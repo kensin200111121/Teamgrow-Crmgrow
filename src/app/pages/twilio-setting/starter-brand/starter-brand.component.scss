@@ -1,0 +1,30 @@
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-column-gap: 16px;
+}
+
+.form-section-description {
+  grid-column: 1/3;
+  font-size: 13px;
+  padding-top: 16px;
+  padding-bottom: 8px;
+  font-weight: 600;
+
+  .form-section-index {
+    font-size: 18px;
+    margin-right: 8px;
+  }
+}
+
+#brand-form {
+  max-width: 800px;
+}
+
+.disclaim {
+  background: #f004;
+  padding: 16px;
+  margin-bottom: 24px;
+  border: 1px solid red;
+  border-radius: 8px;
+}

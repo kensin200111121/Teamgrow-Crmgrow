@@ -1,0 +1,49 @@
+<div class="custom-mat-field">
+  <mat-form-field appearance="outline" floatLabel="never" class="d-block">
+    <mat-chip-list aria-label="Contact Selection" #tagList>
+      <mat-basic-chip
+        *ngFor="let tag of selectedTags"
+        [selectable]="selectable"
+        [removable]="true"
+        (removed)="remove(tag)">
+        <div class="v-center chip p-1 rounded-pill mr-1">
+          <div class="info text-dark ml-1">
+            {{ tag === null ? "No company" : tag}}
+          </div>
+          <div class="close-icon-wrapper rounded-circle bg-white ml-1">
+            <div class="i-icon i-close bgc-dark" matChipRemove></div>
+          </div>
+        </div>        
+      </mat-basic-chip>
+      <input
+        [placeholder]="placeholder"
+        #inputField
+        [formControl]="formControl"
+        [matChipInputFor]="tagList"
+        [matAutocomplete]="auto"
+        [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
+      >
+    </mat-chip-list>
+    <mat-autocomplete
+      #auto="matAutocomplete"
+      (optionSelected)="onSelectOption($event)"
+      [autoActiveFirstOption]="true"
+    >
+      <mat-option [value]="nullOption" *ngIf="hasNullOption && selectedTags.indexOf(null) === -1 && !keyword">
+        <div class="d-flex chip py-2">
+          <div class="info">
+            <div data-name="no-company" class="f-4 fw-600" translate>No company</div>
+          </div>
+        </div>
+      </mat-option>
+      <mat-option *ngFor="let item of filteredResults | async" [value]="item">
+        <div class="d-flex chip py-2" *ngIf="item._id">
+          <div class="info">
+            <div class="f-3" *ngIf="item.isNew" translate>Create new tag:</div>
+            <div class="f-4 fw-600">{{item._id}}</div>
+          </div>
+        </div>
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+</div>

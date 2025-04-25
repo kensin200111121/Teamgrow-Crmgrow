@@ -1,0 +1,116 @@
+@import 'variables';
+
+.mat-table-wrapper {
+  min-height: unset !important;
+}
+.mat-table-wrapper table {
+  min-width: unset !important;
+}
+
+.contact-list-controls {
+  position: sticky;
+  top: 0px;
+  z-index: 10;
+  background: white;
+}
+
+.search-form {
+  max-width: 250px;
+}
+
+.checkbox-col {
+  width: 36px;
+}
+
+.browser-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 65vh;
+  overflow: hidden;
+  width: 100%;
+
+  .contact-list-controls {
+    position: inherit;
+    display: block;
+    min-height: 50px;
+  }
+
+  .custom-mat-table {
+    min-height: calc(65vh - 200px);
+    overflow: auto;
+
+    &.no-selected {
+      height: calc(65vh - 70px);
+    }
+
+    td {
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    .automation-table {
+      .action-count,
+      .contacts {
+        width: 100px;
+
+        @media screen and (max-width: 576px) {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .selected-templates-wrapper {
+    max-height: 200px;
+    min-height: 110px;
+    overflow: auto;
+
+    .table td {
+      height: auto;
+    }
+
+    .actions,
+    .contacts {
+      width: 100px;
+
+      @media screen and (max-width: 576px) {
+        display: none;
+      }
+    }
+  }
+}
+
+.page-table {
+  tr.is_root {
+      display: none;
+  }
+  
+  th.root-folder {
+      text-transform: none;
+      color: blue;
+      font-size: 14px;
+      opacity: 1;
+      border-bottom: none;
+      height: 70px;
+  }
+}
+
+:host ::ng-deep {
+  thead tr.table-header th {
+    top: 64px !important;
+  }
+
+  .mat-dialog-container {
+    display: flex;
+  }
+
+  .browser-container .page-table thead tr.table-header th {
+    position: inherit;
+  }
+}
+
+.to-root {
+  text-decoration: none !important;
+  color: $color-dark !important;
+}

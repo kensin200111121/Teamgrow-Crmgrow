@@ -1,0 +1,21 @@
+@import 'variables';
+
+.card-header {
+  background-color: transparent !important;
+  border-bottom: none !important;
+}
+
+.learn-more-button {
+  text-align: end;
+  color: $color-blue;
+}
+.go-to-university {
+  font-size: 15px;
+}
+.description {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical;
+}

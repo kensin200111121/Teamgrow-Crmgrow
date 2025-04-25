@@ -1,0 +1,84 @@
+<div class="v-center justify-content-between mb-3">
+  <h1 class="m-0" mat-dialog-title translate>
+    Select a Form
+  </h1>
+  <i class="d-block i-icon i-close bgc-dark" (click)="close()"></i>
+</div>
+<mat-dialog-content>
+  <div class="select-form">
+    <label class="f-1 c-dark text-uppercase type-label" for="lead_form" translate>Select Form</label>
+    <div class="row">
+      <div class="col-12 form-group m-0">
+        <select class="form-control c-dark f-5"
+          (change)='onSelectForm(formSelect.value)'
+          name="lead_form"
+          #formSelect 
+        >
+          <option value="0"></option>
+          <option *ngFor="let form of leadForms" [selected]="form._id === this.formId" value="{{form._id}}">
+          {{form.name}}
+          </option>
+        </select>
+      </div>        
+    </div>
+  </div>
+  <div class="select-form mt-3" *ngIf="leadForm">
+    <label class="f-1 c-dark text-uppercase type-label" for="type" translate>Preview</label>
+    <div class="preview-section p-1">
+      <div class="d-block form-name" *ngFor="let item of leadForm.fields">{{item.name}}</div>
+      <div class="d-block mt-2" *ngIf="leadForm.automation">
+        <div class="form-name f-4">Automation</div>
+        <div class="automation-title">{{leadForm.automation.title}}</div>
+      </div>
+      <div class="d-block mt-2" *ngIf="leadForm.tags?.length">
+        <div class="form-name f-4">Tags</div>
+        <div class="d-flex flex-wrap px-1">
+          <div class="badge badge-secondary f-2 py-1 mx-1" *ngFor="let tag of leadForm.tags.slice(0, 5)">
+            {{ tag | shorten :10:'...' }}
+          </div>
+          <span class="more font-weight-bold f-3" *ngIf="leadForm.tags.length > 5"
+            >+ {{ leadForm.tags.length - 5 }} tags</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="select-form mt-3" *ngIf="formType===2 && material?._id">
+    <label class="f-1 c-dark text-uppercase type-label" translate>When should this form display?</label>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" name="chk-immediatly"
+        id="chk_immediatly" [(ngModel)]="isImmediatly"/>
+      <label class="mr-2 f-3" for="chk_immediatly" translate>Immediately</label>
+    </div>
+    <div class="d-flex form-group" style="gap:10px">
+      <div class="d-block w-50">
+        <lable class="f-3">Minute</lable>
+        <input
+            class="form-control"
+            type="number"
+            name="minute"
+            id="name"
+            min="0"
+            [(ngModel)]="minute"
+            [disabled]="isImmediatly"
+        />
+      </div>
+      <div class="d-block w-50">
+        <lable class="f-3">Second</lable>
+        <input
+            class="form-control"
+            type="number"
+            name="second"
+            id="second"
+            min="0"
+            [(ngModel)]="second"
+            [disabled]="isImmediatly"
+        />
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <a class="btn btn-white f-6 font-weight-bold c-dark mr-2" (click)="close()" translate>Cancel</a>
+  <button class="btn btn-primary f-6 font-weight-bold" type="button" (click)="addForm()" translate>Add</button>    
+</mat-dialog-actions>
+

@@ -1,0 +1,169 @@
+<div class="chips">
+  <ng-container *ngIf="_optGroups.length">
+    <ng-container *ngFor="let option of _optGroups">
+      <div class="chip v-center">
+        <div
+          class="f-3"
+          [matMenuTriggerFor]="options"
+          #labelToggler="matMenuTrigger"
+        >
+          <span>{{ option.name }}</span
+          >:&nbsp;
+          <span [ngSwitch]="option.name">
+            <span *ngSwitchCase="'Label'">
+              {{ labelDic[option.items[0]] || 'No Status' }}
+            </span>            
+            <span *ngSwitchCase="'Source'">
+              {{ option.items[0] || 'No Source' }}
+            </span>
+            <span *ngSwitchCase="'Status of task'">
+              {{ statusOptions[option.items[0]] || 'ALL' }}
+            </span>
+            <span *ngSwitchCase="'Task type'">
+              {{ getTaskLabel(option.items[0]) }}
+            </span>
+            <span *ngSwitchCase="'Assignee'">
+              {{ option.items[0].user_name }}
+            </span>
+            <span *ngSwitchDefault>
+              {{ option.items[0] }}
+            </span>
+          </span>
+          <span *ngIf="option.items.length > 1">
+            and {{ option.items.length - 1 }} more
+          </span>
+          <span *ngIf="option.name ==='Datetime'">
+            {{ datetimeString }}
+          </span>
+        </div>
+        <a
+          class="c-pointer ml-2"
+          (click)="removeCondition('filterCondition', option)"
+          ><i class="i-icon d-block i-close bgc-dark"></i
+        ></a>
+      </div>
+      <mat-menu #options class="filter-mat-menu">
+        <div [ngSwitch]="option.name">
+          <div
+            *ngSwitchCase="'Global search'"
+            class="label-container"
+            (click)="$event.stopPropagation()"
+          >
+            <app-task-global-filter
+              (filter)="applyFilter($event, labelToggler)"
+            ></app-task-global-filter>
+          </div>
+          <div
+            *ngSwitchCase="'Task type'"
+            class="label-container"
+            (click)="$event.stopPropagation()"
+          >
+            <app-task-type-filter
+              (filter)="applyFilter($event, labelToggler)"
+            ></app-task-type-filter>
+          </div>
+          <div
+            *ngSwitchCase="'Status of task'"
+            class="label-container"
+            (click)="$event.stopPropagation()"
+          >
+            <app-task-status-filter
+              (filter)="applyFilter($event, labelToggler)"
+            ></app-task-status-filter>
+          </div>
+          <div
+            *ngSwitchCase="'Label'"
+            class="label-container"
+            (click)="$event.stopPropagation()"
+          >
+            {{ options.name }}
+            <app-advanced-filter-label
+              (filter)="applyFilter($event, labelToggler)"
+              [target]="'task'"
+            ></app-advanced-filter-label>
+          </div>
+          <div
+            *ngSwitchCase="'Contact'"
+            class="label-container"
+            (click)="$event.stopPropagation()"
+          >
+            {{ options.name }}
+            <app-task-description-contact-filter
+              (filter)="applyFilter($event, labelToggler)"
+            ></app-task-description-contact-filter>
+          </div>
+          <div
+            *ngSwitchCase="'Datetime'"
+            class="label-container2"
+            (click)="$event.stopPropagation()"
+          >
+            {{ options.name }}
+            <app-task-datetime-filter
+              (filter)="applyFilter($event, labelToggler)"
+            ></app-task-datetime-filter>
+          </div>
+          <div
+            *ngSwitchCase="'Country'"
+            class="label-container"
+            (click)="$event.stopPropagation()"
+          >
+            <app-advanced-filter-country
+              (filter)="applyFilter($event, labelToggler)"
+              [target]="'task'"
+            ></app-advanced-filter-country>
+          </div>
+          <div
+            *ngSwitchCase="'State'"
+            class="label-container"
+            (click)="$event.stopPropagation()"
+          >
+            <app-advanced-filter-state
+              (filter)="applyFilter($event, labelToggler)"
+              [target]="'task'"
+            ></app-advanced-filter-state>
+          </div>
+          <div
+            *ngSwitchCase="'Zipcode'"
+            class="label-container"
+            (click)="$event.stopPropagation()"
+          >
+            <app-advanced-filter-zipcode
+              (filter)="applyFilter($event, labelToggler)"
+              [target]="'task'"
+            ></app-advanced-filter-zipcode>
+          </div>
+          <div
+            *ngSwitchCase="'Source'"
+            class="label-container"
+            (click)="$event.stopPropagation()"
+          >
+            <app-advanced-filter-source
+              (filter)="applyFilter($event, labelToggler)"
+              [target]="'task'"
+            ></app-advanced-filter-source>
+          </div>
+          <div
+            *ngSwitchCase="'Company'"
+            class="label-container"
+            (click)="$event.stopPropagation()"
+          >
+            <app-advanced-filter-company
+              (filter)="applyFilter($event, labelToggler)"
+              [target]="'task'"
+            ></app-advanced-filter-company>
+          </div>
+          <div
+            *ngSwitchCase="'Tag'"
+            class="label-container"
+            (click)="$event.stopPropagation()"
+          >
+            <app-advanced-filter-tag
+              (filter)="applyFilter($event, labelToggler)"
+              [target]="'task'"
+            ></app-advanced-filter-tag>
+          </div>          
+        </div>
+      </mat-menu>
+    </ng-container>
+  </ng-container>
+</div>

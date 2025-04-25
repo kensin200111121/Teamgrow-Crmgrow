@@ -1,0 +1,70 @@
+<div class="intro-container" [ngSwitch]="step">
+    <ng-container *ngSwitchCase="1">
+        <h1 mat-dialog-title translate>Welcome to crmgrow!</h1>
+        <mat-dialog-content>
+            <p translate>
+                With crmgrow you can easilly create and manage your marketing content, whilst streamlining your sales process and manage your contacts.
+            </p>
+            <div class="text-center">
+                <img class="w-100" [src]="sspaService.toAsset('img/onboarding/image 1.jpg')">
+            </div>
+        </mat-dialog-content>
+    </ng-container>
+    <ng-container *ngSwitchCase="2">
+        <h1 mat-dialog-title translate>Create Engaging Videos</h1>
+        <mat-dialog-content>
+            <p translate>
+                Quickly create engaging videos to reach more prospects and create opportunities faster.
+            </p>
+            <div class="text-center">
+                <img [src]="sspaService.toAsset('img/onboarding/image 2.jpg')">
+            </div>
+        </mat-dialog-content>
+    </ng-container>
+    <ng-container *ngSwitchCase="3">
+        <h1 mat-dialog-title translate>Monitor Your Reach</h1>
+        <mat-dialog-content>
+            <p translate >
+                Track the content you send and know when your prospects access your materials, and how they consume it.
+            </p>
+            <div class="text-center">
+                <img [src]="sspaService.toAsset('img/onboarding/image 3.jpg')">
+            </div>
+        </mat-dialog-content>
+    </ng-container>
+    <ng-container *ngSwitchCase="4">
+        <h1 mat-dialog-title translate>Landing Pages in Seconds</h1>
+        <mat-dialog-content>
+            <p translate>
+                Create campaign automations and trigger actions based on how prospects interact with your content.
+            </p>
+            <div class="text-center">
+                <img [src]="sspaService.toAsset('img/onboarding/image 4.jpg')">
+            </div>
+        </mat-dialog-content>
+    </ng-container>
+    <ng-container *ngSwitchCase="5">
+        <h1 mat-dialog-title translate>Welcome to crmgrow!</h1>
+        <mat-dialog-content>
+            <p translate>
+                Choose from several high converting landing page templates to showcase all your video and content.
+            </p>
+            <div class="text-center">
+                <img [src]="sspaService.toAsset('img/onboarding/image 5.jpg')">
+            </div>
+        </mat-dialog-content>
+    </ng-container>
+    <mat-dialog-actions class="p-0">
+        <ul class="v-center step-bar">
+            <li *ngFor="let item of [].constructor(5); let i = index" class="step" [class.active]="i == step - 1">
+            </li>
+        </ul>
+        <button class="btn btn-green font-weight-bold ml-auto" mat-dialog-close translate>Skip</button>
+        <ng-container *ngIf="step != 5; else done">
+            <button class="font-weight-bold btn btn-primary shadow ml-2" (click)="nextStep()" translate>Next</button>
+        </ng-container>
+        <ng-template #done>
+            <button class="font-weight-bold btn btn-primary shadow ml-2" mat-dialog-close translate>Done</button>
+        </ng-template>
+    </mat-dialog-actions>
+</div>

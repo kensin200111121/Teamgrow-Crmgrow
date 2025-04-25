@@ -1,0 +1,61 @@
+<div
+  [@detailExpand]="selectedRows.includes(item._id) ? 'expanded' : 'collapsed'"
+>
+  <ng-container *ngIf="resourceLoading.get(item._id); else resourcesList">
+    <div class="loader" style="height: 50px"></div>
+    <div class="text-center f-8 font-weight-bold" translate>
+      Loading the related resources
+    </div>
+  </ng-container>
+  <ng-template #resourcesList>
+    <table class="w-full c-dark" style="background-color: #eee">
+      <tbody *ngFor="let subItem of data.get(item._id); let subIndex = index">
+        <ng-container *ngIf="subItem.type !== 'Automation'; else automationIcon">
+          <tr>
+            <td class="w-15p" [style.paddingLeft.px]="16 * level + 17">
+              {{ subIndex + 1 }}
+              <img
+                src="{{ subItem.preview }}"
+                class="mr-2 mt-1"
+                style="height: 36px; width: auto"
+                (error)="sspaService.imgError($event, 'img/video_thumb.jpg')"
+              />
+            </td>
+            <td class="w-40p">{{ subItem.title | translate }}</td>
+            <td>{{ subItem.type }}</td>
+          </tr>
+        </ng-container>
+        <ng-template #automationIcon>
+          <tr class="cursor-pointer" (click)="handleSelect(subItem)">
+            <td class="w-15p" [style.paddingLeft.px]="16 * level">
+              {{ subIndex + 1 }}
+              <span
+                *ngIf="!selectedRows.includes(subItem._id); else downIcon"
+                class="mt-1 mx-2"
+                >►</span
+              >
+              <ng-template #downIcon>
+                <span class="mt-1 mx-2">▼</span>
+              </ng-template >
+              <i class="bgc-blue d-block mx-2 i-automation i-icon mt-1"></i>
+            </td>
+            <td class="w-40p">{{ subItem.title | translate }}</td>
+            <td>{{ subItem.type }}</td>
+          </tr>
+          <tr>
+            <td
+              *ngIf="selectedRows.includes(subItem._id)"
+              [attr.colspan]="displayColumns - 1"
+            >
+              <app-automation-resources
+                [item]="subItem"
+                [displayColumns]="displayColumns - 1"
+                [level]="level + 1"
+              ></app-automation-resources>
+            </td>
+          </tr>
+        </ng-template>
+      </tbody>
+    </table>
+  </ng-template>
+</div>

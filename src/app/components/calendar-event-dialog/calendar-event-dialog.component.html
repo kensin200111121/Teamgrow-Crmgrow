@@ -1,0 +1,288 @@
+<div class="calendar-overlay">
+  <form
+    #eventForm="ngForm"
+    (ngSubmit)="submitted = true; eventForm.form.valid ? submit() : false;"
+    class="calendar-form"
+  >
+    <div class="body" id="calender_content" cdkScrollable>
+      <div class="inner-body">
+        <div class="row">
+          <div class="col-12">
+            <div class="form-group">
+              <label class="calendar-label mb-0" translate>title</label>
+              <input
+                data-name="deal-meeting-title"
+                class="form-control"
+                type="text"
+                [placeholder]="'Add meeting title' | translate"
+                name="title"
+                #title="ngModel"
+                [(ngModel)]="event.title"
+                required
+                cdkFocusInitial
+              />
+              <span
+                class="invalid-error f-3 c-red"
+                *ngIf="event.title == '' && submitted"
+                translate
+              >
+                Please input event title
+              </span>
+            </div>
+          </div>
+        </div>
+        <ng-container *ngIf="submitType !== 'update'">
+          <div class="form-group">
+            <label class="calendar-label mb-0" translate>Choose calendar</label>
+            <app-select-calendar [(calendar)]="calendar"></app-select-calendar>
+            <span
+              class="invalid-error f-3 c-red"
+              *ngIf="submitted && !calendar"
+              translate
+            >
+              Please select calendar
+            </span>
+          </div>
+        </ng-container>
+        <div class="row date-time">
+          <div class="col-12 col-sm-6">
+            <div class="form-group">
+                <div class="v-center">
+                  <label class="calendar-label mb-0" translate>date</label>
+                </div>
+                <app-date-input
+                  type="prepend"
+                  [(value)]="selectedDateTime"
+                  [minDate]="minDate">
+                </app-date-input>
+                <span
+                  class="invalid-error f-3 font-weight-bold c-red"
+                  *ngIf="selectedDateTime && selectedDateTime.year == '' && selectedDateTime.month == '' && selectedDateTime.day == '' && submitted"
+                  translate
+                >
+                  Required!
+                </span>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6">
+            <div class="form-group">
+              <div class="v-center">
+                <label class="calendar-label mb-0" translate>time</label>
+              </div>
+              <select
+                data-name="deal-time-select"
+                class="form-control"
+                [(ngModel)]="due_time"
+                name="time"
+                #time="ngModel"
+                [disabled]="event.is_full"
+              >
+                <option value="" disabled translate>Due Time</option>
+                <option *ngFor="let time of getAvailableTimes(); let i = index" value="{{ time.id }}" [attr.data-name]="'deal-time-select-item-' + i">
+                  {{ time.text }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row date-time">
+          <div class="col-12 col-sm-6">
+            <div class="form-group">
+              <label class="calendar-label d-block mb-0" translate>duration</label>
+              <select
+                class="form-control"
+                [(ngModel)]="duration"
+                name="period"
+                #period="ngModel"
+                [disabled]="event.is_full"
+              >
+                <option
+                  *ngFor="let calendar_duration of calendar_durations"
+                  value="{{ calendar_duration.value }}"
+                >
+                  {{ calendar_duration.text }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6">
+            <div class="form-group mt-3">
+              <select
+                data-name="recurring-select"
+                class="form-control"
+                [(ngModel)]="event.recurrence"
+                name="repeat"
+                #repeat="ngModel"
+              >
+                <option
+                  *ngFor="let recurring of recurrings; let i = index"
+                  [attr.data-name]="'recurring-select-item-' + i"
+                  value="{{ recurring.value }}"
+                >
+                  {{ recurring.text }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row align-items-center">
+          <div class="col-12 col-sm-6">
+            <div class="custom-control custom-checkbox">
+              <input
+                type="checkbox"
+                class="custom-control-input"
+                id="customControlInline"
+                [checked]="event.is_full"
+                (change)="setAllDayEvent()"
+              />
+              <label
+                class="custom-control-label f-3 pt-1"
+                for="customControlInline"
+                translate
+                >All Day</label
+              >
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 mb-0 time-zone-wrapper form-group justify-content-end"  *ngIf="!event.is_full">
+            <app-select-timezone [(timezone)]="event.timezone" [uiType]="'dropdown'"></app-select-timezone>
+            <span
+              class="invalid-error f-3 c-red"
+              *ngIf="!event.timezone && submitted"
+              translate
+            >
+              Please select timezone
+            </span>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-12 col-sm-4 form-group">
+            <div class="v-center">
+              <label for="location_cc" class="mb-0" translate>Online Meeting</label>
+              <i class="i-icon bgc-dark i-claim sm d-block ml-1"
+                ngbPopover="When you select a meeting type, the location is automatically created."
+                popoverTitle="Online Meeting"
+                triggers="mouseenter:mouseleave" placement="right">
+              </i>
+            </div>
+            <mat-select
+              #locationSelector
+              class="form-control d-flex align-items-center"
+              [(value)]="meetingType"
+              [disableOptionCentering]="true"
+              (openedChange)="openLocation($event)"
+            >
+              <mat-option value="" translate>None</mat-option>
+              <mat-option value="google" translate [disabled]="getCalendarType() !== 'google'">Google</mat-option>
+              <mat-option value="zoom" translate [disabled]="!garbage.zoom || !garbage.zoom.email" *ngIf="!isSspa">Zoom</mat-option>
+            </mat-select>
+          </div>
+          <div class="col-12 col-sm-8 form-group" *ngIf="submitType == 'update' && meetingType">
+            <div class="v-center">
+              <label class="mb-0" translate>Meeting Link</label>
+            </div>
+            <div class="v-center form-control border-0 p-0">
+              <ng-container *ngIf="meetingType == 'google'; else zoomMeeing">
+                <a [href]="event.hangoutLink" target="_blank">{{event.hangoutLink}}</a>
+              </ng-container>
+              <ng-template #zoomMeeing>
+                <a [href]="event.location" target="_blank" *ngIf="!isSspa">{{event.location}}</a>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div class="form-group">
+              <div class="v-center">
+                <label class="calendar-label mb-0" translate>ASSIGN GUESTS</label>
+              </div>
+              <app-input-contacts
+                [selectedContacts]="contacts"
+                [keepContacts]="keepContacts"
+                [display]="'email'"
+                *ngIf="!isDeal"
+              >
+              </app-input-contacts>
+              <app-input-contact-deal
+                [selectedContacts]="contacts"
+                [onlyFromSearch]="true"
+                [onlySubscriber]="true"
+                class="w-100"
+                *ngIf="isDeal"
+              ></app-input-contact-deal>
+            </div>
+          </div>
+        </div>
+        <div class="row" *ngIf="!meetingType">
+          <div class="col-12 form-group">
+            <label class="calendar-label d-block mb-0" translate>location</label>
+            <div class="form-group mb-0">
+              <input
+                class="form-control"
+                [placeholder]="'Add location' | translate"
+                [(ngModel)]="event.location"
+                name="address"
+                #address="ngModel"
+                ngx-google-places-autocomplete
+                #addressplacesRef="ngx-places"
+                [options]="{
+                  types: []
+                }"
+                (onAddressChange)="handleAddressChange($event)"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 form-group mb-0">
+            <label class="calendar-label d-block mb-0" translate>DESCRIPTION</label>
+            <app-html-editor
+              [(value)]="event.description"
+              [placeholder]="'Add description' | translate"
+              [noImage]="true"
+              [noFont]="true"
+              [noSize]="true"
+              [style]="{height: '90px'}"
+              #emailEditor
+            >
+            </app-html-editor>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="overlay-footer py-3" align="end">
+      <div class="row mx-0">
+        <div class="col-12">
+          <button
+            type="button"
+            (click)="close()"
+            class="btn btn-white py-2 f-6 font-weight-bold"
+            translate
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-blue text-white br-default py-2 f-6 font-weight-bold ml-2"
+            [class.loading]="isLoading"
+            *ngIf="submitType == 'update'; else createButton"
+            translate
+          >
+            Update
+          </button>
+          <ng-template #createButton>
+            <button
+              data-action="deal-action-create"
+              type="submit"
+              class="btn btn-blue text-white ml-2 br-default py-2 f-6 font-weight-bold"
+              [class.loading]="isLoading"
+              translate
+            >
+              Create
+            </button>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

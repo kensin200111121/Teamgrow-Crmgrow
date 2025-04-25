@@ -1,0 +1,14 @@
+@import 'variables';
+.contact {
+    .avatar {
+        width: 24px;
+        min-width: 24px;
+        height: 24px;
+        min-height: 24px;
+        background-color: $color-avatar;
+        border: 1px solid $color-white;
+        margin-left: -8px;
+        box-shadow: unset;
+        line-height:24px;
+    }
+}

@@ -1,0 +1,11 @@
+
+<div ngbDropdown class="v-center btn f-3 font-weight-bold c-blue p-2 ai-button" [style.backgroundColor]="enabled ? '#FFF':'#bbb'">
+  <div class="v-center no-carot c-pointer" ngbDropdownToggle>
+    <i class="d-block i-icon i-openai  bgc-blue"></i>
+  </div>
+  <div *ngIf="enabled" ngbDropdownMenu class="light py-1">
+    <div class="f-2 py-1 px-2 c-pointer menu-item dropdown-item" (click)="setAICreateMode(true)" translate>Create with AI</div>
+    <div class="f-2 py-1 px-2 c-pointer menu-item dropdown-item" (click)="setAICreateMode(false)" translate>Rewrite with AI</div>
+  </div>
+</div>
+

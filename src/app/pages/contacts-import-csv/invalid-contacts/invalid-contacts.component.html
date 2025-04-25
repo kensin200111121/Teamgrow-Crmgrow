@@ -1,0 +1,94 @@
+<!-- Added by Sylla -->
+<div class="page-content">
+
+  <div class="status-header v-center mt-3">
+    <h1 class="page-title" [translateParams]="{count: getInvalidCount()}" translate>
+      Contacts are invalid in your contact list
+      <img [src]="sspaService.toAsset('img/warning-sm.svg')" alt="">
+    </h1>
+    <div class="f-6 font-weight-bold op-64 contact-count mobile" [translateParams]="{count: getInvalidCount()}"
+      translate>
+      Contacts are invalid in your contact list
+      <img [src]="sspaService.toAsset('img/warning-sm.svg')" alt="">
+    </div>
+    <div class="ml-auto v-center create-actions">
+      <button class="v-center btn btn-white border border-primary f-6 font-weight-bold rounded mr-2 px-3"
+        (click)="onBack()">
+        <span class="normal" translate>Back</span>
+        <span class="mobile" translate>Back</span>
+      </button>
+      <ng-container *ngIf="getInvalidCount() == 0">
+        <button class="btn btn-primary f-6 font-weight-bold rounded px-3 text-white shadow" [class.loading]="isSaving"
+          (click)="onContinue()">
+          {{ 'Continue' | translate }}
+        </button>
+      </ng-container>
+      <ng-container *ngIf="getInvalidCount() > 0">
+        <button class="btn btn-primary f-6 font-weight-bold rounded px-3 text-white shadow"
+          (click)="onIgnoreAndContinue()">
+          {{ 'Ignore and Continue' | translate }}
+        </button>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="f-6 font-weight-bold op-64 mb-2 contact-count desktop">
+    {{ 'See below and edit or ignore contacts to import' | translate }}
+  </div>
+
+  <div class="invalid-wrapper pr-2">
+    <div class="invalid-table-wrapper">
+      <div class="table-wrapper">
+        <table class="table page-table mb-0 invalid-table">
+          <thead>
+            <tr class="column-row">
+              <th *ngFor="let item of pcMatching | keyvalue : contactHeaderOrder" class="column-field">
+                <div class="min-w-200 text-black f-4 min-h-40 v-center">
+                  {{properties[item.value]}}</div>
+              </th>
+              <th class="col-action sticky-col-action column-field"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let contact of contacts | paginate: {id: 'contactPages', itemsPerPage: pageSize.id, currentPage: page, totalItems: contacts.length}; let i = index">
+              <td *ngFor="let item of pcMatching | keyvalue : contactHeaderOrder" class="f-4 last-row">
+                <div class="v-center data-field" [class.c-red]="!isValidField(contact[item.value], item.value)">
+                  {{formatValue(contact[item.value]) || ''}}
+                </div>
+              </td>
+              <td class="col-action sticky-col-action">
+                <div class="v-center data-field action-button">
+                  <a (click)="onEditContact(i)" class="ml-2 c-pointer user-action">
+                    <i class="i-icon d-block i-edit bgc-dark"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="my-2 table-control mode-1">
+    <div class="pagination-wrapper m-auto">
+      <pagination-controls (pageChange)="onChangePage($event)" (pageBoundsCorrection)="onChangePage($event)"
+        id="contactPages" maxSize="5" previousLabel="" nextLabel="">
+      </pagination-controls>
+    </div>
+    <div class="shadow-dropdown ml-auto page-size-control" ngbDropdown placement="top-right">
+      <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+        <span class="pr-2 c-blue" [translateParams]="{count: pageSize.id}" translate>pagination</span>
+      </div>
+      <div ngbDropdownMenu aria-labelledby="contactPageSize">
+        <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS" (click)="onChangePageSize(type)">
+          <span class="f-3 v-center" [class.font-weight-bold]="type.id === pageSize.id">
+            <span [translateParams]="{count: type.id}" translate>pagination</span>
+            <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1" *ngIf="type.id === pageSize.id"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End by Sylla -->

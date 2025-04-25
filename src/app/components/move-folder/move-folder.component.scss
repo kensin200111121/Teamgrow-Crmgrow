@@ -1,0 +1,74 @@
+a.material-main-info {
+  padding: 6px 0px;
+  // border-bottom: 1px solid gainsboro;
+}
+
+.mat-dialog-container {
+  padding: 55px;
+}
+
+.mat-dialog-content {
+  overflow: unset;
+}
+
+.bg-orange {
+  background-color: rgb(223, 145, 0);
+  width: 23px;
+  height: 23px;
+}
+
+// .i-icon {
+
+// }
+
+.add-folder-icon {
+  background-color: #0087ff;
+  width: 12px;
+  height: 12px;
+  margin-right: 5px;
+}
+
+.new-folder {
+  cursor: pointer;
+  margin-left: 30px;
+  color: #0087ff;
+  border: 2px solid;
+  width: fit-content;
+  border-radius: 8px;
+  padding: 5px 25px 5px 25px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+div.new-folder:hover {
+  background-color: #bee1ff;
+}
+
+div.new-folder:active {
+  background-color: #9cd1ff;
+}
+
+.input-div {
+  border: 1px solid rgb(185, 185, 185);
+  display: flex;
+  margin-top: 5px;
+  border-radius: 8px;
+  align-items: center;
+}
+
+.remove-i {
+  background-color: gray;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+div.input-div:focus {
+  border-color: rgb(60, 144, 255);
+}
+
+.border {
+  padding: 20px;
+  height: 50vh;
+  overflow-y: auto;
+}

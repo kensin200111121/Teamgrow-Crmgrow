@@ -1,0 +1,605 @@
+<div class="page-content px-3 ml-3">
+    <!-- <div class="v-center mb-3" *ngIf="!user.onboard.upload_video && selectedTab.id === 'video'">
+        <img [src]="sspaService.toAsset('img/onboarding/video.svg')">
+        <div class="ml-3">
+          <div class="f-6 font-weight-bold">Create your first material</div>
+          <div class="f-4 font-weight-bold mt-2">Add or upload a new video to see how your contacts will receive them</div>
+        </div>
+    </div> -->
+    <div class="v-center justify-content-between mb-4">
+        <app-slide-tab [tabs]="tabs" [selected]="selectedTab" (onChange)="changeTab($event)" [onlyEmit]="true">
+        </app-slide-tab>
+    </div>
+    <ng-container *ngIf="selectedTab.id === 'video'">
+        <h6 class="f-22 ls-2 font-weight-bold text-capitalize my-2" translate>upload new video</h6>
+        <div class="d-sm-flex d-block mt-4 upload-step">
+            <div class="d-sm-block d-flex step-bar mr-sm-4 mb-sm-0 mb-3">
+                <span class="f-1 font-weight-bold text-uppercase small-label mr-sm-0 mr-2" translate>steps</span>
+                <label
+                    class="v-center justify-content-center f-3 font-weight-bold ml-sm-1 ml-0 mb-0"
+                    [class.active]="isStep >= 1"
+                >
+                    1
+                </label>
+                <div class="line ml-sm-3 ml-0" for="step-2" [class.active]="isStep >= 2"></div>
+                <label
+                    class="v-center justify-content-center f-3 font-weight-bold ml-sm-1 ml-0 mb-0"
+                    [class.active]="isStep >= 2"
+                >
+                    2
+                </label>
+                <div class="line ml-sm-3 ml-0" for="step-3" [class.active]="isStep >= 3"></div>
+                <label
+                    class="v-center justify-content-center f-3 font-weight-bold ml-sm-1 ml-0 mb-0"
+                    [class.active]="isStep >= 3"
+                >
+                    3
+                </label>
+                <div class="line ml-sm-3 ml-0" for="step-4" [class.active]="isStep == 4"></div>
+                <label
+                    class="v-center justify-content-center f-3 font-weight-bold ml-sm-1 ml-0 mb-0"
+                    [class.active]="isStep == 4"
+                >
+                    4
+                </label>
+            </div>
+            <div class="step-body-1 ml-sm-5" [class.active]="isStep == 1">
+                <span class="f-4 font-weight-bold text-c-dark" translate>Copy a YouTube or Vimeo link and paste below to bring that video into crmgrow.</span>
+                <div class="web-video my-3">
+                    <img [src]="sspaService.toAsset('img/youtube.svg')">
+                    <span class="f-4 font-weight-bold text-c-dark mx-4" translate>or</span>
+                    <img [src]="sspaService.toAsset('img/vimeo.svg')">
+                </div>
+                <div class="form-group has-feedback mb-4 position-relative">
+                    <input class="f-2 form-control pr-4" type="text"
+                        id="step-1-link" name="video_link"
+                        placeholder="eg. https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                        required [(ngModel)]="video.url" #video_link="ngModel"
+                        (ngModelChange)="checkVideoUrl()"
+                    >
+                    <img class="check-spinner" [src]="sspaService.toAsset('img/spinner.gif')" alt="" *ngIf="socialVideoLoading">
+                </div>
+                <div class="f-4 font-weight-bold text-c-dark" translate>or</div>
+                <div class="local-video text-center mt-4"
+                    [ngClass]="{'file-over': overFile}"
+                    ng2FileDrop [uploader]="videoUploader"
+                    (dragover)="activeFileZone($event)"
+                    (dragenter)="activeFileZone($event)"
+                    (dragend)="disableFileZone($event)"
+                    (dragleave)="disableFileZone($event)"
+                    (drop)="disableFileZone($event)"
+                    (click)="openFileDialog('video')"
+                    (fileOver)="fileDrop($event, 'video')"
+                >
+                    <input [attr.data-name]="'video-upload-input'" type="file" style="display: none;" ng2FileSelect [uploader]="videoUploader" accept=".mp4, .mov"
+                        (change)="fileChange($event, 'video')" #videoFile />
+                    <div class="v-center" data-name="material-upload-video">
+                      <i class="i-icon i-upload-video sm d-block bgc-dark"></i>
+                      <div class="f-6 font-weight-bold c-dark ml-2" translate>
+                        Upload your video
+                      </div>
+                    </div>
+                    <p class="f-4 description-text mx-auto my-3" translate>Drag and drop your video in the area or click to select it from your local device</p>
+                </div>
+                <span class="f-4 description-text d-block mt-2" translate>You can upload only MP4 and MOV file types!</span>
+                <span class="f-4 description-text d-block mt-2" translate>Maximum file size 1024MB.</span>
+            </div>
+            <div class="step-body-2 ml-sm-5" [class.active]="isStep == 2">
+                <form
+                    #detailForm="ngForm"
+                    (ngSubmit)="submitted = true; detailForm.form.valid ? saveDetail() : false"
+                    [class.was-validated]="submitted"
+                >
+                    <div class="form-group has-feedback mb-4" *ngIf="videoType == 'web'">
+                        <label class="f-1 font-weight-bold text-uppercase small-label" for="step-2-link" translate>video link</label>
+                        <input class="f-2 form-control" type="text" id="step-2-link" name="video_link"
+                            disabled [(ngModel)]="video.url" #video_link="ngModel"
+                        >
+                    </div>
+                    <div class="video-default mb-4">
+                        <span class="f-1 font-weight-bold text-uppercase small-label" *ngIf="videoType == 'web'" translate>original title</span>
+                        <span class="d-flex f-6 font-weight-bold text-c-dark mb-4" *ngIf="videoType == 'web'">{{video.title}}</span>
+                        <div class="thumbnail">
+                            <img [src]="video.thumbnail">
+                            <a class="v-center justify-content-center bgc-blue c-pointer edit-thumbnail" (click)="openPreviewDialog('video')"><i class="d-block i-icon i-edit bgc-white"></i></a>
+                        </div>
+                    </div>
+                    <div class="form-group has-feedback mb-4">
+                        <label class="f-1 font-weight-bold text-uppercase small-label" for="title" translate>title</label>
+                        <input class="f-2 form-control" type="text" id="title" name="video_title"
+                            [placeholder]="'Type a title for this video' | translate"
+                            [(ngModel)]="video.title" #video_title="ngModel"
+                            [required]="videoType != 'web'"
+                        >
+                    </div>
+                    <div class="video-description">
+                        <label class="f-1 font-weight-bold text-uppercase small-label" translate>DESCRIPTION</label>
+                        <app-html-editor
+                            [(value)]="video.description"
+                            [placeholder]="'Enter Text' | translate"
+                            [style]="{height: '150px'}"
+                            #emailEditor
+                            >
+                        </app-html-editor>
+                    </div>
+                    <div class="v-center justify-content-end mt-4">
+                        <a class="btn f-6 font-weight-bold text-primary px-4 py-2 mr-3" (click)="backUpload()" translate>
+                            Back
+                        </a>
+                        <button [attr.data-action]="'video-upload-next-btn'" class="btn btn-blue f-6 font-weight-bold text-white px-4 py-2" type="submit" translate>
+                            Next
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="step-body-3 ml-sm-5" [class.active]="isStep == 3">
+                <form
+                    #selectThemeForm="ngForm"
+                    (ngSubmit)="submitted = true; selectThemeForm.form.valid ? selectTheme() : false"
+                    [class.was-validated]="submitted"
+                >
+                    <span class="f-3 font-weight-bold text-c-dark" translate>Select landing page</span>
+                    <div class="row mx-0 mt-3 themes">
+                        <div class="col-sm-4 col-6 py-3 theme" *ngFor="let theme of themes" (click)="setTheme(theme)" [class.selected]="selectedTheme.id == theme.id">
+                          <img src="{{theme.thumbnail}}" class="w-100 theme-thumb" />
+                          <div class="f-1 text-center text-c-dark pt-3 theme-name">{{theme.name}}</div>
+                        </div>
+                    </div>
+                    <div class="v-center justify-content-end mt-4">
+                        <a class="btn f-6 font-weight-bold text-primary px-4 py-2" (click)="backDetail()" translate>
+                            Back
+                        </a>
+                        <button [attr.data-action]="'video-upload-next1-btn'" class="btn btn-blue f-6 font-weight-bold text-white px-4 py-2" type="submit" [disabled]="!selectedTheme.id" translate>
+                            Next
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="step-body-4 ml-sm-5 position-relative" [class.active]="isStep == 4">
+                <form
+                    #finishUploadForm="ngForm"
+                    (ngSubmit)="submitted = true; finishUploadForm.form.valid ? finishUpload('video') : false"
+                    [class.was-validated]="submitted"
+                >
+                    <div class="v-center">
+                        <span class="f-3 font-weight-bold c-dark" translate>Final Review</span>
+                        <span class="f-3 c-dark ml-3" *ngIf="uploadingChunks || mergingChunks || savingData">
+                            {{'Uploading' | translate}} ({{totalUploadProgress}}%)...
+                        </span>
+                    </div>
+                    <div class="my-4 position-relative">
+                        <img class="w-100" [src]="video.thumbnail">
+                        <div class="video-uploading" *ngIf="uploadingChunks || mergingChunks || savingData">
+                            <div class="progress">
+                                <div
+                                    class="progress-bar bg-primary"
+                                    role="progressbar"
+                                    [style.width]="totalUploadProgress + '%'"
+                                ></div>
+                            </div>
+                            <div class="status w-100 text-left mt-1">
+                                {{ uploadingChunks ? ('Uploading...' | translate) : (mergingChunks ? ('Completing...' | translate) : (savingData ? ('Saving video data...' | translate): ''))}}
+                            </div>
+                            <div class="retrying" *ngIf="retryAttempt">
+                                {{retryAttempt + retryAttemptSufix + ('uploading retry attempting...' | translate)}}
+                            </div>
+                            <div class="error" *ngIf="uploadingError">
+                                {{uploadingError}}
+                            </div>
+                            <div *ngIf="retryAttempt || uploadingError">
+                                <button class="btn btn-primary cancel-btn" (click)="cancelVideoUpload()" [class.loading]="canceling" translate>Cancel Uploading</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label class="f-1 font-weight-bold text-uppercase small-label" translate>title</label>
+                        <span class="v-center f-3 font-weight-bold text-c-dark">{{video.title}}</span>
+                    </div>
+                    <div class="mt-3">
+                        <label class="f-1 font-weight-bold text-uppercase small-label" translate>DESCRIPTION</label>
+                        <span class="v-center f-3 font-weight-bold text-c-dark">{{(video.description || '') | stripTags | removeEntity | shorten: 80: '...'}}</span>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-sm-6">
+                            <label class="f-1 font-weight-bold text-uppercase small-label" translate>theme</label>
+                            <span class="v-center f-3 font-weight-bold text-c-dark">{{selectedTheme.name}}</span>
+                            <img class="w-100 mt-2" src="{{selectedTheme.thumbnail}}">
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="f-1 font-weight-bold text-uppercase small-label" translate>video duration</label>
+                            <ng-container *ngIf="video.duration >= 0; else liveTemplate">
+                                <span class="v-center f-3 font-weight-bold text-c-dark">{{video.duration/1000 | number}} {{'seconds' | translate}}</span>
+                            </ng-container>
+                            <ng-template #liveTemplate>
+                                <span class="v-center f-3 font-weight-bold text-c-dark">Live</span>
+                            </ng-template>
+                        </div>
+                    </div>
+                    <div class="v-center justify-content-end mt-4">
+                        <a class="btn f-6 font-weight-bold text-primary px-4 py-2" (click)="backSelectTheme()" [class.disabled]="uploading || uploadingChunks || mergingChunks || savingData" translate>
+                            Back
+                        </a>
+                        <button [attr.data-action]="'video-upload-finish-btn'" class="btn btn-blue f-6 font-weight-bold text-white px-4 py-2" type="submit" [class.loading]="uploading || uploadingChunks || mergingChunks || savingData" translate>
+                            Finish
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="selectedTab.id === 'pdf'">
+        <h6 class="f-22 ls-2 font-weight-bold text-capitalize my-2" translate>upload new pdf</h6>
+        <div class="d-sm-flex d-block mt-4 upload-step">
+            <div class="d-sm-block d-flex step-bar mr-sm-4 mb-sm-0 mb-3">
+                <span class="f-1 font-weight-bold text-uppercase small-label mr-sm-0 mr-2" translate>steps</span>
+                <label
+                    class="v-center justify-content-center f-4 font-weight-bold ml-sm-1 ml-0 mb-0"
+                    [class.active]="isStep >= 1"
+                >
+                    1
+                </label>
+                <div class="line ml-sm-3 ml-0" for="step-2" [class.active]="isStep >= 2"></div>
+                <label
+                    class="v-center justify-content-center f-4 font-weight-bold ml-sm-1 ml-0 mb-0"
+                    [class.active]="isStep >= 2"
+                >
+                    2
+                </label>
+                <div class="line ml-sm-3 ml-0" for="step-3" [class.active]="isStep >= 3"></div>
+                <label
+                    class="v-center justify-content-center f-4 font-weight-bold ml-sm-1 ml-0 mb-0"
+                    [class.active]="isStep >= 3"
+                >
+                    3
+                </label>
+                <div class="line ml-sm-3 ml-0" for="step-4" [class.active]="isStep == 4"></div>
+                <label
+                    class="v-center justify-content-center f-4 font-weight-bold ml-sm-1 ml-0 mb-0"
+                    [class.active]="isStep == 4"
+                >
+                    4
+                </label>
+            </div>
+            <div class="step-body-1 ml-sm-5" [class.active]="isStep == 1">
+                <div class="local-video text-center mt-4"
+                    [ngClass]="{'file-over': overFile}"
+                    (dragover)="activeFileZone($event)"
+                    (dragenter)="activeFileZone($event)"
+                    (dragend)="disableFileZone($event)"
+                    (dragleave)="disableFileZone($event)"
+                    (drop)="disableFileZone($event)"
+                    ng2FileDrop [uploader]="pdfUploader"
+                    (click)="openFileDialog('pdf')"
+                    (fileOver)="fileDrop($event, 'pdf')"
+                >
+                    <input [attr.data-name]="'pdf-upload-input'" type="file" style="display: none;" ng2FileSelect [uploader]="pdfUploader" accept=".pdf"
+                        (change)="fileChange($event, 'pdf')" #pdfFile />
+                    <div class="v-center">
+                      <i class="i-icon i-upload-video sm d-block bgc-dark"></i>
+                      <div class="f-6 font-weight-bold c-dark ml-2" translate>
+                        Upload your .PDF file
+                      </div>
+                    </div>
+                    <p class="f-4 description-text mx-auto my-4" translate>Drag and drop your pdf in the area or click to select it from your local device</p>
+                </div>
+                <span class="f-4 description-text d-block mt-2" translate>You can upload only PDF file types!</span>
+            </div>
+            <div class="step-body-2 ml-sm-5" [class.active]="isStep == 2">
+                <form
+                    #detailForm="ngForm"
+                    (ngSubmit)="submitted = true; detailForm.form.valid ? saveDetail() : false"
+                    [class.was-validated]="submitted"
+                >
+                    <div class="video-default mb-4">
+                        <div class="thumbnail" id="pdf-selector">
+                            <!-- <pdf-viewer
+                                [src]="file"
+                                [show-all]="false"
+                                [fit-to-page]="true"
+                                (page-rendered)="pageRendered($event)"
+                                [hidden]="!thumbnail_loading"
+                            >
+                            </pdf-viewer>-->
+                            <div class="loader" *ngIf="thumbnail_loading"></div>
+                            <img class="image" src="{{pdf.preview}}">
+                            <a class="v-center justify-content-center bgc-blue c-pointer edit-thumbnail" (click)="openPreviewDialog('pdf')" *ngIf="pdf.preview">
+                                <i class="d-block i-icon i-edit bgc-white"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="form-group has-feedback mb-4">
+                        <label class="f-1 font-weight-bold text-uppercase small-label" for="title" translate>title</label>
+                        <input class="f-2 form-control" type="text" id="title" name="pdf_title"
+                            [placeholder]="'Type a title for this pdf' | translate"
+                            [(ngModel)]="pdf.title" #pdf_title="ngModel"
+                            required
+                        >
+                    </div>
+                    <div class="video-description">
+                        <label class="f-1 font-weight-bold text-uppercase small-label" translate>DESCRIPTION</label>
+                        <app-html-editor
+                            [(value)]="pdf.description"
+                            [placeholder]="'Enter Text' | translate"
+                            [style]="{height: '150px'}"
+                            #emailEditor
+                            >
+                        </app-html-editor>
+                    </div>
+                    <div class="v-center justify-content-end mt-4">
+                        <a class="btn f-6 font-weight-bold text-primary px-4 py-2 mr-3" (click)="backUpload()" translate>
+                            Back
+                        </a>
+                        <button [attr.data-action]="'pdf-upload-next-btn'" class="btn btn-blue f-6 font-weight-bold text-white px-4 py-2" type="submit" translate>
+                            Next
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="step-body-3 ml-sm-5" [class.active]="isStep == 3">
+                <form
+                    #selectThemeForm="ngForm"
+                    (ngSubmit)="submitted = true; selectThemeForm.form.valid ? selectTheme() : false"
+                    [class.was-validated]="submitted"
+                >
+                    <span class="f-3 font-weight-bold text-c-dark" translate>Select landing page</span>
+                    <div class="row mx-0 mt-3 themes">
+                        <div class="col-sm-4 col-6 py-3 theme" *ngFor="let theme of themes" (click)="setTheme(theme)" [class.selected]="selectedTheme?.id == theme.id">
+                          <img src="{{theme.thumbnail}}" class="w-100 theme-thumb" />
+                          <div class="f-1 text-center text-c-dark pt-3 theme-name">{{theme.name}}</div>
+                        </div>
+                    </div>
+                    <div class="v-center justify-content-end mt-4">
+                        <div class="d-flex p-3">
+                            <label class="v-center p-2" translate>Select View Mode</label>
+                            <div class="p-2">
+                                <select class="form-control theme-control" [(ngModel)]="pdf.view_mode" name="changeViewMode" #changeViewMode="ngModel"
+                                    required>
+                                    <option value="scroll">{{ 'Scroll Mode' | translate }}</option>
+                                    <option value="bookfold">{{ 'Bookfold Mode' | translate }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <a class="btn f-6 font-weight-bold text-primary px-4 py-2" (click)="backDetail()" translate>
+                            Back
+                        </a>
+                        <button [attr.data-action]="'pdf-upload-next1-btn'" class="btn btn-blue f-6 font-weight-bold text-white px-4 py-2" type="submit" [disabled]="!selectedTheme?.id" translate>
+                            Next
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="step-body-4 ml-sm-5 position-relative" [class.active]="isStep == 4">
+                <form
+                    #finishUploadForm="ngForm"
+                    (ngSubmit)="submitted = true; finishUploadForm.form.valid ? finishUpload('pdf') : false"
+                    [class.was-validated]="submitted"
+                >
+                    <div class="v-center">
+                        <span class="f-3 font-weight-bold c-dark" translate>Final Review</span>
+                        <span class="f-3 c-dark ml-3" *ngIf="uploading">
+                            {{'Uploading' | translate}} ({{
+                                pdfUploader.progress != 0 ? pdfUploader.progress.toFixed(0) : uploaded_time.toFixed(0)
+                            }}%)...
+                        </span>
+                    </div>
+                    <div class="my-4">
+                        <img class="w-100" src="{{pdf.preview}}">
+                    </div>
+                    <div class="progress-wrapper" *ngIf="uploading">
+                        <div class="progress">
+                            <div
+                              class="progress-bar bg-primary"
+                              role="progressbar"
+                              [style.width]="
+                              pdfUploader.progress != 0
+                                ? pdfUploader.progress + '%'
+                                : uploaded_time + '%'
+                            "
+                            ></div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label class="f-1 font-weight-bold text-uppercase small-label" translate>title</label>
+                        <span class="v-center f-3 font-weight-bold text-c-dark">{{pdf.title}}</span>
+                    </div>
+                    <div class="mt-3">
+                        <label class="f-1 font-weight-bold text-uppercase small-label" translate>DESCRIPTION</label>
+                        <span class="v-center f-3 font-weight-bold text-c-dark">{{(pdf.description || '') | stripTags | removeEntity | shorten: 80: '...'}}</span>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-sm-6">
+                            <label class="f-1 font-weight-bold text-uppercase small-label" translate>theme</label>
+                            <span class="v-center f-3 font-weight-bold text-c-dark">{{selectedTheme?.name}}</span>
+                            <img class="w-100 mt-2" src="{{selectedTheme?.thumbnail}}">
+                        </div>
+                    </div>
+                    <div class="v-center justify-content-end mt-4">
+                        <a class="btn f-6 font-weight-bold text-primary px-4 py-2" (click)="backSelectTheme()" translate>
+                            Back
+                        </a>
+                        <button [attr.data-action]="'pdf-upload-finish-btn'" class="btn btn-blue f-6 font-weight-bold text-white px-4 py-2" type="submit" [class.loading]="uploading" translate>
+                            Finish
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="selectedTab.id === 'image'">
+        <h6 class="f-22 ls-2 font-weight-bold text-capitalize my-2" translate>upload new image</h6>
+        <div class="d-sm-flex d-block mt-4 upload-step">
+            <div class="d-sm-block d-flex step-bar mr-sm-4 mb-sm-0 mb-3">
+                <span class="f-1 font-weight-bold text-uppercase small-label mr-sm-0 mr-2" translate>steps</span>
+                <label
+                    class="v-center justify-content-center f-3 font-weight-bold ml-sm-1 ml-0 mb-0"
+                    [class.active]="isStep >= 1"
+                >
+                    1
+                </label>
+                <div class="line ml-sm-3 ml-0" for="step-2" [class.active]="isStep >= 2"></div>
+                <label
+                    class="v-center justify-content-center f-3 font-weight-bold ml-sm-1 ml-0 mb-0"
+                    [class.active]="isStep >= 2"
+                >
+                    2
+                </label>
+                <div class="line ml-sm-3 ml-0" for="step-3" [class.active]="isStep >= 3"></div>
+                <label
+                    class="v-center justify-content-center f-3 font-weight-bold ml-sm-1 ml-0 mb-0"
+                    [class.active]="isStep >= 3"
+                >
+                    3
+                </label>
+                <div class="line ml-sm-3 ml-0" for="step-4" [class.active]="isStep == 4"></div>
+                <label
+                    class="v-center justify-content-center f-3 font-weight-bold ml-sm-1 ml-0 mb-0"
+                    [class.active]="isStep == 4"
+                >
+                    4
+                </label>
+            </div>
+            <div class="step-body-1 ml-sm-5" [class.active]="isStep == 1">
+                <div class="local-video text-center mt-4"
+                    [ngClass]="{'file-over': overFile}"
+                    (dragover)="activeFileZone($event)"
+                    (dragenter)="activeFileZone($event)"
+                    (dragend)="disableFileZone($event)"
+                    (dragleave)="disableFileZone($event)"
+                    (drop)="disableFileZone($event)"
+                    ng2FileDrop [uploader]="imageUploader"
+                    (click)="openFileDialog('image')"
+                    (fileOver)="fileDrop($event, 'image')"
+                >
+                    <input [attr.data-name]="'image-upload-input'" type="file" style="display: none;" ng2FileSelect [uploader]="imageUploader" accept="image/*"
+                        (change)="fileChange($event, 'image')" #imageFile multiple />
+                    <div class="v-center">
+                      <i class="i-icon i-upload-video sm d-block bgc-dark"></i>
+                      <div class="f-6 font-weight-bold c-dark ml-2" translate>
+                        Upload your image
+                      </div>
+                    </div>
+                    <p class="f-4 description-text mx-auto my-3" translate>Drag and drop your images in the area or click to select it from your local device</p>
+                </div>
+                <span class="f-4 description-text d-block mt-2" translate>You can select more than one images so can show slide view for several images!</span>
+            </div>
+            <div class="step-body-2 ml-sm-5" [class.active]="isStep == 2">
+                <form
+                    #detailForm="ngForm"
+                    (ngSubmit)="submitted = true; detailForm.form.valid ? saveDetail() : false"
+                    [class.was-validated]="submitted"
+                >
+                    <div class="video-default mb-4">
+                        <div class="thumbnail" id="image-selector">
+                            <img class="image" src="{{image.preview}}">
+                            <a class="v-center justify-content-center bgc-blue c-pointer edit-thumbnail" (click)="openPreviewDialog('image')"><i class="d-block i-icon i-edit bgc-white"></i></a>
+                        </div>
+                    </div>
+                    <div class="form-group has-feedback mb-4">
+                        <label class="f-1 font-weight-bold text-uppercase small-label" for="title" translate>title</label>
+                        <input class="f-2 form-control" type="text" id="title" name="image_title"
+                            [placeholder]="'Type a title for this image' | translate"
+                            [(ngModel)]="image.title" #image_title="ngModel"
+                            required
+                        >
+                    </div>
+                    <div class="video-description">
+                        <label class="f-1 font-weight-bold text-uppercase small-label" translate>DESCRIPTION</label>
+                        <app-html-editor
+                            [(value)]="image.description"
+                            [placeholder]="'Enter Text' | translate"
+                            [style]="{height: '150px'}"
+                            #emailEditor
+                            >
+                        </app-html-editor>
+                    </div>
+                    <div class="v-center justify-content-end mt-4">
+                        <a class="btn f-6 font-weight-bold text-primary px-4 py-2 mr-3" (click)="backUpload()" translate>
+                            Back
+                        </a>
+                        <button [attr.data-action]="'image-upload-next-btn'" class="btn btn-blue f-6 font-weight-bold text-white px-4 py-2" type="submit" translate>
+                            Next
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="step-body-3 ml-sm-5" [class.active]="isStep == 3">
+                <form
+                    #selectThemeForm="ngForm"
+                    (ngSubmit)="submitted = true; selectThemeForm.form.valid ? selectTheme() : false"
+                    [class.was-validated]="submitted"
+                >
+                    <span class="f-3 font-weight-bold text-c-dark" translate>Select landing page</span>
+                    <div class="row mx-0 mt-3 themes">
+                        <div class="col-sm-4 col-6 py-3 theme" *ngFor="let theme of themes" (click)="setTheme(theme)" [class.selected]="selectedTheme.id == theme.id">
+                          <img src="{{theme.thumbnail}}" class="w-100 theme-thumb" />
+                          <div class="f-1 text-center text-c-dark pt-3 theme-name">{{theme.name}}</div>
+                        </div>
+                    </div>
+                    <div class="v-center justify-content-end mt-4">
+                        <a class="btn f-6 font-weight-bold text-primary px-4 py-2" (click)="backDetail()" translate>
+                            Back
+                        </a>
+                        <button [attr.data-action]="'image-upload-next1-btn'" class="btn btn-blue f-6 font-weight-bold text-white px-4 py-2" type="submit" [disabled]="!selectedTheme.id" translate>
+                            Next
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="step-body-4 ml-sm-5 position-relative" [class.active]="isStep == 4">
+                <form
+                    #finishUploadForm="ngForm"
+                    (ngSubmit)="submitted = true; finishUploadForm.form.valid ? finishUpload('image') : false"
+                    [class.was-validated]="submitted"
+                >
+                    <div class="v-center">
+                        <span class="f-3 font-weight-bold c-dark" translate>Final Review</span>
+                        <span class="f-3 c-dark ml-3" *ngIf="uploading">
+                            {{'Uploading' | translate}} ({{
+                                imageUploader.progress != 0 ? imageUploader.progress.toFixed(0) : uploaded_time.toFixed(0)
+                            }}%)...
+                        </span>
+                    </div>
+                    <div class="my-4">
+                        <img class="w-100" src="{{image.preview}}">
+                    </div>
+                    <div class="progress-wrapper" *ngIf="uploading">
+                        <div class="progress">
+                            <div
+                              class="progress-bar bg-primary"
+                              role="progressbar"
+                              [style.width]="
+                              imageUploader.progress != 0
+                                ? imageUploader.progress + '%'
+                                : uploaded_time + '%'
+                            "
+                            ></div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label class="f-1 font-weight-bold text-uppercase small-label" translate>title</label>
+                        <span class="v-center f-3 font-weight-bold text-c-dark">{{image.title}}</span>
+                    </div>
+                    <div class="mt-3">
+                        <label class="f-1 font-weight-bold text-uppercase small-label" translate>DESCRIPTION</label>
+                        <span class="v-center f-3 font-weight-bold text-c-dark">{{(image.description || '') | stripTags | removeEntity | shorten: 80: '...'}}</span>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-sm-6">
+                            <label class="f-1 font-weight-bold text-uppercase small-label" translate>theme</label>
+                            <span class="v-center f-3 font-weight-bold text-c-dark">{{selectedTheme.name}}</span>
+                            <img class="w-100 mt-2" src="{{selectedTheme.thumbnail}}">
+                        </div>
+                    </div>
+                    <div class="v-center justify-content-end mt-4">
+                        <a class="btn f-6 font-weight-bold text-primary px-4 py-2" (click)="backSelectTheme()" translate>
+                            Back
+                        </a>
+                        <button [attr.data-action]="'image-upload-finish-btn'" class="btn btn-blue f-6 font-weight-bold text-white px-4 py-2" type="submit" [class.loading]="uploading" translate>
+                            Finish
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </ng-container>
+</div>

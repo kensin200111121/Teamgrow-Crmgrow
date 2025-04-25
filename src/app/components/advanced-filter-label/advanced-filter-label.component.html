@@ -1,0 +1,68 @@
+<div *ngIf="target!=='task'" class="v-center justify-content-between mb-3 f-3 fw-600 c-pointer text-center">
+  <div 
+    [class]="includeLabel ? 'w-50 p-1 bgc-dark c-white rounded-left' : 'w-50 p-1 bgc-silver c-dark rounded-left'"
+    translate
+    (click)="toggleInclude()"
+  >
+    Include
+  </div>
+  <div 
+    data-name="contact-filter-label-exclusive"
+    [class]="!includeLabel ? 'w-50 p-1 bgc-dark c-white  rounded-right' : 'w-50 p-1 bgc-silver c-dark rounded-right'"
+    translate
+    (click)="toggleInclude()"
+  >
+    Exclude
+  </div>
+</div>
+<div class="label-items-list">
+  <div class="custom-checkbox label-item">
+    <input
+      type="checkbox"
+      class="custom-control-input"
+      id="label-no-label"
+      name="label-no-label"
+      (change)="toggleLabels(null)"
+      [checked]="labelCondition.indexOf(null) !== -1"
+    />
+    <label class="custom-control-label d-flex" for="label-no-label">
+      <span class="f-3 fw-600 mt-1 label-name" [style.backgroundColor]="'#000'" translate>No Status</span>
+    </label>
+  </div>
+  <div
+    class="custom-checkbox label-item"
+    *ngFor="let item of labels; let i = index"
+    style="height: unset; line-height: unset"
+  >
+    <input
+      type="checkbox"
+      class="custom-control-input"
+      id="label-{{ item._id }}"
+      name="label-{{ item._id }}"
+      (change)="toggleLabels(item)"
+      [checked]="labelCondition.indexOf(item._id) !== -1"
+    />
+    <label [attr.data-name]="'task-contact-filter-label-' + item.name " id="task-contact-filter-label-{{i}}" class="custom-control-label v-center" for="label-{{ item._id }}">
+      <span class="f-3 fw-600 mt-0 label-name text-capitalize" [style.backgroundColor]="item.color === '#FFF' ? '#000' : item.color" [class.no-title]="!item.name">{{
+        item.name || 'Undefined'
+      }}</span>
+      <!-- <span class="f-0 ml-1" *ngIf="item.role; else labelBadge"
+        >({{ item.role }})</span
+      > -->
+      <ng-template #labelBadge>
+        <span
+          class="f-0 ml-1 label-name"
+          *ngIf="item.multiple"
+          [translateParams]="{ total: item.multiple }"
+          translate
+          >filter.multiple_account</span
+        >
+      </ng-template>
+    </label>
+  </div>
+</div>
+<div class="d-flex align-items-end">
+  <button type="submit" data-action="task-filter-contact-status-label-apply" class="btn btn-primary" (click)="save()" translate>
+    Apply
+  </button>
+</div>

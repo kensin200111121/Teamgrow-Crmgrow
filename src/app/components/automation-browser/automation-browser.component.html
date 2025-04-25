@@ -1,0 +1,303 @@
+<h1 mat-dialog-title class="v-center d-flex">
+  <span translate>Share Automation</span>
+  <button class="v-center border-0 bgc-trans ml-auto" mat-dialog-close>
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</h1>
+<mat-dialog-content>
+  <div class="browser-container">
+    <div class="contact-list-controls mt-3 pt-0 pb-1">
+      <div class="v-center">
+        <div class="form-group mb-0 search-form">
+          <div class="input-group-prepend">
+            <i class="i-icon i-search d-block bgc-dark"></i>
+          </div>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="{{ 'Search' | translate }}"
+            aria-label="search"
+            aria-describedby="search-addon"
+            [(ngModel)]="filterParam.search"
+            (ngModelChange)="this.onChangeKeyword.next($event)"
+            [class.disabled]="isLoading"
+          />
+          <ng-container *ngIf="filterParam.search">
+            <div class="cancel-action c-pointer" (click)="this.onChangeKeyword.next('')">
+              <i class="i-icon i-close d-block bgc-dark"></i>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <div
+      class="my-2 custom-mat-table position-relative"
+      [class.no-selected]="selection.length <= 0"
+    >
+      <div class="mat-table-wrapper">
+        <table
+          class="w-100 automation-table page-table"
+          mat-table
+          multiTemplateDataRows
+          [dataSource]="filteredItems | paginate: {id: 'b-page', itemsPerPage: pageSize.id, currentPage: page, totalItems: filteredItems.length}"
+        >
+          <ng-container matColumnDef="loader-cell">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              colspan="8"
+              class="loader-cell"
+            >
+              <div
+                class="updating-status"
+                *ngIf="filteredItems.length && isLoading"
+                translate
+              >
+                LOADING
+              </div>
+            </th>
+          </ng-container>
+
+          <ng-container matColumnDef="root-folder">
+            <th mat-header-cell *matHeaderCellDef colspan="12" class="c-dark root-folder">
+              <a class="text-decoration-none" (click)="goToFolder('')">
+                <div class="v-center c-pointer">
+                  <i class="i-icon bgc-dark i-folder mr-1"></i>
+                  <span class="c-dark font-weight-bold" translate>.. to root</span>
+                </div>
+              </a>
+            </th>
+          </ng-container>
+
+          <ng-container matColumnDef="prev-folder">
+            <th mat-header-cell *matHeaderCellDef colspan="12" class="c-dark root-folder">
+              <div class="v-center c-pointer" (click)="goToFolder(parentFolder)">
+                <i class="i-icon bgc-dark i-folder mr-1"></i>
+                <span class="c-dark font-weight-bold" translate>.. to prev</span>
+              </div>
+            </th>
+          </ng-container>
+
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef class="pl-0 checkbox-col">
+              <div
+                class="custom-control custom-checkbox"
+                [class.indeterminate]="selection.length && !isAllSelected()"
+              >
+                <input
+                  type="checkbox"
+                  class="custom-control-input"
+                  id="selectAllAutomations"
+                  (change)="$event ? masterToggle() : null"
+                  [checked]="isAllSelected()"
+                />
+                <label
+                  class="custom-control-label"
+                  for="selectAllAutomations"
+                ></label>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let element" class="pl-0 checkbox-col">
+              <div class="custom-control custom-checkbox">
+                <input
+                  type="checkbox"
+                  class="custom-control-input"
+                  id="b-automation-{{ element._id }}"
+                  (change)="toggleElement(element)"
+                  [checked]="isSelected(element)"
+                />
+                <label
+                  class="custom-control-label"
+                  for="b-automation-{{ element._id }}"
+                ></label>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="title">
+            <ng-container *matHeaderCellDef>
+              <th
+                mat-header-cell
+                *ngIf="!selection.length; else toolHeader"
+                class="title"
+                translate
+              >
+                Title
+              </th>
+              <ng-template #toolHeader>
+                <th mat-header-cell colspan="8">
+                  <div class="v-center">
+                    <span class="c-dark f-3 text-lowercase font-weight-bold"
+                      >{{ selection.length }} {{ 'selected' | translate }}</span
+                    >
+                    <div class="px-3 border-left ml-3">
+                      <a
+                        class="c-blue c-pointer"
+                        (click)="clearSelection()"
+                        translate
+                        >Clear selection</a
+                      >
+                    </div>
+                  </div>
+                </th>
+              </ng-template>
+            </ng-container>
+            <td mat-cell *matCellDef="let element" class="title">
+              <a
+                [routerLink]="['/autoflow/edit/' + element._id]"
+                class="c-dark td-none"
+                *ngIf="element.item_type !== 'folder'; else folderTitle"
+                target="_blank"
+              >
+                <span class="f-3 font-weight-bold">{{ element.title }}</span>
+              </a>
+              <ng-template #folderTitle>
+                <a (click)="goToFolder(element._id)" class="c-dark td-none">
+                  <div class="v-center c-pointer">
+                    <i class="i-icon bgc-dark i-folder mr-1"></i>
+                    <span class="f-3 font-weight-bold">{{
+                      element.title
+                    }}</span>
+                  </div>
+                </a>
+              </ng-template>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action-count">
+            <ng-container *matHeaderCellDef>
+              <th
+                mat-header-cell
+                class="action-count"
+                *ngIf="!selection.length"
+                translate
+              >
+                Actions
+              </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element" class="action-count">
+              <div class="f-3" *ngIf="element.item_type !== 'folder'">
+                {{element?.meta?.action_count || 0}}
+              </div>
+            </td>
+          </ng-container>
+          <tr
+            mat-header-row
+            *matHeaderRowDef="['loader-cell']"
+            class="loader-row"
+          ></tr>
+          <tr mat-header-row *matHeaderRowDef="DISPLAY_COLUMNS"></tr>
+          <tr
+            mat-header-row
+            *matHeaderRowDef="currentFolder ? ['root-folder'] : []"
+            [class.is_root]="!currentFolder"
+          >
+          </tr>
+          <tr
+            mat-header-row
+            *matHeaderRowDef="currentFolder ? ['prev-folder'] : []"
+            [class.is_root]="!currentFolder"
+            [class.is_disabled]="!parentFolder"
+          >
+          </tr>
+          <tr mat-row *matRowDef="let element; columns: DISPLAY_COLUMNS"></tr>
+        </table>
+        <div class="my-2 table-control mode-1">
+          <div class="pagination-wrapper m-auto">
+            <pagination-controls
+              *ngIf="filteredItems.length > pageSize.id"
+              id="b-page"
+              maxSize="5"
+              previousLabel=""
+              nextLabel=""
+              (pageChange)="changePage($event)"
+            >
+            </pagination-controls>
+          </div>
+          <div
+            *ngIf="filteredItems.length > PAGE_COUNTS[0].id"
+            class="shadow-dropdown ml-auto page-size-control"
+            ngbDropdown
+            placement="top-right"
+          >
+            <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+              <span class="pr-2 c-blue" translate [translateParams]="{count: pageSize.id}">
+                pagination
+              </span>
+            </div>
+            <div ngbDropdownMenu aria-labelledby="contactPageSize">
+              <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS" (click)="changePageSize(type)">
+                <span class="f-3 v-center" [class.font-weight-bold]="type.id === pageSize.id">
+                  <span translate [translateParams]="{count: type.label}">
+                    pagination
+                  </span>
+                  <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1" *ngIf="type.id === pageSize.id"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-container *ngIf="!filteredItems.length">
+        <div class="empty-list" *ngIf="!isLoading else loadingTemplate">
+          <div class="object-icon v-center">
+            <i class="i-icon i-automation d-block bgc-dark"></i>
+          </div>
+          <h4 class="font-weight-bold mt-4 mb-3" translate>
+            There is no automations.
+          </h4>
+        </div>
+        <ng-template #loadingTemplate>
+          <div class="list-loading text-center">
+            <div class="loader mt-5 lg"></div>
+            <h4 class="fw-600 mt-2" translate>Loading automations...</h4>
+          </div>
+        </ng-template>
+      </ng-container>
+    </div>
+    <div class="selected-templates-wrapper" *ngIf="selection.length > 0">
+      <table class="table mt-2">
+        <thead>
+          <th class="selected-template op-full pb-1" translate>
+            Selected Automation
+          </th>
+          <th class="actions op-full pb-1" translate>Actions</th>
+          <th class="contacts op-full pb-1" translate>Contacts</th>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let selected of selection">
+            <tr *ngIf="getElementById(selected)">
+              <td class="selected-automation">
+                <div class="c-blue f-2 font-weight-bold">
+                  {{ getElementById(selected).title }}
+                </div>
+              </td>
+              <td class="actions">
+                {{
+                  !getElementById(selected).isFolder &&
+                  getElementById(selected).automations
+                    ? getElementById(selected).automations.length
+                    : ''
+                }}
+              </td>
+              <td class="contacts">
+                {{ getElementById(selected).contacts }}
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button class="btn c-blue" mat-dialog-close translate>Cancel</button>
+  <button
+    class="btn btn-primary"
+    (click)="select()"
+    [class.loading]="sharing"
+    translate
+  >
+    Share
+  </button>
+</mat-dialog-actions>

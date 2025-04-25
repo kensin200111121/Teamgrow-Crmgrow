@@ -1,0 +1,99 @@
+.start-btn {
+    height: 36px;
+    border-radius: 10px;
+    color: white;
+    /* box-shadow: 0px 0px 10px #ccc;*/
+    border: 3px solid #DE5038;
+    background: #DE5038;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+        width: 16px;
+        height: 16px;
+        margin: auto;
+        background-color: white;
+    }
+
+    .record-start-button {
+      min-width: 36px;
+      min-height: 36px;
+      border-radius: 50%;
+      background-color: white;
+    }
+
+  &.recording {
+    display: none;
+    width: 36px;
+    border: 3px solid white;
+  }
+
+  &.recording-pause {
+    width: 36px;
+    border-radius: 50%;
+    background-color: white;
+    border: 1px solid #066FD3;
+  }
+}
+
+.record-action-btn {
+    margin: 0px 8px;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 50%;
+    background-color: #E6E6E6;
+    display: flex;
+}
+
+.record-state {
+  margin: 0px 8px;
+  min-width: 20px;
+  min-height: 20px;
+  border-radius: 50%;
+  background-color: #DE5038;
+}
+
+.record-remove {
+  background-color: white;
+}
+.i-icon {
+  margin: auto;
+}
+
+.audio-note-wrapper {
+    display: flex;
+    align-items: center;
+}
+.mic-list {
+    flex: 1;
+}
+.empty-mic-list {
+    font-size: 13px;
+    padding-left: 16px;
+    line-height: 1.2;
+}
+.recording-stop {
+  background-color: #066FD3 !important;
+}
+.waveform-container {
+  align-items: center;
+  height: 30px;
+  overflow: hidden;
+}
+#waveform {
+  height: 50px;
+  margin-top: -10px;
+}
+.pids-wrapper{
+  display: flex;
+  flex-direction: column-reverse;
+  margin-left: 4px;
+  margin-right: 4px;
+  width: 10px;
+}
+.pid{
+  width: 10px;
+  height: 4px;
+  margin: 0px;
+}

@@ -1,0 +1,32 @@
+<div style="max-width: 300px;">
+  <div class="form-group mt-2 mt-sm-0">
+    <label for="facebook" class="v-center font-weight-bold text-capitalize mr-auto">
+      <img [src]="sspaService.toAsset('img/facebook.svg')" class="social-icon">
+      <span class="f-4 c-dark ml-2">{{ 'facebook profile' | translate }}</span>
+    </label>
+    <input type="text" class="form-control f-4" [(ngModel)]="user.social_link.facebook" id="facebook" name="facebook"
+      #facebook="ngModel">
+  </div>
+  <div class="form-group">
+    <label for="twitter" class="v-center font-weight-bold text-capitalize mr-auto">
+      <img [src]="sspaService.toAsset('img/twitter.svg')" class="social-icon">
+      <span class="f-4 c-dark ml-2">{{ 'twitter profile' | translate }}</span>
+    </label>
+    <input type="text" class="form-control f-4" [(ngModel)]="user.social_link.twitter" id="twitter" name="twitter"
+      #twitter="ngModel" required minlength="8">
+  </div>
+  <div class="form-group">
+    <label for="linkedin" class="v-center font-weight-bold text-capitalize mr-auto">
+      <img [src]="sspaService.toAsset('img/linkedin.svg')" class="social-icon">
+      <span class="f-4 c-dark ml-2">{{ 'linkedin profile' | translate }}</span>
+    </label>
+    <input type="text" class="form-control f-4" [(ngModel)]="user.social_link.linkedin" id="linkedin" name="linkedin"
+      #linkedin="ngModel">
+  </div>
+  <div class="row">
+    <button type="submit" class="btn btn-primary font-weight-bold ml-auto mr-2 mt-4"
+      [class.loading]="socialProfileSaving" (click)="saveChange()" translate>
+      Save changes
+    </button>
+  </div>
+</div>

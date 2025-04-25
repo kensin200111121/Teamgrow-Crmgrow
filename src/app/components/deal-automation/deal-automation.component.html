@@ -1,0 +1,32 @@
+<div class="v-center justify-content-between">
+    <h1 mat-dialog-title class="m-0" translate>
+        Assign Automation
+    </h1>
+    <button class="v-center border-0 bgc-trans" mat-dialog-close>
+        <i class="d-block i-icon i-close bgc-dark"></i>
+    </button>
+</div>
+<form #dealForm="ngForm" (ngSubmit)="submitted = true; selectedAutomation ? setAutomation() : false">
+    <mat-dialog-content>
+        <div class="form-group mt-2">
+            <div class="v-center">
+                <label class="theme-label">
+                    <span translate>Automation</span>
+                    <span class="description ml-1" translate>(TO DEALS)</span></label>
+                <span
+                    class="invalid-error f-3 c-red ml-auto"
+                    *ngIf="!selectedAutomation && submitted"
+                    translate
+                >
+                    Required!
+                </span>
+            </div>
+            <app-input-automation [automation]="selectedAutomationid" (automationChange)="selectAutomation($event)" [type]="'deal'"></app-input-automation>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button class="btn btn-white f-6 font-weight-bold mr-2" type="button" mat-dialog-close translate>Cancel</button>
+        <button *ngIf="originAutomation" class="btn c-blue btn-white f-6 font-weight-bold mr-2" type="button" (click)="detach()" [class.loading]="detaching" translate>Detach</button>
+        <button [attr.data-action]="'pipeline-stage-assign-automation'" class="btn btn-primary f-6 font-weight-bold btn-font-bold" type="submit" [class.loading]="saving" translate>Assign</button>
+    </mat-dialog-actions>
+</form>

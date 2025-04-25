@@ -1,0 +1,233 @@
+  <div class="chips">
+
+    <ng-container *ngIf="listTypeFilter && listTypeFilter._id !== 'own'">
+        <div class="chip v-center">
+          <span class="f-3">
+            {{ listTypeFilter.label }}
+          </span>
+          <a class="c-pointer ml-2" (click)="resetListType()"
+            ><i class="i-icon d-block i-close bgc-dark"></i
+          ></a>
+        </div>
+    </ng-container>
+
+    <ng-container *ngIf="!_option.isEmpty()">
+
+      <ng-container *ngIf="_option.analyticsConditions.length">
+        <ng-container *ngFor="let condition of _option.analyticsConditions">
+          <div class="chip v-center">
+            <span class="f-3">
+              {{ AnalyticsConditionCategories[condition.id] | translate }}:
+              <span translate [translateParams]="{ range: condition.range }">{{
+                condition.id
+              }}</span>
+            </span>
+            <a
+              class="c-pointer ml-2"
+              (click)="removeCondition('analyticsConditions', condition)"
+              ><i class="i-icon d-block i-close bgc-dark"></i
+            ></a>
+          </div>
+        </ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="_optGroups.length">
+        <ng-container *ngFor="let option of _optGroups">
+          <div class="chip v-center">
+            <div
+              class="f-3"
+              [matMenuTriggerFor]="options"
+              #labelToggler="matMenuTrigger"
+            >
+              <span translate>{{ option.name === 'Team'? option.optionLabel : option.name }}</span>:&nbsp;
+              <span *ngIf="!option.include">Excludes&nbsp;</span>
+              <span *ngIf="option.name === 'Tag' && !option.orTag">AND&nbsp;</span>
+              <span [ngSwitch]="option.name">
+                <span *ngSwitchCase="'Label'" class="text-capitalize">
+                  {{ labelDic[option.items[0]] || 'No Status' }}
+                </span>
+                <span *ngSwitchCase="'Tag'" class="text-capitalize">
+                  {{ option.items[0] || 'No Tag' }}
+                </span>
+                <span *ngSwitchCase="'Stage'">
+                  {{ stageDic[option.items[0]] || 'No Stage' }}
+                </span>
+                <span *ngSwitchCase="'Source'">
+                  {{ option.items[0] || 'No Source' }}
+                </span>
+                <span *ngSwitchCase="'Assignee'">
+                  {{ option.items[0].user_name || '' }}
+                </span>
+                <span *ngSwitchCase="'Unsubscribed'">
+                  {{ option.items[0] }}
+                </span>
+                <span *ngSwitchCase="'Team'">
+                  {{ team?.name || '' }}
+                </span>
+                <span *ngSwitchCase="'Community'">
+                  {{ option.community_names[0] }}
+                </span>
+                <span *ngSwitchDefault>
+                  {{ option.items[0] }}
+                </span>
+              </span>
+              <span *ngIf="option.items.length > 1">
+                and {{ option.items.length - 1 }} more
+              </span>
+              <span *ngIf="option.name ==='Activity' && activityDateString.length > 1">
+                between
+                {{ activityDateString }}
+              </span>
+            </div>
+            <a
+              class="c-pointer ml-2"
+              (click)="removeCondition('filterCondition', option)"
+              ><i class="i-icon d-block i-close bgc-dark"></i
+            ></a>
+          </div>
+          <mat-menu #options class="filter-mat-menu">
+            <div [ngSwitch]="option.name">
+              <div
+                *ngSwitchCase="'Label'"
+                class="label-container"
+                (click)="$event.stopPropagation()"
+              >
+                {{ options.name }}
+                <app-advanced-filter-label
+                  (filter)="applyFilter($event, labelToggler)"
+                ></app-advanced-filter-label>
+              </div>
+              <div
+                *ngSwitchCase="'Material Activity'"
+                class="label-container"
+                (click)="$event.stopPropagation()"
+              >
+                <app-advanced-filter-material
+                  (filter)="applyFilter($event, labelToggler)"
+                ></app-advanced-filter-material>
+              </div>
+              <div
+                *ngSwitchCase="'Country'"
+                class="label-container"
+                (click)="$event.stopPropagation()"
+              >
+                <app-advanced-filter-country
+                  (filter)="applyFilter($event, labelToggler)"
+                ></app-advanced-filter-country>
+              </div>
+              <div
+                *ngSwitchCase="'State'"
+                class="label-container"
+                (click)="$event.stopPropagation()"
+              >
+                <app-advanced-filter-state
+                  (filter)="applyFilter($event, labelToggler)"
+                ></app-advanced-filter-state>
+              </div>
+              <div
+                *ngSwitchCase="'City'"
+                class="label-container"
+                (click)="$event.stopPropagation()"
+              >
+                <app-advanced-filter-city
+                  (filter)="applyFilter($event, labelToggler)"
+                ></app-advanced-filter-city>
+              </div>
+              <div
+                *ngSwitchCase="'Zipcode'"
+                class="label-container"
+                (click)="$event.stopPropagation()"
+              >
+                <app-advanced-filter-zipcode
+                  (filter)="applyFilter($event, labelToggler)"
+                ></app-advanced-filter-zipcode>
+              </div>
+              <div
+                *ngSwitchCase="'Source'"
+                class="label-container"
+                (click)="$event.stopPropagation()"
+              >
+                <app-advanced-filter-source
+                  (filter)="applyFilter($event, labelToggler)"
+                ></app-advanced-filter-source>
+              </div>
+              <div
+                *ngSwitchCase="'Company'"
+                class="label-container"
+                (click)="$event.stopPropagation()"
+              >
+                <app-advanced-filter-company
+                  (filter)="applyFilter($event, labelToggler)"
+                ></app-advanced-filter-company>
+              </div>
+              <div
+                *ngSwitchCase="'Tag'"
+                class="tag-container"
+                (click)="$event.stopPropagation()"
+              >
+                <app-advanced-filter-tag
+                  (filter)="applyFilter($event, labelToggler)"
+                ></app-advanced-filter-tag>
+              </div>
+              <div
+                *ngSwitchCase="'Stage'"
+                class="label-container"
+                (click)="$event.stopPropagation()"
+              >
+                <app-advanced-filter-stage
+                  (filter)="applyFilter($event, labelToggler)"
+                ></app-advanced-filter-stage>
+              </div>
+              <div
+                *ngSwitchCase="'Activity'"
+                class="activity-container"
+                (click)="$event.stopPropagation()"
+              >
+                <app-advanced-filter-activity
+                  (filter)="applyFilter($event, labelToggler)"
+                ></app-advanced-filter-activity>
+              </div>
+              <div
+                *ngSwitchCase="'Assignee'"
+                class="label-container"
+                (click)="$event.stopPropagation()"
+              >
+                <app-advanced-filter-assignee
+                  (filter)="applyFilter($event, labelToggler)"
+                ></app-advanced-filter-assignee>
+              </div>
+              <div
+                *ngSwitchCase="'Team'"
+                class="label-container"
+                (click)="$event.stopPropagation()"
+              >
+                <app-advanced-filter-team
+                  (filter)="applyFilter($event, labelToggler)"
+                ></app-advanced-filter-team>
+              </div>
+              <div
+                *ngSwitchCase="'Unsubscribed'"
+                class="label-container"
+                (click)="$event.stopPropagation()"
+              >
+                <app-advanced-filter-unsubscribed
+                  (filter)="applyFilter($event, labelToggler)"
+                ></app-advanced-filter-unsubscribed>
+              </div>
+              <div
+                *ngSwitchDefault
+                class="activity-container"
+                (click)="$event.stopPropagation()"
+              >
+                <app-advanced-filter-custom-field
+                  (filter)="applyFilter($event, labelToggler)"
+                  [column]="option.name"
+                ></app-advanced-filter-custom-field>
+              </div>
+            </div>
+          </mat-menu>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+
+  </div>

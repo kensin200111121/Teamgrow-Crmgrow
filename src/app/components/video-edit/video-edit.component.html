@@ -1,0 +1,62 @@
+<div class="v-center justify-content-between">
+    <h1 mat-dialog-title *ngIf="data.type == 'edit'; else duplicateVideo" translate>
+        Edit your video
+    </h1>
+    <ng-template #duplicateVideo>
+        <h1 mat-dialog-title translate>
+            Clone your video
+        </h1>
+    </ng-template>
+    <button class="v-center border-0 bgc-trans" mat-dialog-close>
+        <i class="d-block i-icon i-close bgc-dark"></i>
+    </button>
+</div>
+<form #videoForm="ngForm" (ngSubmit)="submitted = true; videoForm.form.valid ? (data.type == 'edit' ? update() : duplicate()) : false" [class.was-validateed]="submitted">
+    <mat-dialog-content>
+        <ng-container *ngIf="!isSourceUpdate; else sourcePanel">
+            <div class="row mx-0" *ngIf="data.editContent">
+                <div class="w-100 d-flex justify-content-start" *ngIf="enableSourceUpdate">
+                    <a class="border-0 c-blue c-pointer f-3 font-weight-bold undecoration" (click)="changeMaterial()" translate>
+                      Change source
+                    </a>
+                </div>
+                <div class="col-12 mb-2 rounded bgc-pale px-0">
+                    <div class="thumbnail-wrapper">
+                        <div class="loader lg" *ngIf="loading"></div>   
+                        <img class="thumbnail" src="{{video.thumbnail}}" />
+                        <div class="v-center justify-content-center bgc-blue c-pointer edit-thumbnail" (click)="openPreviewDialog()">
+                        <i class="d-block i-icon sm i-edit bgc-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mx-0">
+                <div class="col-12 px-0">
+                    <div class="form-group mt-2">
+                    <label translate>Title</label>
+                    <input class="form-control"
+                        type="text"
+                        [placeholder]="'Video Title' | translate"
+                        name="title"
+                        #title="ngModel"
+                        [(ngModel)]="video.title"
+                        required>
+                    <span class="invalid-feedback" *ngIf="title.errors && ( title.touched || title.dirty || submitted ) && submitted" translate>
+                        Video title is required
+                    </span>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+        <ng-template #sourcePanel>
+            <app-material-change [material]="video" (onUpdated)="updateSource($event)" (onCancel)="closeSource()"></app-material-change>
+        </ng-template>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" *ngIf="!isSourceUpdate">
+        <button [attr.data-action]="'material-edit-cancel'" class="btn btn-white f-6 font-weight-bold mr-2" mat-dialog-close translate>Cancel</button>
+        <button [attr.data-action]="'material-edit-confirm'" class="btn btn-primary f-6 font-weight-bold" type="submit" [class.loading]="saving" [disabled]="thumbnailLoading" *ngIf="data.type == 'edit'; else duplicateButton" translate>Update</button>
+        <ng-template #duplicateButton>
+            <button [attr.data-action]="'material-duplicate'" class="btn btn-primary f-6 font-weight-bold" type="submit" [class.loading]="saving" [disabled]="thumbnailLoading" translate>Clone</button>
+        </ng-template>
+    </mat-dialog-actions>
+</form>

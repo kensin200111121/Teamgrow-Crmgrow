@@ -1,0 +1,28 @@
+.header-icon {
+    border-bottom: 1px solid #dadada;
+    img {
+        width: 30px;
+    }
+}
+
+.calendly {
+    margin-top: 20px;
+    .calendly-list {
+        margin-bottom: 20px;
+        .calendly-card {
+            border: 1px solid #dadada;
+            box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            .calendly-card-body {
+                border-bottom: 1px solid #dadada;
+                .calendly-card-title {
+                    font-size: 20px;
+                    font-weight: normal;
+                }
+                .card-calendly-duration {
+                    color: rgba(0, 0, 0, 0.44);
+                }
+            }
+        }
+    }
+}

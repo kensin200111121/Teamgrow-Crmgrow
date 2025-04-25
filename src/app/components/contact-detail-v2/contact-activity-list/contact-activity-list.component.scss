@@ -1,0 +1,69 @@
+.history-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.cdk-scroll-viewport {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+}
+
+// .virtual-viewport {
+//   overflow: hidden !important; /* Ensures the viewport doesn't overflow */
+//   height: auto !important; /* Ensures that the height is only as needed */
+//   box-sizing: border-box;
+//   padding-bottom: 0 !important; /* Remove any padding that might cause spacing */
+// }
+
+.scroll-viewport {
+  flex: 1;
+}
+
+@keyframes rotateEffect {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.reload {
+  position:absolute;
+  top: 18vh;
+  right: -8px;
+  width: 30px;
+  height: 30px;
+  background: blue;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  // z-index: 1001;
+  overflow: hidden;
+
+  .i-icon {
+    width: 24px !important;
+    height: 24px !important;
+    margin: 3px !important;
+
+    &.progressing {
+      animation-name: rotateEffect;
+      animation-duration: 0.6s;
+      animation-iteration-count: infinite;
+      animation-delay: 0s;
+    }
+  }
+}
+
+// Material Expansion Panel Style
+:host ::ng-deep { 
+  .dropdown-toggle::after {
+    display: none;
+  }
+  .cdk-virtual-scroll-content-wrapper {
+    position: absolute!important;
+  }
+}

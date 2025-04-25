@@ -1,0 +1,49 @@
+<div *ngIf="target !== 'task'" class="v-center justify-content-between mb-3 f-3 fw-600 c-pointer text-center">
+  <div 
+    [class]="searchOption.includeTag ? 'w-50 p-1 bgc-dark c-white rounded-left' : 'w-50 p-1 bgc-silver c-dark rounded-left'"
+    translate
+    (click)="toggleInclude()"
+  >
+    Include
+  </div>
+  <div 
+    [attr.data-name]="'contact-filter-tag-exclusive'"
+    [class]="!searchOption.includeTag ? 'w-50 p-1 bgc-dark c-white  rounded-right' : 'w-50 p-1 bgc-silver c-dark rounded-right'"
+    translate
+    (click)="toggleInclude()"
+  >
+    Exclude
+  </div>
+</div>
+
+<div *ngIf="target !== 'task'" class="v-center include-section justify-content-end">
+  <div class="v-center mb-2" *ngIf="searchOption.includeTag">
+    <div class="f-3 fw-600 c-dark" translate>Or</div>
+    <label class="custom-toggle mb-0 mx-2" placement="top">
+      <input
+        type="checkbox"
+        id="tag_and_check"
+        name="tag_and_check"
+        [checked]="!searchOption.orTag"
+        (change)="toggleAndOr()"
+      />
+      <span class="custom-toggle-slider rounded-circle"></span>
+    </label>
+    <div class="f-3 fw-600 c-dark" translate>And</div>
+  </div>
+</div>
+
+<div class="source-select">
+  <app-input-tag
+    data-name="input-tag"
+    [selectedTags]="tags"
+    [onlyFromSearch]="true"
+    [hasNoTag]="searchOption.orTag"
+    [includeTeam]="true"
+  ></app-input-tag>
+  <div class="d-flex align-items-end">
+    <button type="submit" data-action="tag-select-apply" class="btn btn-primary" (click)="save()" translate>
+      Apply
+    </button>
+  </div>
+</div>

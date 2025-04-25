@@ -1,0 +1,542 @@
+<div class="page-content bg-white">
+  <div class="v-center mb-3">
+    <h1 class="page-title" translate>Tasks</h1>
+    <div class="ml-auto">
+      <button data-action="create-new-task" class="v-center btn btn-blue f-6 font-weight-bold btn-font-bold text-white rounded px-3" (click)="createTask()" translate>
+        New Task
+      </button>
+    </div>
+  </div>
+  <div class="custom-mat-table">
+    <div class="d-flex table-control-header v-center">
+      <div class="ml-auto" ngbDropdown>
+        <div class="v-center c-pointer f-3 px-3 py-2 justify-content-end" ngbDropdownToggle>
+          <span class="pr-2">
+            <ng-container *ngIf="!deadline || deadline.id === 'all'; else deadlineTemplate">
+              <span class="font-weight-bold" id="task-sort-by" translate>Sort by</span>
+            </ng-container>
+            <ng-template #deadlineTemplate>
+              <span class="font-weight-bold">{{deadline.label}} {{'tasks' | translate}}</span>
+            </ng-template>
+          </span>
+        </div>
+        <div ngbDropdownMenu aria-labelledby="taskSortTypes">
+          <div class="py-2" ngbDropdownItem *ngFor="let type of DEADLINE_TYPES; let i = index;"  (click)="changeDeadlineType(type)">
+            <span class="f-3 v-center" [class.font-weight-bold]="type.id === deadline.id" [attr.data-name]="'task-sort-deadline-' + type.label">
+              {{type.label}}
+              <i class="i-icon i-check d-block bgc-dark sm ml-1 mb-1" *ngIf="type.id === deadline.id"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="border-left pl-3 pr-0 py-1 text-center ml-3 mr-2"
+        ngbDropdown
+        id="editColumn"
+      >
+        <div
+          class="ml-3 f-3 font-weight-bold c-dark td-none c-pointer v-center"
+          (click)="openColumnEdit()"
+        >
+         <img
+           class="mr-1"
+           [src]="sspaService.toAsset('img/width_normal.svg')"
+           alt="column-icon"
+           style="width: 16px; height: 16px;"
+         />
+         <span translate>Edit Columns</span>
+        </div>
+      </div>
+      <div
+        class="border-left pl-3 pr-0 py-1 text-center ml-3 mr-2"
+        ngbDropdown
+        id="filters"
+        placement="bottom-right"
+      >
+        <div data-name="task-filter"
+          class="ml-3 f-3 font-weight-bold c-dark td-none c-pointer v-center"
+          ngbDropdownToggle
+        >
+         <img
+           class="mr-1"
+           [src]="sspaService.toAsset('img/filter.svg')"
+           alt="filter-icon"
+           style="width: 16px; height: 16px;"
+         />
+         <span translate>Filters</span>
+        </div>
+        <div ngbDropdownMenu aria-labelledby="">
+          <div style="max-height: 240px; overflow-y:auto">
+              <ng-container *ngFor="let filter of FILTERS; let i = index;">
+                <div
+                  *enableByFeatures="filter.feature"
+                  class="py-2"
+                  ngbDropdownItem
+                  [attr.data-name]="'task-filter-select-' + filter.id"
+                  (click)="selectFilter(filter)"
+                >
+                  <span class="f-3 v-center">
+                    {{ filter.label | translate }}
+                  </span>
+                </div>
+              </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex" *ngIf="!searchOption.isEmpty()">
+      <div class="flex-grow-1 d-flex flex-wrap mr-2">
+        <app-task-filter-options (changeFilter)="changeFilter($event)"></app-task-filter-options>
+      </div>
+      <div class="ml-auto d-flex">
+        <span
+          class="f-3 p-2 v-center font-weight-bold c-pointer"
+          (click)="clearAllFilters()"
+          id="task-filter-clear"
+        >
+          Clear filters
+        </span>
+      </div>
+    </div>
+    <div class="position-relative">
+      <div class="mat-table-wrapper" [class.empty]="!(storeService.tasks$ | async).length && !(taskService.total$ | async)">
+        <table class="w-100 page-table" mat-table multiTemplateDataRows
+          [dataSource]="storeService.tasks$ | async | paginate: {id: 'tasks', itemsPerPage: pageSize.id, currentPage: page, totalItems: taskService.total$ | async}">
+
+          <ng-container matColumnDef="loader-cell">
+            <th mat-header-cell *matHeaderCellDef colspan="12" class="loader-cell">
+              <div class="updating-status" *ngIf="(storeService.tasks$ | async).length && (taskService.loading$ | async) === STATUS.REQUEST" translate>
+                LOADING
+              </div>
+            </th>
+          </ng-container>
+
+          <!-- Select Column -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef class="pl-2 checkbox-col">
+              <div class="custom-control custom-checkbox" [class.indeterminate]="selection.length && !isAllSelected()">
+                <input type="checkbox" class="custom-control-input" id="selectAllContacts" (change)="$event ? masterToggle() : null"
+                  [checked]="selection.length && isAllSelected()" />
+                <label class="custom-control-label" for="selectAllContacts"></label>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let element" class="pl-2">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="contact-{{element._id}}" (change)="toggle(element)"
+                  [checked]="isSelected(element._id)" />
+                <label class="custom-control-label" for="contact-{{element._id}}"></label>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Complete Status Column -->
+          <ng-container matColumnDef="status">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell class="pl-3 pr-4" *ngIf="!selection.length; else toolHeader" translate>DONE</th>
+              <ng-template #toolHeader>
+                <th mat-header-cell colspan="12">
+                  <div class="v-center">
+                    <span class="c-dark f-3 text-lowercase font-weight-bold">{{selection.length}} {{'selected' | translate}}</span>
+                    <app-actions-header [actions]="ACTIONS" (doCommand)="doAction($event)"></app-actions-header>
+                  </div>
+                </th>
+              </ng-template>
+            </ng-container>
+            <th mat-header-cell *matHeaderCellDef class="done-cell pl-3 pr-4" translate>DONE</th>
+            <td mat-cell *matCellDef="let element" class="done-cell pl-3 pr-4">
+              <i class="i-icon d-block {{element.status === 1 ? 'i-round-check bgc-accept' : 'i-round bgc-dark op-40 c-pointer'}} done-status"
+                (click)="taskComplete(element)"></i>
+            </td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="contact_name">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length" translate> contact name </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element; let i = dataIndex">
+              <a class="v-center c-pointer undecoration" *ngIf="element?.contact; else emptyContactContent;" (click)="gotToContactDetail(element, i)">
+                <div class="contact-avatar f-3 mr-2">{{element.contact?.avatarName}}</div>
+                <span class="c-dark fw-600">
+                  {{ element.contact?.fullName ? element.contact?.fullName : '---' }}
+                </span>
+              </a>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="contact_address">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length" class="address-col" translate> address </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element; let i = dataIndex" class="address-col">
+              <a class="v-center c-pointer undecoration" *ngIf="element?.contact;" (click)="gotToContactDetail(element, i)">
+                <span class="c-dark">{{element.contact?.shortAddress}}</span>
+              </a>
+            </td>
+          </ng-container>
+
+          <!-- label Column -->
+          <ng-container matColumnDef="contact_label">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length" translate> Status </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element" class="label-cell">
+              <div *ngIf="element?.contact; else emptyContactContent;">
+                <app-label-select [value]="element.contact?.label" (valueChange)="updateLabel($event, element.contact._id)"></app-label-select>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Subject Column -->
+          <ng-container matColumnDef="subject">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length" translate> title </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element">
+              <a class="v-center c-pointer undecoration" (click)="element.status !== 1 ? openEdit(element) : false;">
+                <div class="v-center">
+                  <i class="i-icon {{TASK_ICONS[element.type] || 'i-task'}} d-block bgc-dark mr-2"></i>
+                  <span
+                  class="c-dark text-break"
+                  [innerHTML]="
+                    replaceContent(element.contact, element.content) || ''
+                      | stripTags
+                      | shorten: 200:'...'
+                  "></span>
+                </div>
+              </a>
+            </td>
+          </ng-container>
+
+          <!-- Description Column -->
+          <ng-container matColumnDef="description">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length" translate> description </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element">
+              <a class="v-center c-pointer undecoration" (click)="element.status !== 1 ? openEdit(element) : false;">
+                <div class="v-center">
+                  <span
+                  class="c-dark text-break"
+                  [innerHTML]="
+                    replaceContent(element.contact, element?.description || '') || ''
+                      | stripTags
+                      | shorten: 200:'...'
+                  "></span>
+                </div>
+              </a>
+            </td>
+          </ng-container>
+
+          <!-- Phone number Column -->
+          <ng-container matColumnDef="contact_phone">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length" translate> phone number </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element; let i = dataIndex">
+              <a class="v-center c-pointer undecoration" *ngIf="element?.contact; else emptyContactContent;" (click)="gotToContactDetail(element, i)">
+                <span class="c-blue font-weight-bold">
+                  {{ element.contact?.cell_phone ? (element.contact.cell_phone | phone_format) : '---' }}
+                </span>
+              </a>
+            </td>
+          </ng-container>
+
+          <!-- Deadline Column -->
+          <ng-container matColumnDef="deadline">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length">
+                <div class="v-center c-pointer" (click)="changeSort()">
+                  <div translate>deadline</div>
+                  <i
+                    class="d-block i-icon s-8 ml-2 mb-1 bgc-dark {{(taskService.sortOption$ | async) === -1 ? 'i-triangle-up' : 'i-triangle-down'}}"></i>
+                </div>
+              </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element">
+              <a class="v-center c-pointer undecoration" (click)="element.status !== 1 ? openEdit(element) : false;">
+                <span class="c-dark f-2">{{element.due_date | datetimeFormat: element.is_full? 'MMM DD, YYYY':'MMM DD, YYYY, hh:mm A'}}</span>
+              </a>
+            </td>
+          </ng-container>
+
+          <!-- Action Column -->
+          <ng-container matColumnDef="action">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length"> </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element" class="p-0 actions">
+              <div class="c-pointer" *ngIf="element.status !== 1">
+                <i class="i-icon i-edit op-28 d-block bgc-dark ml-auto" placement="bottom" ngbTooltip="Edit" (click)="openEdit(element)"></i>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Recurring Column -->
+          <ng-container matColumnDef="is_recurrence">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length" class="text-center" translate> recurring </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element">
+              <div class="c-dark text-center" translate>
+                {{element.set_recurrence?element.recurrence_mode:''}}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Email Column -->
+          <ng-container matColumnDef="contact_email">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length" translate> Email </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element; let i = dataIndex">
+              <a class="v-center c-pointer undecoration" *ngIf="element?.contact; else emptyContactContent;" (click)="gotToContactDetail(element, i)">
+                <span class="c-blue font-weight-bold">{{element.contact?.email}}</span>
+              </a>
+            </td>
+          </ng-container>
+
+          <!-- Tags Column -->
+          <ng-container matColumnDef="contact_tags">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length" translate> Tags </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element; let i = dataIndex">
+              <a class="v-center c-pointer undecoration" *ngIf="element?.contact" (click)="gotToContactDetail(element, i)">
+                <span class="tag rounded mr-2" *ngIf="element.contact?.tags && element.contact.tags?.length">{{ element.contact.tags[0] }}</span>
+              </a>
+            </td>
+          </ng-container>
+
+          <!-- Country -->
+          <ng-container matColumnDef="country">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length" translate> Country </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element; let i = dataIndex">
+              <a class="v-center c-pointer undecoration" *ngIf="element?.contact" (click)="gotToContactDetail(element, i)">
+                <span class="c-dark">{{element.contact?.country}}</span>
+              </a>
+            </td>
+          </ng-container>
+
+          <!-- State -->
+          <ng-container matColumnDef="state">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length" translate> State </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element; let i = dataIndex">
+              <a class="v-center c-pointer undecoration" *ngIf="element?.contact" (click)="gotToContactDetail(element, i)">
+                <span class="c-dark">{{element.contact?.state}}</span>
+              </a>
+            </td>
+          </ng-container>
+
+          <!-- City -->
+          <ng-container matColumnDef="city">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length" translate> City </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element; let i = dataIndex">
+              <a class="v-center c-pointer undecoration" *ngIf="element?.contact" (click)="gotToContactDetail(element, i)">
+                <span class="c-dark">{{element.contact?.city}}</span>
+              </a>
+            </td>
+          </ng-container>
+
+          <!-- Zipcode -->
+          <ng-container matColumnDef="zipcode">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length" translate> Zipcode </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element; let i = dataIndex">
+              <a class="v-center c-pointer undecoration" *ngIf="element?.contact" (click)="gotToContactDetail(element, i)">
+                <span class="c-dark">{{element.contact?.zip}}</span>
+              </a>
+            </td>
+          </ng-container>
+
+          <!-- Company -->
+          <ng-container matColumnDef="company">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length" translate> Company </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element; let i = dataIndex">
+              <a class="v-center c-pointer undecoration" *ngIf="element?.contact" (click)="gotToContactDetail(element, i)">
+                <span class="c-dark">{{element.contact?.brokerage}}</span>
+              </a>
+            </td>
+          </ng-container>
+
+          <!-- Source -->
+          <ng-container matColumnDef="source">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length" translate> Source </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element; let i = dataIndex">
+              <a class="v-center c-pointer undecoration" *ngIf="element?.contact" (click)="gotToContactDetail(element, i)">
+                <span class="c-dark">{{element.contact?.source}}</span>
+              </a>
+            </td>
+          </ng-container>
+
+          <!-- Assignee -->
+          <ng-container *enableByFeatures="USER_FEATURES.ASSIGNEE">
+            <ng-container matColumnDef="assignee">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell *ngIf="!selection.length" translate>
+                  Assignee
+                </th>
+              </ng-container>
+              <td
+                mat-cell
+                *matCellDef="let element"
+                (click)="openContact(element)"
+              >
+                <div class="v-center c-pointer">
+                  <div
+                    class="contact-avatar f-3 mr-2"
+                    *ngIf="element.owner"
+                    [style.backgroundColor]="getAssigneeAvatarColor(element)"
+                    [ngbTooltip]="element.owner?.user_name"
+                    tooltipClass="custom-tooltip"
+                  >
+                    {{ getAssigneeAvatarName(element) }}
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+          </ng-container>
+
+          <!-- Activity Column -->
+          <ng-container matColumnDef="activity">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell *ngIf="!selection.length" translate>
+                last activity
+              </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element; let i = dataIndex">
+              <div class="v-center">
+                <i
+                  class="act-icon normal {{
+                    'act-' + element?.contact?.last_activity?.type
+                  }} d-block mr-2"
+                ></i>
+                <a class="v-center c-pointer undecoration"  *ngIf="element?.contact" (click)="gotToContactDetail(element, i)">
+                  <span>{{ element.contact?.last_activity?.content }}</span>
+                </a>
+              </div>
+              <!-- <span>{{element.last_activity?.created_at}}</span> -->
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="selection_info">
+            <th mat-header-cell *matHeaderCellDef colspan="9" class="text-center">
+              <span *ngIf="selection.length !== (taskService.total$ | async); else deselectTemplate" class="">
+                {{selection.length}} {{'tasks are selected.' | translate}}
+                <span class="c-blue font-weight-bold" *ngIf="selecting && selectSource === 'page'">
+                  <i class="small-spinner"></i>
+                  <span translate>Selecting all. . .</span>
+                </span>
+                <span class="c-blue font-weight-bold c-pointer" *ngIf="!selecting" (click)="selectAll()">
+                  {{'Select all' | translate}} {{taskService.total$ | async}} {{'tasks' | translate}}
+                </span>
+              </span>
+              <ng-template #deselectTemplate>
+                {{'All' | translate}} {{selection.length}} {{'tasks are selected.' | translate}} <span class="c-blue c-pointer font-weight-bold" (click)="deselectAll()" translate>Clear selection</span>
+              </ng-template>
+            </th>
+          </ng-container>
+
+          <!-- <ng-container matColumnDef="completed_info">
+            <td mat-cell *matCellDef="let element" class="p-0 completed-cell" colspan="10">
+              <div class="completed-mark"></div>
+            </td>
+          </ng-container> -->
+
+          <tr mat-header-row *matHeaderRowDef="['loader-cell']" class="loader-row"></tr>
+          <tr mat-header-row *matHeaderRowDef="DISPLAY_COLUMNS" class="table-header" [class.selected]="selection.length"></tr>
+          <tr mat-header-row *matHeaderRowDef="['selection_info']" [class.d-none]="!selection.length" class='selection-info'></tr>
+          <tr mat-row *matRowDef="let row; columns: DISPLAY_COLUMNS;" [class.completed]="completedTasks.indexOf(row._id) !== -1"></tr>
+        </table>
+      </div>
+
+
+      <ng-container *ngIf="(taskService.total$ | async) > MIN_ROW_COUNT">
+        <!-- <div class="updating-status"
+          *ngIf="(taskService.loading$ | async) === STATUS.REQUEST">
+          LOADING
+        </div> -->
+        <div class="my-2 table-control mode-1">
+          <div class="pagination-wrapper m-auto">
+            <pagination-controls (pageChange)="changePage($event)" (pageBoundsCorrection)="onOverPages($event)" id="tasks" maxSize="5"
+              previousLabel="" nextLabel="">
+            </pagination-controls>
+          </div>
+          <div class="shadow-dropdown ml-auto page-size-control" ngbDropdown placement="top-right">
+            <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+              <span id="task-show-count-page" class="pr-2 c-dark">{{'Show' || translate}} {{pageSize.id}} {{'rows per page' | translate}}</span>
+            </div>
+            <div ngbDropdownMenu aria-labelledby="contactPageSize">
+              <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS; let i = index" (click)="changePageSize(type)">
+                <span id="page-count-select-{{i}}" class="f-3 v-center" [class.font-weight-bold]="type.id === pageSize.id">
+                  {{'Show' | translate}} {{type.label}} {{'rows per page' | translate}}
+                  <i class="i-icon i-check d-block bgc-dark sm ml-1 mb-1" *ngIf="type.id === pageSize.id"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="!(storeService.tasks$ | async).length  && !(taskService.total$ | async)">
+        <ng-container [ngSwitch]="(taskService.loading$ | async)">
+          <div class="empty-list py-5" *ngSwitchCase="STATUS.SUCCESS">
+            <div class="object-icon v-center">
+              <i class="i-icon i-task d-block bgc-dark"></i>
+            </div>
+            <h4 class="font-weight-bold mt-4 mb-3">
+              <ng-container *ngIf="(taskService.searchOption$ | async).name === 'overdue'; else anotherResult;">
+                <ng-container [ngSwitch]="(taskService.searchOption$ | async).status">
+                  <div *ngSwitchCase="1">
+                   {{'You did not have completed any' | translate}} {{(taskService.searchOption$ | async).types ? (taskService.searchOption$ |
+                    async).types.join(', ') : '' }} {{'tasks before.' | translate}}
+                  </div>
+                  <div *ngSwitchCase="0">
+                    {{'You completed all any' | translate}} {{(taskService.searchOption$ | async).types ? (taskService.searchOption$ | async).types.join(', ') :
+                    '' }} {{'tasks before.' | translate}}
+                  </div>
+                  <div *ngSwitchDefault>
+                    {{'You did not have any' | translate}} {{(taskService.searchOption$ | async).types ? (taskService.searchOption$ | async).types.join(', ') :
+                    '' }} {{'tasks before.' | translate}}
+                  </div>
+                </ng-container>
+              </ng-container>
+              <ng-template #anotherResult>
+                {{'There are no' | translate}} {{(taskService.searchOption$ | async).status === TASK_STATUS.TODO ? 'todo' : (taskService.searchOption$ |
+                async).status === TASK_STATUS.COMPLETED ? 'completed' : ''}}
+                {{(taskService.searchOption$ | async).types ? (taskService.searchOption$ | async).types.join(', ') : '' }} {{'tasks' | translate}}
+                {{(taskService.searchOption$ | async).isActive ? ' that fit your filter conditions ' : ''}}
+                {{((taskService.searchOption$ | async).name || 'all') !== 'all' ? ' for ' + (taskService.searchOption$ | async).name : 'in
+                your account'}}.
+              </ng-template>
+            </h4>
+          </div>
+          <div class="list-loading text-center" *ngSwitchCase="STATUS.REQUEST">
+            <div class="loader mt-5 lg"></div>
+            <h4 class="fw-600 mt-2" translate>Loading tasks...</h4>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+
+  <mat-drawer-container [hasBackdrop]="true">
+    <mat-drawer [opened]="opened" position="end" (closedStart)="closeDrawer()">
+      <app-task-filter [opened]="opened" [isFocus]="focusRequired" (onClose)="closeDrawer()" (onFiltered)="customFiltered()"></app-task-filter>
+    </mat-drawer>
+  </mat-drawer-container>
+</div>
+
+<ng-template #emptyContactContent>
+  <div class="empty-content">--</div>
+</ng-template>

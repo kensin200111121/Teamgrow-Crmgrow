@@ -1,0 +1,93 @@
+@import "variables";
+
+.pages {
+    flex-wrap: wrap;
+    .page-item {
+        margin: 1rem;
+        .page-thumbnail {
+            position: relative;
+            min-width: 300px;
+            min-height: 360px;
+            border-radius: 12px;
+            background-color: gainsboro;
+            img {
+                width: 300px;
+                border-radius: 12px;
+                box-shadow: rgb(96 97 112 / 16%) 0px 1px 2px, rgb(40 41 61 / 8%) 0px 0px 1px;
+            }
+            .page-actions {
+                position: absolute;
+                left: 0px;
+                top: 0px;
+                width: 300px;
+                height: 360px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border-radius: 12px;
+                opacity: 0;
+                & > a {
+                    width: 100px;
+                    margin: 10px;
+                }
+
+                &.disabled > a{
+                    opacity: 0.8;
+                    pointer-events: none;
+                }
+
+                .more-action {
+                    position: absolute;
+                    top: 16px;
+                    right: 16px;
+
+                    .dropdown-toggle {
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        border: 1px solid $color-blue;
+
+                        i {
+                            width: 24px;
+                            height: 24px;
+                        }
+                    }
+                }
+
+                &.disabled > .more-action {
+                    opacity: 0.8;
+                    pointer-events: none;
+                }
+            }
+            &:hover {
+                .page-actions {
+                    opacity: 1;
+                    background: rgba(255, 255, 255, 0.7);
+                }
+            }
+            .call-status {
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                right: 0px;
+                bottom: 0px;
+                background: #edededd6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: black;
+                font-size: 20px;
+            }
+        }
+    }
+}
+
+.notify {
+    background: #fff6dc;
+    padding: 16px;
+    border: 1px solid #f7b500;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    text-align: center;
+}

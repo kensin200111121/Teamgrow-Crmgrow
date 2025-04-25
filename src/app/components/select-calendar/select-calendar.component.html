@@ -1,0 +1,23 @@
+<div ngbDropdown>
+  <div ngbDropdownToggle class="custom-select">
+    <div class="selected-item" *ngIf="calendar">
+      <div class="color" [ngStyle]="{'background-color': calendar.color || 'blue'}"></div>
+      <span class="f-4">{{ calendar.title }}</span>
+    </div>
+    <span *ngIf="!calendar" class="f-4">Select Calendar</span>
+  </div>
+  <div ngbDropdownMenu class="custom-select-dropdown">
+    <div *ngFor="let account of accounts" class="dropdown-group">
+      <div class="dropdown-group-label">{{ account.email }}</div>
+      <div
+        *ngFor="let calendar of account.calendars"
+        (click)="selectCalendar(calendar)" 
+        class="dropdown-option"
+        ngbDropdownItem
+      >
+        <div class="color" [ngStyle]="{'background-color': calendar.color || 'blue'}"></div>
+        <span>{{ calendar.title }}</span>
+      </div>
+    </div>
+  </div>
+</div>

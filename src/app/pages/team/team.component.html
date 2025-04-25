@@ -1,0 +1,553 @@
+<div class="page-content">
+  <div class="p-0">
+    <ng-container *ngIf="loading">
+      <div class="list-loading text-center">
+        <div class="loader mt-5 lg"></div>
+        <h4 class="fw-600 mt-2" translate>Loading community information...</h4>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="!loading && team">
+      <app-back-button [defaultTitle]="'Community'" [defaultRoute]="'/community'"></app-back-button>
+      <div class="team-title-wrapper">
+        <div class="d-flex flex-column align-items-center">
+          <ng-container *ngIf="team.picture">
+            <img [src]="team.picture" class="p-2 team-logo"/>
+          </ng-container>
+          <h5 class="font-weight-bold mb-0">{{ team.name }}</h5>
+        </div>
+        <div class="team-info-container d-flex mb-4 ml-4">
+          <div class="owner">
+            <label class="f-2 op-75 text-uppercase" translate>Owner</label>
+            <div class="v-center value">
+              <div class="owners v-center mr-3">
+                <ng-container *ngIf="team.owner">
+                  <ng-container
+                    *ngIf="team.owner.length < 5; else overTemplate"
+                  >
+                    <div class="owner" *ngFor="let own of team.owner">
+                      <ng-container
+                        *ngIf="own.picture_profile; else ownNamePlaceholder"
+                      >
+                        <img
+                          [src]="own.picture_profile"
+                          class="avatar"
+                          (click)="showProfile(own)"
+                          [class.shadow-avatar]="team.owner.length > 1"
+                        />
+                      </ng-container>
+                      <ng-template #ownNamePlaceholder>
+                        <div
+                          class="name-avatar"
+                          (click)="showProfile(own)"
+                          [class.shadow-avatar]="team.owner.length > 1"
+                        >
+                          {{ own.user_name[0] }}
+                        </div>
+                      </ng-template>
+                    </div>
+                  </ng-container>
+                  <ng-template #overTemplate>
+                    <div class="owner" *ngFor="let mIndex of [0, 1, 2, 3]">
+                      <ng-container
+                        *ngIf="
+                          team.owner[mIndex].picture_profile;
+                          else ownNamePlaceholder
+                        "
+                      >
+                        <img
+                          [src]="team.owner[mIndex].picture_profile"
+                          (click)="showProfile(team.owner[mIndex])"
+                          class="avatar shadow-avatar"
+                        />
+                      </ng-container>
+                      <ng-template #ownNamePlaceholder>
+                        <div
+                          class="name-avatar shadow-avatar"
+                          (click)="showProfile(team.owner[mIndex])"
+                        >
+                          {{ team.owner[mIndex].username[0] }}
+                        </div>
+                      </ng-template>
+                    </div>
+                    <div class="owner remain-number">
+                      <div class="name-avatar shadow-avatar">
+                        +{{ team.owner.length - 4 }}
+                      </div>
+                    </div>
+                  </ng-template>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <div class="members ml-5">
+            <label class="f-2 op-75 text-uppercase" translate>Members</label>
+            <div class="value f-37 font-weight-bold ml-3">
+              {{ getMemberCount() }}
+            </div>
+          </div>
+          <div class="ml-5">
+            <label class="f-2 op-75 text-uppercase" translate>Your Role</label>
+            <div class="value v-center">
+              <div
+                class="status font-weight-bold f-2 c-white"
+                [class]="status()" translate
+              >
+                {{ status() }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="button-group v-center justify-content-lg-end justify-content-md-start ml-auto"
+        >
+          <button
+            [attr.data-action]="'community-invite-member'"
+            class="v-center btn btn-primary f-4 font-weight-bold shadow text-white p-2"
+            (click)="inviteMember()"  
+            *ngIf="
+              role == 'owner' ||
+              (role != 'owner' && team.team_setting.requestInvite)
+            "
+          >
+            <i class="bgc-white i-icon i-invite-member sm mr-2"></i>
+            {{ 'Invite Member' | translate }}
+          </button>
+          <div class="more-actions ml-2" ngbDropdown *ngIf="role == 'owner' || role == 'editor'" placement="bottom-end">
+            <a
+              class="f-3 font-weight-bold td-none c-pointer c-blue"
+              ngbDropdownToggle translate
+            >
+              More
+            </a>
+            <div ngbDropdownMenu>
+              <a class="dropdown-item f-3" (click)="editTeam()" *ngIf="role == 'owner'" translate>
+                Edit Community
+              </a>
+              <hr class="my-1" *ngIf="role == 'owner'" />
+              <a class="dropdown-item f-3" (click)="shareMaterial()" translate
+                >Share Material</a
+              >
+              <a
+                class="dropdown-item f-3"
+                (click)="shareEmailTemplate()"
+                translate
+                >Share Template</a
+              >
+              <a
+                class="dropdown-item f-3"
+                (click)="shareAutomation()"
+                [class.disable]="!isPackageAutomation"
+                translate
+                >Share Automation</a
+              >
+              <a
+                class="dropdown-item f-3"
+                (click)="sharePipeline()"
+                translate
+                >Share Pipeline</a
+              >
+              <ng-container *ngIf="team.is_internal || !isNewUser" >
+
+                <a class="dropdown-item f-3" (click)="shareContact()" translate
+                  >Share Contact</a
+                >
+                <a class="dropdown-item f-3" (click)="routingContact()" translate
+                  >Routing Contact</a
+                >
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <app-slide-tab
+        [tabs]="tabs"
+        [selected]="selectedTab"
+        (onChange)="changeTab($event)"
+        type="plain"
+      >
+      </app-slide-tab>
+
+      <ng-container [ngSwitch]="selectedTab.id">
+        <div class="members-table-container mt-3" *ngSwitchCase="'members'">
+          <ng-container
+            *ngIf="
+              team.requests.length && role == 'owner'
+            "
+          >
+            <div class="f-6 font-weight-bold" translate>Requests</div>
+            <table class="table join-request-table mt-3 mb-5">
+              <thead>
+                <th class="name-cell" translate>Members</th>
+                <th class="invite-received" translate>Invite Received</th>
+                <th class="team-actions text-right" translate>Actions</th>
+              </thead>
+              <tbody>
+                <tr *ngFor="let user of team.requests">
+                  <td class="name-cell">
+                    <div class="v-center">
+                      <ng-container
+                        *ngIf="user.picture_profile; else ownNamePlaceholder"
+                      >
+                        <img [src]="user.picture_profile" class="avatar mr-3" />
+                      </ng-container>
+                      <ng-template #ownNamePlaceholder>
+                        <div class="name-avatar mr-3">
+                          {{ avatarName(user.user_name) }}
+                        </div>
+                      </ng-template>
+                      <div class="f-3 font-weight-bold">
+                        {{ user.user_name || 'Unnamed Contact' }}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="invite-received">
+                    {{ user.updated_at | date: 'hh:mm a, dd MMM yyyy' }}
+                  </td>
+                  <td class="team_actions d-flex justify-content-end">
+                    <button
+                      class="btn btn-accept-outline f-1 mr-2 font-weight-bold"
+                      [class.loading]="
+                        acceptJoinRequest && this.acceptUserId == user._id
+                      "
+                      (click)="acceptRequest(user)"
+                    >
+                      <span class="button-label" translate>Accept</span>
+                    </button>
+                    <button
+                      class="btn btn-decline f-1 font-weight-bold"
+                      [class.loading]="
+                        declineJoinRequest && this.declineUserId == user._id
+                      "
+                      (click)="declineRequest(user)"
+                    >
+                      <span class="button-label" translate>Decline</span>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </ng-container>
+          <div class="v-center contact-list-controls my-2">
+            <div class="form-group mb-0 search-form">
+              <div class="input-group-prepend">
+                <i class="i-icon i-search d-block bgc-dark"></i>
+              </div>
+              <input
+                type="text"
+                class="form-control"
+                [placeholder]="'Search' | translate"
+                aria-label="search"
+                aria-describedby="search-addon"
+                [(ngModel)]="searchStr"
+                (ngModelChange)="changeSearchStr()"
+              />
+              <ng-container *ngIf="searchStr">
+                <div class="cancel-action c-pointer" (click)="clearSearchStr()">
+                  <i class="i-icon i-close d-block bgc-dark"></i>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+
+          <div class="custom-mat-table position-relative">
+            <div class="mat-table-wrapper mode-2">
+              <table
+                class="w-100 page-table"
+                mat-table
+                [dataSource]="
+                  filteredMembers
+                    | paginate
+                      : {
+                          itemsPerPage: pageSize.id,
+                          currentPage: page,
+                          id: 'memberTable',
+                          total: filteredMembers.length
+                        }
+                "
+              >
+                <ng-container matColumnDef="member">
+                  <th mat-header-cell *matHeaderCellDef>Members</th>
+                  <td mat-cell *matCellDef="let member">
+                    <div
+                      class="v-center"
+                      *ngIf="
+                        member.role !== 'referral';
+                        else referralPlaceholder
+                      "
+                    >
+                      <ng-container
+                        *ngIf="member.picture_profile; else ownNamePlaceholder"
+                      >
+                        <img
+                          [src]="member.picture_profile"
+                          class="avatar mr-3"
+                        />
+                      </ng-container>
+                      <ng-template #ownNamePlaceholder>
+                        <div class="name-avatar mr-3">
+                          {{ member.user_name[0] }}
+                        </div>
+                      </ng-template>
+                      <div class="f-4 c-dark font-weight-bold">
+                        {{ member.user_name }}
+                      </div>
+                    </div>
+                    <ng-template #referralPlaceholder>
+                      <div class="v-center">
+                        <div class="name-avatar mr-3">
+                          {{ member.email[0] }}
+                        </div>
+                        <div class="font-weight-bold">{{ member.email }}</div>
+                      </div>
+                    </ng-template>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="role">
+                  <th mat-header-cell *matHeaderCellDef translate>Role</th>
+                  <td mat-cell *matCellDef="let member">
+                    <div class="label-cell" *ngIf="member.role == 'owner'">
+                      <div class="value v-center">
+                        <div
+                          class="status Owner font-weight-bold f-2 c-white"
+                          translate
+                        >
+                          Owner
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="label-cell"
+                      *ngIf="member.role == 'editor' || member.role == 'viewer'"
+                    >
+                      <ng-container
+                        *ngIf="role == 'owner'; else noOwnerTemplate"
+                      >
+                        <app-select
+                          [options]="['Viewer', 'Editor']"
+                          (onChange)="toggleMember(member)"
+                          [value]="
+                            team.editors.indexOf(member._id) === -1
+                              ? 'Viewer'
+                              : 'Editor'
+                          "
+                          class="c-white status value f-2 font-weight-bold {{
+                            team.editors.includes(member._id)
+                              ? 'Editor'
+                              : 'Viewer'
+                          }}"
+                          [disabled]="role != 'owner'"
+                        >
+                        </app-select>
+                      </ng-container>
+                      <ng-template #noOwnerTemplate>
+                        <div class="value v-center">
+                          <div
+                            class="status font-weight-bold f-2 c-white"
+                            [class]="
+                              team.editors.indexOf(member._id) === -1
+                                ? 'Viewer'
+                                : 'Editor'
+                            "
+                          >
+                            {{
+                              team.editors.indexOf(member._id) === -1
+                                ? 'Viewer'
+                                : 'Editor'
+                            }}
+                          </div>
+                        </div>
+                      </ng-template>
+                    </div>
+
+                    <div class="value v-center" *ngIf="member.role == 'invite'">
+                      <div
+                        class="status Invite f-2 font-weight-bold mr-2"
+                        translate
+                      >
+                        Invite sent
+                      </div>
+                      <button
+                        class="btn-white-blue remind-button f-2 ml-1 font-weight-bold btn c-blue"
+                        [class.loading]="
+                          resending && resendEmail == member.email
+                        "
+                        (click)="resendInvitation(member)"
+                        translate
+                      >
+                        Remind
+                      </button>
+                    </div>
+
+                    <div
+                      class="value v-center"
+                      *ngIf="member.role == 'referral'"
+                    >
+                      <div class="status Invite f-2 font-weight-bold mr-2">
+                        Invite sent
+                      </div>
+                      <button
+                        class="btn-white-blue remind-button f-1 ml-1 font-weight-bold btn c-blue"
+                        [class.loading]="
+                          resending && resendEmail == member.email
+                        "
+                        (click)="resendReferralInvitation(member.email)"
+                        translate
+                      >
+                        Remind
+                      </button>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="action">
+                  <th mat-header-cell *matHeaderCellDef translate>Action</th>
+                  <td mat-cell *matCellDef="let member">
+                    <ng-container *ngIf="role == 'editor' || role == 'owner'">
+                      <div
+                        *ngIf="
+                          member.role !== 'invite' && member.role !== 'referral'
+                        "
+                      >
+                        <ng-container
+                          *ngIf="member._id === userId && role !== 'owner'; else removeTemplate"
+                        >
+                          <button
+                            class="v-center btn bgc-white c-black f-3 justify-content-end mt-1"
+                            (click)="leaveTeam(member)"
+                            placement="bottom"
+                            [ngbTooltip]="'leave_community' | translate"
+                            ngbButtonLabel
+                          >
+                            <i class="bgc-black i-icon i-trash"></i>
+                          </button>
+                        </ng-container>
+                        <ng-template #removeTemplate>
+                          <button
+                            *ngIf="member.role !== 'owner'"
+                            class="v-center btn bgc-white c-black f-3 justify-content-end mt-1"
+                            (click)="removeMember(member)"
+                            placement="bottom"
+                            [ngbTooltip]="'Remove member' | translate"
+                            ngbButtonLabel
+                          >
+                            <i class="bgc-black i-icon i-trash"></i>
+                          </button>
+                        </ng-template>
+                      </div>
+
+                      <button
+                        *ngIf="
+                          member.role == 'invite' || member.role == 'referral'
+                        "
+                        class="v-center btn bgc-white c-dark f-3 mt-1"
+                        (click)="cancelInvite(member)"
+                        placement="bottom"
+                        [ngbTooltip]="'Cancel Invite'|translate"
+                        ngbButtonLabel
+                      >
+                        <i class="i-icon i-trash bgc-black d-block mr-2"></i>
+                      </button>
+                    </ng-container>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="MEMEBR_COLUMNS"></tr>
+                <tr
+                  mat-row
+                  *matRowDef="let member; columns: MEMEBR_COLUMNS"
+                ></tr>
+              </table>
+              <ng-container *ngIf="filteredMembers.length > MIN_ROW_COUNT">
+                <div class="py-2 table-control mode-1">
+                  <div class="pagination-wrapper m-auto">
+                    <pagination-controls
+                      (pageChange)="changePage($event)"
+                      (pageBoundsCorrection)="changePage($event)"
+                      id="memberTable"
+                      maxSize="5"
+                      previousLabel=""
+                      nextLabel=""
+                      autoHide="filteredMembers.length <= pageSize.id"
+                    >
+                    </pagination-controls>
+                  </div>
+                  <ng-container *ngIf="filteredMembers.length > PAGE_COUNTS[0].id">
+                    <div
+                      class="shadow-dropdown ml-auto page-size-control"
+                      ngbDropdown
+                      placement="top-right"
+                    >
+                      <div
+                        class="v-center c-pointer f-3 p-3 font-weight-bold"
+                        ngbDropdownToggle
+                      >
+                        <span
+                          class="pr-2 c-blue"
+                          [translateParams]="{ count: pageSize.id }"
+                          translate
+                          >pagination</span
+                        >
+                      </div>
+                      <div ngbDropdownMenu aria-labelledby="contactPageSize">
+                        <div
+                          class="py-2"
+                          ngbDropdownItem
+                          *ngFor="let type of PAGE_COUNTS"
+                          (click)="changePageSize(type)"
+                        >
+                          <span
+                            class="f-3 v-center"
+                            [class.font-weight-bold]="type.id === pageSize.id"
+                          >
+                            <span [translateParams]="{ count: type.id }" translate
+                              >pagination</span
+                            >
+                            <i
+                              class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                              *ngIf="type.id === pageSize.id"
+                            ></i>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+
+        <div *ngSwitchCase="'materials'" class="materials-container mt-3">
+          <app-materials-team [team]="teamId"></app-materials-team>
+        </div>
+
+        <div class="contacts-container mt-3" *ngSwitchCase="'contacts'">
+          <app-team-share-contact
+            [team]="team"
+            [role]="role"
+          ></app-team-share-contact>
+        </div>
+
+        <div class="automation-list-wrapper mt-3" *ngSwitchCase="'automations'">
+          <app-automations-team
+            [team]="teamId"
+          ></app-automations-team>
+        </div>
+
+        <div class="template-list-wrapper mt-3" *ngSwitchCase="'templates'">
+          <app-templates-team
+            [team]="teamId"
+          ></app-templates-team>
+        </div>
+
+        <div class="template-list-wrapper mt-3" *ngSwitchCase="'pipelines'">
+          <app-pipelines-team
+            [team]="team"
+          ></app-pipelines-team>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>

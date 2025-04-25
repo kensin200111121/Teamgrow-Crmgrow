@@ -1,0 +1,382 @@
+<div class="page-content" [class.with-contacts]="panel === PanelView.Contacts">
+    <div class="v-center justify-content-between border-bottom page-header">
+        <h4 class="page-title m-0">Messages</h4>
+        <button class="v-center btn btn-blue f-6 font-weight-bold text-white" (click)="newMessage()">
+            New Text
+        </button>
+    </div>
+    <div class="d-flex message-container position-relative">
+        <div class="contact-list" [class.active]="panel === PanelView.Contacts">
+            <div class="d-flex">
+                <div class="form-group mb-1 search-form">
+                    <div class="input-group-prepend">
+                        <i class="i-icon i-search d-block bgc-dark"></i>
+                    </div>
+                    <input type="text" class="form-control" [placeholder]="'Search' | translate" aria-label="search" aria-describedby="search-addon"
+                        [(ngModel)]="searchStr" (ngModelChange)="changeSearchStr()">
+                    <ng-container *ngIf="searchStr">
+                        <div class="cancel-action c-pointer" (click)="clearSearchStr()">
+                            <i class="i-icon i-close d-block bgc-dark"></i>
+                        </div>
+                    </ng-container>
+                </div>
+                <div class="query-dropdown" ngbDropdown>
+                    <div class="v-center c-pointer f-3 px-1 py-2 justify-content-end" ngbDropdownToggle>
+                        <span class="pr-2">
+                            <span class="font-weight-bold">{{(sort_type.label == 'Latest' ? 'Sort by' : sort_type.label) | translate }}</span>
+                        </span>
+                    </div>
+                    <div ngbDropdownMenu aria-labelledby="taskSortTypes">
+                        <div class="py-2" ngbDropdownItem *ngFor="let type of message_sort_type" (click)="changeSortType(type)">
+                        <span class="f-3 v-center" [class.font-weight-bold]="type.id === sort_type.id">
+                            {{type.label}}
+                            <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1" *ngIf="type.id === sort_type.id"></i>
+                        </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-list-wrapper position-relative">
+                <ng-container *ngIf="contacts.length; else noContacts">
+                    <div class="updating-status" *ngIf="loading">
+                        LOADING
+                    </div>
+                    <div class="d-flex p-2 c-pointer contact"
+                        [class]="{'selected': contact._id == selectedContact._id, 'unread': contact.isUnread}"
+                        *ngFor="let contact of contacts" (click)="selectContact(contact)">
+                        <div class="contact-avatar f-3 font-weight-bold mr-2">
+                            {{contact.avatarName}}
+                        </div>
+                        <div class="contact-name">
+                            <div class="v-center justify-content-between">
+                                <span class="f-3 fw-600 contact-fullname">{{contact.fullName}}</span>
+                                <div class="v-center ml-1">
+                                    <ng-container *ngIf="contact.isPending">
+                                        <i class="i-icon i-schedule-send bgc-dark d-inline-block sm mr-1"></i>
+                                    </ng-container>
+                                    <ng-container *ngIf="contact.isFailed">
+                                        <i class="i-icon i-error bgc-red d-inline-block sm mr-1"></i>
+                                    </ng-container>
+                                    <ng-container *ngIf="calcDate(contact.last_text?.created_at) == 0">
+                                        <span class="f-1 op-56">
+                                            {{contact.last_text?.created_at | date:'h:mm a'}}
+                                        </span>
+                                    </ng-container>
+                                    <ng-container *ngIf="calcDate(contact.last_text?.created_at) > 0 && calcDate(contact.last_text?.created_at) < 8">
+                                        <span class="f-1 op-56">
+                                            {{contact.last_text?.created_at | date:'EEE'}}
+                                        </span>
+                                    </ng-container>
+                                    <ng-container *ngIf="calcDate(contact.last_text?.created_at) >= 8">
+                                        <span class="f-1 op-56">
+                                            {{contact.last_text?.created_at | date:'EEE dd, MM, yyyy'}}
+                                        </span>
+                                    </ng-container>
+                                </div>
+                            </div>
+                            <div class="f-3 latest-message">
+                                {{replaceLastMessageToken(contact, contact.last_text?.content || '')}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <ng-container *ngIf="loadingMore; else loadMoreAction">
+                            <div class="loader mt-0"></div>
+                        </ng-container>
+                        <ng-template #loadMoreAction>
+                            <ng-container *ngIf="hasMore;">
+                                <a (click)="loadMore()" class="c-pointer">Load more</a>
+                            </ng-container>
+                        </ng-template>
+                    </div>
+                </ng-container>
+
+                <ng-template #noContacts>
+                    <ng-container *ngIf="loading; else emptyContact">
+                        <div class="list-loading text-center">
+                            <div class="loader mt-5 lg"></div>
+                            <h4 class="fw-600 mt-2">Loading contacts...</h4>
+                        </div>
+                    </ng-container>
+                    <ng-template #emptyContact>
+                        <div class="empty-list py-5">
+                            <div class="object-icon v-center">
+                                <i class="i-icon i-lunch d-block bgc-dark"></i>
+                            </div>
+                            <h4 class="text-center font-weight-bold mt-4 mb-3">
+                                There are no contacts.
+                            </h4>
+                        </div>
+                    </ng-template>
+                </ng-template>
+            </div>
+        </div>
+
+        <div class="message-box border-left" [class.active]="panel === PanelView.Messages" [class.with-files]="panel === PanelView.Files">
+            <ng-container *ngIf="!isNew && !selectedContact._id">
+                <div class="message-cover v-center">
+                    <ng-container *ngIf="(userService.profile$ | async)._id">
+                        <h3 class="font-weight-bold w-100 text-center">Hi {{firstName}}!</h3>
+                    </ng-container>
+                </div>
+            </ng-container>
+            <div class="v-center justify-content-between border-bottom px-3 py-2 message-box-header" *ngIf="!isNew; else newMessageHeader">
+                <i class="i-icon i-back d-block d-sm-none bgc-dark mr-2 c-pointer" (click)="goToBack()"></i>
+                <a class="v-center c-pointer" [routerLink]="['/contacts/' + selectedContact?._id]" target="_blank"
+                    *ngIf="selectedContact?._id">
+                    <div class="contact-avatar f-3 font-weight-bold c-white mr-2">
+                        {{selectedContact.avatarName}}
+                    </div>
+                    <div class="contact-info">
+                        <div class="f-3 c-dark">{{selectedContact.fullName}}</div>
+                        <div class="v-center f-1 font-weight-bold c-blue">
+                            {{selectedContact.cell_phone | phone_format}}
+                        </div>
+                    </div>
+                </a>
+                <div class="v-center justify-content-center c-pointer show-list ml-auto" (click)="toggleFileList()">
+                    <i class="d-block i-icon i-list bgc-dark"></i>
+                </div>
+            </div>
+            <ng-template #newMessageHeader>
+                <div class="v-center border-bottom px-3 py-2 message-box-header">
+                    <i class="i-icon i-back d-block d-sm-none bgc-dark mr-2 c-pointer" (click)="goToBack()"></i>
+                    <label class="f-6 op-56 m-0">To:</label>
+                    <app-input-contacts class="w-100" [placeholder]="'Search for Contact'" [display]="'cell_phone'"
+                        [selectedContacts]="newContacts" (onSelect)="selectNewContacts()" [resultItem]="result" [focus]="true"
+                        [maxLimit]="10">
+                        <ng-template #result let-data>
+                            <div class="chip d-flex align-items-center">
+                                <div class="contact-avatar rounded-circle bg-dark mr-1">{{data.avatarName}}</div>
+                                <div class="info">
+                                    <div class="f-3 font-weight-bold">{{data.fullName}}</div>
+                                    <div class="f-1 font-weight-bold c-blue">{{data.cell_phone | phone_format}}</div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </app-input-contacts>
+                </div>
+            </ng-template>
+            <div #scrollMe class="p-3 message-list" [scrollTop]="scrollMe.scrollHeight">
+                <ng-container *ngIf="selectedContact._id || newContacts.length">
+                    <ng-container *ngIf="isNew && newContacts.length === 1 && conversationDetails[newContacts[0]._id]">
+                        <ng-container *ngFor="let message of conversationDetails[newContacts[0]._id].messages; let i = index;">
+                            <!-- Date Split -->
+                            <ng-container *ngIf="i == 0">
+                                <div class="date-split-line"></div>
+                                <div class="date-split">{{message.created_at | dateSpliter: 'EEE, MMM d, yyyy'}}</div>
+                            </ng-container>
+                            <div class="message mt-3" [innerHTML]="parseContent(message.content)|linkify"
+                                [ngClass]="{send: message.type == 0, receive: message.type == 1, pending: !message.type && message.activity && message.activity.status != 'completed', failed: !message.type && !message.activity}">
+                            </div>
+                            <div class="f-2 message-date mt-1 mx-1 d-flex"
+                                [ngClass]="{send: message.type == 0, receive: message.type == 1, pending: !message.type && message.activity && message.activity.status != 'completed', failed: !message.type && !message.activity}">
+                                <ng-container *ngIf="!message.type && !message.activity">
+                                    <!-- <div class="resend-button c-pointer" (click)="resendMessage(message)">
+                                        <i class="i-icon i-refresh bgc-red sm d-block"></i>
+                                    </div>
+                                    <div class="resend-button c-pointer" (click)="deleteMessage(message)">
+                                        <i class="i-icon i-trash bgc-red sm d-block"></i>
+                                    </div> -->
+                                    <i class="d-block i-icon i-error bgc-red ng-star-inserted mr-2 small" ngbTooltip="{{ 'Failed' | translate }}" ></i>
+                                </ng-container>
+                                <ng-container *ngIf="!message.type && message.activity && message.activity?.status != 'completed'">
+                                    <i class="d-block i-icon i-schedule-send bgc-dark ng-star-inserted mr-2 small" ngbTooltip="{{ 'Pending' | translate }}" ></i>
+                                </ng-container>
+                                <span>{{message.created_at | date:'h:mm a'}}</span>
+                            </div>
+                            <!-- Date Split -->
+                            <ng-container *ngIf="isNewDate(message, conversationDetails[newContacts[0]._id].messages[i+1])">
+                                <div class="date-split-line"></div>
+                                <div class="date-split">
+                                    <div class="time">{{conversationDetails[newContacts[0]._id].messages[i+1].created_at | dateSpliter:
+                                        'EEE, MMM d, yyyy'}}</div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+                    <ng-container *ngIf="!isNew && selectedContact._id && conversationDetails[selectedContact._id]">
+                        <ng-container *ngFor="let message of conversationDetails[selectedContact._id].messages; let i = index">
+                            <ng-container *ngIf="i == 0">
+                                <div class="date-split-line"></div>
+                                <div class="date-split">{{message.created_at | dateSpliter: 'EEE, MMM d, yyyy'}}</div>
+                            </ng-container>
+                            <div class="message mt-3" [innerHTML]="parseContent(message.content) | linkify"
+                                [ngClass]="{send: message.type == 0, receive: message.type == 1, pending: !message.type && message.activity && message.activity.status != 'completed', failed: !message.type && !message.activity}">
+                            </div>
+                            <div class="f-2 message-date mt-1 mx-1 d-flex"
+                                [ngClass]="{send: message.type == 0, receive: message.type == 1, pending: !message.type && message.activity && message.activity.status != 'completed', failed: !message.type && !message.activity}">
+                                <ng-container *ngIf="!message.type && !message.activity">
+                                    <i class="d-block i-icon i-error bgc-red ng-star-inserted mr-2 small" ngbTooltip="{{ 'Failed' | translate }}" ></i>
+                                </ng-container>
+                                <ng-container *ngIf="!message.type && message.activity && message.activity?.status != 'completed'">
+                                    <i class="d-block i-icon i-schedule-send bgc-dark ng-star-inserted mr-2 small" ngbTooltip="{{ 'Pending' | translate }}" ></i>
+                                </ng-container>
+                                <span>{{message.created_at | date:'h:mm a'}}</span>
+                            </div>
+                            <ng-container *ngIf="isNewDate(message, conversationDetails[selectedContact._id].messages[i+1])">
+                                <div class="date-split-line"></div>
+                                <div class="date-split">
+                                    <div class="time">{{conversationDetails[selectedContact._id].messages[i+1].created_at | dateSpliter:
+                                        'EEE, MMM d, yyyy'}}</div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+                </ng-container>
+                <!-- <ng-template #noMessages>
+                    <ng-container *ngIf="loadingMessage; else emptyResult">
+                        <div class="list-loading text-center">
+                            <div class="loader mt-5 lg"></div>
+                            <h4 class="fw-600 mt-2">Loading messages...</h4>
+                        </div>
+                    </ng-container>
+                    <ng-template #emptyResult>
+                        <div class="empty-list py-5">
+                            <div class="object-icon v-center">
+                                <i class="i-icon i-message d-block bgc-dark"></i>
+                            </div>
+                            <h4 class="font-weight-bold mt-4 mb-3">
+                                There is no messages.
+                            </h4>
+                        </div>
+                    </ng-template>
+                </ng-template> -->
+            </div>
+
+            <div class="p-3 message-action border-top" [class.disabled]="!message.replace(spaceReg, '') || (isNew && !newContacts.length)">
+                <div >
+                    <mat-form-field class="w-100">
+                        <textarea matInput cdkTextareaAutosize [(ngModel)]="message" cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5"  (ngModelChange)="messageChanged()"
+                            (keydown)="keyTrigger($event)" [mention]="tokens" (itemSelected)="onSubjectTokenSelected($event)" [mentionConfig]="mentionConfig" #messageText>
+                        </textarea>
+                    </mat-form-field>
+                </div>
+                <div class="v-center justify-content-between button-groups">
+                    <div class="v-center insert-button">
+                        <button type="button" class="btn border-primary material-button py-2 mr-2" (click)="openMaterialsDlg()">
+                            <div class="for-desktop v-center f-3 font-weight-bold c-blue">
+                                <i class="d-block i-icon i-material bgc-blue"></i>
+                                <span class="font-weight-bold c-blue ml-1 mr-3">Material</span>
+                                <i class="d-block i-icon i-plus bgc-blue ml-auto"></i>
+                            </div>
+
+                            <div class="for-mobile">
+                                <i class="d-block i-icon i-material bgc-blue"></i>
+                            </div>
+                        </button>
+                        <app-template-selector (selectTemplate)="selectTemplate($event)"></app-template-selector>
+                        <div ngbDropdown class="insert-token ml-2 mr-2">
+                            <div class="v-center no-carot c-pointer" ngbDropdownToggle placement="top-left" ngbTooltip="Schedule"
+                                (click)="showSchedule()" style="width: fit-content;">
+                                <i class="d-block i-icon i-schedule-send bgc-blue" *ngIf="scheduleCheck"></i>
+                                <i class="d-block i-icon i-schedule-send bgc-dark" *ngIf="!scheduleCheck"></i>
+                            </div>
+                        </div>
+                        <div class="insert-token datetime mr-2" *ngIf="scheduleCheck">
+                            <div class="v-center no-carot c-pointer">{{scheduleDateTime | date}}</div>
+                            <div class="v-center no-carot c-pointer">{{scheduleDateTime | date:'shortTime'}}</div>
+                        </div>
+                        <i class="d-block i-icon i-close bgc-dark" style="cursor: pointer;" (click)="cancelSchedule()" *ngIf="scheduleCheck"></i>
+                        <div ngbDropdown class="py-2 select-template emoji mr-2">
+                            <div class="v-center no-carot c-pointer" ngbDropdownToggle placement="top-left" ngbTooltip="Emoji">
+                                <img class="emoji-icon" [src]="sspaService.toAsset('img/emoji.png')">
+                            </div>
+                            <div ngbDropdownMenu class="light py-1">
+                                <emoji-mart class="emoji-mart" [set]="set" [darkMode]="false"
+                                    (emojiSelect)="insertValue($event.emoji.native)" title="Pick your emoji…">
+                                </emoji-mart>
+                            </div>
+                        </div>
+
+                        <div ngbDropdown class="py-2 select-template mr-2" *ngIf="(scheduleService.eventTypes$ | async).length">
+                            <div class="v-center no-carot c-pointer" ngbDropdownToggle placement="top-left" ngbTooltip="Scheduler">
+                                <i class="d-block i-icon i-event-note bgc-dark"></i>
+                            </div>
+                            <div ngbDropdownMenu class="light template-container">
+                                <ng-container *ngFor="let eventType of (scheduleService.eventTypes$ | async)">
+                                    <div class="template dropdown-item border-top px-2" (click)="selectCalendly(eventType.link)">
+                                        <div class="v-center h-100">
+                                            <div class="f-3 font-weight-bold flex-grow-1 mr-1 h-100 v-center">{{(eventType.title || '') |
+                                                shorten: 25: '...'}}
+                                            </div>
+                                            <a class="ml-auto" [href]="getRealEventTypeLink(eventType.link)" target="_blank">
+                                                <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                        <div ngbDropdown class="py-2 select-template mr-2" *ngIf="isCalendly">
+                            <div class="v-center no-carot c-pointer" ngbDropdownToggle placement="top-left" ngbTooltip="Calendly">
+                                <i class="d-block i-icon i-calendly bgc-dark"></i>
+                            </div>
+                            <div ngbDropdownMenu class="light py-1">
+                                <ng-container *ngFor="let calendly of (connectService.calendlyAll$ | async)">
+                                    <div class="template dropdown-item border-top px-2" (click)="selectCalendly(calendly.scheduling_url)">
+                                        <div class="v-center h-100">
+                                            <div class="f-3 font-weight-bold flex-grow-1 mr-1 h-100 v-center">{{(calendly.name ||
+                                                '') | shorten: 35: '...'}}</div>
+                                            <a class="ml-auto" [href]="calendly.scheduling_url" target="_blank">
+                                                <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                        <div ngbDropdown class="insert-token mr-1">
+                            <div class="v-center no-carot c-pointer" ngbDropdownToggle placement="top-left" ngbTooltip="{{ 'Record' | translate }}">
+                              <i class="d-block i-icon i-record-toolbar" (click)="record()"></i>
+                            </div>
+                          </div>
+                        <app-token-selector (selectToken)="insertValue($event)"></app-token-selector>
+                        <!-- <app-chatgpt-wizard (getGptResponse)="writeGptResponseContent($event)" [baseContent]="message" ngbTooltip="{{ 'chatGTP' | translate }}"></app-chatgpt-wizard> -->
+                    </div>
+                    <button class="btn btn-blue f-6 font-weight-bold send-button segment-width" [class.loading]="isSend"
+                        (click)="checkBusinessHourandSendMessage()" *ngIf='!scheduleCheck'>
+                        Send
+                    </button>
+                    <button class="btn btn-blue f-6 font-weight-bold send-button segment-width" [class.loading]="isSend"
+                        (click)="checkBusinessHourandSendMessage()" *ngIf='scheduleCheck'>
+                        Schedule
+                    </button>
+                    <button class="for-mobile send-button btn p-2 rounded-circle" [class.loading]="isSend" (click)="checkBusinessHourandSendMessage()">
+                        <i class="i-icon i-text-send d-block bgc-blue"></i>
+                    </button>
+                </div>
+                <div class="ml-auto text-center segment-width reduce">
+                  <span *ngIf="segments > 1" class="d-inline-flex ml-1 f-2 mr-1">
+                    {{segments}} Segments
+                    <a href="{{redirectArticleURL}}" target="_blank">
+                        <i class="d-block i-icon i-information bgc-dark"></i>
+                    </a>
+                  </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="file-list-wrapper">
+            <div class="file-list position-relative" [class.active]="panel === PanelView.Files">
+                <div class="v-center p-3 file-list-header">
+                    <div class="f-5 fw-600 ml-auto">Files</div>
+                    <button type="button" class="v-center border-0 bgc-trans ml-auto" (click)="panel = PanelView.Messages">
+                        <i class="i-icon i-close bgc-dark ml-1" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="p-3 files">
+                    <ng-container *ngIf="loadingFiles && fileDetails[selectedContact._id]">
+                        <div class="updating-status">Updating</div>
+                    </ng-container>
+                    <ng-container *ngIf="loadingFiles && !fileDetails[selectedContact._id]; else filesList">
+                        <div class="loader"></div>
+                    </ng-container>
+                    <ng-template #filesList>
+                        <app-message-files [info]="fileDetails[selectedContact._id]"></app-message-files>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,86 @@
+<div class="custom-mat-field label-select-wrapper" [class.label_form]="type === 'form'">
+  <mat-form-field style="display: block;" appearance="outline" (click)="focusField()">
+    <mat-chip-list aria-label="Contact Selection" #contactList>
+      <mat-basic-chip class="assignee-container">
+        <ng-container *ngIf="formControl.value && formControl.value === 'keep'; else normalSelectedLabel">
+          <div class="v-center py-1">
+            <span class="f-3 fw-600 py-1 px-2" style="min-height: 22px;"></span>
+          </div>
+        </ng-container>
+        <ng-template #normalSelectedLabel>
+          <ng-container *ngIf="formControl.value; else emptyLabel">
+            <div class="v-center py-1 value-label">
+              <div class="avartar-icon">
+                <ng-container *ngIf="mode !== 'contact_list' && formControl.value.picture_profile; else avatarDiv">
+                  <img class="profile-wrapper" src="{{ formControl.value.picture_profile }}">
+                </ng-container>              
+                <ng-template #avatarDiv>
+                  <div
+                    class="contact-avatar"
+                    [style.backgroundColor]="getAssigneeAvatarColor(formControl.value._id)"
+                  >
+                    {{ formControl.value.avatar_name }}
+                  </div>
+                </ng-template>
+              </div>              
+              <div class="ml-2 f-3 fw-600 assignee-select-text" *ngIf="mode !== 'contact_detail' && mode !== 'contact_list'">
+                {{formControl.value.user_name}}
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #emptyLabel>
+            <div class="v-center py-1 value-label">
+              <ng-container *ngIf="mode !== 'contact_detail' && mode !== 'contact_list'; else emptyAvatar">
+                <i class="i-icon i-person d-block mr-2" [style.backgroundColor]="'#000'"></i>
+                <span class="f-3 fw-600" translate>Select Assignee</span>
+              </ng-container>
+              <ng-template #emptyAvatar>
+                <div class="avartar-icon" *ngIf="mode === 'contact_detail'; else empltyAvatarList">
+                  <div class="empty-avatar" >
+                    <i class="i-icon plus-contacts d-block bgc-dark"></i>
+                  </div>
+                </div>
+                <ng-template #empltyAvatarList>
+                  <div class="contact-avatar f-3 emplty-avatar-list">+</div>
+                </ng-template>
+              </ng-template>
+            </div>
+          </ng-template>
+        </ng-template>
+      </mat-basic-chip>
+      <input matInput #inputField [formControl]="formControl" [matChipInputFor]="contactList" [matAutocomplete]="auto">
+    </mat-chip-list>
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onChangeAssignee($event)"
+      [class]="(type === 'form' ? 'form-' : '') + 'label-panel'" [panelWidth]="mode === 'contact_detail' || mode === 'contact_list' ? 240 : undefined">
+      <ng-container>
+        <mat-option [value]="{_id: 'unassign', user_name: 'Deselect assignee'}" style="height: unset; line-height: unset;"
+          *ngIf="formControl.value && formControl.value._id !== 'unassign'">
+          <div class="v-center py-1 f-3 fw-600" style="min-width: 240px;">
+            <div class="contact-avatar" style="padding-left: 1px;">
+              <i class="i-icon i-person d-block mr-2 bgc-dark"></i>
+            </div>            
+            <span class="ml-2">No assignee</span>
+          </div>
+        </mat-option>
+        <ng-container *ngFor="let item of userList">
+          <mat-option [value]="item" style="height: unset; line-height: unset;">
+            <div class="v-center py-1 f-3 fw-600" style="min-width: 240px;">
+              <ng-container *ngIf="mode !== 'contact_list' && item.picture_profile; else avatarDiv">
+                <img class="profile-wrapper" src="{{ item.picture_profile }}">
+              </ng-container>              
+              <ng-template #avatarDiv>
+                <div
+                  class="contact-avatar"
+                  [style.backgroundColor]="getAssigneeAvatarColor(item._id)"
+                >
+                  {{item.avatar_name}}
+                </div>
+              </ng-template>              
+              <span class="assignee ml-2">{{item.user_name | shorten: 24:'...'}}</span>
+            </div>
+          </mat-option>
+        </ng-container>
+      </ng-container>
+    </mat-autocomplete>
+  </mat-form-field>
+</div>

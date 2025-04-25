@@ -1,0 +1,72 @@
+<div class="my-3 activity-filters">
+  <div class="form-group mb-0 v-center mb-2">
+    <div class="v-center">
+      <app-date-input
+        type="prepend"
+        [clearable]="true"
+        [(value)]="searchOption.activityStart"
+        [markToday]="true"
+      ></app-date-input>
+      <div class="mx-2">-</div>
+      <app-date-input
+        type="prepend"
+        [clearable]="true"
+        [minDate] = "searchOption.activityStart"
+        [(value)]="searchOption.activityEnd"
+        [markToday]="true"
+      ></app-date-input>
+    </div>
+  </div>
+  <div class="checkbox-wrapper materials w-100 my-3">
+    <div
+      class="custom-checkbox material-action"
+      *ngFor="let item of activities"
+      style="height: unset; line-height: unset"
+      [attr.data-name]="'contact-filter-activity-' + item.title"
+    >
+      <ng-container *enableByFeatures="item.feature">
+        <input
+          type="checkbox"
+          class="custom-control-input"
+          id="activity-{{ item._id }}"
+          name="activity-{{ item._id }}"
+          (change)="toggleActivities(item.title)"
+          [checked]="
+            lodash.findIndex(this.searchOption.activityCondition, {
+              type: activityDefine[item.title]
+            }) !== -1
+          "
+        />
+        <label
+          class="custom-control-label v-center"
+          for="activity-{{ item._id }}"
+        >
+          <div class="f-3 mt-1 material-action-title">{{ item.title }}</div>
+          <button
+            *ngIf="
+              item.title === 'sent video' ||
+              item.title === 'sent pdf' ||
+              item.title === 'sent image' ||
+              item.title === 'watched video' ||
+              item.title === 'reviewed image' ||
+              item.title === 'reviewed pdf'
+            "
+            type="button"
+            class="list f-1 font-weight-bold border border-primary rounded c-blue c-pointer bgc-white"
+            [disabled]="selectedMaterialActions.indexOf(item.title) === -1"
+            (click)="selectMaterial(item.title)"
+            translate
+          >
+            List
+          </button>
+        </label>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="d-flex align-items-end">
+    <button data-action="contact-filter-activity-apply" type="submit" class="btn btn-primary" (click)="save()" translate>
+      Apply
+    </button>
+  </div>
+</div>

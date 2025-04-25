@@ -1,0 +1,165 @@
+<div class="v-center justify-content-between">
+  <h1 mat-dialog-title>{{'Edit Account' | translate}}
+  </h1>
+  <button class="v-center border-0 bgc-trans" mat-dialog-close>
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</div>
+<form #profileForm="ngForm"
+  (ngSubmit)="profileForm.form.valid ? updateProfile(profileForm.value) : false;">
+  <mat-dialog-content>
+    <div class="avatar-wrapper mb-4 mx-auto">
+      <img [src]="sspaService.toAsset(user.picture_profile || 'img/user_avatar.svg')"
+        class="avatar" />
+      <button type="button" class="bgc-blue btn rounded-circle btn-icon"
+        (click)="openProfilePhoto()">
+        <i class="i-icon i-plus bg-white d-block"></i>
+      </button>
+    </div>
+    <div class="row">
+      <div class="col-sm-6 col-12">
+        <div class="form-group"
+          [ngClass]="{invalid: profileForm.submitted && user_name.invalid && (user_name.dirty || user_name.touched || profileForm.submitted)}">
+          <div class="d-flex">
+            <label for="user_name" class="mr-auto" translate>full name</label>
+            <span class="error" *ngIf="user_name.errors">
+              <ng-container *ngIf="user_name.errors.required">
+                {{ 'Required!' | translate }}
+              </ng-container>
+            </span>
+          </div>
+          <input type="text" class="form-control" [(ngModel)]="name"
+            id="user_name" name="user_name" #user_name="ngModel" required>
+        </div>
+      </div>
+      <div class="col-sm-6 col-12">
+        <div class="form-group"
+          [ngClass]="{invalid: profileForm.submitted && email.invalid && (email.dirty || email.touched || profileForm.submitted)}">
+          <div class="d-flex">
+            <label for="email" class="mr-auto" translate>email</label>
+            <span class="error" *ngIf="email.errors">
+              <ng-container *ngIf="email.errors.required">
+                {{ 'Required!' | translate }}
+              </ng-container>
+              <ng-container *ngIf="email.errors.pattern">
+                {{ 'Wrong email format!' | translate }}
+              </ng-container>
+            </span>
+            <!-- added by sylla -->
+            <span class="error d-inline-block" *ngIf="!checkingUser && existingUser" translate>
+              email_exist
+            </span>
+            <!-- end by sylla -->
+          </div>
+          <!-- added by sylla -->
+          <input type="text" class="form-control" [(ngModel)]="userEmail"
+            id="email" name="email" #email="ngModel" required
+            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$"
+            (ngModelChange)="confirmEmail()">
+          <!-- end by sylla -->
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6 col-12">
+        <div class="form-group phone-form">
+          <div class="d-flex">
+            <label for="phone" class="mr-auto" translate>phone</label>
+            <span class="error" [class.d-block]="profileForm.submitted">
+              <ng-container *ngIf="!phoneNumber; else wrongTemplate;">
+                {{ 'Required!' | translate }}
+              </ng-container>
+              <ng-template #wrongTemplate>
+                <ng-container
+                  *ngIf="phoneControl && phoneNumber && !phoneControl.valid">
+                  {{ 'Wrong cell-phone!' | translate }}
+                </ng-container>
+              </ng-template>
+            </span>
+          </div>
+          <app-phone-input [cssClass]="'form-control phone-form'"
+            [onlyCountries]="countries"
+            [selectedCountryISO]="CountryISO.UnitedStates"
+            [(ngModel)]="phoneNumber" name="phone" #phoneControl>
+          </app-phone-input>
+        </div>
+      </div>
+      <div class="col-sm-6 col-12">
+        <div class="form-group"
+          [ngClass]="{invalid: profileForm.submitted && company.invalid && (company.dirty || company.touched || profileForm.submitted)}">
+          <div class="d-flex">
+            <label for="company_info" class="mr-auto" translate>your company</label>
+            <span class="error" *ngIf="company.errors">
+              <ng-container *ngIf="company.errors.required">
+                {{ 'Required!' | translate }}
+              </ng-container>
+            </span>
+          </div>
+          <select class="form-control c-blue f-5" [(ngModel)]="userCompany"
+            name="company" id="company" required #company="ngModel"
+            (ngModelChange)="confirmCompany()">
+            <option *ngFor="let company_info of companies"
+              value="{{company_info}}">
+              {{company_info}}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6 col-12">
+        <div class="form-group">
+          <div class="d-flex">
+            <label for="learn_more" class="mr-auto" translate>
+              landing page learn more redirect link
+            </label>
+          </div>
+          <input type="text" class="form-control" [(ngModel)]="website"
+            id="learn_more" name="learn_more" #learn_more="ngModel">
+        </div>
+      </div>
+      <div class="col-sm-6 col-12">
+        <div class="form-group"
+          [ngClass]="{invalid: profileForm.submitted && timezone == ''}">
+          <div class="d-flex">
+            <label for="time_zone_info" class="mr-auto" translate>time zone</label>
+            <span class="error" *ngIf="timezone == ''">
+                {{ 'Required!' | translate }}
+            </span>
+          </div>
+          <app-select-timezone
+          [(timezone)]="timezone"
+          [uiType]="'selector'"
+        ></app-select-timezone>
+        </div>
+      </div>
+      <div class="col-sm-6 col-12">
+        <div class="form-group"
+          [ngClass]="{invalid: profileForm.submitted && location.invalid && (location.dirty || location.touched || profileForm.submitted)}">
+          <div class="d-flex">
+            <label for="location" class="mr-auto" translate>location</label>
+            <span class="error" *ngIf="location.errors">
+              <ng-container *ngIf="location.errors.required">
+                {{'Required!' | translate}}
+              </ng-container>
+            </span>
+          </div>
+          <input class="form-control" placeholder="Add location"
+            [(ngModel)]="address" name="location" #location="ngModel"
+            ngx-google-places-autocomplete #addressplacesRef="ngx-places"
+            [options]="{
+                      types: []
+                    }" (onAddressChange)="handleAddressChange($event)" />
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <div class="v-center justify-content-between w-100">
+      <button type="submit" class="btn btn-primary font-weight-bold ml-auto"
+        [class.loading]="saving" translate>
+        Save
+      </button>
+    </div>
+  </mat-dialog-actions>
+</form>

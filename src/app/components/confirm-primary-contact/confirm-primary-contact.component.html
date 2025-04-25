@@ -1,0 +1,32 @@
+<div class="v-center justify-content-between">
+  <h1 class="m-0" mat-dialog-title translate>
+    Select Primary Contact
+  </h1>
+  <i class="d-block i-icon i-close bgc-dark" mat-dialog-close *ngIf="!submitting"></i>
+</div>
+<mat-dialog-content class="description">
+  <div class="text-center f-5 c-dark my-3" translate>
+    Select the Primary Contact in this deal
+  </div>
+  <div class="old-member v-center py-1" *ngFor="let contact of contacts; let index = index">
+    <div class="v-center c-pointer" (click)="selectContact(contact)">
+      <div class="custom-radio-container">
+        <input class="custom-radio" type="radio" [id]="'contact'-index" [name]="'contact'-index"
+          [checked]="isSelected(contact)">
+        <label class="f-6 font-weight-bold"></label>
+      </div>
+      <div class="v-center ml-2">
+        <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer">
+          {{ contact.avatarName }}
+        </div>
+        <div class="f-5 c-dark name ml-1">{{ contact.fullName }}</div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="mx-0">
+  <button class="btn btn-white f-6 font-weight-bold c-blue mr-2" [mat-dialog-close]="true"
+    [class.disabled]="submitting" translate>Cancel</button>
+  <button class="btn btn-red f-6 font-weight-bold text-white" [class.loading]="submitting" type="button"
+    (click)="confirm()" translate>Confirm</button>
+</mat-dialog-actions>

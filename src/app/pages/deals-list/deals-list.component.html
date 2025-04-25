@@ -1,0 +1,106 @@
+<div
+  class="stage-container"
+  #wrapper
+  [id]="dealStage._id"
+  [class.deals-container]="!isPossibleToClick"
+  [cdkDropListConnectedTo]="dealsService.pageStageIdArray$ | async"
+  cdkDropList
+  [cdkDropListData]="dealStage.deals"
+  (cdkDropListDropped)="drop($event, dealStage._id)"
+  (scroll)="oncdkDropListScroll($event)"
+  (cdkDragStarted)="onDragStarted($event)"
+>
+  <ng-container *ngIf="!isPossibleToClick">
+    <div [id]="'container_' + dealStage._id" class="stage-list scroller" >
+        <div
+          class="deal m-2 c-pointer"
+          *ngFor="let deal of dealStage.deals; let i = index"
+          [id]="deal._id"
+          cdkDrag
+          (click)="dealDetail(deal._id)"
+          [style]="i===0?'margin-top:0px!important;':''"
+        >
+          <div class="deal-detail position-relative" [attr.data-name]="'stage-panel-' + i">
+            <div class="v-center f-4 font-weight-bold text-truncate">
+              {{ deal.title | shorten: 20:'...'}}
+            </div>
+            <div class="v-center f-4 font-weight-bold text-truncate" *ngIf="deal.close_date">
+              <span class="c-secondary pr-2" translate>Close date: </span>{{ deal.close_date | date: 'mediumDate' }}
+            </div>
+            <div class="d-flex justify-content-between">
+              <div class="d-flex v-center">
+                <app-avatar-contacts [contacts]="deal?.contacts" [firstContact]="deal?.primary_contact[0]"></app-avatar-contacts>
+                <app-avatar-team-members [isSplit]="true" [members]="deal?.team_members" [maxCount]="2"></app-avatar-team-members>
+              </div>
+              <div *ngIf="deal.price">
+                <span class="price f-4 font-weight-bold">{{deal.price | currency: 'USD': 'symbol': '1.0-0'}}</span>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <div
+                class="v-center justify-content-between mt-2"
+                *ngIf="
+                  dealStage.duration != undefined &&
+                  dealStage.duration != 0 &&
+                  deal.put_at &&
+                  deal._id !== moveDealId
+                ">
+                <div
+                  class="v-center rounded pl-1 pr-1"
+                  [ngStyle]="{
+                    'background-color': getBackgroundStatusColor(
+                      deal,
+                      dealStage.duration
+                    ),
+                    color: getForgroundStatusColor(deal, dealStage.duration)
+                  }">
+                  <div
+                    class="v-center justify-content-center timer-avatar"
+                    placement="right"
+                    ngbTooltip="{{
+                      getDurationDate(deal, dealStage.duration)
+                    }}" container="body">
+                    <i
+                      class="i-icon s-14 i-timer"
+                      [ngStyle]="{
+                        'background-color': getForgroundStatusColor(
+                          deal,
+                          dealStage.duration
+                        )
+                      }"
+                    ></i>
+                  </div>
+                  <div class="ml-1 f-3 fw-400">
+                    {{ getLeftDays(deal, dealStage.duration) }}
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex flex-column">
+                <div>
+                  <i
+                    *ngIf="deal.running_automation"
+                    class="i-icon i-automation sm d-block bgc-dark ml-2 mt-2 mb-1"
+                  ></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>      
+    </div>
+    <ng-container *ngIf="dealStage.deals.length == 0">
+      <div class="empty-list">
+        <div class="object-icon sm v-center">
+          <i class="i-icon i-deals d-block bgc-dark"></i>
+        </div>
+        <div class="f-5 font-weight-bold mt-3 mb-3" translate>
+          Not found.
+        </div>
+      </div>
+      <div class="drop-zone" cdkDropListPlaceholder></div>
+    </ng-container>
+  </ng-container>
+</div>
+<div class="v-center justify-content-center mt-2" 
+    *ngIf="(dealsService.loadMoreStageStatus$ | async)[dealStage._id] ===STATUS.REQUEST">
+  <i class="small-spinner"></i>
+</div>

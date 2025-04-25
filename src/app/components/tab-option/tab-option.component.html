@@ -1,0 +1,8 @@
+<div class="tab-options d-flex rounded">
+  <ng-container *ngFor="let option of options;">
+    <div class="tab-option flex-grow-1 text-center f-3 font-weight-bold"
+      [ngClass]="{active: value.value === option.value}" (click)="changeOption(option)">
+      {{ option.label | translate }}
+    </div>
+  </ng-container>
+</div>

@@ -1,0 +1,155 @@
+<ng-container *ngIf="!category || category == ActionCategory.START">
+  <div class="action start" [attr.data-action]="action && action.id">
+    <label translate>START</label>
+    <div class="add-button">
+      <button mat-button (click)="addNextStep()" *ngIf="!hasChild">
+        <mat-icon>add_circle_outline</mat-icon>
+      </button>
+    </div>
+    <div class="child-connector" *ngIf="hasChild"></div>
+    <div class="connector" *ngIf="hasChild">
+      <button mat-icon-button (click)="addNextStep()">
+        <mat-icon>add_circle_outline</mat-icon>
+      </button>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="category == ActionCategory.NORMAL">
+  <div class="action normal" [attr.data-action]="action && action.id">
+    <button mat-icon-button class="action-edit" (click)="edit(action)"><i class="far fa-edit"></i></button>
+    <button mat-icon-button class="action-remove" (click)="remove(action)"><i class="far fa-trash-alt"></i></button>
+    <label>{{ActionTypes[action.type]}}</label>
+    <div class="yellow-color" *ngIf="action.period; else immediatelyTemplate">
+      <ng-container *ngIf="action.period != 'custom_date'">({{action.period | period}})</ng-container>
+      <ng-container *ngIf="action.period === 'custom_date'">({{action.plan_time | date: 'MM/dd/yyyy'}})</ng-container>
+    </div>
+    <ng-template #immediatelyTemplate><div class="yellow-color" translate>Immediately</div></ng-template>
+    <div class="action-detail">
+      <ng-container *ngIf="action.type == 'follow_up'">
+        <div [translateParams]="{content: action.content}" translate>autoflow.content</div>
+        <div *ngIf="action.due_date" [translateParams]="{time: action.due_date | date: 'hh:mm MM/dd/yyyy'}" translate>action.due_time</div>
+        <div *ngIf="action.due_duration" [translateParams]="{duration: action.due_duration}" translate>action.duration</div>
+      </ng-container>
+      <ng-container *ngIf="action.type == 'note'">
+        <div [translateParams]="{content: action.content}" translate>autoflow.note_content</div>
+      </ng-container>
+      <ng-container *ngIf="action.type == 'email'">
+        <div [translateParams]="{subject: action.subject}" translate>autoflow.subject</div>
+        <div [translateParams]="{content: action.content}" translate>autoflow.content</div>
+      </ng-container>
+      <ng-container *ngIf="action.type == 'send_text_video'">
+        <div [translateParams]="{video: action.video && action.video.title}" translate>autoflow.video_title</div>
+        <div [translateParams]="{text: action.content}" translate>autoflow.text_content</div>
+      </ng-container>
+      <ng-container *ngIf="action.type == 'send_email_video'">
+        <div [translateParams]="{video: action.video && action.video.title}" translate>autoflow.video_title</div>
+        <div [translateParams]="{subject: action.subject}" translate>autoflow.email_subject</div>
+      </ng-container>
+      <ng-container *ngIf="action.type == 'send_text_pdf'">
+        <div [translateParams]="{pdf: action.pdf && action.pdf.title}" translate>autoflow.pdf_title</div>
+        <div [translateParams]="{text: action.content}" translate>autoflow.text_content</div>
+      </ng-container>
+      <ng-container *ngIf="action.type == 'send_email_pdf'">
+        <div [translateParams]="{pdf: action.pdf && action.pdf.title}" translate>autoflow.pdf_title</div>
+        <div [translateParams]="{subject: action.subject}" translate>autoflow.email_subject</div>
+      </ng-container>
+      <ng-container *ngIf="action.type == 'send_text_image'">
+        <div [translateParams]="{image: action.image && action.image.title}" translate>autflow.image_title</div>
+        <div [translateParams]="{text: action.content}" translate>autoflow.text_content</div>
+      </ng-container>
+      <ng-container *ngIf="action.type == 'send_email_image'">
+        <div [translateParams]="{image: action.image && action.image.title}" translate>autflow.image_title</div>
+        <div [translateParams]="{subject: action.subject}" translate>autoflow.email_subject</div>
+      </ng-container>
+    </div>
+    <ng-container>
+      <button mat-button (click)="addNextStep()" class="add-child" *ngIf="!hasChild">
+        <mat-icon>add_circle_outline</mat-icon>
+      </button>
+    </ng-container>
+    <div class="child-connector" *ngIf="hasChild"></div>
+    <div class="connector" *ngIf="hasChild">
+      <button mat-icon-button (click)="addNextStep()">
+        <mat-icon>add_circle_outline</mat-icon>
+      </button>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="category == ActionCategory.CONDITION">
+  <div class="condition-action" [attr.data-action]="action && action.id">
+    <button mat-icon-button class="condition-action-remove" (click)="remove(action)">&times;</button>
+    <button mat-icon-button class="condition-action-edit" (click)="edit(action)"><i class="far fa-edit"></i></button>
+    <div class="condition">
+      <div class="name">{{ConditionActions[action.type]}}</div>
+      <div class="period" *ngIf="action.period">
+        <ng-container *ngIf="action.period != 'custom_date'">({{action.period | period}})</ng-container>
+        <ng-container *ngIf="action.period === 'custom_date'">({{action.plan_time | date: 'MM/dd/yyyy'}})</ng-container>
+      </div>
+    </div>
+    <div class="sub-actions">
+      <div class="action" *ngFor="let sub_action of action.sub_actions" class="action"
+        [attr.data-action]="(action && action.id) + '_' + sub_action.condition"
+        [class.right-action]="sub_action.condition == 'right'"
+        [class.wrong-action]="sub_action.condition == 'wrong'">
+        <ng-container *ngIf="!sub_action.type">
+          <div class="set-button">
+            <button mat-button (click)="editActionFn(sub_action)"><mat-icon>edit</mat-icon></button>
+          </div>
+        </ng-container>
+        <label *ngIf="sub_action.type">{{ActionTypes[sub_action.type]}}</label>
+        <div class="action-detail">
+          <button mat-icon-button class="action-edit" *ngIf="ActionTypes[sub_action.type]"  (click)="edit(sub_action)"><i class="far fa-edit"></i></button>
+          <button mat-icon-button class="action-remove" *ngIf="ActionTypes[sub_action.type]" (click)="remove(sub_action)"><i class="far fa-trash-alt"></i></button>
+          <ng-container *ngIf="sub_action.type == 'follow_up'">
+            <div >Content: {{sub_action.content}}</div>
+            <div *ngIf="sub_action.due_date" [translateParams]="{time: sub_action.due_date | date: 'hh:mm MM/dd/yyyy'}" translate>action.due_time</div>
+            <div *ngIf="sub_action.due_duration" [translateParams]="{duration: sub_action.due_duration}" translate>action.duration</div>
+          </ng-container>
+          <ng-container *ngIf="sub_action.type == 'note'">
+            <div [translateParams]="{content: sub_action.content}" translate>autoflow.note_content</div>
+          </ng-container>
+          <ng-container *ngIf="sub_action.type == 'email'">
+            <div [translateParams]="{subject: sub_action.subject}" translate>autoflow.subject</div>
+            <div [translateParams]="{content: sub_action.content}" translate>autoflow.content</div>
+          </ng-container>
+          <ng-container *ngIf="sub_action.type == 'send_text_video'">
+            <div [translateParams]="{video: sub_action.video && sub_action.video.title}" translate>autoflow.video_title</div>
+            <div [translateParams]="{text: sub_action.content}" translate>autoflow.text_content</div>
+          </ng-container>
+          <ng-container *ngIf="sub_action.type == 'send_email_video'">
+            <div [translateParams]="{video: sub_action.video && sub_action.video.title}" translate>autoflow.video_title</div>
+            <div [translateParams]="{subject: sub_action.subject}" translate>autoflow.email_subject</div>
+          </ng-container>
+          <ng-container *ngIf="sub_action.type == 'send_text_pdf'">
+            <div [translateParams]="{pdf: sub_action.pdf && sub_action.pdf.title}" translate>autoflow.pdf_title</div>
+            <div [translateParams]="{text: sub_action.content}" translate>autoflow.text_content</div>
+          </ng-container>
+          <ng-container *ngIf="sub_action.type == 'send_email_pdf'">
+            <div [translateParams]="{pdf: sub_action.pdf && sub_action.pdf.title}" translate>autoflow.pdf_title</div>
+            <div [translateParams]="{subject: sub_action.subject}" translate>autoflow.email_subject</div>
+          </ng-container>
+          <ng-container *ngIf="sub_action.type == 'send_text_image'">
+            <div [translateParams]="{image: sub_action.image && sub_action.image.title}" translate>autflow.image_title</div>
+            <div [translateParams]="{text: sub_action.content}" translate>autoflow.text_content</div>
+          </ng-container>
+          <ng-container *ngIf="sub_action.type == 'send_email_image'">
+            <div [translateParams]="{image: sub_action.image && sub_action.image.title}" translate>autflow.image_title</div>
+            <div [translateParams]="{subject: sub_action.subject}" translate>autoflow.email_subject</div>
+          </ng-container>
+        </div>
+        <ng-container>
+          <button mat-button (click)="addCondNext(sub_action.condition)" class="add-child" *ngIf="sub_action.type && !condHasChild[sub_action.condition]">
+            <mat-icon>add_circle_outline</mat-icon>
+          </button>
+        </ng-container>
+        <div class="connector" *ngIf="sub_action.type && condHasChild[sub_action.condition]">
+          <button mat-icon-button (click)="addCondNext(sub_action.condition)">
+            <mat-icon>add_circle_outline</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

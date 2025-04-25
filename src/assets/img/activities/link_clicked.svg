@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>D153A21A-C426-4B7D-B3FC-975AF53DCA99</title>
+    <g id="Main" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Timeline-Actions-Icons" transform="translate(-440.000000, -195.000000)" stroke="#FF7A00" stroke-width="2">
+            <g id="Icon-/-Link-Clicked" transform="translate(440.000000, 195.000000)">
+                <g id="Path-18" transform="translate(1.000000, 1.000000)">
+                    <path d="M5.11653149,3.82238832 L14.7352352,7.55978115 C15.2500253,7.75980526 15.5051935,8.33927663 15.3051694,8.85406669 C15.2129689,9.09135756 15.0337394,9.28455107 14.8040192,9.39426218 L12.488754,10.5 L12.488754,10.5 L17.2608541,14.9385925 C17.6652538,15.3147299 17.6881649,15.9474803 17.3120275,16.3518799 C17.3098935,16.3541743 17.3077488,16.3564585 17.3055934,16.3587327 L16.468786,17.241627 C16.088864,17.6424732 15.4559262,17.6594355 15.05508,17.2795135 C15.0444607,17.2694485 15.0340636,17.2591517 15.0238962,17.2486305 L10.5,12.5673195 L10.5,12.5673195 L9.39825317,14.831779 C9.15662662,15.3284027 8.55815659,15.5351187 8.06153293,15.2934921 C7.83484667,15.1832005 7.65818016,14.9913613 7.56689726,14.7563755 L3.82221656,5.11659822 C3.62223422,4.60179193 3.87744946,4.02234127 4.39225575,3.82235893 C4.62520341,3.73186777 4.88359117,3.73187826 5.11653149,3.82238832 Z" id="Path-17" fill-opacity="0.1" fill="#FF7A00"></path>
+                    <line x1="1" y1="1" x2="2" y2="2" id="Path" stroke-linecap="round"></line>
+                    <line x1="5" y1="0" x2="5" y2="1" id="Path-Copy" stroke-linecap="round"></line>
+                    <line x1="9" y1="1" x2="8" y2="2" id="Path-Copy-3" stroke-linecap="round"></line>
+                    <line x1="2" y1="8" x2="1" y2="9" id="Path-Copy-4" stroke-linecap="round"></line>
+                    <line x1="0" y1="5" x2="1" y2="5" id="Path-Copy-2" stroke-linecap="round"></line>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

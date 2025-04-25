@@ -1,0 +1,30 @@
+<div class="ml-3">
+    <div class="page-content p-0">
+        <form #actionForm="ngForm"
+          (ngSubmit)="actionForm.form.valid ? onSaveMyLink() : false"
+          [class.was-validated]="actionForm.submitted">
+          <div class="form-group mt-2">
+            <p class="sub-title mt-2 mb-2" translate>All newly created Scheduler events</p>
+            <div class="d-flex align-items-end justify-content-start w-100">
+              <div >
+                <label class="title mt-1 mb-1" translate>My Link</label>
+                <input type="text" class="form-control my-link-input"
+                  [(ngModel)]="myLink" name="my_link"
+                  #my_link="ngModel" required />
+              </div>
+              <div class="v-center">
+                <button type="submit"
+                  class="v-center btn btn-primary ml-2 px-3 save-btn"
+                  [class.loading]="isSaving"
+                  [class.d-none]="myLink==orgLink || myLink ==''">
+                  <span class="f-3 font-weight-bold ml-2" translate>Save</span>
+                </button>
+              </div>
+            </div>
+            <span class="error ml-2 pt-1" *ngIf="my_link.errors"
+                style="height: 0px;" translate>
+                {{ 'invalid' | translate }}
+            </span>
+          </div>
+        </form>
+</div>

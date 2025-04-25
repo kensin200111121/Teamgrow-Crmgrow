@@ -1,0 +1,24 @@
+.material-status-progress-bar{
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.tile-cover {
+  background-color: #00000090;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  justify-content: center;
+  
+
+}
+.spinner-cover {
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+
+.video-status-wrapper > div:not(.spinner-cover) {
+  pointer-events: auto;
+}

@@ -1,0 +1,204 @@
+<div class='contacts-list-panel flex-column h-100 d-flex'
+  style='overflow-x:hidden'>
+  <div class="contacts-list-panel mt-3">
+    <h6 class="fw-600 mt-2">
+      <span [translateParams]="{count: length}" translate>Contacts for custom field</span> "{{customField.name}}"
+    </h6>
+  </div>
+  <div class="v-center contact-list-controls my-1">
+    <div class="form-group mb-0 search-form ml-2 mb-0">
+      <div class="input-group-prepend">
+        <i class="i-icon i-search d-block bgc-dark"></i>
+      </div>
+      <input type="text" class="form-control" placeholder="{{'Search' | translate}}" aria-describedby="search-addon"
+        [(ngModel)]="searchStr" (ngModelChange)="changeSearchStr()">
+      <ng-container *ngIf="searchStr">
+        <div class="cancel-action c-pointer" (click)="clearSearchStr()">
+          <i class="i-icon i-close d-block bgc-dark"></i>
+        </div>
+      </ng-container>
+    </div>
+    <div *ngIf="customField.type === 'dropdown'">
+      <div class="ml-auto" ngbDropdown placement="bottom-right">
+        <div class="v-center c-pointer f-3 p-3 mr-2 font-weight-bold"
+          ngbDropdownToggle>
+          <span class="pr-2">{{'Sort by' | translate}}</span>
+        </div>
+        <div ngbDropdownMenu aria-labelledby="taskSortTypes">
+          <div class="py-2" ngbDropdownItem
+            *ngFor="let option of customField.options"
+            (click)="changeOption(option)">
+            <span class="f-3 v-center"
+              [class.font-weight-bold]="option.label === sortType.label">
+              {{option.label}}
+              <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                *ngIf="option.label === sortType.label"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="v-center contact-list-controls my-1">
+    <div class="form-group ml-2 mb-0" *ngIf="customField.type === 'date'">
+      <div class="flex-container pt-2">
+        <div class="flex-item">
+          <mat-checkbox name="check-start-date" [color]="'primary'" (change)="toggleDateFilter($event.checked, 'start')"
+            [checked]="showStartDate">
+            <span class="f-3" translate>Start Date</span>
+          </mat-checkbox>
+          <ng-container *ngIf="showStartDate">
+            <app-date-input type="prepend" [(value)]="dateFilterValue.startDate" [placeholder]="'Start Date'"
+              [required]="false" (valueChange)="onChangeDateValue()">
+            </app-date-input>
+          </ng-container>
+        </div>
+        <div class="flex-item">
+          <mat-checkbox name="check-end-date" [color]="'primary'" (change)="toggleDateFilter($event.checked, 'end')"
+            [checked]="showEndDate">
+            <span class="f-3" translate>End Date</span>
+          </mat-checkbox>
+          <ng-container *ngIf="showEndDate">
+            <app-date-input type="prepend" [(value)]="dateFilterValue.endDate" [placeholder]="'End Date'" [required]="false"
+              (valueChange)="onChangeDateValue()">
+            </app-date-input>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="custom-mat-table d-flex flex-column overflow-auto" *ngIf='length'>
+    <div class="mat-table-body-wrapper overflow-auto" [class.empty]="!length">
+      <table class="w-100 page-table" mat-table
+        [dataSource]="contacts | paginate: {id: 'contactPages', itemsPerPage: pageSize.id, currentPage: page, totalItems: length}">
+        <ng-container matColumnDef="loader-cell">
+          <th mat-header-cell *matHeaderCellDef colspan="12"
+            class="loader-cell">
+            <div class="updating-status"
+              *ngIf="length && isLoading">
+              {{'LOADING' | translate}}
+            </div>
+          </th>
+        </ng-container>
+        <ng-container matColumnDef="contact_name">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell> {{'contact name' | translate}} </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" (click)="openContact(element)">
+            <div class="v-center c-pointer">
+              <div class="contact-avatar f-3 mr-2">
+                {{element.avatarName}}
+                <ng-container
+                  *ngIf="element.shared_members && element.shared_members.length;else item">
+                  <ng-container
+                    *ngIf="userId && userId !== element.user && userId !== element.user[0]; else sharedBy">
+                    <span class="shared-with">
+                      <i class="i-icon i-shared-with d-block bgc-green"></i>
+                    </span>
+                  </ng-container>
+                  <ng-template #sharedBy>
+                    <span class="shared-by">
+                      <i class="i-icon i-shared-by d-block bgc-red"></i>
+                    </span>
+                  </ng-template>
+                </ng-container>
+              </div>
+              <div class="f-3 text-primary name">
+                {{element.fullName}}
+              </div>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="custom_field">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell> {{customField.name}} </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" (click)="openContact(element)">
+            <span class="c-blue font-weight-bold" *ngIf="customField.type !== FieldTypeEnum.DATE; else dateText">
+              {{ element.additional_field && element.additional_field[customField.name] }}
+            </span>
+            <ng-template #dateText>
+              <span class="c-blue font-weight-bold">
+                {{
+                  element.additional_field && element.additional_field[customField.name]
+                    ? getFormattedDateValue(element.additional_field[customField.name])
+                    : ''
+                }}
+              </span>
+            </ng-template>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['loader-cell']"
+          class="loader-row"></tr>
+        <tr mat-header-row *matHeaderRowDef="DISPLAY_COLUMNS;sticky: true"
+          class=""></tr>
+        <tr mat-row *matRowDef="let row; columns: DISPLAY_COLUMNS"></tr>
+      </table>
+    </div>
+    <ng-container
+      *ngIf="length; else emptyListTemplate">
+      <div class="v-center my-2 mode-1">
+        <div class="pagination-wrapper p-2">
+          <pagination-controls (pageChange)="changePage($event)"
+            (pageBoundsCorrection)="changePage($event)" id="contactPages"
+            maxSize="5" previousLabel="" nextLabel="">
+          </pagination-controls>
+        </div>
+        <div class="shadow-dropdown ml-auto page-size-control" ngbDropdown
+          placement="top-right">
+          <div class="v-center c-pointer f-3 p-1 font-weight-bold"
+            ngbDropdownToggle>
+            <span class="pr-2 c-blue" [translateParams]="{count: pageSize.id}" translate>pagination</span>
+          </div>
+          <div ngbDropdownMenu aria-labelledby="contactPageSize">
+            <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS"
+              (click)="changePageSize(type)">
+              <span class="f-3 v-center"
+                [class.font-weight-bold]="type.id === pageSize.id">
+                <span [translateParams]="{count: type.id}" translate>pagination</span>
+                <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                  *ngIf="type.id === pageSize.id"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #emptyListTemplate>
+      <ng-container [ngSwitch]="isLoading">
+        <div class="empty-list" *ngSwitchCase="false">
+          <div class="object-icon v-center">
+            <i class="i-icon i-lunch d-block bgc-dark"></i>
+          </div>
+          <h4 class="fw-600 mt-3 mb-3" style='font-size:12px' translate>
+            no_contact_in_account
+          </h4>
+          <a class="btn btn-primary" (click)="createContact()">
+            <span class="font-weight-bold f-3" translate>Create contact</span>
+          </a>
+        </div>
+        <div class="list-loading text-center" *ngSwitchCase="true">
+          <div class="loader mt-2"></div>
+          <h6 class="fw-600 mt-2">{{'Loading contacts' | translate}}...</h6>
+        </div>
+      </ng-container>
+    </ng-template>
+  </div>
+  <div class="custom-mat-table d-flex flex-column"
+    *ngIf='!length'>
+    <ng-container [ngSwitch]="isLoading">
+      <div class="empty-list mt-5" *ngSwitchCase="false">
+        <div class="object-icon v-center">
+          <i class="i-icon i-information d-block bgc-dark"></i>
+        </div>
+        <h4 class="fw-600 mt-3 mb-3" style='font-size:12px' translate>
+          There is no contact with this custom field.
+        </h4>
+      </div>
+      <div class="list-loading text-center" *ngSwitchCase="true">
+        <div class="loader mt-2"></div>
+        <h6 class="fw-600 mt-2">{{'Loading contacts' | translate}}...</h6>
+      </div>
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,267 @@
+@import 'variables';
+
+a {
+  text-decoration: none !important;
+}
+.navbar-brand.mobile {
+  outline: none!important;
+}
+.sidebar-content {
+  min-height: 100%;
+  height: 100%;
+}
+.sidebar-nav {
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+  list-style: none;
+  padding: 0px;
+}
+
+.navbar-toggler {
+  display: none;
+}
+.sidebar-header {
+  display: none;
+  margin: 1rem 2rem 0rem 2rem;
+  padding: 1rem 0rem;
+  .navbar-brand img{
+    width: 120px;
+  }
+}
+
+.nav-link {
+  padding: 0.75rem 1rem 0.75rem 1.875rem;
+  font-weight: bold;
+  width: 170px;
+  color: $color-dark;
+  position: relative;
+  opacity: 0.64;
+
+  &:before {
+    content: '';
+    background-color: $color-blue;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 8px;
+    height: 0px;
+    transition: height .2s;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+  }
+
+  .i-icon {
+    min-width: 18px;
+  }
+
+  &.active {
+    opacity: 1;
+
+    &:before {
+      height: 100%;
+    }
+  }
+}
+.submenu-list{
+  padding-bottom:3px;
+  padding-bottom: 3px;
+}
+.overlayer {
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  z-index: 998;
+  background-color: #000000;
+  opacity: 0.3;
+}
+
+@media screen and (max-width: 992px) and (min-width: 680px) {
+  .nav-link {
+    padding-left: 1.5rem;
+
+    .menu-label {
+      opacity: 0;
+      transition: all .2s;
+    }
+  }
+
+  .sidebar {
+    .submenu {
+      visibility: hidden;
+      min-width: calc($side-width - 55px);
+    }
+  }
+
+  .sidebar:hover {
+    overflow: auto;
+
+    .menu-label {
+      opacity: 1;
+    }
+
+    .widget.d-block {
+      display: none!important;
+    }
+    .widget.d-none{
+      display: block!important;
+    }
+
+    .submenu {
+      visibility: visible;
+    }
+  }
+  .sidebar-bottom {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 680px) {
+  .navbar-toggler {
+    display: block;
+    left: 8px;
+  }
+  .sidebar-header {
+    display: flex;
+  }
+  .sidebar {
+    display: none;
+    //animation: hide-navbar-collapse .2s ease forwards;
+    background-color: #aaaaaa;
+
+    .nav-link {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+
+      .menu-label {
+        opacity: 1;
+        font-size: 14px;
+      }
+      .i-icon {
+        width: 14px;
+        height: 14px;
+      }
+
+      &::before {
+        left: 6px;
+        width: 3px;
+      }
+    }
+    .widget.d-block {
+      display: none!important;
+    }
+    .widget.d-none {
+      display: flex!important;
+      align-items: center;
+      padding: 0.5rem 1rem !important;
+      i.i-icon {
+        margin: 0px!important;
+      }
+      p {
+        margin: 0px auto 0px 8px;
+        br {
+          display: none;
+        }
+      }
+    }
+
+    &.show {
+      display: block;
+      margin: 0px;
+      border-radius: 0px;
+      width: 100vw;
+      height: 100vh;
+    }
+  }
+
+  .sidebar-content {
+    width: 230px;
+    overflow: hidden;
+
+    .sidebar-nav {
+      margin: 0;
+    }
+  }
+
+  .overlayer.show {
+    display: block;
+  }
+}
+@media screen and (max-width: 575px) {
+  .navbar-toggler {
+    left: 0px;
+  }
+}
+
+@keyframes show-navbar-collapse {
+  0% {
+      opacity: 0;
+      transform: scale(.95);
+      transform-origin: 100% 0;
+  }
+
+  100% {
+      opacity: 1;
+      transform: scale(1);
+  }
+}
+
+@keyframes hide-navbar-collapse {
+  from {
+      opacity: 1;
+      transform: scale(1);
+      transform-origin: 100% 0;
+  }
+
+  to {
+      opacity: 0;
+      transform: scale(.95);
+  }
+}
+
+
+:host ::ng-deep {
+  mat-sidenav-container {
+    z-index: 999;
+    display: none;
+  }
+
+  mat-sidenav {
+    position: fixed;
+    height: 100vh;
+  }
+
+  @media screen and (max-width: 680px) {
+    mat-sidenav-container {
+      display: block;
+    }
+  }
+}
+
+li.active .i-triangle-down {
+  transform: rotate(180deg);
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.submenu{
+  font-size: 15px;
+  margin-left: 15px;
+  font-weight: 600;
+
+  li .active{
+    opacity: 1;
+  }
+
+  li{
+    padding: 5px 0px 5px 0px;
+  }
+}
+
+.opacity {
+  opacity: 0.64;
+  font-weight: 600;
+  color: #101336;
+}

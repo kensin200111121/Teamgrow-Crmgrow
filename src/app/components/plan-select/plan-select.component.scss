@@ -1,0 +1,48 @@
+.plan {
+    border: 1px solid #D9D8E7;
+    border-radius: 8px;
+    .sms-count {
+        width: 100px;
+        height: 30px;
+        border-radius: 21.5px;
+        background-color: #0000FF;
+    }
+    button {
+        &:hover {
+            background-color: #0000ff;
+            border-color: #0000ff;
+            color: white;
+        }
+    }
+    &.selected {
+        background-color: #0000FF;
+        border-color: #0000ff;
+        .plan-title {
+            color: #ffffff;
+            opacity: 0.87;
+        }
+        .plan-type {
+            color: #ffffff;
+        }
+        .sms-count {
+            color: #0000FF;
+            background-color: #ffffff;
+        }
+        .sms-price span {
+            color: #ffffff;
+            &:first-child {
+                opacity: 0.87;
+            }
+        }
+        button {
+            background-color: #ffffff;
+            border-color: #ffffff;
+            color: #0000FF;
+            &:hover {
+                background-color: #ffffff;
+                border-color: #ffffff;
+                color: #0000FF;
+            }
+        }
+    }
+}

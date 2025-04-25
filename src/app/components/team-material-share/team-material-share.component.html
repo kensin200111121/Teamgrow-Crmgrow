@@ -1,0 +1,70 @@
+<h1 mat-dialog-title class="v-center d-flex">
+  <span *ngIf="shareType == 'material' && !isUnshare" translate>Material share</span>
+  <span *ngIf="shareType == 'template' && !isUnshare" translate>Template share</span>
+  <span *ngIf="shareType == 'automation' && !isUnshare" translate>Automation share</span>
+  <span *ngIf="shareType == 'pipeline' && !isUnshare" translate>Pipeline share</span>
+  <span *ngIf="isUnshare" translate>Stop share</span>
+  <button class="border-0 bgc-trans ml-auto" mat-dialog-close>
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</h1>
+<mat-dialog-content>
+  <div class="form-group">
+      <div class="v-center">
+          <label for="target_team" class="mb-0" *ngIf="internalTeamCount === 0 && communityCount > 0" translate>Select Community</label>
+          <label for="target_team" class="mb-0" *ngIf="internalTeamCount > 0 && communityCount === 0" translate>Select Team</label>
+          <label for="target_team" class="mb-0" *ngIf="internalTeamCount > 0 && communityCount > 0" translate>select Community / Team</label>
+
+          <span class="error ml-auto" *ngIf="!selectedTeams?.length" translate>
+            Required!
+          </span>
+      </div>
+      <div class="border rounded py-2 px-2 mt-1">
+          <mat-select [(ngModel)]="selectedTeam"
+              [attr.data-name]="'pipeline-community-select'"
+              name="fullname"
+              id="target_team"
+              name="team"
+              #team="ngModel"
+              required
+              placecholder="Select Community"
+              (closed)="select()"
+          >
+              <mat-option disabled translate>Please select community</mat-option>
+              <mat-option style="height: unset; line-height: unset;" *ngFor="let team of teams" [value]="team" [attr.data-name]="'pipeline-community-select-item-' + team.name">
+                <div class="v-center chip py-3">
+                    <img class="team-avatar md rounded mr-2" [src]="team.picture" (error)="sspaService.imgError($event,'img/team_placeholder.png')" />
+                    <div class="font-weight-bold f-5">{{team.name}}<span *ngIf="team.is_internal"> (Internal Team)</span></div>
+                    <div class="bgc-azure c-badge rect f-1 ml-auto"  [class]="team.is_internal ? 'team' : ''">{{!team.is_internal ? 'Community': 'Team' | translate }}</div>
+                </div>
+              </mat-option>
+          </mat-select>
+      </div>
+      <div class="mt-4" >
+        <div class="v-center" *ngIf="selectedTeams.length > 0">
+          <label for="target_team" class="mb-0">selected community</label>
+        </div>
+        <div class="selected-teams">
+          <div class="mt-1" *ngFor="let team of selectedTeams">
+            <div class="py-1 px-2 d-flex">
+              <div class="v-center chip">
+                <img class="team-avatar md rounded mr-2" [src]="team.picture" (error)="sspaService.imgError($event,'img/team_placeholder.png')" />
+                <div class="font-weight-bold f-5">
+                  {{team.name}}
+                  <span *ngIf="team.is_internal"> (Internal Team)</span>
+                </div>
+              </div>
+              <button class="border-0 bgc-trans ml-auto" (click)="cancelTeam(team)">
+                <i class="d-block i-icon i-close bgc-dark"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button class="btn c-blue" mat-dialog-close translate>Cancel</button>
+  <button [attr.data-action]="'pipeline-share-unshare'" *ngIf="!isUnshare" class="btn btn-primary" [class.loading]="sharing" (click)="share()" translate>Share</button>
+  <button [attr.data-action]="'team-material-unshare'" *ngIf="isUnshare" class="btn btn-primary" [class.loading]="sharing" (click)="unshare()" translate>Unshare</button>
+</mat-dialog-actions>

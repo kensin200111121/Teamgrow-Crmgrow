@@ -1,0 +1,13 @@
+:host ::ng-deep {
+    .mat-dialog-title {
+      margin: 0 !important;
+      font-size: 20px !important;
+      .btn {
+        border-radius: 50%;
+        padding: 4px 10px;
+      }
+    }
+}
+.form-check-input {
+  margin-top: 7px;
+}

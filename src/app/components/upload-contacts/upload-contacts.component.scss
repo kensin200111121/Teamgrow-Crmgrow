@@ -1,0 +1,403 @@
+.table thead th {
+  border-bottom: 1px solid #e9ecef;
+}
+
+.dialog-container{
+  padding: 0;
+  max-width: 800px;
+
+  .f-22 {
+    font-size: 22px;
+  }
+
+  @media screen and (max-width: 576px) {
+    .dup-notification-text {
+      display: inline-block;
+    }
+  }
+
+  .close-button {
+    width: auto;
+    padding: 0;
+
+    &:focus, &:hover {
+      color: #000000;
+      background-color: transparent;
+    }
+
+    .i-icon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .table {
+    border-collapse: separate;
+    border-spacing: 0px;
+
+    td {
+      padding: 10px;
+    }
+
+    .note {
+      width: 150px;
+    }
+
+    @media screen and (max-width: 576px) {
+      .crmgrow-property {
+        select {
+          width: 140px;
+        }
+      }
+    }
+  }
+  .round-check {
+    background-color: #00916E;
+  }
+
+  .download-button {
+    width: 150px;
+  }
+
+  .no-cvs {
+    background-color: #F9FAFB;
+  }
+}
+
+
+.custom-control {
+  display: flex;
+
+  label {
+    text-align: left;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 24px;
+    color: #0000ff;
+    font-weight: bold;
+  }
+}
+
+
+.example-data {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 24px;
+  white-space: nowrap;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.duplicate-check-table {
+  .sticky-action-col {
+    position: sticky;
+    width: 90px;
+    right: 0px;
+    border-left: 1px solid #e9ecef;
+    background: white;
+  }
+}
+
+.duplicate-wrapper {
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+  white-space: nowrap;
+
+  .merge-group-wrapper {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .table-wrapper {
+    width: 100%;
+    overflow: auto;
+  }
+
+  .duplicate-check-table {
+    thead .sticky-action-col {
+      opacity: 1;
+    }
+
+    tr:last-child td {
+      border-bottom: 1px solid gainsboro;
+    }
+
+    .sticky-check-col {
+      position: sticky;
+      width: 40px;
+      left: 0;
+      border-right: 1px solid #e9ecef;
+      padding: 12px 7px;
+      background: white;
+      z-index: 1;
+    }
+
+    .sticky-action-col {
+      position: sticky;
+      width: 36px;
+      right: 0px;
+      border-left: 1px solid #e9ecef;
+      background: white;
+      z-index: 1;
+    }
+
+    td, th {
+      padding: 15px 10px;
+      height: 50px;
+    }
+  }
+
+  &.invalid-wrapper {
+    .table-wrapper {
+      width: 100%;
+      margin-left: 0;
+    }
+
+    .duplicate-check-table {
+      .sticky-action-col {
+        right: 0;
+      }
+    }
+
+  }
+
+  .duplicate-error {
+    margin-left: 40px;
+  }
+
+  @media screen and (max-width: 576px) {
+    .duplicate-error {
+      margin-left: 40px;
+      width: 50%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-break: break-all;
+    }
+  }
+}
+
+.flag-container {
+  display: flex;
+
+  .dropdown-toggle {
+    background: #eee;
+    height: 40px;
+    width: 100%;
+    border-radius: 5px;
+    justify-content: center;
+  }
+
+  .dropdown-menu.show {
+    width: 250px;;
+  }
+}
+
+.countries-wrapper {
+  background-color: white;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.review-container {
+  width: 100%;
+  max-height: 60vh;
+  overflow: auto;
+
+  .review-table {
+    td, th {
+      height: 50px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+.invalid-wrapper {
+  .table-wrapper {
+    overflow: auto;
+    .edit-contact-button {
+      opacity: 0;
+    }
+    tr:hover {
+      .edit-contact-button {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+
+.template-screenshot {
+  width: 100%;
+}
+
+.upload-container {
+  position: relative;
+  width: 100%;
+  height: 200px;
+
+
+  .upload-input-area {
+    position: absolute;
+    width: 100%;
+    height: 200px;
+    border: 1px dashed #0000ff;
+    border-radius: 3px;
+
+    p{
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      line-height: 170px;
+      color: #0000ff;
+      font-family: Arial;
+    }
+    input{
+      position: absolute;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      outline: none;
+      opacity: 0;
+      left: 0;
+      top: 0;
+      z-index: 10;
+    }
+  }
+}
+
+.upload-progress-wrapper {
+  position: relative;
+  width: 250px;
+  height: 250px;
+}
+
+.glass-img {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  left: 80px;
+  top: 125px;
+  object-fit: contain;
+}
+
+.checking-img {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  margin: 0px auto;
+}
+
+.attention {
+  max-width: 500px;
+  margin: auto;
+  background-color: #fffbfb;
+  border: 2px solid #e87b7c;
+  border-radius: 8px;
+
+  .attention-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+}
+
+
+.column-file {
+  width: 185px;
+}
+.preview {
+  max-width: 180px;
+}
+
+.selected-option-text {
+  color: #0000ff;
+}
+
+:host ::ng-deep {
+  .duplicate-check-table {
+
+    .radio-cell {
+      .custom-radio:checked, .custom-radio:not(:checked) {
+        position: relative;
+        left: 0;
+      }
+
+      .custom-control-input:checked ~ .custom-control-label::before {
+        border-color: #0000ff;
+        background-color: #ffffff;
+        left: 60px;
+      }
+
+      .custom-control label {
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .custom-radio .custom-control-label::before {
+        border-radius: 50%;
+        left: 60px;
+      }
+
+      .custom-radio .custom-control-input:checked ~ .custom-control-label::after {
+        background-image: none;
+        background-color: #0000ff;
+        border-radius: 50%;
+        left: 64px;
+      }
+
+      .custom-control-label::after {
+        top: 0.4rem;
+        left: 64px;
+        width: 0.75rem;
+        height: 0.75rem;
+      }
+    }
+  }
+
+  .mat-select {
+    border: 1px solid #aaa;
+    padding: 10px 12px;
+    border-radius: 5px;
+  }
+
+  .automation-wrapper {
+    .mat-select {
+      border: none;
+      padding: 0;
+      border-radius: 5px;
+    }
+  }
+
+  .mat-select-value-text {
+    color: #000;
+    font-weight: bold;
+  }
+
+  mat-pseudo-checkbox {
+    background-color: #0000ff;
+  }
+
+  .sticky-check-col {
+    .custom-radio:checked + label:before, .custom-radio:not(:checked) + label:before {
+      top: -5px;
+    }
+
+    .custom-radio:checked + label:after, .custom-radio:not(:checked) + label:after {
+      top: -1px;
+    }
+  }
+}
+
+.pagination-wrapper {
+  position: sticky;
+  bottom: 0px;
+  z-index: 10;
+  background: white;
+  padding: 8px 0px 0px 0px;
+  display: flex;
+  justify-content: center;
+}

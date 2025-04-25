@@ -1,0 +1,41 @@
+<div class="custom-mat-field mat-select-wrapper">
+  <mat-form-field style="display: block;" appearance="outline">
+    <mat-select [formControl]="formControl" placeholder="{{ placeholder | translate }}" #selector
+      [disableOptionCentering]="true">
+      <mat-select-trigger>
+        <ng-container *ngIf="formControl.value">
+          <ng-container *ngIf="resultItemTemplate; else defaultResult" [ngTemplateOutlet]="resultItemTemplate"
+            [ngTemplateOutletContext]="{ $implicit: formControl.value }">
+          </ng-container>
+          <ng-template #defaultResult>
+            <div class="chip d-flex justify-content-between align-items-center mt-1">
+              <div class="v-center">
+                <div class="info">
+                  <div class="f-4">{{formControl.value.title}}</div>
+                </div>
+              </div>
+              <div (click)="cancelSelect()">
+                <i class="d-block i-icon i-close bgc-dark"></i>
+              </div>
+            </div>
+          </ng-template>
+        </ng-container>
+      </mat-select-trigger>
+      <mat-option>
+        <ngx-mat-select-search [formControl]="inputControl" [searching]="searching" [placeholderLabel]="formPlaceholder | translate"
+          [disableScrollToActiveOnOptionsChanged]="true"
+          noEntriesFoundLabel="{{ 'There is no searched results' | translate }}" preventHomeEndKeyPropagation="true">
+        </ngx-mat-select-search>
+      </mat-option>
+      <mat-option *ngFor="let item of filteredResults | async" [value]="item"
+        style="height: unset; line-height: unset;">
+        <div class="d-flex chip py-2">
+          <div class="v-center info w-100">
+            <div class="f-5 font-weight-bold mr-2">{{ item.title }}</div>
+            <div class="f-3 c-grey ml-auto">({{getStageTitle(item)}})</div>
+          </div>
+        </div>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

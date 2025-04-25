@@ -1,0 +1,28 @@
+.new-contacts-wrapper {
+  max-height: 30vh;
+  overflow: auto;
+
+  .name-wrapper {
+  }
+
+  .email-wrapper {
+  }
+}
+
+:host ::ng-deep {
+  .new-contacts-wrapper {
+    .custom-mat-field .mat-form-field-flex {
+      padding: 0 0.25em 0.25em;
+    }
+    .custom-mat-field .mat-form-field-appearance-outline .mat-form-field-outline:not(.mat-form-field-outline-thick) {display: none}
+    .custom-mat-field .mat-form-field-appearance-outline .mat-form-field-infix {padding: 0px!important;}
+  }
+
+  .dropdown-toggle::after {
+    display: none;
+  }
+}
+
+::ng-deep .cdk-global-overlay-wrapper {
+  z-index: 1001;
+}

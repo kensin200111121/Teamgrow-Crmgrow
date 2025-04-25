@@ -1,0 +1,34 @@
+
+<div ngbDropdown #mainDrop="ngbDropdown" class="px-2 py-2 sms-token token">
+  <div class="v-center no-carot c-pointer" ngbDropdownToggle>
+      <span class="f-1 font-weight-bold mr-1">
+        <i class="d-block i-icon i-openai bgc-blue"></i>
+      </span>
+  </div>
+  <div ngbDropdownMenu class="light py-1 px-2">
+    <span class="f-3 font-weight-bold" translate>Please ask something to chatGPT.</span>
+    <div class="form-group search-form mb-2">
+      <div class="form-group mb-2">
+        <input type="text" class="form-control" [placeholder]="'Ask Me' | translate" aria-label="search" name="search"
+          #search="ngModel" aria-describedby="search-addon" [(ngModel)]="questionStr" [readonly]="isSending">
+      </div>
+      <ng-container *ngIf="questionStr">
+        <div class="cancel-action c-pointer" (click)="clearQuestionStr()">
+          <i class="i-icon i-close d-block bgc-dark"></i>
+        </div>
+      </ng-container>
+    </div>
+    <div class="v-center justify-content-between mb-2">
+      <select id="gptMode" class="f-3 font-weight-bold mr-1" [(ngModel)]="gptMode" name="gptMode" #stage="ngModel">
+        <option value="insertMode" translate>Insert New Story</option>
+        <option value="resetMode" translate>Modify Above Story</option>
+      </select>
+      <button 
+        type="button" 
+        class="btn btn-blue text-white br-default py-1 f-6 font-weight-bold shadow ml-auto"
+        [class.loading]="isSending"
+        (click)="sendQuestion()">Get Answer</button>
+    </div>
+  </div>
+</div>
+

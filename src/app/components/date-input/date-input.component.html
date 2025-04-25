@@ -1,0 +1,146 @@
+<div>
+  <div class="input-group bgc-dark-trans08 rounded">
+    <ng-container *ngIf="type === 'prepend'">
+      <div class="input-group-prepend rounded" (click)="openOverlay()">
+        <span class="input-group-text bgc-blue border-0">
+          <i class="i-icon i-calendar bgc-white"></i>
+        </span>
+      </div>
+    </ng-container>
+    <input
+      [attr.data-name]="'deal-date-picker'"
+      class="form-control datepicker"
+      [class]="type==='append'?'input-append':''"
+      [placeholder]="placeholder"
+      [(ngModel)]="dateString"
+      [required]="required"
+      [formControl]="dateInput"
+      type="text"
+      cdkOverlayOrigin
+      #trigger="cdkOverlayOrigin"
+      (click)="openOverlay()"
+    />
+    <ng-container *ngIf="type === 'prepend' && clearable && dateObj">
+      <div class="action" (click)="clearDate()">
+        <i class="d-block i-icon i-close bgc-dark"></i>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="type === 'append'">
+      <div class="action"  (click)="openOverlay()">
+        <i class="d-block i-icon i-calendar bgc-gray"></i>
+      </div>
+    </ng-container>
+  </div>
+  <ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayOrigin]="trigger"
+    [cdkConnectedOverlayOpen]="isOpen"
+    (overlayOutsideClick)="closeOverlay($event)"
+  >
+    <ng-container [ngSwitch]="uiType">
+      <div
+        class="bg-white date-picker-overlay"
+        [class.prepend-wrapper]="type == 'prepend'"
+        *ngSwitchCase="'default'"
+      >
+        <ngb-datepicker
+          name="select_date"
+          #dp="ngbDatepicker"
+          [(ngModel)]="dateObj"
+          [minDate]="_minDate"
+          [maxDate]="_maxDate"
+          [firstDayOfWeek]="7"
+          (ngModelChange)="changeDate()"
+          [class.mark-today]="!dateObj"
+        ></ngb-datepicker>
+      </div>
+      <div
+        class="bg-white date-picker-overlay mode1"
+        [class.prepend-wrapper]="type == 'prepend'"
+        *ngSwitchCase="'mode1'"
+      >
+        <ng-container *ngIf="title">
+          <div class="v-center pt-3 pb-2 border-bottom">
+            <div class="f-6 font-weight-bold">{{ title }}</div>
+            <div
+              class="dropdown-toggle i-icon i-close bg-dark ml-auto"
+              (click)="closeOverlay()"
+            ></div>
+          </div>
+        </ng-container>
+        <div class="f-6 c-blue font-weight-bold text-center my-2">
+          {{ dateFormat() }}
+        </div>
+        <ng-container *ngIf="!hasTime; else withTimeTemplate">
+          <ngb-datepicker
+            name="select_date"
+            class="border-0"
+            #dp
+            [(ngModel)]="dateObj"
+            [minDate]="_minDate"
+            [maxDate]="_maxDate"
+            [firstDayOfWeek]="7"
+            [class.mark-today]="!dateObj"
+          ></ngb-datepicker>
+          <div class="v-center mt-2">
+            <button
+              class="btn btn-white f-6 font-weight-bold ml-auto"
+              type="button"
+              (click)="closeOverlay()"
+            >
+              Cancel
+            </button>
+            <div
+              class="btn btn-primary f-6 font-weight-bold ml-2"
+              (click)="changeDate()"
+            >
+              Set
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #withTimeTemplate>
+          <div class="d-flex date-time-wrapper">
+            <ngb-datepicker
+              name="select_date"
+              class="border-0"
+              #dp
+              [(ngModel)]="dateObj"
+              [minDate]="_minDate"
+              [maxDate]="_maxDate"
+              [firstDayOfWeek]="7"
+              (ngModelChange)="changeDateTime(false)"
+            ></ngb-datepicker>
+            <div class="time-wrapper">
+              <div class="timer">
+                <ngb-timepicker
+                  name="select_time"
+                  [(ngModel)]="timeObj"
+                  [meridian]="'ON'"
+                  (ngModelChange)="changeDateTime(false)"
+                >
+                </ngb-timepicker>
+              </div>
+              <div class="v-center mt-2">
+                <button
+                  class="btn btn-white f-6 font-weight-bold ml-auto"
+                  type="button"
+                  (click)="closeOverlay()"
+                  translate
+                >
+                  Cancel
+                </button>
+                <div
+                  class="btn btn-primary f-6 font-weight-bold ml-2"
+                  (click)="changeDateTime()"
+                  translate
+                >
+                  Set
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </ng-container>
+  </ng-template>
+</div>

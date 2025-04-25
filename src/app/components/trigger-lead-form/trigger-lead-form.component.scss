@@ -1,0 +1,61 @@
+@import 'variables';
+
+.select-form {
+  label {
+    font-weight: bold;
+  }
+
+  .preview-section {
+    background-color: #fafafa;
+    overflow-y: auto;
+    min-height: 50px;
+    height: 150px;
+    border-radius: 8px;
+  }
+
+  .form-name {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px;
+  }
+
+  .form-check {
+    label {
+      font-weight: 400;
+    }
+  }
+
+  .automation-title {
+    font-size: 12px;
+    font-weight: 400;
+    color: $color-dark;
+    padding-left: 16px;
+  }
+}
+
+div {
+  gap: 16px;
+}
+
+.bgc-light-gray {
+  background-color: #4d4d4d;
+  height: 14px;
+}
+.operator_box {
+  background-color: #e6e6e6 !important;
+}
+.add_link {
+  color: #066fd3;
+  font-weight: 600;
+}
+.bgc-plus {
+  background-color: #066fd3 !important;
+}
+.no-gap {
+  gap: 0.75rem !important;
+}
+.gray_bar {
+  background-color: #e6e6e6;
+  opacity: .5;
+  height: 2px;
+}

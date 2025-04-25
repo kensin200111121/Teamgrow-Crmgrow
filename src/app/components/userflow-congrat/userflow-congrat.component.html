@@ -1,0 +1,13 @@
+<div class="congrat-wrapper">
+    <div class="f-20 font-weight-bold text-center" translate>
+        Congrats
+    </div>
+    <div class="f-4 mt-2" [innerHTML]="'congrat_greet' | translate : {source: isSspa ? 'vortex' : 'crmgrow'}">
+    </div>
+    <img class="congrat-image mt-3" [src]="sspaService.toAsset('img/onboarding/congrat.svg')">
+    <mat-dialog-actions align="center">
+        <button class="btn btn-primary f-6 font-weight-bold mt-2" (click)="getStarted()" translate>
+            Close
+        </button>
+    </mat-dialog-actions>
+</div>

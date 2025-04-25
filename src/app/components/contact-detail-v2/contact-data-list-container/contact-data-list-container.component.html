@@ -1,0 +1,102 @@
+<div class="container px-0 h-100">
+  <div style="flex: 1;">
+    <ng-scrollbar>
+      <div class="data-sections-container">
+        <ng-container *ngFor="let object of objects">
+          <ng-container *enableByFeatures="object.feature">
+            <div class="bgc-white mb-3 accordion-item">
+              <div class="d-flex justify-content-between accordion-header">
+                <div class="d-flex items-center">
+                  <i class="bgc-dark d-block i-icon mr-2" [ngClass]="object.icon"></i>
+                  <b class="text-14px">
+                    {{ object.name}}
+                    <span class="text-dark">({{ totalActionCount[object.type] }})</span>
+                  </b>
+                </div>
+                <div class="d-flex items-center">
+                  <div (click)="addData(object.name)"
+                    class="d-flex justify-content-center mr-3 add-btn cursor-pointer contact-action-btn"
+                    *ngIf="object.name !== 'Scheduled Items'">
+                    <b class="text-20px">+</b>
+                  </div>
+                  <i (click)="handleExpand(object.name)" class="bgc-dark d-block i-icon arrow-down-width cursor-pointer"
+                    [ngClass]="{
+                      'i-arrow-up': object.isExpanded,
+                      'i-arrow-down': !object.isExpanded
+                    }"></i>
+                </div>
+              </div>
+              <div *ngIf="object.isExpanded">
+                <ng-container [ngSwitch]="object.name">
+                  <ng-container *ngSwitchCase="'Automations'">
+                    <app-automation-item [setData]="object.items" [contactId]="contactId"
+                      [setInitLoading]="isInitAutomationLoading" (onUpdateAutomationCount)="updateAutomationCount($event)"></app-automation-item>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'Scheduled Items'">
+                    <app-task-list [setContactId]="contactId" [tasks]="tasks" [loading]="taskLoading"></app-task-list>
+                  </ng-container>
+                  <ng-container *ngSwitchDefault>
+                    <app-data-list [type]="object.name" [contactId]="contactId"></app-data-list>
+                  </ng-container>
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+        <div class="bgc-white accordion-item" *ngIf="isAgentFire">
+          <div class="d-flex justify-content-between accordion-header">
+            <div class="d-flex items-center text-14px">
+              <i class="bgc-dark d-block i-icon i-lightbulb mr-2"></i><b>Insights</b>
+            </div>
+            <div class="d-flex items-center">
+              <span class="powered">Powered By</span>
+              <img alt="agentfire" class="mr-3 ml-1 mb-1 agent-w" src="/assets/img/agentfire2.png" />
+              <i class="bgc-dark d-block i-icon arrow-down-width cursor-pointer" [ngClass]="{
+                  'i-arrow-up': isAgentExpanded,
+                  'i-arrow-down': !isAgentExpanded
+                }" (click)="handleExpand('agent')"></i>
+            </div>
+          </div>
+          <div class="list-wrapper" *ngIf="isAgentExpanded">
+            <ng-scrollbar visibility="hover">
+              <ng-container *ngIf="properties.length">
+                <div class="property" *ngFor="let property of properties">
+                  <div class="thumbnail-wrapper">
+                    <a href="{{ property.url }}" target="_blank">
+                      <img [src]="
+                          property.thumb || 'assets/img/agentfire_placeholder.png'
+                        " class="thumbnail" />
+                    </a>
+                  </div>
+                  <div class="street">{{ property.street }}</div>
+                  <div class="city">{{ property.city }}</div>
+                  <div class="d-flex">
+                    <div class="spec-item">
+                      <i class="spec-item-icon i-icon d-block i-bedroom"></i>
+                      <div class="spec-item-content">{{ property.bedrooms }}</div>
+                    </div>
+                    <div class="spec-item">
+                      <i class="spec-item-icon i-icon d-block i-bathroom"></i>
+                      <div class="spec-item-content">{{ property.bathrooms }}</div>
+                    </div>
+                    <div class="spec-item">
+                      <i class="spec-item-icon i-icon d-block i-area"></i>
+                      <div class="spec-item-content">{{ property.area }}</div>
+                    </div>
+                  </div>
+                  <div class="price">$ {{ property.price }}</div>
+                </div>
+              </ng-container>
+            </ng-scrollbar>
+          </div>
+        </div>
+      </div>
+    </ng-scrollbar>
+  </div>
+
+  <!-- <app-contact-agent-fire [contactId]="contactId"></app-contact-agent-fire> -->
+  <div class="mt-auto close-action">
+    <hr class="mb-3 mt-2 w-100" />
+    <button class="w-100 rounded text-center f-3 p-1" (click)="close()">Close</button>
+  </div>
+</div>

@@ -1,0 +1,117 @@
+<div class="contacts-list-panel flex-column h-100 d-flex overflow-hidden">
+  <h6 class="fw-600 pt-4 px-3 panel-header pb-2">
+    <span [translateParams]="{count: length}" translate>Contacts for </span>
+    <span class="font-weight-bold text-capitalize">"{{label.name}}"</span>
+  </h6>
+  <div class="v-center contact-list-controls">
+    <div class="form-group mb-0 search-form ml-3">
+      <div class="input-group-prepend">
+        <i class="i-icon i-search d-block bgc-dark"></i>
+      </div>
+      <input type="text" class="form-control" [placeholder]="'Search' | translate"
+        aria-label="search" aria-describedby="search-addon"
+        [(ngModel)]="searchStr" (ngModelChange)="changeSearchStr()">
+      <ng-container *ngIf="searchStr">
+        <div class="cancel-action c-pointer" (click)="clearSearchStr()">
+          <i class="i-icon i-close d-block bgc-dark"></i>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div class='flex-column d-flex overflow-auto' *ngIf='labelContacts.length'>
+    <div class="contacts-list position-relative mt-1 overflow-auto">
+      <table class="page-table w-100" mat-table
+        [dataSource]="labelContacts | paginate: {id: 'contactPages', itemsPerPage: pageSize.id, currentPage: page, totalItems: length}">
+        <ng-container matColumnDef="loader-cell">
+          <th mat-header-cell *matHeaderCellDef colspan="12"
+            class="loader-cell">
+            <div class="updating-status"
+              *ngIf="labelContacts.length && isLoading">
+              {{ 'LOADING' | translate }}
+            </div>
+          </th>
+        </ng-container>
+        <!-- Name Column -->
+        <ng-container matColumnDef="contact_name">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell> {{ 'Contact Name' | translate }} </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let contact">
+            <a class="v-center py-2 avatar-wrapper"
+              [routerLink]="['/contacts/' + contact._id]">
+              <div
+                class="v-center justify-content-center f-0 text-white avatar">
+                {{contact.avatarName}}
+              </div>
+              <div class="f-3 text-primary name">
+                {{contact.fullName}}
+              </div>
+            </a>
+          </td>
+        </ng-container>
+        <!-- Status Column -->
+        <ng-container matColumnDef="label_name">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell colspan="12">{{ 'Status' | translate }}</th>
+          </ng-container>
+          <td mat-cell colspan="12" *matCellDef="let contact">
+            <div class="v-center" style='width:150px'>
+              <i class="i-icon i-label d-block mr-2"
+                [style.backgroundColor]="label?.color === '#FFF' ? '#000' : label?.color"></i>
+              <span class="f-3 fw-600 text-capitalize">{{label?.name}}</span>
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['loader-cell']"
+          class="loader-row"></tr>
+        <tr mat-header-row *matHeaderRowDef="DISPLAY_COLUMNS;sticky: true"
+          class=""></tr>
+        <tr mat-row *matRowDef="let row; columns: DISPLAY_COLUMNS;"></tr>
+      </table>
+    </div>
+    <div class="pagination-wrapper d-flex justify-content-center w-100 py-2"
+      *ngIf='labelContacts.length'
+      style='padding-left:5px;'>
+      <pagination-controls (pageChange)="changePage($event)"
+        (pageBoundsCorrection)="pageChanged($event)" id="contactPages"
+        maxSize="5" previousLabel="" nextLabel="">
+      </pagination-controls>
+      <div class="shadow-dropdown ml-auto page-size-control" ngbDropdown
+        placement="top-right">
+        <div class="v-center c-pointer f-3 p-1 font-weight-bold"
+          ngbDropdownToggle>
+          <span class="pr-2 c-blue" [translateParams]="{count: pageSize.id}" translate>pagination</span>
+        </div>
+        <div ngbDropdownMenu aria-labelledby="contactPageSize">
+          <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS"
+            (click)="changePageSize(type)">
+            <span class="f-3 v-center"
+              [class.font-weight-bold]="type.id === pageSize.id">
+              <span [translateParams]="{count: type.id}" translate>pagination</span>
+              <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                *ngIf="type.id === pageSize.id"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf='!labelContacts.length'>
+    <ng-container *ngIf="isLoading">
+      <div class="empty-list py-5">
+        <div class="loader mt-2"></div>
+        <h6 class="fw-600 mt-2" translate>LOADING</h6>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="!isLoading">
+      <div class="empty-list py-5">
+        <div class="object-icon v-center">
+          <i class="i-icon i-lunch d-block bgc-dark"></i>
+        </div>
+        <h4 class="fw-600 mt-3 mb-3" style='font-size:12px' translate>
+          there_are_no_contacts_with_this_label
+        </h4>
+      </div>
+    </ng-container>
+  </div>
+</div>

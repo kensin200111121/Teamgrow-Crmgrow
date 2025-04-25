@@ -1,0 +1,124 @@
+<div class="analytics-page">
+  <div class="row my-3">
+    <div class="range-selector mt-3">
+      <div class="range-item d-flex align-items-start justify-content-between">
+        <div>
+          <p class="f-40 c-blue">16</p>
+          <div class="v-center">
+            <span class="growth-color font-weight-bold f-1">+12</span>
+            <i class="i-icon i-triangle-up growth-icon bgc-growth"></i>
+            <span class="f-1 c-dark" translate>vs the last week</span>
+          </div>
+        </div>
+        <div class="v-center">
+          <i class="i-icon arrow-icon i-triangle-left bgc-black" [class.disable]="selectedWeekly == 0" (click)="beforeWeek()"></i>
+          <div class="f-1 c-range select-text font-weight-bold">{{weekly[selectedWeekly]}}</div>
+          <i class="i-icon arrow-icon i-triangle-right bgc-black" [class.disable]="selectedWeekly == 2" (click)="nextWeek()"></i>
+        </div>
+      </div>
+      <div class="range-item d-flex align-items-start justify-content-between">
+        <div>
+          <p class="f-40 c-blue">78</p>
+          <div class="v-center">
+            <span class="growth-color font-weight-bold f-1">+23</span>
+            <i class="i-icon i-triangle-up growth-icon bgc-growth"></i>
+            <span class="f-1 c-dark" translate>vs the last month</span>
+          </div>
+        </div>
+        <div class="v-center">
+          <i class="i-icon arrow-icon i-triangle-left bgc-black" [class.disable]="selectedMonthly == 0" (click)="beforeMonth()"></i>
+          <div class="f-1 c-range select-text  font-weight-bold">{{monthly[selectedMonthly]}}</div>
+          <i class="i-icon arrow-icon i-triangle-right bgc-black" [class.disable]="selectedMonthly == 2" (click)="nextMonth()"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row my-3">
+    <mat-accordion>
+      <mat-expansion-panel [expanded]="topExpanded" hideToggle>
+        <mat-expansion-panel-header (click)="changeExpanded()">
+          <mat-panel-title>
+            <div class="v-center justify-content-between border-0 py-2 c-dark expand w-100">
+              <div class="v-center">
+                <i class="i-icon i-triangle-right expand-icon bg-dark opacity-6 mr-3" aria-hidden="true" [class.expand]="topExpanded"></i>
+                <span class="f-6 font-weight-bold" translate>Top watched videos</span>
+              </div>
+              <div class="v-center">
+                <i class="i-icon i-calendar bgc-blue ml-1" aria-hidden="true"></i>
+                <span class="ml-2 f-3 font-weight-bold c-blue">{{weekly[selectedWeekly]}}</span>
+              </div>
+            </div>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="material-usage-wrapper w-100">
+          <mat-accordion>
+            <ng-container *ngFor="let item of watchData; let row = index;">
+              <mat-expansion-panel [expanded]="watchDataExpanded[row]" hideToggle>
+                <mat-expansion-panel-header (click)="changeDataExpanded(row)">
+                  <div class="v-center w-100">
+                    <div class="number-wrapper" [style.background]="colors[row % colorCount].border">
+                      <div class="number f-3 font-weight-bold c-white" [style.background]="colors[row % colorCount].background">{{row + 1}}</div>
+                    </div>
+                    <div class="v-center w-100">
+                      <div class="v-center ml-3">
+                        <ng-container *ngIf="getMaterialType(item) == 'Video'; else imagePreview">
+                          <div class="thumb-prev-wrapper">
+                            <img [src]="item.thumbnail" class="thumbnail" (error)="sspaService.imgError($event,'img/video_thumb.jpg')"/>
+                            <img [src]="item.preview" class="preview" (error)="sspaService.imgError($event,'img/video_thumb.jpg')"/>
+                          </div>
+                        </ng-container>
+                        <ng-template #imagePreview>
+                          <img class="thumbnail" src="{{item.preview}}" (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+                        </ng-template>
+                      </div>
+                      <div class="title ml-3">
+                        <h5 class="f-4 font-weight-bold c-dark m-0">{{item.title}}</h5>
+                        <span class="description f-1 mt-1 c-dark">{{(item.description || '') | stripTags | removeEntity | shorten: 120: '...'}}</span>
+                      </div>
+                    </div>
+                    <div class="watched v-center justify-content-end">
+                      <span class="f-24 font-weight-bold c-blue">{{item.watches.length}}</span>
+                      <span class="etc f-6 ml-2" translate>x watched</span>
+                    </div>
+                  </div>
+                </mat-expansion-panel-header>
+                <div class="details-table">
+                  <table class="table mt-3">
+                    <thead>
+                    <th class="name" translate>Video Recipients</th>
+                    <th class="session" translate>Last session</th>
+                    <th class="progress-cell" translate>Progress</th>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let watch of item.watches">
+                      <td>
+                        <div class="v-center">
+                          <ng-container *ngIf="watch.picture_profile; else namePlaceholder">
+                            <img [src]="watch.picture_profile" class="avatar mr-3" />
+                          </ng-container>
+                          <ng-template #namePlaceholder>
+                            <div class="name-avatar mr-3">{{getAvatarName(watch)}}</div>
+                          </ng-template>
+                          <div class="font-weight-bold">{{watch.first_name + ' ' + watch.last_name}}</div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="f-3">{{watch.last_session | date: 'dd.MM.yyyy' }}</div>
+                      </td>
+                      <td class="progress-cell">
+                        <div class="progress-wrapper f-3 font-weight-bold c-white bgc-blue ml-auto">
+                          {{watch.progress}}%
+                        </div>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </mat-expansion-panel>
+            </ng-container>
+          </mat-accordion>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div>

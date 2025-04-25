@@ -1,0 +1,83 @@
+<div class="team-select">
+  <ng-container *ngFor="let team of teams">
+    <mat-expansion-panel class="no-shadow">
+      <mat-expansion-panel-header class="pl-0 pr-3 team-header">
+        <div
+          class="custom-checkbox my-2 mr-2 team-checkbox"
+          [class.indeterminate]="teamOptions[team._id]?.flag === 0"
+        >
+          <input
+            type="checkbox"
+            class="custom-control-input"
+            id="team-{{ team._id }}"
+            name="team-{{ team._id }}"
+            (change)="toggleTeam(team)"
+            [checked]="teamOptions[team._id]?.flag === 1"
+          />
+          <label
+            class="custom-control-label f-3 pt-1"
+            for="team-{{ team._id }}"
+            >{{ team.name }}</label
+          >          
+        </div>
+        <div class="ml-auto mr-3">
+          <span *ngIf="team.is_internal" class="team-badge">Team</span>
+          <span *ngIf="!team.is_internal" class="community-badge">Community</span>
+        </div>        
+      </mat-expansion-panel-header>
+      <div>
+        <app-member-selector
+          [dataSource]="teamMembers[team._id]"
+          [selected]="teamOptions[team._id]?.members || []"
+          (onSelect)="changeTeamMemberOptions(team._id, $event)"
+        ></app-member-selector>
+      </div>
+    </mat-expansion-panel>
+  </ng-container>
+
+  <ng-container *ngIf="(teamOptions | json) != ({} | json)">
+    <div class="form-group form-group mb-1 mt-2">
+      <label class="label mb-1" translate>Share Option</label>
+    </div>
+    <div class="custom-checkbox my-2 mr-2 team-checkbox">
+      <input
+        type="checkbox"
+        class="custom-control-input"
+        id="team-share-with"
+        name="team-share-with"
+        (change)="changeShareOption('share_with')"
+        [checked]="isShareWith"
+      />
+      <label
+        class="custom-control-label f-3 pt-1"
+        for="team-share-with"
+        translate
+        >Share With</label
+      >
+    </div>
+    <div class="custom-checkbox my-2 mr-2 team-checkbox">
+      <input
+        type="checkbox"
+        class="custom-control-input"
+        id="team-share-by"
+        name="team-share-by"
+        (change)="changeShareOption('share_by')"
+        [checked]="isShareBy"
+      />
+      <label
+        class="custom-control-label f-3 pt-1"
+        for="team-share-by"
+        translate
+        >Share By</label
+      >
+    </div>
+  </ng-container>
+  
+
+  <div class="d-flex align-items-end">
+    <button data-action="advanced-filter-team-apply" type="submit" class="btn btn-primary" (click)="save()" translate>
+      Apply
+    </button>
+  </div>
+</div>
+

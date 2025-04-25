@@ -1,0 +1,30 @@
+:host ::ng-deep {
+  #wavv-dialer {
+    z-index: 997 !important;
+    position: fixed;
+    top: 64px;
+  }
+}
+.deal-dialer-controller {
+  position: fixed !important;
+  top: 70px;
+  right: 0;
+  padding: 6px 18px;
+  display: flex;
+  justify-content: flex-end;
+  width: fit-content;
+  margin-left: auto;
+  font-size: 12px;
+  z-index: 10;
+
+  &.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .i-icon {
+    min-width: 12px;
+    width: 12px;
+    opacity: 0.75;
+  }
+}

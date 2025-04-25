@@ -1,0 +1,109 @@
+<div class="row">
+  <div class="col-sm-8 col-12 form-group">
+    <label for="address_cc_{{ key }}" translate>Street Address</label>
+    <input
+      type="text"
+      placeholder=""
+      id="address_cc_{{ key }}"
+      class="form-control"
+      [(ngModel)]="_address.street"
+      name="address"
+      #address="ngModel"
+      ngx-google-places-autocomplete
+      #addressplacesRef="ngx-places"
+      (onAddressChange)="handleAddressChange($event)"
+      [options]="{types: [], componentRestrictions: { country: _address.country || LOCATION_COUNTRIES }}"
+    />
+  </div>
+  <div class="col-sm-4 col-12 form-group">
+    <label for="country_cc" translate>country</label>
+    <select
+      id="country_cc"
+      class="form-control"
+      [(ngModel)]="_address.country"
+      name="country"
+      #country="ngModel"
+      (ngModelChange)="setContactStates()"
+    >
+      <option value="" translate>None</option>
+      <option *ngFor="let country of COUNTRIES" value="{{ country.code }}">
+        {{ country.name }}
+      </option>
+    </select>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-4 col-12 form-group">
+    <label for="city_cc_{{ key }}" translate>city</label>
+    <input
+      type="text"
+      placeholder=""
+      id="city_cc_{{ key }}"
+      class="form-control"
+      [(ngModel)]="_address.city"
+      name="city_cc"
+      #city="ngModel"
+      ngx-google-places-autocomplete
+      #cityplacesRef="ngx-places"
+      (onAddressChange)="handleAddressChange($event)"
+      [options]="{
+        types: ['(cities)'],
+        componentRestrictions: {
+          country: _address.country || LOCATION_COUNTRIES
+        }
+      }"
+    />
+  </div>
+  <div class="col-sm-4 col-12 form-group">
+    <label for="state_cc_{{ key }}" translate>state</label>
+    <select
+      id="state_cc_{{ key }}"
+      class="form-control"
+      [(ngModel)]="_address.state"
+      name="state"
+      #state="ngModel"
+    >
+      <option value="" translate>None</option>
+      <ng-container *ngIf="!_address.country; else selectedState">
+        <optgroup
+          *ngFor="
+            let country of DefaultCountryStates | keyvalue : orderOriginal
+          "
+          label="{{ country.key }}"
+        >
+          <option *ngFor="let region of country.value" value="{{ region }}">
+            {{ region }}
+          </option>
+        </optgroup>
+      </ng-container>
+      <ng-template #selectedState>
+        <option
+          *ngFor="let region of COUNTRY_REGIONS[_address.country]"
+          value="{{ region }}"
+        >
+          {{ region }}
+        </option>
+      </ng-template>
+    </select>
+  </div>
+  <div class="col-sm-4 col-12 form-group">
+    <label for="zipcode_cc_{{ key }}" translate>zip code</label>
+    <input
+      type="text"
+      id="zipcode_cc_{{ key }}"
+      class="form-control"
+      [(ngModel)]="_address.zip"
+      name="zip"
+      #zip="ngModel"
+    />
+  </div>
+</div>
+<span
+  class="error d-flex align-items-center mb-2"
+  *ngIf="_address.errors?.required"
+  translate
+>
+  <ng-container *ngIf="_address.errors?.required">
+    Address Can't be empty.
+  </ng-container>
+</span>

@@ -1,0 +1,46 @@
+<div class="v-center pb-3 header-icon">
+    <img [src]="sspaService.toAsset('img/calendly.svg')" class="mr-3">
+    <h1 class="m-0" mat-dialog-title translate>
+        Select one of the event.
+    </h1>
+</div>
+<div class="row calendly">
+    <ng-container *ngIf="calendlyList.length; else noCalendly">
+        <div class="col-md-4 calendly-list" *ngFor="let calendly of calendlyList; let index=index;">
+            <div class="calendly-card" [ngStyle]="{'border-top-color': calendly.color,
+                'border-top-width': '6px', 'border-top-style': 'solid'}">
+                <div class="calendly-card-body p-3">
+                    <p class="m-0 calendly-card-title">{{ calendly.name }}</p>
+                    <p class="m-0 calendly-card-duration"
+                       [translateParams]="{duration: calendly.duration}" translate
+                    >calendar.duration</p>
+                </div>
+                <div class="py-2 text-right calendly-card-footer">
+                    <button class="mr-2 btn bg-white c-blue border-primary" (click)="setEvent(index)" [disabled]="calendly.selectStatus == true">
+                        <ng-container *ngIf="calendly.selectStatus == false" translate>
+                            Select
+                        </ng-container>
+                        <ng-container *ngIf="calendly.selectStatus == true">
+                            <ng-container translate>Selected</ng-container>
+                        </ng-container>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    <ng-template #noCalendly>
+        <ng-container *ngIf="loading; else emptyResult">
+            <div class="list-loading mx-auto">
+                <div class="loader mt-5 lg"></div>
+                <h4 class="fw-600 mt-2" translate>Loading calendly lists...</h4>
+            </div>
+        </ng-container>
+        <ng-template #emptyResult>
+            <div class="empty-list mx-auto py-5">
+                <h4 class="font-weight-bold mt-4 mb-3" translate>
+                There is no calendly lists.
+                </h4>
+            </div>
+        </ng-template>
+    </ng-template>
+</div>

@@ -1,0 +1,29 @@
+<div class="v-center justify-content-between">
+  <h1 class="m-0" mat-dialog-title translate>
+    Merge
+  </h1>
+  <i class="d-block i-icon i-close bgc-dark" mat-dialog-close></i>
+</div>
+<form class="merge-label-form">
+  <mat-dialog-content>
+    <div class="form-group mt-2">
+      <label for="label" translate>Merge To:</label>
+      <app-input-label type="form" [labels]="mergeList" [value]="mergeTo"
+        (valueChange)="onChangeLabel($event)"></app-input-label>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <a class="btn btn-white f-6 font-weight-bold c-blue mr-2"
+      mat-dialog-close translate>Cancel</a>
+    <ng-container *ngIf="!mergeTo || mergeTo === ''; else mergeButton">
+      <button class="btn btn-default f-6 font-weight-bold"
+        type="button" translate>Merge</button>
+    </ng-container>
+    <ng-template #mergeButton>
+      <button [attr.data-action]="'contact-label-merge'" class="btn btn-primary f-6 font-weight-bold"
+        [class.loading]="isProcessing" 
+        type="button"
+        (click)="onMergeLabel()" translate>Merge</button>
+    </ng-template>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,32 @@
+<div class="dialog-container">
+  <div class="v-center justify-content-between mx-0">
+    <div class="f-22 fw-600 c-black" translate>Allow assigning timelines</div>
+  </div>
+  <mat-dialog-content class="mt-3">
+    <div class="row mx-1 my-2">
+      <p translate>Are you going to execute the current assigned deal automation with these new contacts</p>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <div class="d-flex justify-content-end w-100">
+      <button
+        [attr.data-action]="'no'"
+        class="btn btn-secondary c-white fw-600 mr-2"
+        type="button"
+        (click)="handleCancel($event)"
+        translate
+      >
+        No
+      </button>
+      <button
+        [attr.data-action]="'allow'"
+        class="btn btn-primary c-white fw-600"
+        type="button"
+        (click)="handleYes($event)"
+        translate
+      >
+        Yes
+      </button>
+    </div>
+  </mat-dialog-actions>
+</div>

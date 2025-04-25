@@ -1,0 +1,10 @@
+<div class="d-flex v-center pl-1">
+    <div *ngFor="let contact of _contacts.slice(0, 2)">
+        <div class="contact"  [ngbTooltip]="getFullName(contact)" container="body">
+          <div class="avatar bgc-secondary text-white f-2 text-center rounded-circle c-pointer">
+            {{getAvatarName(contact)}}
+          </div>          
+        </div>
+    </div>
+    <div *ngIf="_contacts.length > 2" class="f-4  pl-1">+{{_contacts.length - 2}}</div>
+</div>

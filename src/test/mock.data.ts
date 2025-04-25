@@ -1,0 +1,390 @@
+import { Contact, Contact2I } from '@app/models/contact.model';
+import { Template } from '@app/models/template.model';
+import { User } from '@app/models/user.model';
+import { Alias, TemplateToken } from '@app/utils/data.types';
+import { BehaviorSubject } from 'rxjs';
+
+export const socialUserData = {
+  googleLogin: {
+    id: 'google-id',
+    provider: 'crmgrow',
+    email: 'test@crmgrow.com',
+    name: 'tester',
+    photoUrl: '',
+    firstName: '',
+    lastName: '',
+    authToken: '',
+    idToken: '',
+    authorizationCode: '',
+    response: undefined
+  },
+  outlookLogin: {
+    account: {
+      accountIdentifier: 'outlook-id',
+      userName: '',
+      name: '',
+      idToken: undefined,
+      homeAccountIdentifier: undefined,
+      idTokenClaims: undefined,
+      sid: undefined,
+      environment: ''
+    },
+    uniqueId: undefined,
+    tenantId: undefined,
+    tokenType: undefined,
+    idToken: undefined,
+    idTokenClaims: undefined,
+    accessToken: undefined,
+    scopes: undefined,
+    expiresOn: undefined,
+    accountState: undefined,
+    fromCache: undefined
+  }
+};
+
+export const profileSubject = new BehaviorSubject({
+  _id: '1',
+  subscription: { is_failed: false },
+  automation_info: { is_enabled: true },
+  calendar_info: { is_enabled: true },
+  campaign_info: { is_enabled: true },
+  scheduler_info: { is_enabled: true },
+  landing_page_info: { is_enabled: true },
+  assignee_info: { is_enabled: true },
+  email: { _id: 'email123' }
+});
+export const mockUser: User = {
+  location: '',
+  picture_profile: '',
+  learn_more: '',
+  role: '',
+  outlook_refresh_token: '',
+  google_refresh_token: '',
+  yahoo_refresh_token: '',
+  other_emailer: undefined,
+  connected_email_type: '',
+  connected_email: '',
+  calendar_connected: false,
+  primary_connected: false,
+  daily_report: false,
+  weekly_report: false,
+  admin_notification: 0,
+  desktop_notification: false,
+  desktop_notification_subscription: '',
+  text_notification: false,
+  pipe_info: {
+    is_enabled: false,
+    is_limit: false,
+    max_count: 0
+  },
+  capture_enabled: false,
+  email_verified: false,
+  welcome_email: false,
+  is_trial: false,
+  is_free: false,
+  package_level: '',
+  user_version: 0,
+  expired_at: undefined,
+  created_at: undefined,
+  updated_at: undefined,
+  last_logged: undefined,
+  del: false,
+  sub_domain: '',
+  job: '',
+  company: '',
+  is_primary: false,
+  primary_account: undefined,
+  email_draft: {
+    subject: '',
+    content: ''
+  },
+  text_draft: {
+    content: ''
+  },
+  sub_accounts: [],
+  sub_account_info: {
+    is_enabled: false,
+    is_limit: false,
+    max_count: 0
+  },
+  campaign_smtp_connected: false,
+  login_enabled: false,
+  master_enabled: false,
+  billing_access_enabled: false,
+  team_stay_enabled: false,
+  scheduler_info: {
+    is_enabled: false,
+    connected_email: '',
+    calendar_id: '',
+    conflict_calendar_list: []
+  },
+  landing_page_info: {
+    is_enabled: false,
+    is_limit: false,
+    max_count: 0
+  },
+  onboard: {
+    watched_modal: false,
+    profile: false,
+    connect_email: false,
+    created_contact: false,
+    upload_video: false,
+    send_video: false,
+    sms_service: false,
+    connect_calendar: false,
+    dialer_checked: false,
+    tour: false,
+    material_download: false,
+    automation_download: false,
+    template_download: false,
+    complete: false
+  },
+  support_info: {
+    feature_request: false
+  },
+  builder_version: '',
+  smtp_info: {
+    host: '',
+    user: '',
+    pass: '',
+    secure: false,
+    port: 0,
+    email: '',
+    smtp_connected: false,
+    verification_code: '',
+    daily_limit: 0,
+    start_time: '',
+    end_time: ''
+  },
+  email_alias: [],
+  assignee_info: {
+    is_enabled: false,
+    is_editable: false
+  },
+  notification_info: {
+    seenBy: '',
+    lastId: ''
+  },
+  can_restore_seat: false,
+  agent_vending_info: {
+    is_enabled: false,
+    is_limit: false,
+    max_count: 0
+  },
+  source: '',
+  deserialize: function (input: any): User {
+    throw new Error('Function not implemented.');
+  },
+  avatarName: ''
+};
+export const mockTemplate: Template = {
+  _id: '',
+  original_id: '',
+  user: '',
+  title: '',
+  subject: 'New Subject',
+  content: '',
+  role: '',
+  company: '',
+  video_ids: [],
+  pdf_ids: [],
+  image_ids: [],
+  token_ids: [],
+  attachments: [],
+  type: '',
+  default: false,
+  is_sharable: false,
+  created_at: '',
+  updated_at: '',
+  isFolder: false,
+  templates: [],
+  folder: '',
+  meta: undefined,
+  original_version: '',
+  version: 0,
+  deserialize: function (input: any): Template {
+    throw new Error('Function not implemented.');
+  }
+};
+export const mockContact: Contact = {
+  _id: '123',
+  first_name: '',
+  last_name: '',
+  email: '',
+  user: '',
+  address: '',
+  city: '',
+  state: '',
+  zip: '',
+  label: '',
+  cell_phone: '',
+  country: '',
+  auto_follow_up: '',
+  source: '',
+  brokerage: '',
+  tags: [],
+  recruiting_stage: '',
+  deal_stage: '',
+  website: '',
+  secondary_email: '',
+  secondary_phone: '',
+  additional_field: {},
+  last_activity: '',
+  lastest_message: '',
+  lastest_at: new Date(),
+  unread: false,
+  response: '',
+  rate: 0,
+  automation_off: new Date(),
+  favorite: false,
+  rate_lock: false,
+  owner: '',
+  pending_users: [],
+  unsubscribed: {},
+  updated_at: null,
+  contacted_at: null,
+  sphere_bucket_id: '',
+  should_contact: false,
+  action_score: 0,
+  type: '',
+  prospect_id: '',
+  phones: [],
+  emails: [],
+  addresses: [],
+  deserialize: function (input: any): Contact {
+    throw new Error('Function not implemented.');
+  },
+  toConatct2I: new Contact2I(),
+  fullName: '',
+  avatarName: '',
+  shortName: '',
+  fullAddress: '',
+  shortAddress: '',
+  isVip: false
+};
+
+export const mockContact1: Contact = {
+  _id: '1',
+  first_name: '',
+  last_name: '',
+  email: '',
+  user: '',
+  address: '',
+  city: '',
+  state: '',
+  zip: '',
+  label: '',
+  cell_phone: '',
+  country: '',
+  auto_follow_up: '',
+  source: '',
+  brokerage: '',
+  tags: [],
+  recruiting_stage: '',
+  deal_stage: '',
+  website: '',
+  secondary_email: '',
+  secondary_phone: '',
+  additional_field: {},
+  last_activity: '',
+  lastest_message: '',
+  lastest_at: new Date(),
+  unread: false,
+  response: '',
+  rate: 0,
+  automation_off: new Date(),
+  favorite: false,
+  rate_lock: false,
+  owner: '',
+  pending_users: [],
+  unsubscribed: {},
+  updated_at: null,
+  contacted_at: null,
+  sphere_bucket_id: '',
+  should_contact: false,
+  action_score: 0,
+  type: '',
+  prospect_id: '',
+  phones: [],
+  emails: [],
+  addresses: [],
+  deserialize: function (input: any): Contact {
+    throw new Error('Function not implemented.');
+  },
+  toConatct2I: new Contact2I(),
+  fullName: '',
+  avatarName: '',
+  shortName: '',
+  fullAddress: '',
+  shortAddress: '',
+  isVip: false
+};
+
+export const mockContact2: Contact = {
+  _id: '2',
+  first_name: '',
+  last_name: '',
+  email: '',
+  user: '',
+  address: '',
+  city: '',
+  state: '',
+  zip: '',
+  label: '',
+  cell_phone: '',
+  country: '',
+  auto_follow_up: '',
+  source: '',
+  brokerage: '',
+  tags: [],
+  recruiting_stage: '',
+  deal_stage: '',
+  website: '',
+  secondary_email: '',
+  secondary_phone: '',
+  additional_field: {},
+  last_activity: '',
+  lastest_message: '',
+  lastest_at: new Date(),
+  unread: false,
+  response: '',
+  rate: 0,
+  automation_off: new Date(),
+  favorite: false,
+  rate_lock: false,
+  owner: '',
+  pending_users: [],
+  unsubscribed: {},
+  updated_at: null,
+  contacted_at: null,
+  sphere_bucket_id: '',
+  should_contact: false,
+  action_score: 0,
+  type: '',
+  prospect_id: '',
+  phones: [],
+  emails: [],
+  addresses: [],
+  deserialize: function (input: any): Contact {
+    throw new Error('Function not implemented.');
+  },
+  toConatct2I: new Contact2I(),
+  fullName: '',
+  avatarName: '',
+  shortName: '',
+  fullAddress: '',
+  shortAddress: '',
+  isVip: false
+};
+export const mockAlias: Alias = {
+  email: 'sender@example.com',
+  name: 'sender'
+};
+
+export const mockTemplateToken: TemplateToken = {
+  id: 0,
+  name: 'testname',
+  value: 'testvalue',
+  match_field: '',
+  default: false
+};

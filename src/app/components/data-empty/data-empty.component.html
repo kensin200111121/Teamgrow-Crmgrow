@@ -1,0 +1,227 @@
+<ng-container *ngIf="type == 'todayFollow'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">No Follow up.</h3>
+      <p class="f-4">
+        There is no follow up today. <br/>
+        If you have a task to do, please add a new follow up reminder
+      </p>
+    </div>
+  </div>
+</ng-container>
+<ng-container *ngIf="type == 'tomorrowFollow'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">No Follow up.</h3>
+      <p class="f-4">
+        There is no follow up tomorrow. <br/> If you have a task to do, please add a new follow up reminder.
+      </p>
+    </div>
+  </div>
+</ng-container>
+<ng-container *ngIf="type == 'nextWeekFollow'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">No Follow up.</h3>
+      <p class="f-4">
+        There is no follow up for next week. <br/> If you have a task to do, please add a new follow up reminder.
+      </p>
+    </div>
+  </div>
+</ng-container>
+<ng-container *ngIf="type == 'futureFollow'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">No Follow up.</h3>
+      <p class="f-4">
+        There is no follow up future date. <br/> If you have a task to do, please add a new follow up reminder.
+      </p>
+    </div>
+  </div>
+</ng-container>
+<ng-container *ngIf="type == 'overdueFollow'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">No Follow up.</h3>
+      <p class="f-4">
+        You completed all follow ups overdue.
+      </p>
+    </div>
+  </div>
+</ng-container>
+<ng-container *ngIf="type == 'activity'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">Welcome to our platform</h3>
+      <p class="f-4">You can add some contacts and use our platform.</p>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="type == 'contact'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">Welcome to our platform</h3>
+      <p class="f-4">You can add some contacts and work with them.</p>
+    </div>
+  </div>
+</ng-container>
+
+
+<ng-container *ngIf="type == 'searched_contact'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">There is no searched result</h3>
+      <p class="f-4">There is no searched contacts.</p>
+    </div>
+  </div>
+</ng-container>
+
+
+
+<ng-container *ngIf="type == 'video'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">There is no video</h3>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="type == 'pdf'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">There is no pdf</h3>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="type == 'image'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">There is no image</h3>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="type == 'template'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">There is no template.</h3>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="type == 'automation'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">There is no automation.</h3>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="type == 'ticket'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">There is no ticket.</h3>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="type == 'material_video'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">There is no Videos.</h3>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="type == 'material_pdf'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">There is no PDFs .</h3>
+    </div>
+  </div>
+</ng-container>
+
+
+<ng-container *ngIf="type == 'material_image'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">There is no Images.</h3>
+    </div>
+  </div>
+</ng-container>
+
+
+<ng-container *ngIf="type == 'page'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">There is no Pages.</h3>
+    </div>
+  </div>
+</ng-container>
+
+
+<ng-container *ngIf="type == 'notification'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">There is no notification.</h3>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="type == 'inquiry'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">No Inquiry.</h3>
+      <p class="f-4">
+        There is no call inquiry. <br/>
+        If you have a inquiry to do, please add a new group call inquiry
+      </p>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="type == 'plan'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">No Plan.</h3>
+      <p class="f-4">
+        There is no plan. <br/>
+      </p>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="type == 'finish'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">No Finished.</h3>
+      <p class="f-4">
+        There is no finished call. <br/>
+      </p>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="type == 'campaign-list'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">No Campaign List.</h3>
+      <p class="f-4">
+        There is no campaign list. <br/>
+      </p>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="type == 'campaign-contact'">
+  <div class="empty-wrapper">
+    <div class="empty-content">
+      <h3 class="f-6 font-weight-bold">No Campaign Contact.</h3>
+      <p class="f-4">
+        There is no campaign contact. <br/>
+      </p>
+    </div>
+  </div>
+</ng-container>

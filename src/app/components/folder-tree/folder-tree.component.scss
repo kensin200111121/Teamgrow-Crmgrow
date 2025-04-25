@@ -1,0 +1,32 @@
+.dropdown-wrapper {
+  position: relative;
+  width: 96px;
+}
+
+.text-gray {
+  color: #c5c0c0;
+  font-weight: 400;
+}
+
+.text-black {
+  color: black;
+  font-weight: 600;
+}
+
+.icon-right {
+  width: 10px;
+  height: 10px;
+}
+
+.flag-container {
+  display: flex;
+  align-items: center;
+  position: absolute !important;
+
+  .dropdown-toggle {
+    height: 500px;
+    width: 96px;
+    justify-content: center;
+    z-index: 1001;
+  }
+}

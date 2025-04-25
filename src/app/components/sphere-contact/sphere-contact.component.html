@@ -1,0 +1,75 @@
+<div class="card-body m-auto" [class.disabled]="isLoading || isSaving">
+  <div class="progress-bar" *ngIf="isLoading || isSaving">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+  <div class="mb-5">
+    <div class="v-center">
+      <div class="contact-avatar f-6 mr-2">
+        {{ contact.avatarName }}
+      </div>
+      <span class="fw-600" style="font-size: 1.4rem">{{ contact.fullName }}</span>
+      <div class="ml-auto v-center text-decoration-none c-pointer" (click)="excludeContact()">
+        <i class="d-block i-icon i-block bgc-red mr-2"></i>
+        <span class="fw-600 c-red" translate>Exclude from Sphere</span>
+      </div>
+    </div>
+    <div class="d-block contact-info">
+      <span>{{ contact.email }}</span>
+    </div>
+    <div class="d-block contact-info">
+      <span>{{ contact.cell_phone | phone_format }}</span>
+    </div>
+    <div class="d-block contact-info">
+      <span>{{ contact.fullAddress }}</span>
+    </div>
+    <div class="d-block contact-info">
+      <app-label-display [value]="contact.label"></app-label-display>
+    </div>
+    <div class="d-block contact-info">
+      <span *ngFor="let tag of contact.tags" class="tag-el">
+        {{ tag }}
+      </span>
+    </div>
+  </div>
+  <div class="v-center mt-auto mb-2">
+    <label class="fw-600 form-label mb-0" translate
+      >What's your relationship with this person?</label
+    >
+  </div>
+  <div class="v-center justify-content-between">
+    <button
+      *ngFor="let bucket of buckets"
+      class="btn btn-white border-primary d-flex align-items-center"
+      [class.selected-bucket]="selectedBucket?._id === bucket._id"
+      (click)="setBucket(bucket)"
+    >
+      <span>{{ bucket.name }}</span>
+      <span
+        *ngIf="bucket.hotkey"
+        class="short-key ml-2"
+      >{{ bucket.hotkey }}</span>
+    </button>
+  </div>
+
+  <div class="actions-container" [class.disabled]="!selectedBucket?._id && !_contact?.sphere_bucket_id">
+    <div class="v-center mt-5 mb-2">
+      <label class="fw-600 form-label mb-0" translate
+        >Is this person likely to give you business or a referral?</label
+      >
+    </div>
+    <div class="v-center justify-content-between">
+      <button
+        *ngFor="let score of actionScores"
+        class="btn btn-white border-primary d-flex align-items-center"
+        [class.selected-answer]="selectedScore === score.score"
+        (click)="setActionScore(score.score)"
+      >
+        <span translate>{{ score.name }}</span>
+        <span
+          class="short-key ml-2"
+          *ngIf="score.hotkey"
+        >{{ score.hotkey }}</span>
+      </button>
+    </div>
+  </div>
+</div>

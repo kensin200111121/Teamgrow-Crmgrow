@@ -1,0 +1,34 @@
+@import 'variables';
+
+.select-form {
+  label {
+    font-weight: bold;
+  }
+
+  .preview-section {
+    background-color: #FAFAFA;
+    overflow-y: auto;
+    min-height: 50px;
+    height: 150px;
+    border-radius: 8px;
+  }
+
+  .form-name {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px;
+  }
+
+  .form-check {
+    label {
+      font-weight: 400;
+    }
+  }
+
+  .automation-title {
+    font-size: 12px;
+    font-weight: 400;
+    color: $color-dark;
+    padding-left: 16px;
+  }
+}

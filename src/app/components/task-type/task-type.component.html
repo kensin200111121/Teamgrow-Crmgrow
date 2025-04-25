@@ -1,0 +1,50 @@
+<div class="task-types btn-group btn-group-toggle rounded">
+  <div class="btn btn-type px-2 rounded no-shadow"
+         data-name="task-type-general"
+         placement="bottom"
+         ngbTooltip="{{'General' | translate}}"
+         (click)="updateValue('task')"
+         [class.active]="value == 'task'"
+  >
+    <i class="i-icon i-task d-block bgc-dark"></i>
+  </div>
+  <div class="btn btn-type px-2 rounded no-shadow"
+       data-name="task-type-call"
+       placement="bottom"
+       ngbTooltip="{{'Call' | translate}}"
+       (click)="updateValue('call')"
+       [class.active]="value == 'call'"
+       *enableByFeatures="USER_FEATURES.DIALER"
+  >
+    <i class="i-icon i-phone d-block bgc-dark"></i>
+  </div>
+  <div class="btn btn-type px-2 rounded no-shadow"
+       data-name="task-type-meeting"
+       placement="bottom"
+       ngbTooltip="{{'Meeting' | translate}}"
+       (click)="updateValue('meeting')"
+       [class.active]="value == 'meeting'"
+       *ngIf="!isSspa"
+  >
+    <i class="i-icon i-lunch d-block bgc-dark"></i>
+  </div>
+  <div class="btn btn-type px-2 rounded no-shadow"
+       data-name="task-type-email"
+       placement="bottom"
+       ngbTooltip="{{'Email' | translate}}"
+       (click)="updateValue('email')"
+       [class.active]="value == 'email'"
+  >
+    <i class="i-icon i-message d-block bgc-dark"></i>
+  </div>
+  <div class="btn btn-type px-2 rounded no-shadow"
+      data-name="task-type-text"
+      placement="bottom"
+      ngbTooltip="{{'Text' | translate}}"
+      (click)="updateValue('text')"
+      [class.active]="value == 'text'"
+      *enableByFeatures="USER_FEATURES.TEXT"
+  >
+    <i class="i-icon i-sms-sent d-block bgc-dark"></i>
+  </div>
+</div>

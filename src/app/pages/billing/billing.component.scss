@@ -1,0 +1,62 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+.card-col {
+    width: 220px;
+}
+
+.status-col {
+  width: 100px;
+}
+
+.gross-col {
+  width: 75px;
+}
+
+.download-col {
+  width: 160px;
+}
+
+.card-img {
+    width: 36px;
+    height: 20px;
+    position: relative;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+}
+
+.c-seablue {
+  font-style: normal;
+  font-weight: normal;
+  color: #101336;
+  font-size: 12px;
+  line-height: 16px;
+  text-transform: uppercase;
+}
+
+.c-plan-item {
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 19px;
+}
+
+.current-plan-list {
+  padding-left: 10px;
+  padding-top: 20px;
+}
+
+.c-sub-cancel {
+  color: #1301FF;
+  border: 1px solid #1301FF;
+}
+
+a.disabled {
+  visibility: hidden;
+  pointer-events: none;
+}

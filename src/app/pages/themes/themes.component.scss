@@ -1,0 +1,18 @@
+.table tr td {
+    &.theme-thumbnail {
+        width: 25%;
+        img {
+            width: 96px;
+            height: 54px;
+        }
+    }
+    &.theme-type {
+        width: 10%;
+    }
+    &.theme-content {
+        width: 20%;
+    }
+    &.theme-action {
+        width: 10%;
+    }
+}

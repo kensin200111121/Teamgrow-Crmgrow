@@ -1,0 +1,73 @@
+<div class="custom-mat-field mat-select-wrapper">
+  <mat-form-field style="display: block;" appearance="outline">
+    <mat-select [formControl]="formControl" placeholder="{{ placeholder | translate }}" #selector
+      [disableOptionCentering]="true">
+      <mat-select-trigger>
+        <ng-container *ngIf="formControl.value">
+          <ng-container *ngIf="resultItemTemplate; else defaultResult" [ngTemplateOutlet]="resultItemTemplate"
+            [ngTemplateOutletContext]="{ $implicit: formControl.value }">
+          </ng-container>
+          <ng-template #defaultResult>
+            <div *ngIf="formControl.value === 'allMembers' || formControl.value === 'round_robin'; else userResult">
+              <div class="chip d-flex justify-content-between align-items-center">
+                <div class="v-center">
+                  {{formControl.value === 'allMembers' ? 'All Members' : 'Round Robin'}}
+                </div>
+                <div (click)="cancelSelect()">
+                  <i class="d-block i-icon i-close bgc-dark"></i>
+                </div>
+              </div>
+            </div>
+            <ng-template #userResult>
+              <div class="chip d-flex justify-content-between align-items-center">
+                <div class="v-center">
+                  <img *ngIf="formControl.value.picture_profile; else avatarNameTemplate"
+                    [src]="formControl.value.picture_profile"
+                    (error)="sspaService.imgError($event,'img/user_avatar.svg')"
+                    class="form-avatar rounded-circle mr-1" />
+                  <ng-template #avatarNameTemplate>
+                    <div class="form-avatar rounded-circle bg-dark mr-3">{{ getAvatarName(formControl.value) }}</div>
+                  </ng-template>
+                  <div class="info">
+                    <div class="f-4">{{ formControl.value.user_name }}</div>
+                  </div>
+                </div>
+                <div (click)="cancelSelect()">
+                  <i class="d-block i-icon i-close bgc-dark"></i>
+                </div>
+              </div>
+            </ng-template>
+          </ng-template>
+        </ng-container>
+      </mat-select-trigger>
+      <mat-option>
+        <ngx-mat-select-search [formControl]="inputControl" [searching]="searching"
+          [placeholderLabel]="formPlaceholder | translate"
+          noEntriesFoundLabel="{{ 'There is no searched results' | translate }}" preventHomeEndKeyPropagation="true">
+        </ngx-mat-select-search>
+      </mat-option>
+      <mat-option [value]="'allMembers'" *ngIf="role!=='viewer'&&type!=='Transfer'">
+        <div class="d-flex chip py-2">All Members</div>
+      </mat-option>
+      <mat-option [value]="'round_robin'" *ngIf="role==='owner'">
+        <div class="d-flex chip py-2">Round Robin</div>
+      </mat-option>
+      <mat-option *ngFor="let item of filteredResults | async" [value]="item"
+        style="height: unset; line-height: unset;">
+        <div class="d-flex chip py-2">
+          <img *ngIf="item.picture_profile; else avatarNameTemplate" [src]="item.picture_profile"
+            (error)="sspaService.imgError($event,'img/user_avatar.svg')" class="form-avatar rounded-circle mr-1" />
+          <ng-template #avatarNameTemplate>
+            <div class="form-avatar rounded-circle bg-dark mr-3">{{ getAvatarName(item) }}</div>
+          </ng-template>
+          <div class="info ml-1">
+            <div class="f-5 font-weight-bold">{{ item.user_name }}</div>
+            <div class="f-2">{{ item['email'] || ('' | translate) }}</div>
+            <div class="f-2">{{ item['cell_phone'] || item['phone']?.['internationalNumber'] || ('' | translate) }}
+            </div>
+          </div>
+        </div>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

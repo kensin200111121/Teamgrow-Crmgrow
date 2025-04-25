@@ -1,0 +1,42 @@
+<h1 mat-dialog-title *ngIf="data.type != 'filter'; else filter">Share media</h1>
+<ng-template #filter>
+  <h1 mat-dialog-title>Watched material</h1>
+</ng-template>
+<mat-dialog-content>
+  <div class="template-container">
+    <ng-container *ngIf="loading || !materials.length; else showMaterials">
+      <div class="loader mt-5"></div>
+      <h4 class="f-8 text-center font-weight-bold mt-2">Loading {{share_type}}s for share...</h4>
+    </ng-container>
+    <ng-template #showMaterials>
+      <div class="material-container mt-3">
+        <ng-container *ngFor="let material of materials">
+          <div class="material-item" (click)="toggleMaterial(material)" [class.active]="materialSelection.isSelected(material._id)">
+            <img class="confirm" [src]="sspaService.toAsset('img/confirm.svg')" alt="check" *ngIf="materialSelection.isSelected(material._id)">
+            <div class="thumb-wrapper">
+              <img class="thumbnail" src="{{material.thumbnail || material.preview}}" alt="{{material.title}}"
+                   onerror="( this.src = errorThumb() );" />
+            </div>
+            <div class="material-title f-1 font-weight-bold mt-3">
+              {{material.title}}
+            </div>
+            <div class="material-description f-1 mt-2">
+              {{material.description || '' | stripTags | removeEntity | shorten: 80: '...'}}
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </ng-template>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button type="button" class="btn c-blue" mat-dialog-close>Cancel</button>
+  <button
+    type="submit"
+    class="btn btn-primary"
+    [class.loading]="sharing"
+    (click)="shareMaterials()"
+  >
+    Share
+  </button>
+</mat-dialog-actions>

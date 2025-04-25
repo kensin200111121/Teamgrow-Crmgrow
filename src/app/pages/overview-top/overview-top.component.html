@@ -1,0 +1,263 @@
+<div class="row">
+  <ng-container *ngIf="isSspa; else normalTemplete">
+    <div class="col-md-4 mb-3">
+      <div class="card card-body-height card-padding">
+        <app-nav-link class="card-header c-pointer pl-2" [link]="getToLink('prospects')">
+          {{'Prospects' | translate }}
+        </app-nav-link>
+        <div class="card-body card-body-padding card-prospects d-flex flex-column justify-content-between">
+          <div>
+            <app-nav-link class="card-text v-center c-pointer" [link]="getToLink('prospects')">
+              <span class="text-green">+{{prospectCount}}</span>
+              <a class="c-pointer ml-3 mt-2">
+                <i class="d-block i-icon bgc-dark i-chev-right"></i>
+              </a>
+            </app-nav-link>
+            <div>
+              Added Last 7 Days
+            </div>
+          </div>
+          <div>
+            <app-nav-link class="mt-auto btn btn-primary c-pointer" [link]="getToLink('prospects')" translate>
+              See Prospects
+            </app-nav-link>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card card-body-height card-padding">
+        <div class="card-header c-pointer pl-2 d-flex justify-content-between align-items-center">
+          {{'New Leads' | translate }}
+          <div
+            class="ml-auto c-pointer v-center btn-card-header"
+            ngbDropdown
+            placement="bottom-right"
+          >
+            <div class="v-center c-pointer" ngbDropdownToggle>
+              <span class="pr-2">{{ viewNewLeadsOption.label | translate }}</span>
+            </div>
+            <div ngbDropdownMenu aria-labelledby="taskSortTypes">
+              <div
+                class="py-2"
+                ngbDropdownItem
+                *ngFor="let option of VIEW_OPTIONS"
+                (click)="changeOptionNewLeads(option)"
+              >
+                <span
+                  class="f-4 v-center"
+                  [class.font-weight-bold]="option.id === viewNewLeadsOption.id"
+                >
+                  {{ option.label | translate }}
+                  <i
+                    class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                    *ngIf="option.id === viewNewLeadsOption.id"
+                  ></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body card-body-padding d-flex flex-wrap">
+          <div class="col-lg-6 col-md-12 d-flex justify-content-between align-items-center pl-1 pr-1">
+            <div class="d-flex align-items-center">
+              <img [src]="sspaService.toAsset('img/dashboard/geoleads.svg')" class="pr-2">
+              GeoLeads
+            </div>
+            <span class="f-7 font-weight-bold pr-gap">
+              {{newLeadsOverview?.Geo || 0}}
+            </span>
+          </div>
+          <div class="col-lg-6 col-md-12 d-flex justify-content-between align-items-center pl-1 pr-1">
+            <div class="d-flex align-items-center">
+              <img [src]="sspaService.toAsset('img/dashboard/expired.svg')" class="pr-2 pl-gap">
+              Expired
+            </div>
+            <span class="f-7 font-weight-bold">
+              {{newLeadsOverview?.Expired || 0}}
+            </span>
+          </div>
+          <div class="col-lg-6 col-md-12 d-flex justify-content-between align-items-center pl-1 pr-1">
+            <div class="d-flex align-items-center">
+              <img [src]="sspaService.toAsset('img/dashboard/fsbo.svg')" class="pr-2">
+              FSBO
+            </div>
+            <span class="f-7 font-weight-bold pr-gap">
+              {{newLeadsOverview?.FSBO || 0}}
+            </span>
+          </div>
+          <div class="col-lg-6 col-md-12 d-flex justify-content-between align-items-center pl-1 pr-1">
+            <div class="d-flex align-items-center">
+              <img [src]="sspaService.toAsset('img/dashboard/frbo.svg')" class="pr-2 pl-gap">
+              FRBO
+            </div>
+            <span class="f-7 font-weight-bold">
+              {{newLeadsOverview?.FRBO || 0}}
+            </span>
+          </div>
+          <div class="col-lg-6 col-md-12 d-flex justify-content-between align-items-center pl-1 pr-1">
+            <div class="d-flex align-items-center">
+              <img [src]="sspaService.toAsset('img/dashboard/foreclosure.svg')" class="pr-2">
+              Foreclosure
+            </div>
+            <span class="f-7 font-weight-bold pr-gap">
+              {{newLeadsOverview?.PreForeclosure || 0}}
+            </span>
+          </div>
+          <div class="col-lg-6 col-md-12 d-flex justify-content-between align-items-center pl-1 pr-1">
+            <div class="d-flex align-items-center">
+              <img [src]="sspaService.toAsset('img/dashboard/import.svg')" class="pr-2 pl-gap">
+              My Imports
+            </div>
+            <span class="f-7 font-weight-bold">
+              {{newLeadsOverview?.ThirdParty || 0}}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card card-body-height card-padding">
+        <div class="card-header c-pointer pl-2 d-flex justify-content-between align-items-center">
+          {{'Pulse' | translate }}
+          <div
+            class="ml-auto c-pointer v-center btn-card-header"
+            ngbDropdown
+            placement="bottom-right"
+          >
+            <div class="v-center c-pointer" ngbDropdownToggle>
+              <span class="pr-2">{{ viewPulseOption.label | translate }}</span>
+            </div>
+            <div ngbDropdownMenu aria-labelledby="taskSortTypes">
+              <div
+                class="py-2"
+                ngbDropdownItem
+                *ngFor="let option of VIEW_OPTIONS"
+                (click)="changeOptionPulse(option)"
+              >
+                <span
+                  class="f-4 v-center"
+                  [class.font-weight-bold]="option.id === viewPulseOption.id"
+                >
+                  {{ option.label | translate }}
+                  <i
+                    class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                    *ngIf="option.id === viewPulseOption.id"
+                  ></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body card-body-padding d-flex flex-wrap">
+          <div class="col-md-12 d-flex justify-content-between align-items-center pl-0 pr-0">
+            <div class="d-flex align-items-center">
+              <img [src]="sspaService.toAsset('img/dashboard/call.svg')" class="pr-2">
+              Calls Made
+            </div>
+            <span class="f-7 font-weight-bold pr-2">
+              {{plusOverview?.total.calls || 0}}
+            </span>
+          </div>
+          <div class="col-md-12 d-flex justify-content-between align-items-center pl-0 pr-0">
+            <div class="d-flex align-items-center">
+              <img [src]="sspaService.toAsset('img/dashboard/connections.svg')" class="pr-2">
+              Connections
+            </div>
+            <span class="f-7 font-weight-bold pr-2">
+              {{plusOverview?.total?.conv || 0}}
+            </span>
+          </div>
+          <div class="col-md-12 d-flex justify-content-between align-items-center pl-0 pr-0">
+            <div class="d-flex align-items-center">
+              <img [src]="sspaService.toAsset('img/dashboard/contacts.svg')" class="pr-2">
+              Contacts
+            </div>
+            <span class="f-7 font-weight-bold pr-2">
+              0
+            </span>
+          </div>
+          <div class="col-md-12 d-flex justify-content-between align-items-center pl-0 pr-0">
+            <div class="d-flex align-items-center">
+              <img [src]="sspaService.toAsset('img/dashboard/appt.svg')" class="pr-2">
+              Appt. Set
+            </div>
+            <span class="f-7 font-weight-bold pr-2">
+              {{plusOverview?.total?.appts || 0}}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #normalTemplete>
+    <div [ngClass]="isSspa?'col-md-3':'col-md-4'">
+      <div class="card">
+        <div class="card-header c-pointer" (click)="goToPage('contacts')">
+          {{ 'Contacts' | translate}}
+        </div>
+        <div class="card-body">
+          <div class="card-text v-center c-pointer" (click)="goToPage('contacts')">
+            <span>{{ contactCount }}</span>
+            <a class="c-pointer ml-3 mt-2">
+              <i class="d-block i-icon bgc-dark i-chev-right"></i>
+            </a>
+          </div>
+          <div class="card-bottom">
+            <span class="text-green">+{{ contactMonthCount }}</span> {{"Added Last 30 Days" | translate}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div [ngClass]="isSspa?'col-md-3':'col-md-4'">
+      <div class="card">
+        <div class="card-header c-pointer" (click)="goToPage('pipeline')">
+          {{'Deals' | translate}}
+        </div>
+        <div class="card-body">
+          <div class="card-text v-center c-pointer" (click)="goToPage('pipeline')">
+            <span>{{ dealCount }}</span>
+            <a class="c-pointer ml-3 mt-2">
+              <i class="d-block i-icon bgc-dark i-chev-right"></i>
+            </a>
+          </div>
+          <div class="card-bottom">
+            <span class="text-green">+{{ dealMonthCount }}</span> {{"Added Last 30 Days" | translate}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div [ngClass]="isSspa?'col-md-3':'col-md-4'">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          {{'Usage' | translate}}
+          <a class="c-pointer btn-card-header c-pointer" (click)="purchaseSMS()" *ngIf="!isVortex">{{'Buy SMS' | translate}}</a>
+          <a class="c-pointer btn-card-header c-pointer" [routerLink]="['/settings/sms']" *ngIf="isVortex">{{'Settings' | translate}}</a>
+        </div>
+        <div class="card-body" style="padding-top: 5px;">
+          <div class="v-center c-pointer" (click)="goToPage('sms')">
+            <span>SMS</span>
+            <a class="c-pointer ml-3 mt-1">
+              <i class="d-block i-icon bgc-dark i-chev-right"></i>
+            </a>
+          </div>
+          <div class="v-center d-flex justify-content-between mt-3">
+            <div class="chart">
+              <canvas baseChart [datasets]="pieChartData" [labels]="pieChartLabels" [type]="pieChartType"
+                [options]="pieChartOptions" [plugins]="pieChartPlugins" [legend]="pieChartLegend">
+              </canvas>
+            </div>
+            <div class="chart-label">
+              <div class="legend-item v-center m-2" *ngFor="let item of usageData">
+                <div class="legend-color d-block mr-1" [style.backgroundColor]="item.color"></div>
+                <div class="legend-name f-3">{{item.id | translate}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</div>

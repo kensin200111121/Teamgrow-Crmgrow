@@ -1,0 +1,10 @@
+<div class="source-select">
+  <div class="d-flex">
+    <input data-name="task-global-filter" type="text" class="form-control" [(ngModel)]="searchOption.str" cdkFocusInitial/>
+  </div>
+  <div class="d-flex align-items-end">
+    <button type="submit" data-action="task-global-filter-apply" class="btn btn-primary" (click)="save()" translate>
+      Apply
+    </button>
+  </div>
+</div>

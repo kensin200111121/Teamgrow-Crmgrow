@@ -1,0 +1,44 @@
+<div [class]="viewMode === ''? 'filter-options' : ''">
+  <div class="py-2 dropdown-header d-flex justify-content-between" *ngIf="isSspa && viewMode !== 'dropdown'">
+    <span class="f-4 v-center font-weight-bold" translate>CONTACT LISTS</span>
+  </div>
+  <div style="max-height: 100%; overflow:auto;" [style]="!isSspa?'max-height: 320px;':''">
+    <ng-container *ngFor="let filter of originContactListType">
+      <div
+        class="py-2 saved-filters align-items-center"
+        [class.selected]="filter._id === currentFilterId"
+        ngbDropdownItem
+        *enableByFeatures="filter.feature"
+        (click)="applyFilter($event,filter)"
+      >
+        <div class="f-4 v-center save-filter-item mr-2">
+          {{ filter.label }}
+        </div>
+        <div class="count-badge" *ngIf="filter._id ==='pending'">{{pendingContactsCount}}</div>
+      </div>
+    </ng-container>
+    <div
+      placement="bottom"
+      tooltipClass="filter-options-tooltip"
+      [ngbTooltip]="filter.title"
+      class="py-2 saved-filters align-items-center"
+      [class]="filter._id === currentFilterId ? 'selected':''"
+      ngbDropdownItem
+      *ngFor="let filter of savedFilters"
+      (click)="applyFilter($event, filter)"
+    >
+      <span class="f-4 v-center save-filter-item mr-auto">
+        {{ filter.title | shorten: 16: '...' }}
+      </span>
+      <a class="ml-1 c-pointer save-filter-item-delete" *ngIf="userId === filter.user" (click)="removeSavedFilter($event, filter)">
+        <i class="i-icon i-trash d-block bgc-dark sm ml-1 mb-0"></i>
+      </a>
+    </div>
+    <div class="py-2 v-center align-items-center c-pointer" (click)="saveFilter($event)" style="padding-left: 1rem;" *ngIf="viewMode !== 'dropdown'">
+      <div>
+        <img [src]="sspaService.toAsset('img/blue-add.svg')"/>
+      </div>
+      <span class="f-4 v-center c-blue fw-600" translate>New List</span>
+    </div>
+  </div>
+</div>

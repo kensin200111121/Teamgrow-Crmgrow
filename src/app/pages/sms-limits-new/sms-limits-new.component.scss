@@ -1,0 +1,54 @@
+.content {
+  width: 100%;
+  max-width: 600px;
+
+  @media screen and (min-width: 576px) {
+    margin-left: -1.5rem;
+  }
+
+  .add-phone {
+    width: 10px;
+    height: 10px;
+    min-width: 10px;
+  }
+}
+
+.errorContent {
+  width: 100%;
+  height: 100%;
+  max-width: 600px;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 1.5rem;
+}
+
+.description {
+  max-width: 500px;
+}
+
+.disabled {
+  filter: blur(4px);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.error-icon {
+  width: 60px;
+  height: 60px;
+}
+
+.phone-number {
+  background: gainsboro;
+  padding: 0px 4px;
+  border-radius: 6px;
+}
+
+.loading button {
+  opacity: 0.5;
+  pointer-events: none;
+  background: #f0f0f0;
+}

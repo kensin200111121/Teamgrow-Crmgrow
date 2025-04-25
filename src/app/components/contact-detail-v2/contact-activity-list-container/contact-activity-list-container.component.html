@@ -1,0 +1,18 @@
+<div class="container d-flex pb-0 pt-3 px-3 contact-activity-list">
+  <app-slide-tab [tabs]="tabs" [selected]="tab" (onChange)="onChangeTab($event)" type="plain"
+    class="border-bottom pl-0 rounded-0">
+  </app-slide-tab>
+
+  <div class="mt-1 position-relative d-flex flex-grow-1 contact-activity-list-container">
+    <ng-container [ngSwitch]="tab.id">
+      <ng-container *ngSwitchCase="'activity'">
+        <app-contact-activity-list  [filterTypes]="filterTypes" [setContactId]="contactId" [prospectId]="prospectId"
+          [class]="'d-flex flex-grow-1'"></app-contact-activity-list>
+      </ng-container>     
+      <ng-container *ngSwitchDefault>
+        <app-contact-action-list [setContactId]="contactId" [type]="tab.id"
+          [class]="'d-flex flex-grow-1'"></app-contact-action-list>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>

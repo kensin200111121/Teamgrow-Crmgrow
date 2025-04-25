@@ -1,0 +1,190 @@
+<div class="page-content">
+  <div class="v-center justify-content-between">
+    <h1 class="page-title" translate>Forms</h1>
+    <a
+      data-action="create-lead-capture-form"
+      class="btn btn-primary f-6 font-weight-bold v-center justify-content-center"
+      [routerLink]="'/lead-hub/lead-capture/create'"
+    >
+      <i class="i-icon i-plus f-4 bgc-white d-block h-12 mr-2"></i>
+      {{ 'New Form' | translate }}
+    </a>
+  </div>
+  <div
+    class="page-wrapper mt-3"
+    *ngIf="(leadFormService.forms$ | async)?.length; else emptyForms"
+  >
+    <div
+      class="updating-status"
+      *ngIf="(leadFormService.loadStatus$ | async) === STATUS.REQUEST"
+      translate
+    >
+      LOADING
+    </div>
+    <div class="forms" *ngFor="let form of leadFormService.forms$ | async">
+      <div class="form-detail">
+        <div>
+          <div class="v-center justify-content-between mb-2">
+            <span
+              class="f-22 font-weight-bold c-dark title"
+              placement="bottom"
+              ngbTooltip="{{ form.name }}"
+              >
+                <a class="c-dark td-none" [routerLink]="'/lead-hub/lead-capture/' + form._id">{{ form.name }}</a>
+              </span>
+            <div class="v-center material-actions ml-auto">
+              <div ngbDropdown placement="bottom-right" class="ml-auto">
+                <a
+                  ngbDropdownToggle
+                  class="v-center btn bgc-white c-dark f-3 no-carot px-0"
+                >
+                  <i class="d-block i-icon i-menu-more bgc-grey-light"></i>
+                </a>
+                <div ngbDropdownMenu class="light px-2">
+                  <a
+                    [attr.data-action]="'lead-capture-edit'"
+                    class="v-center border-0 py-2 c-dark dropdown-item"
+                    [routerLink]="'/lead-hub/lead-capture/edit/' + form._id"
+                  >
+                    <i
+                      class="i-icon i-edit bgc-dark ml-1"
+                      aria-hidden="true"
+                    ></i>
+                    <span class="ml-3 f-3 font-weight-bold" translate
+                      >Edit</span
+                    >
+                  </a>
+                  <button
+                    [attr.data-action]="'lead-capture-edit'"
+                    class="v-center border-0 py-2 c-dark dropdown-item"
+                    (click)="getEmbededCode(form)"
+                  >
+                    <i
+                      class="i-icon i-embed bgc-dark ml-1"
+                      aria-hidden="true"
+                    ></i>
+                    <span class="ml-3 f-3 font-weight-bold" translate
+                      >Get Embed Code</span
+                    >
+                  </button>
+                  <a
+                    [attr.data-action]="'lead-capture-edit'"
+                    class="v-center border-0 py-2 c-dark dropdown-item"
+                    [routerLink]="'/lead-hub/lead-capture/' + form._id"
+                  >
+                    <i
+                      class="i-icon i-detail bgc-dark ml-1"
+                      aria-hidden="true"
+                    ></i>
+                    <span class="ml-3 f-3 font-weight-bold" translate
+                      >Form Details</span
+                    >
+                  </a>
+                  <button
+                    [attr.data-action]="'lead-capture-edit'"
+                    class="v-center border-0 py-2 c-dark dropdown-item"
+                    (click)="downloadResponse(form)"
+                  >
+                    <i
+                      class="i-icon i-download bgc-dark ml-1"
+                      aria-hidden="true"
+                    ></i>
+                    <span class="ml-3 f-3 font-weight-bold" translate
+                      >Download Responses</span
+                    >
+                  </button>
+                  <hr class="m-0" />
+                  <button
+                    [attr.data-action]="'lead-capture-delete'"
+                    class="v-center border-0 py-2 c-dark dropdown-item"
+                    *ngIf="!form.isAdmin"
+                    (click)="deleteForm(form._id)"
+                  >
+                    <i
+                      class="i-icon i-trash bgc-dark ml-1"
+                      aria-hidden="true"
+                    ></i>
+                    <span class="ml-3 f-3 font-weight-bold" translate
+                      >Delete</span
+                    >
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mb-2">
+            <span class="f-4 font-weight-bold" translate>Fields</span>
+            <div class="fields-container">
+              <div class="field" *ngFor="let field of form.fields">
+                {{ field.name }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-auto">
+          <div>
+            <div class="f-4 font-weight-bold" translate>Automation</div>
+            <div class="f-4 c-grey-light" *ngIf="form?.automation" translate>
+              {{ form?.automation?.title }}
+            </div>
+            <span class="f-4 c-grey-light" *ngIf="!form?.automation" translate
+              >None</span
+            >
+          </div>
+          <div class="mt-1">
+            <div class="f-4 font-weight-bold" translate>Tags</div>
+            <div class="" *ngIf="form.tags.length">
+              <span
+                class="mr-1 mt-1 tag font-weight-bold no-wrap"
+                *ngFor="let tag of form.tags.slice(0, 5)"
+              >
+                {{ tag }}
+              </span>
+              <span class="more font-weight-bold" *ngIf="form.tags.length > 5"
+                >More {{ form.tags.length - 5 }}</span
+              >
+            </div>
+            <span class="f-4 c-grey-light" *ngIf="form.tags.length === 0" translate
+              >None</span
+            >
+          </div>
+          <hr class="mt-1" />
+          <div class="mt-1 d-flex items-center justify-content-between">
+            <div class="d-flex items-center">
+              <i class="i-icon i-response d-block bgc-dark h-14 mr-1"></i>
+              <div class="f-4 font-weight-bold" translate>Responses</div>
+            </div>
+            <div class="response-number">{{ form.trackerCount || 0 }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #emptyForms>
+    <ng-container [ngSwitch]="leadFormService.loadStatus$ | async">
+      <div class="empty-list mt-5 pt-5" *ngSwitchCase="STATUS.SUCCESS">
+        <div class="object-icon v-center mt-5">
+          <i class="i-icon i-event-note d-block bgc-dark"></i>
+        </div>
+        <h4 class="font-weight-bold mt-3 mb-3" translate>
+          There are no lead forms yet.
+        </h4>
+      </div>
+      <div class="empty-list mt-5 pt-5" *ngSwitchCase="STATUS.FAILURE">
+        <div class="object-icon v-center mt-5">
+          <i class="i-icon i-event-note d-block bgc-dark"></i>
+        </div>
+        <h4 class="font-weight-bold mt-3 mb-3" translate>
+          There are no lead forms yet.
+        </h4>
+      </div>
+      <div
+        class="list-loading text-center mt-5 pt-5"
+        *ngSwitchCase="STATUS.REQUEST"
+      >
+        <div class="loader mt-5 pt-5 lg"></div>
+        <h4 class="fw-600 mt-2" translate>Loading lead forms...</h4>
+      </div>
+    </ng-container>
+  </ng-template>
+</div>

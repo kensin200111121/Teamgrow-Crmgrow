@@ -1,0 +1,47 @@
+<div class="position-relative">
+  <div
+    class="flag-container"
+    [class.prevent-event]="disabled"
+    ngbDropdown
+    placement="bottom-start"
+    autoClose="outside"
+  >
+    <div ngbDropdownToggle class="drop-contain">
+      <div class="v-center c-pointer no-carot">
+        <div class="iti__flag" [ngClass]="selectedCountry?.flagClass"></div>
+        <div class="selected-dial-code f-3 mx-1">
+          +{{ selectedCountry?.dialCode }}
+        </div>
+        <div class="iti__arrow"></div>
+      </div>
+    </div>
+    <div ngbDropdownMenu class="countries-wrapper p-0">
+      <div
+        class="dropdown-item c-pointer"
+        *ngFor="let country of COUNTRIES"
+        (click)="onCountrySelect(country, control)"
+      >
+        <div ngbDropdownToggle class="v-center">
+          <div class="iti__flag" [ngClass]="country.flagClass"></div>
+          <div class="iti__label mx-1">{{ country.name }}</div>
+          <div class="dial-code op-75 f-3">+{{ country.dialCode }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <input
+    type="tel"
+    [(ngModel)]="phoneNumber"
+    (ngModelChange)="onPhoneNumberChange()"
+    autocomplete="off"
+    [ngClass]="cssClass"
+    (keypress)="onInputKeyPress($event)"
+    (blur)="onBlur($event)"
+    (keyup)="keyUp($event)"
+    [placeholder]="placeholder || selectedCountry?.placeHolder"
+    [attr.validation]="true"
+    #control
+    [class.disabled]="disabled"
+    data-name="add-user-phone"
+  />
+</div>

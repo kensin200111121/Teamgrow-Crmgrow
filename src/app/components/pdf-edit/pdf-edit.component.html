@@ -1,0 +1,92 @@
+<div class="v-center justify-content-between">
+  <h1 mat-dialog-title *ngIf="data.type == 'edit'; else duplicatePdf" translate>
+    Edit your PDF
+  </h1>
+  <ng-template #duplicatePdf>
+    <h1 mat-dialog-title translate>
+      Clone your PDF
+    </h1>
+  </ng-template>
+  <button class="v-center border-0 bgc-trans" mat-dialog-close>
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</div>
+<form #videoForm="ngForm"
+  (ngSubmit)="submitted = true; videoForm.form.valid ? (data.type == 'edit' ? update() : duplicate()) : false"
+  [class.was-validateed]="submitted">
+  <mat-dialog-content>
+    <ng-container *ngIf="!isSourceUpdate; else sourcePanel">
+      <div class="row mx-0" *ngIf="data.editContent">
+        <div class="col-12 mb-2 rounded bgc-pale px-0">
+          <div class="thumbnail-wrapper">
+            <img class="thumbnail" src="{{pdf.preview}}" />
+            <a class="v-center justify-content-center bgc-blue c-pointer edit-thumbnail"
+              (click)="openPreviewDialog()"><i class="d-block i-icon i-edit bgc-white"></i></a>
+          </div>
+        </div>
+        <div class="w-100 d-flex justify-content-end">
+          <a class="border-0 c-blue c-pointer f-3 font-weight-bold undecoration" (click)="changeMaterial()">
+            {{ 'Change source' | translate }}
+          </a>
+        </div>
+      </div>
+      <div class="row mx-0">
+        <div class="col-12 px-0">
+          <div class="form-group">
+            <label translate>Title</label>
+            <input class="form-control" type="text" placeholder="{{ 'PDF Title' | translate }}" name="title" #title="ngModel"
+              [(ngModel)]="pdf.title" required>
+            <span class="invalid-feedback"
+              *ngIf="title.errors && ( title.touched || title.dirty || submitted ) && submitted" translate>
+              PDF title is required
+            </span>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="row mx-0">
+        <div class="col-12 px-0">
+          <div class="video-description">
+          </div>
+        </div>
+      </div> -->
+      <span class="f-3 font-weight-bold text-c-dark" translate>Select PDF View Mode</span>
+      <div class="row mx-0 mt-2 themes">
+          <div class="select-view-mode">
+              <div class="mode-item" [class.selected-mode]="pdf.view_mode==='scroll'" (click)="pdf.view_mode = 'scroll'">
+                  <img [src]="sspaService.toAsset('img/layout_scroll.svg')">
+                  <div class="mt-2">
+                      <span class="f-3 fw-600 d-block">Scroll View Mode</span>
+                      <span class="f-3 mt-1">Visitors can read the pdf by scrolling.</span>
+                  </div>
+              </div>
+              <div class="mode-item" [class.selected-mode]="pdf.view_mode==='bookfold'" (click)="pdf.view_mode = 'bookfold'">
+                  <img [src]="sspaService.toAsset('img/layout_page.svg')">
+                  <div class="mt-2">
+                      <span class="f-3 fw-600 d-block">Bookfold View Mode</span>
+                      <span class="f-3 mt-1">Visitors can read the pdf page by page by clicking buttons.</span>
+                  </div>
+              </div>                
+          </div>
+      </div>
+    </ng-container>
+    <ng-template #sourcePanel>
+      <app-material-change [material]="pdf" (onUpdated)="updateSource($event)" (onCancel)="closeSource()">
+      </app-material-change>
+    </ng-template>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end" *ngIf="!isSourceUpdate">
+    <button [attr.data-action]="'material-edit-cancel'" class="btn btn-white f-6 font-weight-bold mr-2" mat-dialog-close>
+      {{ 'Cancel' | translate }}
+    </button>
+    <button [attr.data-action]="'material-edit-confirm'" class="btn btn-primary f-6 font-weight-bold" type="submit" [class.loading]="saving"
+      [disabled]="thumbnailLoading" *ngIf="data.type == 'edit'; else duplicateButton">
+      {{ 'Update' | translate }}
+    </button>
+    <ng-template #duplicateButton>
+      <button [attr.data-action]="'material-duplicate'" class="btn btn-primary f-6 font-weight-bold" type="submit" [class.loading]="saving"
+        [disabled]="thumbnailLoading">
+        {{ 'Clone' | translate }}
+      </button>
+    </ng-template>
+  </mat-dialog-actions>
+</form>

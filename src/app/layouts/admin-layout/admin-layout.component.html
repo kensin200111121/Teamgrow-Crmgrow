@@ -1,0 +1,37 @@
+<app-navbar></app-navbar>
+<app-wavv-connector></app-wavv-connector>
+<app-sidebar *ngIf="!isSspa" ></app-sidebar>
+<app-record-setting-dialog *ngIf="visibleRecording"></app-record-setting-dialog>
+<app-twilio-brand-manager></app-twilio-brand-manager>
+<div class="d-flex align-items-end sidebar-bottom" *ngIf="user?.user_version >= 2.1">
+  <div class="download-detail" [class.active]="isDownload">
+    <div class="app">
+      <img [src]="sspaService.toAsset('img/onboarding/desktop_app.svg')">
+      <span class="d-block mt-2">Please download the crmgrow desktop app to start creating your own dynamic videos on your computer.</span>
+      <a [href]="downloadLink" target="_blank">Get it here</a>
+    </div>
+    <div class="extension">
+      <img [src]="sspaService.toAsset('img/onboarding/extension.svg')">
+      <span class="d-block mt-2">Get the crmgrow Chrome extension</span>
+      <a href="https://chrome.google.com/webstore/detail/crmgrow-video-webcam-scre/bcbcnnookeieadihaekplblbfmjaodbb?hl=en-US" target="_blank">Get it here</a>
+    </div>
+  </div>
+  <div class="v-center justify-content-center c-pointer download-icon" *ngIf="!isSspa" (click)="showDownload()">
+    <i class="d-blcok i-icon i-download bgc-white"></i>
+  </div>
+</div>
+<div class="page" [class.dialog-mode]="showDialog" [class.sspa-wrapper]="isSspa">
+  <div class="page-router">
+    <router-outlet></router-outlet>
+  </div>
+  <mat-drawer-container [hasBackdrop]="true" [class]="'label-container'">
+    <mat-drawer #drawer position="end">
+      <app-manage-label (onClose)="drawer.close();" (showDialog)="setShowDialog($event)"></app-manage-label>
+    </mat-drawer>
+  </mat-drawer-container>
+  <ng-container *ngIf="(handlerService.openSearch$ | async)">
+    <div class="search-page">
+      <app-global-search></app-global-search>
+    </div>
+  </ng-container>
+</div>

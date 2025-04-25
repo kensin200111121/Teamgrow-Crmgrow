@@ -1,0 +1,77 @@
+@import "variables";
+
+.page_event_types {
+  margin-top: -50px;
+  .deals-header {
+    width: 150px;
+  }
+}
+
+.event_types {
+  position: relative;
+  .updating-status {
+    top: -16px !important;
+  }
+
+  .event-type {
+    position: relative;
+    border: 1px solid #E6E6E6;
+    border-radius: 5px;
+    box-shadow: 5px 5px 20px 1px rgb(0 0 0 / 5%);
+    // height: 150px;
+
+    .item-action {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 30px;
+    }
+
+    .title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      word-break: break-all;
+      line-height: 1.3em;
+      height: 2.6em;
+    }
+
+    .title-label {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .copy-link {
+      border-top: 1px solid #E6E6E6;
+      cursor: pointer;
+    }
+
+    .tags-wrapper {
+      line-height: 2;
+      .tag-label {
+        background-color: #E6E6E6;
+        border-radius: 5px;
+      }
+    }
+  }
+}
+
+:host ::ng-deep {
+  .show.dropdown {
+    position: unset;
+  }
+  .dropdown-new-event-type {
+    width: 260px;
+  }
+  .event-type-icon {
+    width: 20px;
+  }
+  .event-type-detail {
+    padding-left: 20px;
+    line-height: 1.3;
+  }
+}

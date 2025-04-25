@@ -1,0 +1,42 @@
+:host ::ng-deep {
+  .conversation {
+    min-height: 48px;
+    padding: 8px;
+    align-items: center;
+    & > * {
+      margin-left: 16px;
+      margin-right: 16px;
+    }
+    .phone, .contact-at {
+      min-width: 110px;
+    }
+    .buckets {
+      min-width: 120px;
+      margin-right: 4px;
+    }
+    .referrral {
+      width: 90px;
+      margin-left: 4px;
+    }
+    .name {
+      min-width: 210px;
+    }
+    .action {
+      display: flex;
+      justify-content: flex-end;
+      flex: 1;
+    }
+  }
+}
+
+.conversation.header {
+  border-bottom: 1px solid gainsboro;
+  min-height: 32px;
+  margin-bottom: 8px;
+  color: gray;
+}
+
+h5 {
+  font-size: 16px;
+  font-weight: 600;
+}

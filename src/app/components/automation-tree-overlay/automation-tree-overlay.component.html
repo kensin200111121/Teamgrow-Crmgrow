@@ -1,0 +1,152 @@
+<div class="tree-overlay">
+    <div class="v-center justify-content-between">
+        <h1 mat-dialog-title class="f-6 font-weight-bold m-0" translate>Full Automation</h1>
+        <button type="button" class="v-center border-0 bgc-trans close-button" (click)="overlayClose()">
+            <i class="i-icon i-close bgc-black ml-1" aria-hidden="true"></i>
+        </button>
+    </div>
+    <div class="automation-detail mt-1">
+        <ng-container [ngSwitch]="node.action.type">
+            <div *ngSwitchCase="'send_email_video'">
+                <div class="v-center justify-content-center thumb-prev-wrapper">
+                    <img [src]="node.action.video.thumbnail" class="thumbnail"/>
+                    <img [src]="node.action.video.preview" class="preview"/>
+                </div>
+                <div class="mt-2">
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+                    <div class="f-3 mt-1">{{node.action.subject}}</div>
+                </div>
+                <div class="mt-2">
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+                    <div class="f-3 mt-1" *ngIf="!isShow">{{node.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+                    <div class="f-3 mt-1" *ngIf="isShow">{{node.action.content | stripTags | removeEntity}}</div>
+                </div>
+            </div>
+            <div *ngSwitchCase="'send_text_video'">
+                <div class="v-center justify-content-center thumb-prev-wrapper">
+                    <img [src]="node.action.video.thumbnail" class="thumbnail"/>
+                    <img [src]="node.action.video.preview" class="preview"/>
+                </div>
+                <div class="mt-2">
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+                    <div class="f-3 mt-1" *ngIf="!isShow">{{node.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+                    <div class="f-3 mt-1" *ngIf="isShow">{{node.action.content | stripTags | removeEntity}}</div>
+                </div>
+            </div>
+            <div *ngSwitchCase="'send_email_pdf'">
+                <div class="v-center justify-content-center thumb-prev-wrapper">
+                    <img [src]="node.action.pdf.preview" class="thumbnail"/>
+                </div>
+                <div class="mt-2">
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+                    <div class="f-3 mt-1">{{node.action.subject}}</div>
+                </div>
+                <div class="mt-2">
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+                    <div class="f-3 mt-1" *ngIf="!isShow">{{node.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+                    <div class="f-3 mt-1" *ngIf="isShow">{{node.action.content | stripTags | removeEntity}}</div>
+                </div>
+            </div>
+            <div *ngSwitchCase="'send_text_pdf'">
+                <div class="v-center justify-content-center thumb-prev-wrapper">
+                    <img [src]="node.action.pdf.preview" class="thumbnail"/>
+                </div>
+                <div class="mt-2">
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+                    <div class="f-3 mt-1" *ngIf="!isShow">{{node.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+                    <div class="f-3 mt-1" *ngIf="isShow">{{node.action.content | stripTags | removeEntity}}</div>
+                </div>
+            </div>
+            <div *ngSwitchCase="'send_email_image'">
+                <div class="v-center justify-content-center thumb-prev-wrapper">
+                    <img [src]="node.action.image.preview" class="thumbnail"/>
+                </div>
+                <div class="mt-2">
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+                    <div class="f-3 mt-1">{{node.action.subject}}</div>
+                </div>
+                <div class="mt-2">
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+                    <div class="f-3 mt-1" *ngIf="!isShow">{{node.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+                    <div class="f-3 mt-1" *ngIf="isShow">{{node.action.content | stripTags | removeEntity}}</div>
+                </div>
+            </div>
+            <div *ngSwitchCase="'send_text_image'">
+                <div class="v-center justify-content-center thumb-prev-wrapper">
+                    <img [src]="node.action.image.preview" class="thumbnail"/>
+                </div>
+                <div class="mt-2">
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+                    <div class="f-3 mt-1" *ngIf="!isShow">{{node.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+                    <div class="f-3 mt-1" *ngIf="isShow">{{node.action.content | stripTags | removeEntity}}</div>
+                </div>
+            </div>
+            <div *ngSwitchCase="'email'">
+                <div>
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+                    <div class="f-3 mt-1">{{node.action.subject}}</div>
+                </div>
+                <div class="mt-2">
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+                    <div class="f-3 mt-1" *ngIf="!isShow">{{node.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+                    <div class="f-3 mt-1" *ngIf="isShow">{{node.action.content | stripTags | removeEntity}}</div>
+                </div>
+            </div>
+            <div *ngSwitchCase="'follow_up'">
+                <div>
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+                    <div class="f-3 mt-1" *ngIf="!isShow">{{node.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+                    <div class="f-3 mt-1" *ngIf="isShow">{{node.action.content | stripTags | removeEntity}}</div>
+                </div>
+            </div>
+            <div *ngSwitchCase="'update_follow_up'">
+                <div *ngIf="this.node.action.command == 'update_follow_up'">
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+                    <div class="f-3 mt-1" translate>Update follow up</div>
+                </div>
+                <div *ngIf="this.node.action.command == 'complete_follow_up'">
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+                    <div class="f-3 mt-1" translate>Complete follow up</div>
+                </div>
+                <div class="mt-2">
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+                    <div class="f-3 mt-1" *ngIf="!isShow">{{node.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+                    <div class="f-3 mt-1" *ngIf="isShow">{{node.action.content | stripTags | removeEntity}}</div>
+                </div>
+            </div>
+            <div *ngSwitchCase="'note'">
+                <div>
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+                    <div class="f-3 mt-1" *ngIf="!isShow">{{node.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+                    <div class="f-3 mt-1" *ngIf="isShow">{{node.action.content | stripTags | removeEntity}}</div>
+                </div>
+            </div>
+            <div *ngSwitchCase="'update_contact'">
+                <div *ngIf="node.action.commands[0] == 'update_label'">
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>command</div>
+                    <div class="f-3 mt-1" translate>Update label</div>
+                </div>
+                <div *ngIf="node.action.commands[1] == 'push_tag'">
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>command</div>
+                    <div class="f-3 mt-1" translate>Insert tags</div>
+                </div>
+                <div *ngIf="node.action.commands[2] == 'pull_tag'">
+                    <div class="f-1 font-weight-bold text-uppercase op-56" translate>command</div>
+                    <div class="f-3 mt-1" translate>Remove tags</div>
+                </div>
+            </div>
+        </ng-container>
+        <div class="read-more text-right mt-1" *ngIf="node.action.content.length > 90">
+            <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                See more
+            </span>
+            <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                See less
+            </span>
+        </div>
+        <div class="mt-2">
+            <div class="f-1 font-weight-bold text-uppercase op-56" translate>time delay</div>
+            <div class="f-3 mt-1">{{node.period | duration}}</div>
+        </div>
+    </div>
+</div>

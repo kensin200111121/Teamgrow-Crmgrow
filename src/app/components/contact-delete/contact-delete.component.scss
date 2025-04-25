@@ -1,0 +1,13 @@
+.attention {
+    max-width: 500px;
+    margin: auto;
+    background-color: #fffbfb;
+    border: 2px solid #e87b7c;
+    border-radius: 8px;
+  
+    .attention-icon {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+    }
+}

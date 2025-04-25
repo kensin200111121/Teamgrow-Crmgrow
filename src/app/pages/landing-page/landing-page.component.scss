@@ -1,0 +1,144 @@
+@import "variables";
+
+.page-detail-wrapper {
+  border: 1px solid #e6e6e6;
+  background-color: #fafafa !important;
+  border-radius: 8px;
+  padding: 10px 20px;
+  .mat-table {
+    background-color: #fafafa;
+  }
+  .mat-header-row {
+    height: 32px;
+  }
+}
+
+.tag-el {
+  padding: 2px 6px;
+  background-color: gainsboro;
+  border-radius: 8px;
+  margin-right: 4px;
+  margin-bottom: 2px;
+  margin-top: 2px;
+  font-weight: 600;
+  display: inline-block;
+  overflow-wrap: anywhere;
+}
+
+.mat-table-container {
+  width: 100%;
+  overflow-x: auto;
+
+  table {
+    width: 100%;
+    table-layout: auto;
+
+    .table-cell {
+      width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.table-container {
+  width: 100%;
+
+  table {
+    width: 100%;
+
+    .table-cell {
+      min-width: 180px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-right: 8px;
+    }
+    .title-cell {
+      width: 150px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-right: 8px;
+    }
+    .progress-cell {
+      width: 120px;
+    }
+    .date-cell {
+      width: 150px;
+    }
+  }
+}
+
+/* Sticky column for the first column */
+.sticky-column-first {
+  position: sticky;
+  left: 0;
+  background-color: white;
+  z-index: 1;
+  box-shadow: 2px 0 5px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Sticky column for the second column */
+.sticky-column-second {
+  position: sticky;
+  left: 200px; /* It will adjust based on the width of the first column */
+  background-color: white;
+  z-index: 1;
+  box-shadow: 2px 0 5px -2px rgba(0, 0, 0, 0.1);
+}
+
+.custom-switch {
+  border-left: 1px;
+  border-color: gray;
+}
+
+.errorContent {
+  width: 100%;
+  height: 100%;
+  max-width: 600px;
+  align-items: center;
+  text-align: left;
+  flex-direction: column;
+  margin: auto;
+}
+
+:host ::ng-deep {
+  .has-sticky-header thead tr:first-child th {
+    position: initial;
+  }
+
+  .back-button {
+    margin-left: 0px!important;
+    margin-bottom: 8px;
+  }
+}
+
+:host ::ng-deep {
+  .tab-container {
+    height: 40px!important;
+
+    .tab {
+      font-size: 14px!important;
+      height: 32px!important;
+      padding: 8px!important;
+    }
+  }
+}
+
+.form-type {
+  border: 1px solid gray;
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.empty-view {
+  max-width: 300px;
+  margin: 40px auto;
+}
+
+.title-thumbnail {
+  width: 100px;
+  margin-right: 1rem;
+}

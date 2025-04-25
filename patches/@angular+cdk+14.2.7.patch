@@ -1,0 +1,42 @@
+diff --git a/node_modules/@angular/cdk/esm2020/overlay/overlay-container.mjs b/node_modules/@angular/cdk/esm2020/overlay/overlay-container.mjs
+index 2897dc2..e621ec9 100755
+--- a/node_modules/@angular/cdk/esm2020/overlay/overlay-container.mjs
++++ b/node_modules/@angular/cdk/esm2020/overlay/overlay-container.mjs
+@@ -65,7 +65,8 @@ export class OverlayContainer {
+         else if (!this._platform.isBrowser) {
+             container.setAttribute('platform', 'server');
+         }
+-        this._document.body.appendChild(container);
++        const wrapper = this._document.querySelector("app-root") || this._document.body;
++        wrapper.appendChild(container);
+         this._containerElement = container;
+     }
+ }
+diff --git a/node_modules/@angular/cdk/fesm2015/overlay.mjs b/node_modules/@angular/cdk/fesm2015/overlay.mjs
+index 8a3d6f8..935c04c 100755
+--- a/node_modules/@angular/cdk/fesm2015/overlay.mjs
++++ b/node_modules/@angular/cdk/fesm2015/overlay.mjs
+@@ -952,7 +952,8 @@ class OverlayContainer {
+         else if (!this._platform.isBrowser) {
+             container.setAttribute('platform', 'server');
+         }
+-        this._document.body.appendChild(container);
++        const wrapper = this._document.querySelector("app-root") || this._document.body;
++        wrapper.appendChild(container);
+         this._containerElement = container;
+     }
+ }
+diff --git a/node_modules/@angular/cdk/fesm2020/overlay.mjs b/node_modules/@angular/cdk/fesm2020/overlay.mjs
+index b5462d3..a944735 100755
+--- a/node_modules/@angular/cdk/fesm2020/overlay.mjs
++++ b/node_modules/@angular/cdk/fesm2020/overlay.mjs
+@@ -789,7 +789,8 @@ class OverlayContainer {
+         else if (!this._platform.isBrowser) {
+             container.setAttribute('platform', 'server');
+         }
+-        this._document.body.appendChild(container);
++        const wrapper = this._document.querySelector("app-root") || this._document.body;
++        wrapper.appendChild(container);
+         this._containerElement = container;
+     }
+ }

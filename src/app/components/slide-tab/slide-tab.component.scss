@@ -1,0 +1,173 @@
+@import  "variables";
+
+.tab-container {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  background: $color-trans08;
+  padding: 4px;
+  border-radius: 24px;
+  position: relative;
+
+  .tab {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-weight: 600;
+    cursor: pointer;
+
+    .tab-icon {
+      width: 18px;
+      height: 18px;
+      background-color: $color-dark;
+    }
+
+    * {
+      position: relative;
+    }
+
+    &.active {
+      span {
+        color: $color-blue;
+      }
+      .tab-icon {
+        background-color: $color-blue;
+      }
+    }
+  }
+
+  &.colorful {
+    .tab {
+
+      &.active {
+
+        &.tab-note {
+          span {
+            color: $color-yellow-light;
+          }
+          .tab-icon {
+            background-color: $color-yellow-light;
+          }
+        }
+
+        &.tab-email {
+          span {
+            color: $color-purple;
+          }
+          .tab-icon {
+            background-color: $color-purple;
+          }
+        }
+
+        &.tab-text {
+          span {
+            color: $color-green-light;
+          }
+          .tab-icon {
+            background-color: $color-green-light;
+          }
+        }
+      }
+    }
+  }
+  .tab-indicator {
+    position: absolute;
+    width: 0px;
+    height: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 3px 16px -3px rgba(16, 19, 54, 0.4);
+    transition: all .3s;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .tab-container {
+    padding-left: 10px;
+    padding-right: 10px;
+
+    .tab, .tab-label {
+      padding-left: 5px;
+      padding-right: 5px;
+      font-size: 13px;
+    }
+    .tab-icon {
+      display: none;
+    }
+  }
+}
+
+.tab-container.plain {
+  background-color: transparent;
+  border-radius: 0;
+  border-bottom: 1px solid $color-trans08;
+
+  .tab-indicator {
+    height: 2px;
+    bottom: 0px;
+    top: unset;
+    transform: none;
+    background-color: $color-blue;
+  }
+  &.colorful {
+    .indicator-note {
+      background-color: $color-yellow-light;
+    }
+
+    .indicator-email {
+      background-color: $color-purple;
+    }
+
+    .indicator-text {
+      background-color: $color-green-light;
+    }
+  }
+}
+
+.tab-container.same {
+  .tab {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+
+:host ::ng-deep {
+  .mat-tab-label {
+    height: 40px;
+    padding: 0px 12px;
+    min-width: unset;
+    font-size: 16px;
+    opacity: 1;
+
+    &.mat-tab-label-active {
+      color: $color-blue;
+      font-weight: 700;
+    }
+
+    @media screen and (max-width: 1280px) and (min-width: 1200px) {
+      padding: 0px 10px;
+      font-size: 14px;
+    }
+  }
+  .mat-ink-bar {
+    background-color: $color-blue !important;
+  }
+}
+
+.badge {
+  background: #0000ff80;
+  color: white;
+  border-radius: 12px;
+  margin-left: 4px;
+  min-width: 20px;
+  line-height: 15px;
+  height: 20px;
+  font-size: 10px;
+  text-align: center;
+}

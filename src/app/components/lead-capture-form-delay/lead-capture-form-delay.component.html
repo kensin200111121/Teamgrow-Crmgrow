@@ -1,0 +1,94 @@
+<div class="v-center justify-content-between">
+    <h1 class="m-0" mat-dialog-title translate>
+       {{msgTitle}}
+    </h1>
+</div>
+<mat-dialog-content>
+    <div class="row py-5">
+        <div class="col-12 form-group delay">
+            <div class="v-center justify-content-between d-flex mb-3" *ngIf="type === 'create'">
+                <span class="text-nowrap mr-2">Select Form</span>
+                <select id="leadform_select" class="form-control" [(ngModel)]="form_id" name="leadform_select" #leadform_select="ngModel">
+                    <option *ngFor="let form of enable_forms_data" value="{{form.key}}">{{form.value}}</option>
+                </select>
+            </div>
+            <ng-container *ngIf="max_duration">
+                <h6 class="v-center f-3 font-weight-bold mb-1">
+                    {{'Max Delay Time' | translate}}: <span class="c-blue ml-1">{{ getVideoDuration() }}</span>
+                    <i class="i-icon bgc-dark i-claim sm d-block ml-1"
+                        ngbTooltip="{{'Delay time must not exceed the Max Delay Time' | translate}}" placement="bottom">
+                    </i>
+                </h6>
+            </ng-container>
+            <div class="v-center my-3">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="immediate" (change)="$event ? onToggleImmediate() : null"
+                        [checked]="delay_immediate" />
+                    <label class="custom-control-label f-4" for="immediate" translate>Immediately</label>
+                </div>
+            </div>
+            <div class="v-center">
+                <div class="input-group bgc-dark-trans08 rounded mr-2">
+                    <select class="form-control c-blue f-5" [class.disabled]="delay_immediate" [(ngModel)]="capture_delay_hour"
+                        (ngModelChange)="onChangeDelay()" name="delayHour" id="delay_hour" required #delayHour="ngModel">
+                        <option *ngFor="let hour of DELAY.HOUR" value="{{hour.id}}">
+                            {{hour.id}}
+                        </option>
+                    </select>
+                    <div class="input-group-prepend rounded">
+                        <span class="input-group-text bgc-white border-1 c-gray f-3" translate>hour</span>
+                    </div>
+                </div>
+                <div class="input-group bgc-dark-trans08 rounded">
+                    <select class="form-control c-blue f-5" [class.disabled]="delay_immediate" [(ngModel)]="capture_delay_min"
+                        (ngModelChange)="onChangeDelay()" name="delayMinute" id="delay_minute" required #delayMinute="ngModel">
+                        <option *ngFor="let minute of DELAY.MINUTE" value="{{minute.id}}">
+                            {{minute.id}}
+                        </option>
+                    </select>
+                    <div class="input-group-prepend rounded">
+                        <span class="input-group-text bgc-white border-1 c-gray f-3" translate>min</span>
+                    </div>
+                </div>
+                <div class="input-group bgc-dark-trans08 rounded ml-2">
+                    <select class="form-control c-blue f-5" [class.disabled]="delay_immediate" [(ngModel)]="capture_delay_sec"
+                        (ngModelChange)="onChangeDelay()" name="delaySecond" id="delay_second" required #delaySecond="ngModel">
+                        <option *ngFor="let second of DELAY.SECOND" value="{{second.id}}">
+                            {{second.id}}
+                        </option>
+                    </select>
+                    <div class="input-group-prepend rounded">
+                        <span class="input-group-text bgc-white border-1 c-gray f-3" translate>sec</span>
+                    </div>
+                </div>
+            </div>
+            <span class="c-red f-3" *ngIf="exceedDuration" [translateParams]="{max: getVideoDuration()}" translate>
+                Delay time mustn't exceed max
+            </span>
+            <span class="c-red f-3" *ngIf="isTimeDup" translate>
+                Delay time mustn't be duplicated
+            </span>            
+        </div>
+    </div>
+</mat-dialog-content>
+<ng-container *ngIf="type == 'create'; else updateActions">
+    <mat-dialog-actions align="end">
+        <a class="btn btn-white f-6 font-weight-bold c-blue mr-2" (click)="onCancel()" translate>Cancel</a>
+        <button [attr.data-action]="'lead-capture-set-delay-time'" class="btn btn-primary f-6 font-weight-bold" (click)="onSet()" translate>
+            Set Delay Time
+        </button>
+    </mat-dialog-actions>
+</ng-container>
+<ng-template #updateActions>
+    <mat-dialog-actions align="end">
+        <!-- <div class="v-center justify-content-between w-100">
+             <a class="btn btn-white mr-2" (click)="onRemoveFromMaterial()" translate>
+                <span class="c-red f-4 font-weight-bold">Remove from Material</span>
+            </a> -->
+            <div class="v-center justify-content-end">
+                <a class="btn btn-white f-6 font-weight-bold c-blue mr-2" (click)="onCancel()" translate>Cancel</a>
+                <button class="btn btn-primary f-6 font-weight-bold" (click)="onSet()" translate>Change</button>
+            </div>
+        <!-- </div> -->
+    </mat-dialog-actions>
+</ng-template>

@@ -1,0 +1,70 @@
+ <!-- Video Converting Status -->
+ <ng-container [ngSwitch]="displayType">
+  <div *ngSwitchCase="'list'" >
+    <ng-container [ngSwitch]="status">
+      <div *ngSwitchCase="'progress'" >
+        <mat-spinner class="material-status-progress-bar" diameter="25"></mat-spinner> 
+      </div>
+      <div *ngSwitchCase="'convertError'" >
+        <div class="v-center btn p-1 c-dark material-send"
+            placement="bottom" [ngbTooltip]="'The video converting is failed. Please try again or you can contact to support team and they maybe help you.' | translate">
+            <i class="i-icon i-icon  i-error  bgc-red" aria-hidden="true"></i>
+        </div>
+      </div>
+    
+      <div *ngSwitchCase="'uploadError'" >
+        <div class="v-center btn p-1 c-dark material-send"
+            placement="bottom" [ngbTooltip]="'Your video had an issue in the uploading/recording. Please try again.' | translate">
+            <i class="i-icon i-icon i-warning-yellow bgc-yellow" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div *ngSwitchCase="'completed'" >
+        <button class="v-center btn p-1 c-dark material-send" (click)="sendMaterialEvent($event)"
+            placement="bottom" [ngbTooltip]="'Send via Email or Text' | translate">
+            <i class="i-icon i-sent bgc-dark" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div *ngSwitchCase="'disabled'" >
+        <button class="v-center btn p-1 c-dark material-send" (click)="sendMaterialEvent($event)"
+            placement="bottom" [ngbTooltip]="'Send via Email or Text' | translate">
+            <i class="i-icon i-sent bgc-dark" aria-hidden="true"></i>
+        </button>
+      </div>
+    </ng-container>
+  </div>
+<!-- tile case -->
+  <div *ngSwitchCase="'tile'" class="d-flex v-center justify-content-end video-status-wrapper">    
+   
+     <ng-container [ngSwitch]="status">
+      <div *ngSwitchCase="'progress'" class="spinner-cover">
+        <mat-spinner class="material-status-progress-bar" diameter="60"></mat-spinner> 
+      </div>
+      <div *ngSwitchCase="'convertError'" >
+        <div class="v-center btn p-1 c-dark material-send tile-cover "
+            placement="bottom" [ngbTooltip]="'The video converting is failed. Please try again or you can contact to support team and they maybe help you.' | translate">
+            <i class="i-icon i-icon  i-error bgc-red" aria-hidden="true"></i>
+        </div>
+      </div>
+    
+      <div *ngSwitchCase="'uploadError'" >
+        <div class="v-center btn p-1 c-dark material-send tile-cover "
+            placement="bottom" [ngbTooltip]="'Your video had an issue in the uploading/recording. Please try again.' | translate">
+            <i class="i-icon i-icon i-warning-yellow bgc-yellow" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div *ngSwitchCase="'completed'" >
+        <button class="v-center btn p-1 c-dark material-send tile-cover " (click)="sendMaterialEvent($event)"
+            placement="bottom" [ngbTooltip]="'Send via Email or Text' | translate">
+            <i class="i-icon i-sent bgc-white" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div *ngSwitchCase="'disabled'" >
+        <button class="v-center btn p-1 c-dark material-send tile-cover " (click)="sendMaterialEvent($event)"
+            placement="bottom" [ngbTooltip]="'Send via Email or Text' | translate">
+            <i class="i-icon i-sent bgc-white" aria-hidden="true"></i>
+        </button>
+      </div>
+    </ng-container> 
+  </div>
+</ng-container>
+

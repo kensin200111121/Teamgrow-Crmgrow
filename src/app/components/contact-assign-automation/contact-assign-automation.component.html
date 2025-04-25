@@ -1,0 +1,39 @@
+<h1 mat-dialog-title translate>Add Automation</h1>
+<form #actionForm="ngForm" (ngSubmit)="addAutomation()">
+  <mat-dialog-content>
+    <div class="form-group">
+      <div class="my-3">
+        <label translate>Search Automation</label>
+        <app-input-automation (automationChange)="selectAutomation($event)"></app-input-automation>
+      </div>
+      <div class="my-3">
+        <div class="my-5 text-center" *ngIf="contacts.length && automationLoading">
+          <div class="loader mt-5"></div>
+          <div class="f-8 font-weight-bold mt-2" translate>Loading running automations.</div>
+        </div>
+        <div class="contact-list" *ngIf="contacts.length && !automationLoading">
+          <div class="v-center">
+            <label class="contact-item" translate>Contacts to add</label>
+            <label class="automation-item" translate>Running Automation</label>
+          </div>
+          <div class="v-center my-2" *ngFor="let contact of contacts">
+            <div class="v-center w-100">
+              <div class="contact-item v-center">
+                <div class="form-avatar rounded-circle bg-dark mr-3">{{contact.avatarName}}</div>
+                <div class="f-3">{{contact.fullName}}</div>
+              </div>
+              <div class="automation-item">
+                <div class="f-3">{{getAutomation(contact)}}</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button type="button" class="btn btn-white" type="button" mat-dialog-close translate>Close</button>
+    <button [attr.data-action]="'contact-assign-automation-add'" type="submit" class="btn btn-primary ml-2" [class.loading]="adding" translate>Add</button>
+  </mat-dialog-actions>
+</form>

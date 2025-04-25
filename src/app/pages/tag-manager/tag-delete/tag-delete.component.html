@@ -1,0 +1,26 @@
+<div class="v-center justify-content-between">
+	<h1 class="m-0" mat-dialog-title translate>
+		Delete tag
+	</h1>
+	<i class="d-block i-icon i-close bgc-dark" mat-dialog-close></i>
+</div>
+<mat-dialog-content>
+	<div class="text-center f-3 c-dark mt-3">
+		<span translate>Do you want to delete</span>
+		<ng-container *ngIf="tags.length == 1; else tagsCount">
+			<span class="c-blue font-weight-bold">{{tag}}</span>
+		</ng-container>
+		<ng-template #tagsCount>
+			<span class="c-blue font-weight-bold" [translateParams]="{count: tags.length}" translate>count tags</span>
+		</ng-template>
+		?
+	</div>
+	<div class="text-center f-1 c-grey mt-1">
+		*<span translate>It will permanently remove the tags from contacts</span>
+	</div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+	<button class="btn btn-white f-6 font-weight-bold c-blue mr-2" mat-dialog-close translate>Cancel</button>
+	<button [attr.data-action]="'contact-tag-delete-confirm'" class="btn btn-red f-6 font-weight-bold" (click)="onDelete()" [class.loading]="saving"
+		translate>Delete</button>
+</mat-dialog-actions>

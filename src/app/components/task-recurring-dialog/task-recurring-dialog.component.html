@@ -1,0 +1,32 @@
+<div mat-dialog-title class="d-flex justify-content-between">
+  <span>{{title | translate}}</span>
+  <button class="btn text-white close-mark" type="button" (click)="close()">
+    <i class="i-icon i-close bgc-dark d-block" aria-hidden="true"></i>
+  </button>
+</div>
+<div mat-dialog-content class="mt-3">
+  <ng-container *ngIf="description">
+    <div class="description f-4 my-1" translate>{{ description }}</div>
+  </ng-container>
+  <mat-radio-group name="recurranceEvent" [(ngModel)]="actionType">
+    <ng-container *ngFor="let option of selectOptions;let i = index">
+      <div class="form-check mt-2">
+        <mat-radio-button [color]="'primary'" [value]="option.value">
+          {{ option.name | translate }}
+        </mat-radio-button>
+      </div>
+    </ng-container>
+  </mat-radio-group>
+</div>
+<div mat-dialog-actions align="end">
+  <div class="row mx-0">
+    <div class="col-12">
+      <button type="button" mat-dialog-close class="btn btn-white py-2 ml-2 btn-font-bold" (click)="close()" translate>
+        Cancel
+      </button>
+      <button data-action="task-recurring-delete-confirm" type="submit" class="btn btn-blue text-white py-2 btn-font-bold" (click)="confirm()" translate>
+        OK
+      </button>
+    </div>
+  </div>
+</div>

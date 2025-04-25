@@ -1,0 +1,153 @@
+<div class="v-center justify-content-between bgc-blue email-header" [style.width.px]='dialogWidth'
+  [class.minimize-content]="dialogType == 'global_email' ? !(storeService.emailWindowType$ | async) : !isMinimizable">
+  <div class="p-3 flex-grow-1">
+    <h1 class="f-6 font-weight-bold text-white m-0" translate>
+      {{ this.type == 'deal' ? ('Deal Email' | translate) : ('Email' | translate) }}
+    </h1>
+
+  </div>
+  <div class="v-center p-3">
+    <ng-container *ngIf="dialogType == 'global_email'; else subWindow">
+      <button type="button" class="v-center border-0 bgc-trans close-button px-0" (click)="minimizeDialog()">
+        <i class="i-icon i-minimize sm bgc-white" aria-hidden="true" *ngIf="storeService.emailWindowType$ | async"></i>
+        <i class="i-icon i-maximize sm bgc-white" aria-hidden="true"
+          *ngIf="!(storeService.emailWindowType$ | async)"></i>
+      </button>
+    </ng-container>
+    <ng-template #subWindow>
+      <button type="button" class="v-center border-0 bgc-trans close-button px-0" (click)="minimizeDialog()">
+        <i class="i-icon i-minimize sm bgc-white" aria-hidden="true" *ngIf="isMinimizable"></i>
+        <i class="i-icon i-maximize sm bgc-white" aria-hidden="true" *ngIf="!isMinimizable"></i>
+      </button>
+    </ng-template>
+    <button type="button" class="v-center border-0 bgc-trans close-button" (click)="closeDialog()">
+      <i class="i-icon i-close bgc-white" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+<div class="d-flex">
+  <div class="email-panel"
+    [class.minimize-content]="dialogType == 'global_email' ? !(storeService.emailWindowType$ | async) : !isMinimizable">
+    <form #emailForm="ngForm" (ngSubmit)="emailSubmitted = true; emailForm.form.valid ? sendEmail() : false">
+      <div class="email-box">
+        <app-email-sender (onChange)="onSelectSender($event)"></app-email-sender>
+        <div class="receiver pl-3 pr-2 py-1 contacts-wrapper address-wrapper">
+          <div class="overflow-visible">
+            <div class="d-flex w-100" (click)="setFocus()">
+              <label class="f-6 op-56 m-0">To:</label>
+              <app-input-contact-chip [selectedContacts]="emailContacts" [keepContacts]="mode == 'edit' ? emailContacts : []"
+                [shouldFromSearch]="false" [shouldBeSubscriber]="true" [unsubscribeType]="'email'" (onSelect)="checkDuplication('to')"
+                (onRemove)="removeContact($event)" (onFocus)="setFocus()" [focus]="isFocus()" [isDealContact]="this.type == 'deal'"
+                class="w-100 ml-2">
+              </app-input-contact-chip>
+              <span class="invalid-error f-3 c-red inline-error"
+                *ngIf="!emailContacts.length && emailSubmitted">
+                {{ 'Required!' | translate }}
+              </span>
+            </div>
+            <div class="v-center justify-content-end" *ngIf="isFocus()">
+              <div class="f-3 c-blue p-1 c-pointer" (click)="ccFlag = !ccFlag">
+                {{ (ccFlag ? 'Disable Cc' : 'Add Cc') | translate }}
+              </div>
+              <div class="f-3 c-blue p-1 c-pointer" (click)="bccFlag = !bccFlag">
+                {{ (bccFlag ? 'Disable Bcc' : 'Add Bcc') | translate }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="email-tracking contacts-wrapper" *ngIf="ccFlag || bccFlag" (click)="blueAll()">
+          <div class="v-center pl-3 f-2 py-1">
+            <mat-icon class="mr-2">warning</mat-icon>
+            {{ 'Email tracking does not work for any emails in the cc, bcc' | translate }}
+          </div>
+          <div class="v-center pl-3 py-2 email-cc address-wrapper" *ngIf="ccFlag">
+            <label class="f-6 text-uppercase op-56 m-0">cc:</label>
+            <app-input-email-chip [selectedContacts]="ccContacts" (onSelect)="checkDuplication('cc')" class="w-100 ml-2">
+            </app-input-email-chip>
+          </div>
+          <div class="v-center pl-3 py-2 email-bcc address-wrapper" *ngIf="bccFlag">
+            <label class="f-6 text-uppercase op-56 m-0">{{ 'bcc' | translate}}:</label>
+            <app-input-email-chip [selectedContacts]="bccContacts" (onSelect)="checkDuplication('bcc')"
+              class="w-100 ml-2"></app-input-email-chip>
+          </div>
+        </div>
+        <div class="email-title px-3 py-2 position-relative" (click)="blueAll()">
+          <input data-name="deal-send-email-subject" class="w-100" type="text" placeholder="{{ 'Subject' | translate }}" name="emailTitle" #emailTitle="ngModel"
+            [(ngModel)]="emailSubject" (focus)="subjectFoucs()" [mention]="tokens" (itemSelected)="onSubjectTokenSelected($event)"
+            [mentionConfig]="mentionConfig" required #subjectField>
+          <span class="invalid-error f-3 c-red inline-error"
+            *ngIf="emailTitle.invalid && (emailTitle.touched || emailTitle.dirty || emailSubmitted) && emailSubmitted">
+            {{ 'Required!' | translate }}
+          </span>
+        </div>
+        <div class="email-body" (click)="blueAll()">
+          <app-html-editor
+            [(value)]="emailContent"
+            [(attach)]="attachments"
+            placeholder="{{ 'Start typing here' | translate }}"
+            required="true"
+            (onFocus)="contentFoucs()"
+            [hasAttachment]="true"
+            [hasTemplates]="false"
+            [mentionEnabled]="true"
+            [hasScheduler]="hasSchedule"
+            [hasCalendly]="hasCalendly"
+            [hasRecord]="hasMaterial"
+            [hasChatgpt]="true"
+            [enableChatgpt]="!aiDialogExtendable"
+            [subject]="emailSubject"
+            [style]="aiDialogExtendable ? {height: '500px'} : {height: '300px'}"
+            [submitted]="emailSubmitted"
+            (attachmentChange)="onAttachmentChange($event)"
+            (onRecordCompleted)="onRecordCompleted($event)"
+            (onSetAiMode)="setAiMode($event)">
+            [mention]="tokens"
+            #editor>
+          </app-html-editor>
+        </div>
+        <div class="p-3 email-setting" (click)="blueAll()">
+          <div class="v-center" *enableByFeatures="USER_FEATURES.MATERIAL">
+            <button type="button" class="v-center btn border-primary f-3 font-weight-bold c-blue p-2 mr-2 material-button"
+              (click)="openMaterialsDlg()">
+              <i class="d-block i-icon i-material bgc-blue"></i>
+              <span class="f-3 font-weight-bold c-blue mx-2" translate>Material</span>
+              <i class="d-block i-icon i-plus bgc-blue"></i>
+            </button>
+          </div>
+          <app-template-selector *enableByFeatures="USER_FEATURES.BETA" [type]="'email'" (selectTemplate)="selectTemplate($event)"></app-template-selector>
+          <div ngbDropdown class="insert-token ml-2" *enableByFeatures="USER_FEATURES.SCHEDULER">
+            <div class="v-center no-carot c-pointer" ngbDropdownToggle placement="top-left" ngbTooltip="{{ 'Schedule' | translate }}"
+              (click)="showSchedule()" style="width: fit-content;">
+              <i class="d-block i-icon i-schedule-send bgc-blue" *ngIf="scheduleCheck"></i>
+              <i class="d-block i-icon i-schedule-send bgc-dark" *ngIf="!scheduleCheck"></i>
+            </div>
+          </div>
+          <div class="insert-token ml-2 datetime" *ngIf="scheduleCheck">
+            <div class="v-center no-carot c-pointer">{{time_display}}</div>
+          </div>
+          <div class="insert-token ml-1 timezone" *ngIf="scheduleCheck">
+            <div class="v-center no-carot c-pointer">({{tz_display}})</div>
+          </div>
+          <i class="d-block i-icon i-close bgc-dark ml-3" style="cursor: pointer;" (click)="cancelSchedule()" *ngIf="scheduleCheck"></i>
+          <app-token-selector (selectToken)="insertTextContentToken($event)"></app-token-selector>
+          <div class="v-center justify-content-between mt-2 mt-sm-0 w-100">
+            <button type="submit" class="btn btn-blue text-white br-default py-1 f-6 font-weight-bold shadow ml-auto"
+              [class.loading]="emailSending" *ngIf='!scheduleCheck' data-action="deal-email-send">
+              {{ 'Send' | translate }}
+            </button>
+            <button type="submit" class="btn btn-blue text-white br-default py-1 f-6 font-weight-bold shadow ml-auto"
+              [class.loading]="emailSending" *ngIf='scheduleCheck' data-action="contact-item-schedule">
+              {{ mode == 'edit' ? 'Update' : 'Schedule' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <app-chatgpt-extend
+    *ngIf="aiDialogExtendable && !aiTabMinimized"
+    [creatorResultContent]="presetText"
+    (getGptResponse)="writeGptResponseContent($event)"
+    (setVisible)="setDialogExtend(false)">
+  </app-chatgpt-extend>
+</div>

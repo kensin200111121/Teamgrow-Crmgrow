@@ -1,0 +1,118 @@
+<div class="activitys-detail">
+  <div class="v-center justify-content-between">
+    <div class="v-center">
+      <div class="history-icon mr-1">
+        <i
+          class="act-icon act-{{ activity.activityOverView.type }} bgc-dark"
+        ></i>
+      </div>
+      <ng-container *ngIf="activity.activityOverView.type === 'form_trackers'; else noneFormTemplate">
+        <div>
+          <span>Form Submission</span>
+        </div>
+      </ng-container>
+      <ng-template #noneFormTemplate>
+        <div class="d-flex v-center">
+          <span class="text-capitalize">{{ activity.activityOverView.content }}</span>
+          <ng-container *ngIf="activity?.activityOverView?.user">
+            <app-contact-action-user [user]="activity.activityOverView.user"></app-contact-action-user>
+          </ng-container>
+        </div>
+      </ng-template>
+    </div>
+    <ng-container *ngIf="hasProspectLink()">
+      <div class="v-center ml-3">
+        <app-nav-link class="c-pointer v-center text-decoration-none"
+        [link]="'lms/detail/leads/' + prospectId">
+          Go to Prospect Profile
+          <i class="d-block i-icon bgc-blue i-chev-right ml-2"></i>
+        </app-nav-link>
+      </div>
+    </ng-container>
+    <div class="v-center ml-auto">
+      <span class="f-3 op-56">
+        {{ activity.activityOverView.created_at | datetimeFormat }}
+      </span>
+    </div>
+  </div>
+  <div class="contact-main d-flex align-items-center mb-3 mt-3" *ngIf="activity?.action?.user_name">
+    <div class="contact-avatar lg font-weight-bold">
+      <img [src]="activity?.action?.picture_profile || sspaService.toAsset('img/user_avatar.svg')" />
+    </div>
+    <div class="contact-main-info ml-3">
+      <div class="f-10 font-weight-bold text-overflow-wrap">
+        {{activity?.action?.user_name }}
+      </div>
+    </div>
+  </div>
+  <ng-container *ngIf="activity?.materials">
+    <app-contact-material-list
+      [materials]="activity?.materials"
+    ></app-contact-material-list>
+    <ng-container
+      *ngIf="
+        activity?.trackerType === 'video_trackers' ||
+        activity?.trackerType === 'pdf_trackers'
+      "
+    >
+      <app-play-timelines
+        [data]="activity?.trackerDetail"
+        [type]="activity?.trackerType"
+        [duration]="activity?.trackerDetail?.videoDuration"
+      >
+      </app-play-timelines>
+    </ng-container>
+  </ng-container>
+
+  <ng-container *ngIf="activity.activityOverView.type === 'form_trackers'">
+    <div >
+      <div class="v-center">
+        <span translate>Submitted lead form</span>
+      </div>
+      <div>
+        <div class="mt-2">
+          This contact submitted the
+          <span class="font-weight-bold">{{ activity.trackerDetail?.lead_form?.name || 'UnNamed' }}</span>
+          form. Click
+          <a href="{{siteUrl}}/lead-hub/lead-capture/{{activity.trackerDetail?.lead_form?._id || ''}}">here</a>
+          to view the form.
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <div class="expanded" *ngIf="isExpanded">
+    <ng-container *ngIf="!!actionDetail">
+      <!-- Sessions -->
+      <div class="mt-4">
+        <app-action-session-list
+          [sessionList]="actionDetail.activities ?? []"
+          [isShowCollapse]="false"
+        ></app-action-session-list>
+      </div>
+      <!-- <div *ngIf="actionDetail && actionDetail.activities?.[0]?.assigner">Assigned to {{actionDetail.activities[0].assigner?.user_name ? actionDetail.activities[0].assigner?.user_name : 'No assignee'}}</div> -->
+    </ng-container>
+  </div>
+
+  <div class="expanded">
+    <!-- <ng-container *ngIf="actionDetail && !actionDetail.activities?.[0]?.assigner?.user_name">
+      <div>Assigned to No assignee</div>
+    </ng-container> -->
+  </div>
+
+  <!-- <ng-container *ngIf="!!actionDetail && actionDetail.activities?.[0]?.assigner?.user_name">
+    <a
+      class="more f-3 mt-3 c-pointer fw-600 d-block w-fit btn c-blue px-0"
+      (click)="toggleSessions()"
+      [class.loading]="detailLoading"
+      *ngIf="activity.activityOverView.type !== 'contacts'"
+      translate
+      [innerText]="isExpanded ? 'Collapse' : 'Expand'"
+    >
+    </a>
+  </ng-container> -->
+  <a class="more f-3 mt-3 c-pointer fw-600 d-block w-fit btn c-blue px-0" (click)="toggleSessions()"
+    *ngIf="activity?.activityOverView?.type?.includes('_trackers')"
+    [class.loading]="detailLoading" translate [innerText]="isExpanded ? 'Collapse' : 'Expand'">
+  </a>
+</div>

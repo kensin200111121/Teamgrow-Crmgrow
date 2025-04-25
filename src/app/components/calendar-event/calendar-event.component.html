@@ -1,0 +1,127 @@
+<div class="event-container" [class.other]="!event.meta.is_organizer">
+    <div class="v-center mb-0 header p-3 decide-actions" *ngIf="!event.meta.is_organizer">
+        <div class="d-flex flex-grow-1">
+            <ng-container [ngSwitch]="responseStatus">
+                <ng-container *ngSwitchCase="'needsAction'">
+                    <div class="col-6 pl-0 pr-1">
+                        <button class="btn btn-accept f-1 font-weight-bold w-100 py-2" (click)="accept()" [class.loading]="accepting" translate>Accept</button>
+                    </div>
+                    <div class="col-6 pl-1 pr-0">
+                        <button class="btn btn-red f-1 font-weight-bold w-100 py-2" (click)="decline()" [class.loading]="declining" translate>Decline</button>
+                    </div>
+                </ng-container>
+                <ng-container *ngSwitchCase="'accepted'">
+                    <div class="col-6 pl-0 pr-1">
+                        <button class="btn btn-accept f-1 font-weight-bold w-100 py-2 op-28" translate>Accepted</button>
+                    </div>
+                    <div class="col-6 pl-1 pr-0">
+                        <button class="btn btn-red f-1 font-weight-bold w-100 py-2" (click)="decline()" [class.loading]="declining" translate>Decline</button>
+                    </div>
+                </ng-container>
+                <ng-container *ngSwitchCase="'declined'">
+                    <div class="col-6 pl-0 pr-1">
+                        <button class="btn btn-accept f-1 font-weight-bold w-100 py-2" (click)="accept()" [class.loading]="accepting" translate>Accept</button>
+                    </div>
+                    <div class="col-6 pl-1 pr-0">
+                        <button class="btn btn-red f-1 font-weight-bold w-100 py-2 op-28" translate>Declined</button>
+                    </div>
+                </ng-container>
+                <ng-container *ngSwitchCase="'tentative'">
+                    <div class="col-6 pl-0 pr-1">
+                        <button class="btn btn-accept f-1 font-weight-bold w-100 py-2" (click)="accept()" [class.loading]="accepting" translate>Accept</button>
+                    </div>
+                    <div class="col-6 pl-1 pr-0">
+                        <button class="btn btn-red f-1 font-weight-bold w-100 py-2" (click)="decline()" [class.loading]="declining" translate>Decline</button>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+        <ng-container *ngIf="hasLink && event.start && event.meta?.event_id">
+            <a [routerLink]="getCalendarLink()" [queryParams]="{event: event.meta.event_id}" class="ml-2">
+                <i class="i-icon i-expand bgc-dark d-block" aria-hidden="true"></i>
+            </a>
+        </ng-container>
+    </div>
+    <div class="v-center header p-3 mb-0 main-actions justify-content-end" *ngIf="event.meta?.is_organizer">
+        <ng-container *ngIf="hasLink && event.start && event.meta?.event_id">
+            <a [routerLink]="getCalendarLink()" [queryParams]="{event: event.meta.event_id}">
+                <i class="i-icon i-expand bgc-dark d-block" aria-hidden="true"></i>
+            </a>
+        </ng-container>
+        <span class="ml-2 c-pointer" (click)="update()"><i class="i-icon i-edit d-block bgc-blue"></i></span>
+        <span class="ml-2 c-pointer" (click)="remove()"><i class="i-icon i-trash d-block bgc-red"></i></span>
+        <button type="button" class="v-center border-0 bgc-trans close-button p-0 ml-2" (click)="close()">
+            <i class="i-icon i-close bgc-dark" aria-hidden="true"></i>
+        </button>
+    </div>
+    <div class="event-detail">
+        <div class="event-detail-inner px-3 pb-3">
+            <div class="v-center justify-content-between form-group">
+                <div class="f-3 font-weight-bold">
+                    {{event.title}}
+                </div>
+            </div>
+            <div class="form-group mb-1">
+                <label for="time" class="mb-1" translate>time</label>
+                <div class="f-1 font-weight-bold">
+                    <ng-container *ngIf="event.meta && event.meta['is_full']; else normalEventDur"
+                      [translateParams]="{eventStart: event.start | datetimeFormat: 'MMM d y'}" translate
+                    >
+                        calendar.event_start
+                    </ng-container>
+                    <ng-template #normalEventDur>
+                        {{ event.start | datetimeFormat: 'h:mm a' }} - {{ event.end | datetimeFormat: 'h:mm a'}}, {{ getProfileDate(event.end) | date: 'MMM d y'}}
+                    </ng-template>
+                </div>
+            </div>
+            <div class="form-group mb-1" *ngIf="event.meta.isGoogleMeet">
+                <label for="location" class="mb-1" translate>Google Meet</label>
+                <div class="v-center">
+                    <a class="f-1 font-weight-bold text-primary" [href]="event.meta.hangoutLink" target="_blank">
+                        {{event.meta.hangoutLink}}
+                    </a>
+                </div>
+            </div>
+            <div class="form-group mb-1" *ngIf="!event.meta.isGoogleMeet">
+                <label for="location" class="mb-1" translate>location</label>
+                <div class="v-center">
+                    <span class="mr-2"><i class="i-icon i-location d-block bgc-blue"></i></span>
+                    <span class="f-1 font-weight-bold text-primary" [innerHtml]="event.meta.location || '' | linkify"></span>
+                </div>
+            </div>
+            <div class="form-group mb-1">
+                <label for="description" class="mb-1" translate>description</label>
+                <div class="f-1 description" [innerHTML]="event.meta.description || '' | safeHtml">
+                </div>
+            </div>
+            <div class="form-group mb-1">
+                <label for="organizer" class="mb-1" translate>organizer</label>
+                <div class="v-center member">
+                    <div class="avatar mr-1"></div>
+                    <span class="f-2 fw-600">{{event.meta.organizer}}</span>
+                </div>
+            </div>
+            <div class="form-group mb-1">
+                <label for="guests" class="mb-1" [translateParams]="{guestCount: event.meta.guests.length}" translate>calendar.guest_count</label>
+                <ng-container *ngFor="let guest of event.meta.guests">
+                    <div class="v-center member mb-1">
+                        <div class="response {{guest.response || 'needsAction'}} mr-1"></div>
+                        <span class="f-2 fw-600">{{guest.email}}</span>
+                    </div>
+                </ng-container>
+            </div>
+            <div class="form-group mb-1" *ngIf="event.meta.recurrence">
+                <label for="guests" class="mb-1" translate>recurrence</label>
+                <div class="f-1 font-weight-bold">
+                    {{event.meta.recurrence}}
+                </div>
+            </div>
+            <!-- <div class="form-group">
+                <label for="zoom-link" class="mb-1">zoom-link</label>
+                <div class="f-1 font-weight-bold text-primary">
+                    {{zoom_link}}
+                </div>
+            </div> -->
+        </div>
+    </div>
+</div>

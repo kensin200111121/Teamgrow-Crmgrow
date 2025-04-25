@@ -1,0 +1,40 @@
+<div class="v-center justify-content-between">
+  <h1 class="m-0" mat-dialog-title translate>
+    {{ data.title }}
+  </h1>
+</div>
+<form #dealForm="ngForm">
+  <mat-dialog-content class="description">
+    <div class="text-center f-5 c-dark mt-3" translate>
+      {{ data.message }}
+    </div>
+    <div *ngFor="let token of customTokens; let i = index">
+      <div class="f-3 font-weight-bold mt-4">{{ token.name }}</div>
+      <div class="mb-3">
+        <div *ngFor="let match_field of token.match_fields">
+          <div class="v-center c-pointer" (click)="selectMatchField(i, match_field.field_name)">
+            <div class="custom-radio-container mr-3">
+              <input class="custom-radio" type="radio" [checked]="match_field.selected">
+              <label class="f-3 font-weight-bold"></label>
+            </div>
+            <div class="f-3 ml-4 mt-3" *ngIf="match_field.field_name">
+              Contact Field: {{ match_field.field_name }}
+            </div>
+            <div class="f-3 ml-4 mt-3" *ngIf="match_field.value">
+              Static Value: {{ match_field.value }}
+            </div>
+          </div>
+          <div *ngIf="isSelectedAddtionalField(match_field)" class="f-3 ml-5 mt-1 c-red" translate>
+            It will create a new additional field
+          </div>
+        </div>         
+      </div>
+    </div>    
+  </mat-dialog-content>
+  <mat-dialog-actions align="end" class="mx-0">
+    <button class="btn btn-primary f-6 font-weight-bold text-white" [class.loading]="submitting" type="button"
+            (click)="doConfirm()" cdkFocusInitial translate>
+      {{ data['confirmLabel'] || 'Save' }}
+    </button>
+  </mat-dialog-actions>
+</form>

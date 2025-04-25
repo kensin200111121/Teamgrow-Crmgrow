@@ -1,0 +1,161 @@
+<div class="mt-3 ml-2">
+  <app-back-button
+    [defaultTitle]="''"
+    [defaultRoute]="'/lead-hub/lead-capture'"
+    class="back-button"
+  ></app-back-button>
+</div>
+<div class="page-content pt-3">
+  <div class="v-center justify-content-between">
+    <h1
+      class="m-0 page-title"
+      mat-dialog-title
+      *ngIf="type === 'create'; else editCustomField"
+      translate
+    >
+      Add form
+    </h1>
+    <ng-template #editCustomField>
+      <h1 class="m-0 page-title" mat-dialog-title translate>Edit form</h1>
+    </ng-template>
+    <button
+      data-action="create-lead-capture-form"
+      class="btn btn-primary f-6 font-weight-bold"
+      (click)="onSubmit(actionForm)"
+    >
+      {{ 'Save' | translate }}
+    </button>
+  </div>
+  <div style="padding-left: 20vw; padding-right: 20vw;">
+    <form
+      #actionForm="ngForm"
+      (ngSubmit)="submitted = true; actionForm.form.valid ? addForm() : false"
+      [class.was-validated]="submitted"
+    >
+      <mat-dialog-content>
+        <div class="row mt-4">
+          <div class="col-12 form-group">
+            <h6 class="f-3 font-weight-bold mb-1" translate>Name</h6>
+            <input
+              class="form-control"
+              type="text"
+              placeholder="{{ 'Type in name of your form' | translate }}"
+              name="field_name"
+              #field_name="ngModel"
+              id="name"
+              [(ngModel)]="name"
+              required
+            />
+            <span
+              class="invalid-feedback"
+              *ngIf="
+                field_name.errors &&
+                (field_name.touched || field_name.dirty || submitted) &&
+                submitted
+              "
+              translate
+            >
+              Field name is required
+            </span>
+          </div>
+        </div>
+        <div class="form-group">
+          <h6 class="f-4 font-weight-bold mb-1" translate>Fields</h6>
+          <div class="v-center required-field my-2">
+            <div class="f-4 c-light-dark field-name" translate>Field Name</div>
+            <div class="f-4 c-light-dark field-match ml-auto" translate>
+              Contact Field
+            </div>
+            <div class="f-4 c-light-dark field-required ml-auto" translate>
+              Required
+            </div>
+            <div class="f-4 c-light-dark field-action"></div>
+          </div>
+          <div
+            class="v-center required-field mb-2"
+            *ngFor="let field of fields"
+            [attr.data-name]="'add-lead-capture-field-' + field.name"
+          >
+            <div class="f-4 field-name">{{ field.name | translate }}</div>
+            <div class="f-4 field-match ml-auto">
+              {{ getFieldName(field) }}
+            </div>
+            <div class="custom-control custom-checkbox field-required ml-auto">
+              <input
+                type="checkbox"
+                class="custom-control-input"
+                id="{{ field.name }}-required"
+                [checked]="field.required"
+                (change)="requiredStatusChange($event, field.name)"
+              />
+              <label
+                class="custom-control-label"
+                for="{{ field.name }}-required"
+              ></label>
+            </div>
+            <div class="v-center field-action">
+              <i
+                class="d-block i-icon i-edit bgc-blue c-pointer ml-2"
+                *ngIf="
+                  field.name !== 'First Name' &&
+                  field.name !== 'Last Name' &&
+                  field.name !== 'Email' &&
+                  field.name !== 'Phone'
+                "
+                (click)="editField(field)"
+              >
+              </i>
+              <i
+                class="d-block i-icon i-trash bgc-red c-pointer ml-2"
+                *ngIf="
+                  field.name !== 'First Name' &&
+                  field.name !== 'Last Name' &&
+                  field.name !== 'Email' &&
+                  field.name !== 'Phone'
+                "
+                (click)="deleteField(field)"
+              >
+              </i>
+            </div>
+          </div>
+          <button
+            class="v-center justify-content-center btn btn-white border border-primary f-4 c-blue font-weight-bold w-100 mt-3 add-button"
+            (click)="addField()"
+            type="button"
+          >
+            <i class="i-icon i-plus bgc-blue d-block mr-2"></i>
+            {{ 'Add field' | translate }}
+          </button>
+        </div>
+        <div class="form-group">
+          <h6 class="f-3 font-weight-bold mb-1" translate>Tags</h6>
+          <app-input-tag [selectedTags]="tags"></app-input-tag>
+        </div>
+        <ng-container *enableByFeatures="USER_FEATURES.AUTOMATION">
+          <div class="form-group" *ngIf="type == 'create'; else editAutomation">
+            <h6 class="f-3 font-weight-bold mb-1" translate>Automation</h6>
+            <app-input-automation
+              [type]="'contact'"
+              (automationChange)="selectAutomation($event)"
+            >
+            </app-input-automation>
+          </div>
+          <ng-template #editAutomation>
+            <div class="form-group">
+              <h6 class="f-3 font-weight-bold mb-1" translate>Automation</h6>
+              <div class="v-center">
+                <app-input-automation
+                  class="w-100"
+                  [type]="'contact'"
+                  [automation]="selectedAutomation"
+                  (automationChange)="selectAutomation($event)"
+                >
+                </app-input-automation>
+              </div>
+            </div>
+          </ng-template>
+        </ng-container>
+      </mat-dialog-content>
+    </form>
+  </div>
+</div>

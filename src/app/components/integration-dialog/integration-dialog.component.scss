@@ -1,0 +1,208 @@
+@import "variables";
+.title {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.integration-title {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.logo {
+  width: 90px;
+  height: 90px;
+  border-radius: 8px;
+  border: 1px solid #E6E6E6;
+}
+
+.summary {
+  font-size: 16px;
+  color: #989898;
+}
+
+@media screen and (max-width: 575px) {
+  .logo {
+    width: 50px;
+    height: 50px;
+
+    img {
+      width: 50px;
+      height: 100%;
+    }
+  }
+  .integration-title {
+    font-size: 16px;
+  }
+
+  .summary {
+    font-size: 14px;
+  }
+}
+
+.description-section {
+  border-radius: 16px;
+  background-color: #FAFAFA;
+  padding: 16px;
+  min-height: 250px;
+
+  .description {
+    width: 45%;
+    padding-right: 16px;
+  }
+
+  .demo-video {
+    width: 55%;
+
+    iframe {
+      width: 100%;
+      aspect-ratio: 16/9;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+      display: block;
+
+      .description, .demo-video {
+        width: 100%;
+      }
+  }
+}
+
+.video-box {
+  border: 0;
+}
+
+.about-integration {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.about-title{
+  font-size: 16px;
+}
+
+.sub-title {
+  font-size: 12px;
+  color: #b8b8b8;
+}
+
+.sub-content {
+  font-size: 13px;
+  color: #989898;
+}
+
+
+.learn-more {
+  font-size: 14px;
+  color: #4d4d4d;
+
+  .i-icon {
+    max-width: 10px;
+    height: 10px;
+  }
+}
+
+.copy-key {
+  font-size: 14px;
+  color: #989898;
+}
+
+.integration-header {
+  padding-bottom: 30px;
+  border-bottom: 1px solid #eaeaea;
+  .key-container {
+    flex-grow: 1;
+
+    .key-label {
+      min-width: 80px;
+    }
+  }
+  .header-button {
+    display: flex;
+    justify-content: flex-end;
+    margin-left: 8px;
+    button {
+      text-align: left;
+      &.key-copy {
+        min-width: 80px;
+        padding: 0;
+      }
+      &.key-regenerate {
+        padding: 0;
+        width: 140px;
+        .i-icon {
+          &.spinner {
+            animation: rotation 1s infinite linear;
+          }
+        }
+      }
+    }
+  }
+}
+
+.integration-contents {
+  li {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    list-style-type: decimal;
+  }
+}
+
+/* STMP Email Connection */
+.sub-sidebar {
+  width: 200px;
+  min-width: 200px;
+  @media screen and (max-width: 576px) {
+      display: none;
+  }
+}
+.smtp-container {
+  width: 100%;
+
+  @media screen and (max-width: 576px) {
+    display: block;
+    max-width: 100%;
+  }
+}
+
+
+form div.form-group.disabled input {
+  pointer-events: none !important;
+  opacity: 0.4 !important;
+}
+form.disabled .custom-toggle {
+  pointer-events: none !important;
+  opacity: 0.4 !important;
+}
+
+.info-section {
+  border: 1.6px solid #0000ff70;
+  border-radius: 4.8px;
+  background-color: #f5f5ff50;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+form .custom-control-label {
+  font-size: 14px;
+}
+
+.rotating-icon {
+  display: inline-block;
+  animation: rotate 0.5s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

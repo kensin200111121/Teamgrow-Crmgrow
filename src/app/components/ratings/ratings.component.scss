@@ -1,0 +1,42 @@
+.rates {
+  display: flex;
+
+  .rate {
+    margin: 4px;
+    display: block;
+  
+    &.selected {
+      .i-icon {
+        background-color: #ff7900;
+      }
+    }
+
+    .i-icon {
+      background-color: gainsboro;
+    }
+  }
+
+  &.increasing {
+    .rate.indicated:not(.selected) {
+      .i-icon {
+        background-color: #f7b500;
+      }
+    }
+  }
+
+  &:not(.increasing) {
+    .rate.indicated {
+      .i-icon {
+        background-color: #f7b500;
+      }
+    }
+  }
+}
+
+.lock-status {
+  display: none;
+
+  &.locked {
+    display: block;
+  }
+}

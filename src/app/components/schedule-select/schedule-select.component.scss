@@ -1,0 +1,41 @@
+@import 'variables';
+.avatar-wrapper {
+  cursor: pointer;
+
+  .rectangle {
+    border-radius: 3px;
+  }
+
+  &.empty {
+    border: 1px dashed #101336;
+    opacity: 0.64;
+    padding: 30px 12px;
+    text-align: center;
+  }
+
+  .btn-icon {
+    bottom: -14px;
+    right: -14px;
+  }
+}
+.demo-inline-calendar-card {
+  width: 300px;
+}
+.bold
+{
+  font-weight: bold;
+}
+.overlay{
+  z-index:3;
+}
+.description {
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  &:hover {
+    background-color: #ebebff;
+  }
+
+  @media screen and (max-width: 576px) {
+    padding: 0;
+  }
+}

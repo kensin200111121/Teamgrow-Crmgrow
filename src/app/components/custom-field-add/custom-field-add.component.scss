@@ -1,0 +1,44 @@
+.action-form {
+    .type-label {
+        font-weight: 600;
+    }
+    .theme-radios {
+        .theme-radio {
+            &:first-child {
+                border-top-left-radius: 3px;
+                border-bottom-left-radius: 3px;
+            }
+            &:last-child {
+                border-top-right-radius: 3px;
+                border-bottom-right-radius: 3px;
+            }
+        }
+    }
+    .form-group {
+        .dropdown-options {
+            &:first-of-type {
+                margin-top: 0.25rem !important;
+            }
+        }
+        .i-plus {
+            width: 14px;
+            height: 14px;
+            min-width: 14px;
+        }
+    }
+    .invalid-option {
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 80%;
+        color: #dc3545;
+    }
+    .disabled-cursor {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+}
+
+.dot-error {
+  font-size: 11px;
+  color: #dc3545;
+}

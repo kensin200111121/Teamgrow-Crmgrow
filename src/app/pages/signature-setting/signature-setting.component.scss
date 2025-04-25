@@ -1,0 +1,13 @@
+@import "variables";
+
+.signature-container {
+  margin-top: 38px;
+}
+
+:host ::ng-deep {
+  .has-sticky-header thead tr:first-child th {
+    position: initial;
+  }
+}
+
+

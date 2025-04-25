@@ -1,0 +1,143 @@
+<div class="page-content">
+
+  <div class="status-header v-center mt-3">
+    <div>
+      <h1 class="page-title">
+        {{ 'Deal column found in your contact upload file' | translate}}
+      </h1>
+      <div class="f-6 font-weight-bold op-64 contact-count mobile">
+        {{ 'Deal column found in your contact upload file' | translate}}
+      </div>
+      <div class="status-header v-center mt-3">
+        <h1 class="page-warning" *ngIf="hasMoreThanTenContacts.length">
+          Some of deals have more than 10 contacts
+        </h1>
+        <img class="mx-1" [src]="sspaService.toAsset('img/warning-sm.svg')" alt="" *ngIf="hasMoreThanTenContacts.length">
+      </div>
+    </div>
+    <div class="ml-auto v-center create-actions">
+      <div class="mr-2 pipeline-select">
+        <mat-select [(ngModel)]="pipeline" (ngModelChange)="onChangePipeline($event)">
+          <mat-option *ngFor="let value of pipelines" [value]="value._id">
+            <div class="f-3 c-black" [class.selected-option-text]="value._id == pipeline">
+              {{ value.title }}
+            </div>
+          </mat-option>
+        </mat-select>
+      </div>
+      <button class="v-center btn btn-white border border-primary f-6 font-weight-bold rounded mx-2 px-3"
+        (click)="onBack()">
+        <span class="normal" translate>Close</span>
+        <span class="mobile" translate>Close</span>
+      </button>
+      <button class="btn btn-primary f-6 font-weight-bold rounded ml-2 px-3 text-white shadow"
+        [class.loading]="isSaving" (click)="onContinue()">
+        {{ 'Continue' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="f-6 font-weight-bold op-64 mb-2 contact-count desktop">
+  </div>
+
+  <div class="deal-group-wrapper pr-2 mt-3">
+    <div class="deal-group-container" *ngIf="deals.length">
+      <ng-container
+        *ngFor="let deal of deals | paginate: {id: 'dealCreationPage', itemsPerPage: pageSize.id, currentPage: page, totalItems: deals.length}; let dIndex = index;">
+        <div id="deal-group-{{deal.id}}" class="merge-group-wrapper mb-3">
+          <div class="table-wrapper">
+            <table class="table deal-group-check-table mb-0">
+              <thead>
+                <tr>
+                  <th class="check-cell sticky-check-col" translate>Primary</th>
+                  <th>Pipeline</th>
+                  <!-- <th translate>Type</th> -->
+                  <ng-container *ngFor="let match of pcMatching | keyvalue : contactHeaderOrder">
+                    <th [class]="match.value">
+                      {{ properties[match.value] }}
+                    </th>
+                  </ng-container>
+                  <th class="actions sticky-action-col">
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let contact of deal.contacts; let cIndex = index;" [id]="'deal-' + deal.id + contact._id" [ngClass]="{'bg-warning': cIndex > 9}">
+                  <td class="sticky-check-col" [ngClass]="{'bg-warning': cIndex > 9}">
+                    <div class="custom-radio-container" (click)="setPrimary(deal, contact)">
+                      <input class="custom-radio" type="radio" [id]="'deal-contact-item-' + deal.id + contact._id"
+                        [name]="'deal-contact-item-' + deal.id + contact._id" [checked]="deal.primary_contact._id == contact._id">
+                      <label class="f-6 font-weight-bold"></label>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="f-3 c-blue">{{ deal.title }}</div>
+                  </td>
+                  <ng-container *ngFor="let match of pcMatching | keyvalue : contactHeaderOrder">
+                    <td [class]="match.value">
+                      <ng-container *ngIf="match.value == 'label'; else normalField;">
+                        <app-label-select [value]="contact.label" [disabled]="true"></app-label-select>
+                      </ng-container>
+                      <ng-template #normalField>
+                        {{ formatValue(contact[match.value]) }}
+                      </ng-template>
+                    </td>
+                  </ng-container>
+                  <td class="sticky-action-col" [ngClass]="{'bg-warning': cIndex > 9}">
+                    <div class="v-center justify-content-between">
+                      <a class="v-center border-0 bgc-trans c-pointer ml-2 p-0"
+                        (click)="removeContactFromDeal(contact, deal, dIndex, cIndex)">
+                        <i class="i-icon i-trash bgc-black" aria-hidden="true"></i>
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="v-center p-2">
+            <div class="deal-group-error f-1 fw-600 c-red"></div>
+            <div class="v-center ml-auto">
+              <div class="form-group mb-0">
+                <div class="v-center">
+                  <label class="d-block mb-0 mr-3">Stage</label>
+                  <ng-container *ngIf="loadingStage; else stage">
+                    <div class="loader"></div>
+                  </ng-container>
+                  <ng-template #stage>
+                    <select class="form-control mb-0" [(ngModel)]="deal.deal_stage" name="select_stage" #select_stage="ngModel">
+                      <option *ngFor="let stage of stages" value="{{stage._id}}">
+                        {{ stage.title }}
+                      </option>
+                    </select>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div class="table-control my-2 mode-1">
+    <div class="pagination-wrapper m-auto">
+      <pagination-controls (pageChange)="onChangePage($event)" (pageBoundsCorrection)="onChangePage($event)"
+        id="dealCreationPage" maxSize="5" previousLabel="" nextLabel="" autoHide="true">
+      </pagination-controls>
+    </div>
+    <div *ngIf="deals.length > PAGE_COUNTS[0].id" class="shadow-dropdown ml-auto page-size-control" ngbDropdown
+      placement="top-right">
+      <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+        <span class="pr-2 c-blue" [translateParams]="{count: pageSize.id}" translate>pagination</span>
+      </div>
+      <div ngbDropdownMenu aria-labelledby="dealCreationPageSize">
+        <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS" (click)="onChangePageSize(type)">
+          <span class="f-3 v-center" [class.font-weight-bold]="type.id === pageSize.id">
+            <span [translateParams]="{count: type.id}" translate>pagination</span>
+            <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1" *ngIf="type.id == pageSize.id"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

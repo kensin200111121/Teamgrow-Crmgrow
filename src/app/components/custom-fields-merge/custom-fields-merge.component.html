@@ -1,0 +1,148 @@
+<ng-container *ngIf="step == 1">
+  <div class="v-center justify-content-between">
+    <h1 class="m-0" mat-dialog-title [translateParams]="{count: mergeList.length}" translate>
+      Merge count custom contact fields
+    </h1>
+    <i class="d-block i-icon i-close bgc-dark" mat-dialog-close></i>
+  </div>
+  <form class="merge-tag-form">
+    <mat-dialog-content>
+      <div class="form-group mt-2">
+        <label for="tag">{{ 'Merge To' | translate }}:</label>
+        <mat-select [(ngModel)]="mergeToField" name="merge_to">
+          <mat-option value="" translate>Select Field</mat-option>
+          <mat-option value="{{mergeToField}}" *ngIf="mergeToField">
+            <div class="f-3 c-black selected-option-text">
+              {{getFieldName(mergeToField)}}
+            </div>
+          </mat-option>
+          <mat-option *ngFor="let field of getFieldsList()" value="{{field._id}}">
+            <div class="f-3 c-black" [class.selected-option-text]="mergeToField == field._id">
+              {{field.name}}
+            </div>
+          </mat-option>
+        </mat-select>
+      </div>
+      <div class="form-group mt-1">
+        <small class="c-red" translate>merge_custom_field_notify</small>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <a class="btn btn-white f-6 font-weight-bold c-blue mr-2" mat-dialog-close translate>Cancel</a>
+      <ng-container *ngIf="!mergeToField || mergeToField == ''; else activeMergeButton">
+        <button class="btn btn-default f-6 font-weight-bold" type="button" translate>Merge</button>
+      </ng-container>
+      <ng-template #activeMergeButton>
+        <button class="btn btn-primary f-6 font-weight-bold" type="button" (click)="onMergeField()"
+          [class.loading]="isProcessing" translate>Merge</button>
+      </ng-template>
+    </mat-dialog-actions>
+  </form>
+</ng-container>
+
+<ng-container *ngIf="step == 2">
+  <div class="v-center justify-content-between">
+    <h2 class="m-0" mat-dialog-title translate>
+      We've found the conflicts in following contacts
+    </h2>
+  </div>
+  <mat-dialog-content>
+    <div class="v-center justify-content-between">
+      <div class="f-5 fw-600 mb-3" translate>Choose the value to solve the conflicts</div>
+    </div>
+    <table class="table">
+      <thead>
+        <th class="status-col pl-0" translate>Solved</th>
+        <th class="name-col" translate>Contact Name</th>
+        <th class="merge-field-col">{{ getFieldName() }}</th>
+        <th class="action-col" translate>Action</th>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let contact of contacts | paginate: {id: 'contactPages', itemsPerPage: pageSize.id, currentPage: page, totalItems: total}; let i = index">
+          <tr *ngIf="isLoading">
+            <td colspan="5">
+              <div class="load-status" *ngIf="isLoading">
+                {{'LOADING' | translate}}
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="status-col pl-0">
+              <div class="v-center" *ngIf="updatedContact(contact) || solvedContact(contact)">
+                <i class="i-icon i-round-check mr-2 round-check"></i>
+              </div>
+              <div class="v-center" *ngIf="failedContact(contact)">
+                <i class="i-icon i-error d-block bgc-red mr-2"></i>
+              </div>
+            </td>
+            <td class="name-col" (click)="openContact(contact)">
+              <div class="v-center c-pointer">
+                <div class="contact-avatar f-3 mr-2">
+                  {{contact.avatarName}}
+                </div>
+                <span class="fw-600">{{contact.fullName}}</span>
+              </div>
+            </td>
+            <td class="merge-field-col">
+              <div class="f-4 fw-600" *ngIf="solvedContact(contact); else selectFieldValue;">
+                {{ contact['additional_field'][getFieldName()] }}
+              </div>
+              <ng-template #selectFieldValue>
+                <div class="form-group mb-0">
+                  <mat-select [(ngModel)]="contact['additional_field'][getFieldName()]">
+                    <mat-option value="">Select Value</mat-option>
+                    <mat-option value="{{contact['additional_field'][getFieldName()]}}"
+                      *ngIf="contact['additional_field'][getFieldName()]">
+                      <div class="f-3 c-black selected-option-text">{{ contact['additional_field'][getFieldName()] }}</div>
+                    </mat-option>
+                    <mat-option *ngFor="let value of getAvailableValues(contact)" value="{{value}}">
+                      <div class="f-3 c-black" [class.selected-option-text]="contact['additional_field'][getFieldName()] == value">
+                        {{value}}
+                      </div>
+                    </mat-option>
+                  </mat-select>
+                </div>
+              </ng-template>
+            </td>
+            <td class="action-col">
+              <ng-container *ngIf="!updatedContact(contact) && !solvedContact(contact)">
+                <a (click)="onUpdateContact(contact)" class="c-pointer user-action" translate>
+                  Save
+                </a>
+              </ng-container>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+    <div class="my-2 table-control mode-1 conflict-table">
+      <div class="pagination-wrapper m-auto">
+        <pagination-controls (pageChange)="changePage($event)" (pageBoundsCorrection)="changePage($event)" id="contactPages"
+          maxSize="5" previousLabel="" nextLabel="" autoHide="true">
+        </pagination-controls>
+      </div>
+      <div *ngIf="total > PAGE_COUNTS[0].id"
+        class="shadow-dropdown ml-auto page-size-control" ngbDropdown placement="top-right">
+        <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+          <span class="pr-2 c-blue" [translateParams]="{count: pageSize.id}" translate>pagination</span>
+        </div>
+        <div ngbDropdownMenu aria-labelledby="contactPageSize">
+          <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS" (click)="changePageSize(type)">
+            <span class="f-3 v-center" [class.font-weight-bold]="type.id === pageSize.id">
+              <span [translateParams]="{count: type.id}" translate>pagination</span>
+              <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1" *ngIf="type.id === pageSize.id"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <div class="d-flex justify-content-between w-100">
+      <div class="d-flex"></div>
+      <div class="d-flex">
+        <button class="btn btn-white c-blue fw-600" type="button" (click)="close()" translate>Close</button>
+      </div>
+    </div>
+  </mat-dialog-actions>
+</ng-container>

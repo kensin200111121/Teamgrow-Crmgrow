@@ -1,0 +1,9 @@
+.page-content {
+    width: 100%;
+    max-width: 350px;
+    .btn-blue {
+        &:hover {
+            color: white;
+        }
+    }
+}

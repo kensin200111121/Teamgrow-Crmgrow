@@ -1,0 +1,57 @@
+<div class="page-content">
+  <h1 class="page-title mb-3 mb-sm-4" *ngIf="currentPageItem[0]?.label">{{currentPageItem[0]?.label | translate}}</h1>
+  <div class="sub-sidebar-mobile mb-2">
+    <div ngbDropdown class="sidebar-menu p-2">
+      <div ngbDropdownToggle class="v-center">
+        <i class="i-icon bgc-blue {{currentPageItem[0]?.icon}} mr-2"></i>
+        <span class="f-3 menu-label font-weight-bold c-blue">{{currentPageItem[0]?.label | translate}}</span>
+      </div>
+      <div ngbDropdownMenu class="light">
+        <div *ngFor="let menuItem of menuItems" class="dropdown-item">
+          <a class="d-flex nav-link c-dark c-pointer px-0" (click)="changeMenu(menuItem)">
+            <i class="i-icon bgc-dark {{menuItem?.icon}} mr-2"></i>
+            <span class="f-3 menu-label font-weight-bold">{{menuItem?.label | translate}}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class='content'>
+    <div class="sub-container pl-0 flex-grow-1">
+      <ng-container [ngSwitch]="currentPage">
+        <app-notifications *ngSwitchCase="'notifications'"></app-notifications>
+        <ng-container *ngSwitchCase="'sms'">
+          <ng-container *ngIf="isLoadingProfile; else content">
+            <div class="list-loading text-center">
+              <div class="loader mt-5 lg"></div>
+              <h4 class="fw-400 mt-2" translate>Loading...</h4>
+            </div>
+          </ng-container>
+          <ng-template #content>
+            <ng-container *ngIf="isWavvUser; else twilioTemplate">
+              <app-sms-limits-new></app-sms-limits-new>
+            </ng-container>
+            <ng-template #twilioTemplate>
+              <app-sms-limits></app-sms-limits>
+            </ng-template>
+          </ng-template>
+        </ng-container>
+        <app-affiliate *ngSwitchCase="'affiliate'"></app-affiliate>
+        <app-assistant *ngSwitchCase="'assistant'"></app-assistant>
+        <app-status-automation *ngSwitchCase="'status-automation'"></app-status-automation>
+        <app-auto-follow-up *ngSwitchCase="'auto-follow-up'"></app-auto-follow-up>
+        <app-auto-resend-video *ngSwitchCase="'auto-resend-video'"></app-auto-resend-video>
+        <app-deals-setting *ngSwitchCase="'deals-setting'"></app-deals-setting>
+        <!-- <app-integration *ngSwitchCase="'integration'"></app-integration> -->
+        <app-integration-new *ngSwitchCase="'integration'"></app-integration-new>
+        <app-integration-vortex *ngSwitchCase="'integration-vortex'"></app-integration-vortex>
+        <app-social-profile *ngSwitchCase="'social-profile'"></app-social-profile>
+        <app-theme-setting *ngSwitchCase="'landing-page-theme'"></app-theme-setting>
+        <app-business-hour *ngSwitchCase="'business-hour'"></app-business-hour>
+        <app-token-manager *ngSwitchCase="'token-manager'"></app-token-manager>
+        <app-twilio-setting *ngSwitchCase="'twilio-setting'"></app-twilio-setting>
+        <app-starter-brand *ngSwitchCase="'brand-register'" (created)="onBrandCreated()"></app-starter-brand>
+      </ng-container>
+    </div>
+  </div>
+</div>

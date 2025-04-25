@@ -1,0 +1,53 @@
+<div class="tree-overlay">
+  <div class="v-start justify-content-between">
+    <div>
+      <h1 mat-dialog-title class="f-6 font-weight-bold m-0 title">
+        {{ trigger.type | translate }}
+      </h1>
+      <span class="f-4 c-secondary" translate>start_trigger</span>
+    </div>
+    <span class="mr-2 c-pointer ml-auto mt-2" (click)="update()"
+      ><i class="i-icon i-edit d-block bgc-black"></i
+    ></span>
+    <span class="c-pointer mt-2" (click)="remove()"
+      ><i class="i-icon i-trash d-block bgc-red"></i
+    ></span>
+  </div>
+  <div class="automation-detail mt-3">
+    <ng-container [ngSwitch]="trigger.type">
+      <div *ngSwitchCase="TRIGGER_TYPES.DEAL_STAGE_CHANGE">
+        <p class="f-2 c-secondary mb-0" translate>Pipeline</p>
+        <span class="f-4"
+          >{{ trigger?.detail?.pipeline?.detail?.title }} -
+          {{ trigger?.detail?.stage?.title }}</span
+        >
+      </div>
+      <div *ngSwitchCase="TRIGGER_TYPES.CONTACT_TAG_ADDED">
+        <p class="f-2 c-secondary mb-0" translate>Tags</p>
+        <span class="f-4">{{ trigger?.detail?.tags.join(', ') }}</span>
+      </div>
+      <div *ngSwitchCase="TRIGGER_TYPES.CONTACT_STATUS_CHANGED">
+        <p class="f-2 c-secondary mb-0" translate>Status</p>
+        <app-label-select [value]="trigger?.detail?.status" [disabled]="true"></app-label-select>
+      </div>
+      <div *ngSwitchCase="TRIGGER_TYPES.CONTACT_FORM_COMPLETE">
+        <!-- <p class="f-2 c-secondary mb-0" translate>Condition</p> -->
+        <p class="f-2 c-secondary mb-0" translate>Form Name</p>
+        <span class="f-4">{{ trigger?.detail?.form?.name }}</span>
+        <ng-container *ngIf="trigger?.detail?.conditions?.length">
+          <p class="f-2 c-secondary mb-0" translate>Condition</p>
+          <span class="f-4">{{ formConditions }}</span>
+        </ng-container>
+      </div>
+      <div *ngSwitchCase="TRIGGER_TYPES.CONTACT_VIEWS_MEDIA">
+        <p class="f-2 c-secondary mb-0" translate>File Name</p>
+        <span class="f-4">{{ trigger?.detail?.file }}</span>
+        <ng-container *ngIf="trigger?.detail?.amount">
+          <p class="f-2 c-secondary mb-0" translate>percentage_of_view</p>
+          <span class="f-4">{{ trigger?.detail?.amount }}%</span>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+  <div class="overlay-triangle"></div>
+</div>

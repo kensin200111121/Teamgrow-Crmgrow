@@ -1,0 +1,117 @@
+<div class="contact-added">
+  <div class="row my-3 analytics-page">
+    <div class="range-selector mt-3">
+      <div class="range-item d-flex align-items-start justify-content-between">
+        <div>
+          <p class="f-40 c-blue">16</p>
+          <div class="v-center">
+            <span class="growth-color font-weight-bold f-1">+12</span>
+            <i class="i-icon i-triangle-up growth-icon bgc-growth"></i>
+            <span class="f-1 c-dark" translate>vs the last week</span>
+          </div>
+        </div>
+        <div class="v-center">
+          <i class="i-icon arrow-icon i-triangle-left bgc-black" [class.disable]="selectedWeekly == 0" (click)="beforeWeek()"></i>
+          <div class="f-1 c-range select-text font-weight-bold">{{weekly[selectedWeekly]}}</div>
+          <i class="i-icon arrow-icon i-triangle-right bgc-black" [class.disable]="selectedWeekly == 2" (click)="nextWeek()"></i>
+        </div>
+      </div>
+      <div class="range-item d-flex align-items-start justify-content-between">
+        <div>
+          <p class="f-40 c-blue">78</p>
+          <div class="v-center">
+            <span class="growth-color font-weight-bold f-1">+23</span>
+            <i class="i-icon i-triangle-up growth-icon bgc-growth"></i>
+            <span class="f-1 c-dark" translate>vs the last month</span>
+          </div>
+        </div>
+        <div class="v-center">
+          <i class="i-icon arrow-icon i-triangle-left bgc-black" [class.disable]="selectedMonthly == 0" (click)="beforeMonth()"></i>
+          <div class="f-1 c-range select-text  font-weight-bold">{{monthly[selectedMonthly]}}</div>
+          <i class="i-icon arrow-icon i-triangle-right bgc-black" [class.disable]="selectedMonthly == 2" (click)="nextMonth()"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row my-3">
+    <mat-accordion>
+      <mat-expansion-panel [expanded]="topExpanded" hideToggle>
+        <mat-expansion-panel-header (click)="changeExpanded()">
+          <mat-panel-title>
+            <div class="v-center justify-content-between border-0 py-2 c-dark expand w-100">
+              <div class="v-center">
+                <i class="i-icon i-triangle-right expand-icon bg-dark opacity-6 mr-3" aria-hidden="true" [class.expand]="topExpanded"></i>
+                <span class="f-6 font-weight-bold" translate>Contacts added list</span>
+              </div>
+              <div class="v-center">
+                <i class="i-icon i-calendar bgc-blue ml-1" aria-hidden="true"></i>
+                <span class="ml-2 f-3 font-weight-bold c-blue">{{weekly[selectedWeekly]}}</span>
+              </div>
+            </div>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="material-usage-wrapper w-100">
+          <table class="table campaign-add-contact-table">
+            <thead>
+            <tr>
+              <th class="name" translate>Contact Name</th>
+              <th class="label" translate>Status</th>
+              <th class="last-activity" translate>Last Activity</th>
+              <th class="date-added" translate>Date Added</th>
+              <th class="phone-number" translate>Phone number</th>
+            </tr>
+            </thead>
+            <tbody>
+            <ng-container *ngIf="contacts">
+              <tr *ngFor="let contact of contacts">
+                <td class="name">
+                  <div class="v-center">
+                    <div>
+                      <div class="contact-avatar">
+                        {{getAvatarName(contact)}}
+                      </div>
+                    </div>
+                    <div class="f-4 ml-2">
+                      <div *ngIf="!contact.first_name && !contact.last_name" translate>Unnamed Contact</div>
+                      <div *ngIf="contact.first_name || contact.last_name">
+                        {{contact.first_name || ''}} {{contact.last_name || ''}}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td class="label">
+                  <div class="v-center">
+                    <div class="label-container">
+                      <div class="label-rectangle" [ngStyle]="{'background-color': getLabelById(contact.label).color}"></div>
+                      <div class="label-circle" [ngStyle]="{'background-color': getLabelById(contact.label).color}"></div>
+                    </div>
+                    <span class="f-3 font-weight-bold ml-2">{{getLabelById(contact.label).name}}</span>
+                  </div>
+                </td>
+                <td class="last-activity">
+                  <div class="v-center">
+                    <div class="v-center icon-button mr-2">
+                      <i class="i-icon bgc-dark i-activity"></i>
+                    </div>
+                    <div class="activity">
+                      <div class="f-4 font-weight-bold">{{contact.last_activity && contact.last_activity.content}}</div>
+                      <div class="f-2 c-black opacity-6">{{(contact.last_activity && contact.last_activity.updated_at) | timeago }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="date-added">
+                  <div class="f-3">
+                    {{contact.created_at | datetimeFormat : 'MMM dd, hh:mm a'}}
+                  </div>
+                </td>
+                <td class="phone-number">
+                  <div class="f-3 c-blue font-weight-bold text-right">{{contact.cell_phone}}</div>
+                </td>
+              </tr>
+            </ng-container>
+          </table>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div>

@@ -1,0 +1,19 @@
+<h1 mat-dialog-title class="v-center d-flex">
+  <span translate>Share Automation</span>
+  <button class="border-0 bgc-trans ml-auto" mat-dialog-close>
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</h1>
+<mat-dialog-content>
+  <div class="form-group mt-3">
+    <div class="v-center justify-content-between mb-2">
+      <label class="mb-0" translate>Select community</label>
+      <span class="error font-weight-bold d-block" *ngIf="!selectedTeam && submitted" translate>Required!</span>
+    </div>
+    <app-select-team (onSelect)="selectTeam($event)"></app-select-team>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button class="btn c-blue" mat-dialog-close translate>Cancel</button>
+  <button class="btn btn-primary" [class.loading]="sharing" (click)="share()" translate>Share</button>
+</mat-dialog-actions>

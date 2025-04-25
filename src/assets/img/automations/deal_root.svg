@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <g id="Oval_Copy_54" data-name="Oval Copy 54" fill="#fff" stroke="#1300ff" stroke-miterlimit="10" stroke-width="1" transform="matrix(12.393806, 0, 0, 12.393805, 2.123919, 0.648978)" style="">
+    <circle cx="20" cy="20" r="20" stroke="none"/>
+    <circle cx="20" cy="20" r="19.5" fill="none"/>
+  </g>
+  <g id="Group_52" data-name="Group 52" transform="matrix(5.221976, 0, 0, 4.963864, -14.775796, 198.289078)" style="">
+    <g id="Icons_Video_Sent" data-name="Icons / Video Sent" transform="matrix(2.527907, 0, 0, 2.513463, 61.198097, 41.088634)" style="">
+      <rect id="Icons_Video_Sent_background" data-name="Icons / Video Sent background" width="20" height="20" fill="none"/>
+      <g id="video-sent" transform="translate(1 1)">
+        <path id="Path-2" data-name="Path" d="M -12.567 -8.502 L -12.567 -19.392 C -12.569 -22.133 -9.604 -23.846 -7.231 -22.479 C -7.191 -22.455 -7.15 -22.432 -7.11 -22.406 L 1.597 -16.963 C 3.828 -15.568 3.828 -12.32 1.597 -10.927 L -7.11 -5.484 C -9.428 -4.023 -12.458 -5.62 -12.565 -8.355 C -12.565 -8.405 -12.567 -8.453 -12.567 -8.502 Z" style="fill: rgb(0, 0, 255);"/>
+      </g>
+    </g>
+  </g>
+</svg>

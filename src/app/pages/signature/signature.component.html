@@ -1,0 +1,27 @@
+<h6 class="mb-1" translate>Signature layouts</h6>
+<p class="f-2" style="opacity: 0.8" translate>
+  Load premade template made of your profile info
+</p>
+<div class="email-templates">
+  <div class="v-center justify-content-center template" *ngFor="let template of templates; let i = index;" id="signature-layout-{{i}}"
+    [ngClass]="{active: currentTemplate === template.layout}" (click)="changeTemplate(template)">
+    <i class="d-block {{template.icon}} bgc-dark"></i>
+    <div class="v-center justify-content-center bgc-white select-icon" *ngIf="currentTemplate === template.layout">
+      <i class="d-block i-icon i-check bgc-blue"></i>
+    </div>
+  </div>
+</div>
+<div class="email-editor mt-3">
+  <quill-editor image-resize="true" [placeholder]="'Enter Text' | translate" format="html" [(ngModel)]="emailSignature"
+    [modules]="config" name="mailContent" [styles]="{ height: '220px' }" id="mailContent" [sanitize]="true"
+    (onEditorCreated)="getEditorInstance($event)" (onContentChanged)="updateEditor($event)" class="rounded"
+    #emailEditor>
+  </quill-editor>
+  <div class="row">
+    <a class="btn c-blue fw-600 ml-auto mr-4 mt-4" (click)="cancel()" translate>Cancel</a>
+    <button class="btn btn-secondary fw-600 mr-2 mt-4" (click)="generate()" [class.loading]="generating"
+      translate>Auto Generate</button>
+    <button type="submit" class="btn btn-primary fw-600 mr-2 mt-4" (click)="update()" [class.loading]="saving"
+      translate>Save changes</button>
+  </div>
+</div>

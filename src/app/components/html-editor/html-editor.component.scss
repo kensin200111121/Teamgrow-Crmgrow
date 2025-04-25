@@ -1,0 +1,298 @@
+@import 'variables';
+
+.html-editor {
+  .insert-token {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    cursor: pointer;
+    .dropdown-toggle {
+      .i-triangle-up {
+        display: none !important;
+      }
+      .i-icon {
+        width: 8px;
+        height: 8px;
+        min-width: 8px;
+      }
+    }
+    &.show {
+      .dropdown-toggle {
+        .i-triangle-down {
+          display: none !important;
+        }
+        .i-triangle-up {
+          display: block !important;
+        }
+      }
+    }
+
+    .menu-item:hover {
+      background-color: gainsboro;
+    }
+    .menu-item:active {
+      background-color: blue;
+      color: white;
+    }
+  }
+
+  .error {
+    position: absolute;
+    bottom: 6px;
+    left: 15px;
+    font-size: 14px;
+    display: block;
+  }
+
+  .attach-files {
+    max-height: 52px;
+    overflow: auto;
+
+    .attachment {
+      height: 25px;
+      display: flex;
+      font-size: 14px;
+      background: #f5f5f5;
+      margin-bottom: 3px;
+      padding: 0px 8px;
+
+      &:last-child {
+        margin-bottom: 0px;
+      }
+
+      .name {
+        max-width: calc(100% - 120px);
+        text-overflow: ellipsis;
+        overflow: hidden;
+        color: #15c;
+        font-weight: 600;
+        margin-right: 5px;
+      }
+
+      .close {
+        margin-left: auto;
+      }
+    }
+  }
+}
+
+:host ::ng-deep {
+  .ql-toolbar.ql-snow .ql-formats {
+    margin-right: 0px !important;
+  }
+  button.ql-link {
+    position: relative;
+    width: 24px;
+  }
+  button.ql-template{
+    position: relative;
+    width: 24px;
+    margin-left: 4px;
+    svg {
+      display: none;
+    }
+  }
+  button.ql-emoji {
+    position: relative;
+    width: 24px;
+    background-image: url(../../../assets/img/emoji.png);
+    background-position: center;
+    background-size: 24px;
+    background-repeat: no-repeat;
+    margin-left: 4px;
+    padding: 0;
+  }
+  button.ql-calendly {
+    position: relative;
+    margin-left: 4px;
+    svg {
+      display: none;
+    }
+  }
+  button.ql-record {
+    position: relative;
+    width: 24px;
+    margin-left: 4px;
+    svg {
+      display: none;
+    }
+  }
+
+  .ql-toolbar.ql-snow {
+    // display: flex;
+    // justify-content: space-between;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-color: #e0e0e0;
+    padding: 4px;
+  }
+  .ql-toolbar.ql-snow + .ql-container.ql-snow{
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-color: #e0e0e0;
+  }
+  .ql-editor br {
+    display: block;
+  }
+  .ql-editor > div {
+    font-family: "Helvetica", "Arial", "sans-serif", "TwemojiMozilla";
+  }
+  .ql-font {
+    .ql-picker-label {
+      font-size: 12px;
+    }
+    .ql-picker-options {
+      height: 150px;
+      overflow: auto;
+    }
+    span[data-value="arial"] {
+      &::before {
+        content: "Sans Serif" !important;
+        font-family: "arial, sans-serif";
+      }
+    }
+    span[data-value="times new roman"] {
+      &::before {
+        content: "Serif" !important;
+        font-family: "times new roman", serif;
+      }
+    }
+    span[data-value="monospace"] {
+      &::before {
+        content: "Fixed Width" !important;
+        font-family: "monospace";
+      }
+    }
+    span[data-value="arial black"] {
+      &::before {
+        content: "Wide" !important;
+        font-family: "arial black", sans-serif;
+      }
+    }
+    span[data-value="arial narrow"] {
+      &::before {
+        content: "Narrow" !important;
+        font-family: "arial narrow", sans-serif;
+      }
+    }
+    span[data-value="comic sans ms"] {
+      &::before {
+        content: "Comic Sans MS" !important;
+        font-family: "comic sans ms", sans-serif;
+      }
+    }
+    span[data-value="garamond"] {
+      &::before {
+        content: "Garamond" !important;
+        font-family: garamond, "times new roman", serif;
+      }
+    }
+    span[data-value="georgia"] {
+      &::before {
+        content: "Georgia" !important;
+        font-family: "georgia, serif";
+      }
+    }
+    span[data-value="tahoma"] {
+      &::before {
+        content: "Tahoma" !important;
+        font-family: "tahoma, sans-serif";
+      }
+    }
+    span[data-value="trebuchet ms"] {
+      &::before {
+        content: "Trebuchet MS" !important;
+        font-family: "trebuchet ms", sans-serif;
+      }
+    }
+    span[data-value="verdana"] {
+      &::before {
+        content: "Verdana" !important;
+        font-family: "verdana", sans-serif;
+      }
+    }
+  }
+  .ql-font-trebuchet-ms {
+    font-family: "trebuchet ms", sans-serif;
+  }
+  .ql-font-vardana {
+    font-family: "verdana, sans-serif";
+  }
+  .qtip::before {
+    width: max-content;
+  }
+  .ql-align {
+    margin-top: -7px;
+  }
+}
+
+.templates-container {
+  background: white;
+  border: 1px solid gainsboro;
+  padding: 0px 0px;
+  border-radius: 4px;
+  box-shadow: 0px 0px 6px #bbb8;
+  width: 280px;
+  max-height: 250px;
+  overflow: auto;
+
+  .template {
+    padding: 4px 6px;
+    border-top: 1px solid gainsboro;
+    cursor: pointer;
+    min-height: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    i {
+      width: 14px;
+      height: 14px;
+      min-width: 14px;
+    }
+  }
+
+  .c-badge {
+    padding: 2px 4px;
+    font-size: 10px!important;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+}
+
+.link-container {
+  background: white;
+  border: 1px solid gainsboro;
+  padding: 0px 0px;
+  border-radius: 4px;
+  box-shadow: 0px 0px 6px #bbb8;
+  width: 300px;
+  max-height: 250px;
+  overflow: auto;
+  label {
+    margin: 0;
+  }
+  input {
+    height: 26px;
+    font-size: 13px;
+  }
+}
+
+.actions {
+  position: absolute;
+  top: 5px;
+  visibility: hidden;
+  pointer-events: none;
+  &.templates-action, &.emoji-action, &.calendly-action {
+    left: 185px;
+  }
+  &.link-action {
+    left: 10px;
+  }
+}
+
+.chatgpt-dropdown {
+  position: absolute !important;
+  top: 5px !important;
+  left: 531px !important;
+  cursor: pointer !important;
+}

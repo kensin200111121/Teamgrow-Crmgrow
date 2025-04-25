@@ -1,0 +1,195 @@
+<!-- Added by Sylla -->
+<div class="page-content">
+  <div class="status-header v-center mt-3">
+    <h1 class="page-title" translate>
+      Update Contact
+    </h1>
+    <div class="f-6 font-weight-bold op-64 contact-count mobile">
+      {{ 'Update Contact' | translate }}
+    </div>
+    <div class="ml-auto v-center create-actions">
+  
+    </div>
+  </div>
+  
+  <div class="f-6 font-weight-bold op-64 mb-2 contact-count desktop">
+    {{ 'Select the information you want to keep for this contact' | translate }}
+  </div>
+
+  <div class="row update-contact-page">
+    <div class="col-sm-6 col-12">
+      <div class="contact-form new-contact" [class.selected]="selectedIndex == 0">
+        <div class="row">
+          <div class="col-12 form-group custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="new-contact"
+              (change)="$event ? onSelectNewContact() : null"
+              [checked]="selectedIndex == 0" />
+            <label class="custom-control-label f-2" for="new-contact" translate>
+              New Contact Information
+            </label>
+          </div>
+          <div class="col-12 form-group">
+            <label for="full_name">FULL NAME</label>
+            <ng-container
+              *ngIf="group.contacts[0]['full_name'] !== undefined">
+              <input type="text" id="full_name" class="form-control disabled"
+                name="full_name" #full_name="ngModel"
+                [(ngModel)]="group.contacts[0]['full_name']"/>
+            </ng-container>
+            <ng-container
+              *ngIf="group.contacts[0]['full_name'] === undefined">
+              <input type="text" id="full_name" class="form-control disabled"
+                name="full_name" />
+            </ng-container>
+          </div>
+          <div class="col-12 form-group">
+            <label for="deal">DEAL</label>
+            <ng-container
+              *ngIf="group.contacts[0].deal !== undefined">
+              <input type="text" id="deal" class="form-control disabled" name="deal"
+                #deal="ngModel" [(ngModel)]="group.contacts[0].deal" />
+            </ng-container>
+            <ng-container
+              *ngIf="group.contacts[0].deal === undefined">
+              <input type="text" id="deal" class="form-control disabled" name="deal" />
+            </ng-container>
+          </div>
+          <div class="col-12 form-group">
+            <label for="email">EMAIL</label>
+            <ng-container
+              *ngIf="group.contacts[0].email !== undefined">
+              <input type="text" id="email" class="form-control disabled" name="email"
+                #email="ngModel" [(ngModel)]="group.contacts[0].email" />
+            </ng-container>
+            <ng-container
+              *ngIf="group.contacts[0].email === undefined">
+              <input type="text" id="email" class="form-control disabled" name="email" />
+            </ng-container>
+          </div>
+          <div class="col-12 form-group">
+            <label for="cell_phone">PHONE</label>
+            <ng-container
+              *ngIf="group.contacts[0].cell_phone !== undefined">
+              <input type="text" id="cell_phone" class="form-control disabled"
+                name="cell_phone" #cell_phone="ngModel"
+                [(ngModel)]="group.contacts[0].cell_phone" />
+            </ng-container>
+            <ng-container
+              *ngIf="group.contacts[0].cell_phone === undefined">
+              <input type="text" id="cell_phone" class="form-control disabled"
+                name="cell_phone" />
+            </ng-container>
+          </div>
+          <div class="col-12 form-group">
+            <label for="address">ADDRESS</label>
+            <ng-container
+              *ngIf="group.contacts[0].address !== undefined">
+              <input type="text" id="address" class="form-control disabled" name="address"
+                #address="ngModel" [(ngModel)]="group.contacts[0].address" />
+            </ng-container>
+            <ng-container
+              *ngIf="group.contacts[0].address === undefined">
+              <input type="text" id="address" class="form-control disabled"
+                name="address" />
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-12">
+      <div class="contact-form old-contact" [class.selected]="selectedIndex == 1">
+        <div class="row">
+          <div class="col-12 form-group custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="old-contact"
+              (change)="$event ? onSelectOldContact() : null"
+              [checked]="selectedIndex == 1" />
+            <label class="custom-control-label f-2" for="old-contact" translate>
+              Old Contact Information
+            </label>
+          </div>
+          <div class="col-12 form-group">
+            <label for="full_name">FULL NAME</label>
+            <ng-container
+              *ngIf="group.contacts[1]['full_name'] !== undefined">
+              <input type="text" id="full_name" class="form-control disabled"
+                name="full_name" #full_name="ngModel"
+                [(ngModel)]="group.contacts[1]['full_name']" />
+            </ng-container>
+            <ng-container
+              *ngIf="group.contacts[1]['full_name'] === undefined">
+              <input type="text" id="full_name" class="form-control disabled"
+                name="full_name" />
+            </ng-container>
+          </div>
+          <div class="col-12 form-group">
+            <label for="deal">DEAL</label>
+            <ng-container
+              *ngIf="group.contacts[1].deal !== undefined">
+              <input type="text" id="deal" class="form-control disabled" name="deal"
+                #deal="ngModel" [(ngModel)]="group.contacts[1].deal" />
+            </ng-container>
+            <ng-container
+              *ngIf="group.contacts[1].deal === undefined">
+              <input type="text" id="deal" class="form-control disabled" name="deal" />
+            </ng-container>
+          </div>
+          <div class="col-12 form-group">
+            <label for="email">EMAIL</label>
+            <ng-container
+              *ngIf="group.contacts[1].email !== undefined">
+              <input type="text" id="email" class="form-control disabled" name="email"
+                #email="ngModel" [(ngModel)]="group.contacts[1].email" />
+            </ng-container>
+            <ng-container
+              *ngIf="group.contacts[1].email === undefined">
+              <input type="text" id="email" class="form-control disabled" name="email" />
+            </ng-container>
+          </div>
+          <div class="col-12 form-group">
+            <label for="cell_phone">PHONE</label>
+            <ng-container
+              *ngIf="group.contacts[1].cell_phone !== undefined">
+              <input type="text" id="cell_phone" class="form-control disabled"
+                name="cell_phone" #cell_phone="ngModel"
+                [(ngModel)]="group.contacts[1].cell_phone" />
+            </ng-container>
+            <ng-container
+              *ngIf="group.contacts[1].cell_phone === undefined">
+              <input type="text" id="cell_phone" class="form-control disabled"
+                name="cell_phone" />
+            </ng-container>
+          </div>
+          <div class="col-12 form-group">
+            <label for="address">ADDRESS</label>
+            <ng-container
+              *ngIf="group.contacts[1].address !== undefined">
+              <input type="text" id="address" class="form-control disabled" name="address"
+                #address="ngModel" [(ngModel)]="group.contacts[1].address" />
+            </ng-container>
+            <ng-container
+              *ngIf="group.contacts[1].address === undefined">
+              <input type="text" id="address" class="form-control disabled"
+                name="address" />
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer v-center">
+    <button
+      class="v-center btn btn-white border border-primary f-6 font-weight-bold rounded mr-2 px-3"
+      (click)="onCancel()">
+      <span class="normal" translate>Cancel</span>
+      <span class="mobile" translate>Cancel</span>
+    </button>
+    <button
+      class="btn btn-primary f-6 font-weight-bold rounded px-3 text-white shadow"
+      [class.loading]="isUpdating"
+      (click)="onUpdateContact()">
+      {{ 'Update' | translate }}
+    </button>
+  </div>
+</div>
+<!-- End by Sylla -->

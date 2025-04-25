@@ -1,0 +1,13 @@
+<div class="alias-selector v-center pl-3 pr-2 py-1 " [class.d-none]="!primary || list.length < 2">
+    <label class="mb-0 mr-2 op-56">From: </label>
+    <div class="c-pointer" ngbDropdown placement="bottom-left">
+        <div ngbDropdownToggle>
+          <span class="f-3 fw-600" *ngIf="primary">{{primary.name}} <{{primary.email}}></span>
+        </div>
+        <div ngbDropdownMenu class="light">
+          <div class="dropdown-item c-dark f-3" *ngFor="let item of list" (click)="change(item)">
+            {{item.name}} <{{item.email}}>
+          </div>
+        </div>
+    </div>
+</div>

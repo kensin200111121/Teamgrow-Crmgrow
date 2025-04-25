@@ -1,0 +1,25 @@
+@import 'variables';
+.task-types {
+  border: 1px solid $color-dark;
+  .btn-type {
+    opacity: 1;
+    margin: -1px;
+    &.active {
+      border: 1px solid $color-dark !important;
+      background-color: $color-dark !important;
+
+      i {
+        background-color: white !important;
+      }
+    }
+    &:hover {
+      border: 1px solid $color-dark !important;
+    }
+
+    i {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+    }
+  }
+}

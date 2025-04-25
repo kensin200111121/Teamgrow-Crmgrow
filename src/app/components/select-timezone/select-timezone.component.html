@@ -1,0 +1,99 @@
+<ng-container *ngIf="uiType === 'selector'">
+  <div class="timezone-selector-wrapper" [class.disabled]="disabled">
+    <mat-form-field class="timezone-selector">
+      <mat-select
+        id="time_zone_info"
+        class="form-control c-blue f-5"
+        (selectionChange)="selectTimezone($event.value)"
+        [disableOptionCentering]="true"
+        [(ngModel)]="value"
+      >
+        <mat-option value="{{ ADDITIONAL_TIMEZONE }}" *ngIf="ADDITIONAL_TIMEZONE" translate>
+          {{ ADDITIONAL_TIMEZONE }}
+        </mat-option>
+        <ng-container *ngFor="let timezone_group of TIME_ZONES">
+          <mat-optgroup label="{{ timezone_group.country | uppercase }}">
+            <mat-option
+              class="timezone w-fit"
+              *ngFor="let timezone of timezone_group.timezones"
+              value="{{ timezone }}"
+            >
+              <div
+                class="d-flex justify-content-between"
+                [class.font-weight-bold]="timezone == timezoneInfo"
+              >
+                <span>{{ TIME_ZONE_NAMES[timezone] }}</span>
+                <span>({{ showLocalTime(timezone) }})</span>
+              </div>
+            </mat-option>
+          </mat-optgroup>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="uiType == 'dropdown'">
+  <div
+    class="shadow-dropdown ml-auto"   
+    ngbDropdown
+    placement="bottom-end"
+    [class.disabled]="disabled"
+    style="position: unset;"
+  >
+    <div class="v-center c-pointer f-3 justify-content-end min-h-30"   ngbDropdownToggle>
+      <span class="fw-400 c-grey">{{
+        TIME_ZONE_NAMES[value] || value
+      }}</span>
+    </div>
+    <div
+      ngbDropdownMenu
+      aria-labelledby="timezoneList"
+      class="py-2 dropdown-timezone"
+    >
+      <ng-container *ngIf="ADDITIONAL_TIMEZONE">
+        <div
+          class="px-2"
+          ngbDropdownItem
+          (click)="selectTimezone(ADDITIONAL_TIMEZONE)"
+        >
+          <span
+            class="f-3 v-center"
+            [class.font-weight-bold]="ADDITIONAL_TIMEZONE == value"
+            translate
+          >
+            {{ ADDITIONAL_TIMEZONE }}
+            <i
+              class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+              *ngIf="ADDITIONAL_TIMEZONE == value"
+            ></i>
+          </span>
+        </div>
+      </ng-container>
+      <ng-container *ngFor="let timezone_group of TIME_ZONES">
+        <label class="mb-1 px-2 f-3 text-black font-weight-bold">{{
+          timezone_group.country | uppercase
+        }}</label>
+        <div
+          class="px-2"
+          ngbDropdownItem
+          *ngFor="let timezone of timezone_group.timezones"
+          (click)="selectTimezone(timezone)"
+        >
+          <div
+            class="d-flex justify-content-between"
+            [class.font-weight-bold]="timezone == value"
+          >
+            <span [attr.data-name]="'task-timezone-select-' + TIME_ZONE_NAMES[timezone]">{{ TIME_ZONE_NAMES[timezone] }}</span>
+             <div class="d-flex justify-content-between" >
+                <span>({{ showLocalTime(timezone) }})</span>
+                <i
+                  class="i-icon i-check d-block bgc-blue sm mb-1" [ngClass]="{ 'hidden': timezone !== value }"
+                ></i>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</ng-container>

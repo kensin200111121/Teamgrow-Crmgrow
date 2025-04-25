@@ -1,0 +1,24 @@
+<div class="v-center justify-content-between mb-3 f-3 fw-600 c-pointer text-center">
+  <div
+    [class]="searchOption.includeStage ? 'w-50 p-1 bgc-dark c-white rounded-left' : 'w-50 p-1 bgc-silver c-dark rounded-left'"
+    translate
+    (click)="toggleInclude()"
+  >
+    Include
+  </div>
+  <div
+    [class]="!searchOption.includeStage ? 'w-50 p-1 bgc-dark c-white  rounded-right' : 'w-50 p-1 bgc-silver c-dark rounded-right'"
+    translate
+    (click)="toggleInclude()"
+  >
+    Exclude
+  </div>
+</div>
+<div class="source-select">
+  <app-input-stage [selectedStages]="searchOption.stagesCondition"></app-input-stage>
+  <div class="d-flex align-items-end">
+    <button data-action="contact-filter-stage-apply" type="submit" class="btn btn-primary" (click)="save()" translate>
+      Apply
+    </button>
+  </div>
+</div>

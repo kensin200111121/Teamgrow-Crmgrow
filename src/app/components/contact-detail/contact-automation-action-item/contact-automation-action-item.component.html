@@ -1,0 +1,45 @@
+<div class="automations-detail">
+  <div class="v-center justify-content-between mb-3">
+    <div class="v-center">
+      <div class="history-icon mr-1">
+        <i class="act-icon act-automations sm"></i>
+      </div>
+      <div class="d-flex v-center">
+        <span class="text-capitalize">{{ activity.activityOverView.content }}</span>
+        <ng-container *ngIf="activity?.activityOverView?.user">
+          <app-contact-action-user [user]="activity.activityOverView.user"></app-contact-action-user>
+        </ng-container>
+      </div>
+    </div>
+    <div class="v-center ml-auto">
+      <span class="f-3 op-56">
+        {{ activity.activityOverView.created_at | datetimeFormat }}
+      </span>
+    </div>
+  </div>
+  <div class="main-history-item">
+    <div class="f-6 font-weight-bold">
+      {{ activity.action?.title }}
+    </div>
+  </div>
+  <div class="mt-2">
+    <div class="content">
+      <div class="f-3 fw-600 c-blue c-pointer" translate (click)="showDetailCompletedAutomation(activity)">
+        See detail
+      </div>
+    </div>
+  </div>
+  <div class="mt-2">
+    <div class="expanded" *ngIf="isExpanded">
+      <ng-container *ngIf="!!actionDetail?.activities?.length > 0">
+        <div class="mt-1">
+          <app-action-session-list [sessionList]="actionDetail.activities"
+            [isShowCollapse]="false"></app-action-session-list>
+        </div>
+      </ng-container>
+    </div>
+    <a class="more f-3 mt-1 c-pointer fw-600 d-block w-fit btn c-blue px-0" (click)="toggleSessions()"
+      [class.loading]="detailLoading" translate [innerText]="isExpanded ? 'Collapse' : 'Expand'">
+    </a>
+  </div>
+</div>

@@ -1,0 +1,98 @@
+<div class="emails-detail">
+  <div class="v-center justify-content-between mb-3">
+    <div class="v-center">
+      <div class="history-icon mr-1">
+        <i class="act-icon act-{{ activity.activityOverView.type }}"></i>
+      </div>
+      <div>
+        <div class="d-flex v-center">
+          <span class="text-capitalize">{{ activity.activityOverView.content }}</span>
+          <ng-container *ngIf="activity.activityOverView.receivers.length > 0">
+            <span class="ml-2">({{convertReceiversStr(activity.activityOverView.receivers)}})</span>
+          </ng-container>
+          <ng-container *ngIf="activity?.activityOverView?.user">
+            <app-contact-action-user [user]="activity.activityOverView.user"></app-contact-action-user>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <div class="v-center ml-auto">
+      <span class="f-3 op-56">
+        {{ activity.activityOverView.created_at | datetimeFormat }}
+      </span>
+    </div>
+  </div>
+  <div class="font-weight-bold subject">
+    {{ replaceContent(activity?.action?.subject ?? '') }}
+  </div>
+  <ng-container *ngIf="isExpanded && !detailLoading; else collapsedTemplate">
+    <!-- Email Summary / All content -->
+    <ng-container *ngIf="more; else emailSummary">
+      <div class="email-content" [innerHTML]="
+          replaceContent(activity?.action?.content) || ''
+            | makeRedirect
+            | safeHtml
+        "></div>
+      <a class="more f-3 mt-2 c-pointer fw-600 d-block w-fit" (click)="more = false" translate>Less</a>
+    </ng-container>
+    <ng-template #emailSummary>
+      <span class="email-content" [innerHTML]="
+          replaceContent(activity?.action?.content) || ''
+            | removeEntity
+            | shorten : 200 : '...'
+            | safeHtml
+        "></span>
+      <a class="more ml-2 f-3 c-pointer" (click)="more = true" translate>More</a>
+    </ng-template>
+    <!-- Sessions -->
+    <div class="mt-4">
+      <app-action-session-list [sessionList]="actionDetail.activities"
+        [isShowCollapse]="false"></app-action-session-list>
+    </div>
+  </ng-container>
+  <ng-template #collapsedTemplate>
+    <!-- Email Content Summary or Materials -->
+    <app-contact-material-list [materials]="activity?.materials"
+      *ngIf="!!activity?.includeMaterials; else emailSummaryContent"></app-contact-material-list>
+    <ng-template #emailSummaryContent>
+      <span class="email-content" [innerHTML]="
+          replaceContent(activity?.action?.content) || ''
+            | removeEntity
+            | shorten : 200 : '...'
+            | safeHtml
+        "></span>
+    </ng-template>
+    <!-- Last Tracker Details -->
+    <ng-container *ngIf="
+        activity?.trackerType === 'video_trackers' ||
+        activity?.trackerType === 'pdf_trackers'
+      ">
+      <app-play-timelines [data]="activity?.trackerDetail" [type]="activity?.trackerType"
+        [duration]="activity?.trackerDetail?.videoDuration">
+      </app-play-timelines>
+    </ng-container>
+    <ng-container *ngIf="
+        activity?.trackerType === 'email_trackers' &&
+        activity?.trackerDetail?.link
+      ">
+      <a href="{{ activity?.trackerDetail?.link }}" target="_blank" class="f-3">{{ activity?.trackerDetail?.link }}</a>
+    </ng-container>
+  </ng-template>
+
+  <div class="mt-2" *ngIf="activity.action.attachments?.length">
+    <div class="v-center">
+      <i class="i-icon i-attachment d-block bgc-dark" style="width: 14px; height: 14px;"></i>
+      <span class="ml-1">Attachments</span>
+    </div>
+    <div class="mt-1 d-block" *ngFor="let attachment of activity.action.attachments">
+      <div class="attachment m-1">
+        <span class="c-blue">{{ attachment.name }}</span>
+        <span>{{ attachment.size }} KB</span>
+      </div>
+    </div>
+  </div>
+
+  <a class="more f-3 mt-3 c-pointer fw-600 d-block w-fit btn c-blue px-0" (click)="toggleSessions()"
+    [class.loading]="detailLoading" translate [innerText]="isExpanded ? 'Collapse' : 'Expand'">
+  </a>
+</div>

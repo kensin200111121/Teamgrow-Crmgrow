@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="15px" height="16px" viewBox="0 0 15 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icons / Setting / Follow</title>
+    <g id="Icons-/-Setting-/-Follow" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
+        <path d="M2.655664,14.14472 C1.424304,12.91352 0.8,11.40688 0.8,9.66648 C0.8,7.92648 1.424304,6.419872 2.655464,5.188672 C3.886624,3.957472 5.393024,3.333352 7.133336,3.333352 C8.566,3.333352 9.84048,3.756504 10.93336,4.593184" id="Path" stroke="#797B8F" stroke-width="2"></path>
+        <line x1="11.79984" y1="4.6" x2="10.5332" y2="0.8" id="Path" stroke="#797B8F" stroke-width="2"></line>
+        <line x1="8" y1="7.133336" x2="11.8" y2="4.6" id="Path" stroke="#797B8F" stroke-width="2"></line>
+        <line x1="10.6" y1="9.6" x2="7" y2="15" id="Path" stroke="#797B8F" stroke-width="2"></line>
+        <line x1="10.6" y1="9.6" x2="14" y2="15" id="Path" stroke="#797B8F" stroke-width="2"></line>
+        <line x1="8" y1="14" x2="13" y2="14" id="Path-Copy-3" stroke="#797B8F" stroke-width="2"></line>
+    </g>
+</svg>

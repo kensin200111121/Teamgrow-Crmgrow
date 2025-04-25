@@ -1,0 +1,12 @@
+.btn-blue {
+    &:hover {
+        color: #fff;
+    }
+}
+textarea {
+    width: 100%;
+    height: 100px;
+    &:focus {
+        outline: none;
+    }
+}

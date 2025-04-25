@@ -1,0 +1,117 @@
+<div class="page-content">
+  <div class="v-center op-56 mb-2 back-menu">
+    <app-back-button defaultRoute="/sphere"></app-back-button>
+  </div>
+  <div class="status-header v-center mb-3">
+    <h1 class="page-title" translate>Sphere of Influence Sorting</h1>
+  </div>
+  <div class="d-flex list-container">
+    <div class="contact-list-wrapper p-3" *ngIf="showList">
+      <h5 translate class="font-weight-bold f-6">Contacts List</h5>
+      <!-- <div class="form-group mb-0 search-form">
+        <div class="input-group-prepend">
+          <i class="i-icon i-search d-block bgc-dark"></i>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          [placeholder]="'Search Contacts' | translate"
+          aria-label="search"
+          aria-describedby="search-addon"
+        />
+      </div> -->
+      <div class="card mt-2" [class.op-56]="isSaving">
+        <div class="card-body contacts-list p-0">
+          <cdk-virtual-scroll-viewport itemSize="50" style="height: 100%;" #list>
+            <div *cdkVirtualFor="let contact of pageContacts" class="contact-item c-pointer">
+              <ng-container *ngIf="contact?._id; else loadingContact">
+                <div class="d-flex align-items-center" [class.selected-contact]="contact?._id === selectedContact?._id">
+                  <div class="v-center p-3 flex-grow-1" (click)="selectContact(contact)">
+                    <div class="contact-avatar f-3 mr-2">
+                      {{ contact.avatarName }}
+                    </div>
+                    <span class="fw-600">{{ contact.fullName }}</span>
+                  </div>
+                  <div class="p-1" *ngIf="contact.sphere_bucket_id; else notSphere">
+                    <span [class]="'bucket-el score score-' + bucketsDic[contact.sphere_bucket_id]?.score">
+                      {{ bucketsDic[contact.sphere_bucket_id]?.name }}
+                    </span>
+                  </div>
+                  <ng-template #notSphere>
+                    <div class="p-1" *ngIf="contact.sphere_bucket_id === null">
+                      <span class="bucket-el bgc-red">Not Sphere</span>
+                    </div>
+                  </ng-template>
+                  <div class="py-1" *ngIf="contact?.action_score">
+                    <span class="action-score">{{ SCORES[contact?.action_score] }}</span>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #loadingContact>
+                <div class="p-3" style="height: 56px;">Loading...</div>
+              </ng-template>
+            </div>
+          </cdk-virtual-scroll-viewport>
+        </div>
+      </div>
+    </div>
+    <div class="contact-sorter-wrapper">
+      <div class="contact-card">
+        <app-sphere-contact *ngIf="selectedContact" [isSaving]="isSaving" [contact]="selectedContact"
+          (sort)="onSortedContact($event)" (load)="onLoadedContact($event)"
+          (exclude)="onExcludedContact($event)"></app-sphere-contact>
+      </div>
+
+      <div class="d-flex mt-3">
+        <div class="">
+          <button class="btn btn-primary btn-sm d-flex align-items-center" (click)="toggleContactList()">
+            <span class="mr-2"><i class="d-block i-icon i-list bgc-white"></i></span>
+            <span>List</span>
+          </button>
+        </div>
+        <div class="mx-3 flex-grow-1">
+          <div class="v-center justify-content-center">
+            <a class="d-flex align-items-center c-pointer text-decoration-none" (click)="prevContact()">
+              <i class="i-icon i-skip-previous bgc-primary"></i>
+              <span class="f-6 ml-2" translate>Previous</span>
+            </a>
+            <a class="d-flex align-items-center ml-5 c-pointer text-decoration-none" (click)="nextContact()">
+              <span class="f-6" translate>Next</span>
+              <i class="i-icon i-skip-next bgc-primary ml-2"></i>
+            </a>
+          </div>
+          <div class="d-flex v-center justify-content-center">
+            <div class="align-items-center">
+              <span class="f-6">{{ completedPercentage }}% completed</span>
+            </div>
+            <div class="flex-grow-1 px-3">
+              <mat-progress-bar class="custom-progress" [value]="completedPercentage"></mat-progress-bar>
+            </div>
+            <div class="align-items-center">
+              <span class="f-6">{{ leftContacts }} left</span>
+            </div>
+          </div>
+        </div>
+        <div class="">
+          <a class="v-center c-pointer text-decoration-none" (click)="togglePreference()">
+            <i class="i-icon i-preference bgc-primary"></i>
+            <span class="f-6 ml-2" style="color: #066fd3" translate>Preference</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="sphere-spinner" *ngIf="pageContacts.isLoading">
+      <div class="list-loading text-center">
+        <div class="loader mt-5 lg"></div>
+        <h4 class="fw-600 mt-2" translate>Loading the contacts for Influence Sorting...</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<mat-drawer-container [hasBackdrop]="true">
+  <mat-drawer #drawer position="end">
+    <app-bucket-list (close)="togglePreference()"></app-bucket-list>
+  </mat-drawer>
+</mat-drawer-container>

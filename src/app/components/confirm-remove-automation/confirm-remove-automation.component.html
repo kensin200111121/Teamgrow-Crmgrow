@@ -1,0 +1,315 @@
+<div class="v-center justify-content-between">
+  <h1 mat-dialog-title class="m-0" translate>
+    {{data.title}}
+  </h1>
+  <button class="v-center border-0 bgc-trans" mat-dialog-close>
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</div>
+<form #dealForm="ngForm">
+  <mat-dialog-content>
+    <div class="link-panel mt-2">
+      <div class="ml-2 c-dark" translate>
+        {{data.message}}
+      </div>
+      <ng-container
+        *ngIf="stages || lead_forms || event_types || automations || smartCodes || sharedTeams || running; else bulkRemove">
+        <div class="mt-2">
+          <div *ngIf="stages && stages.length > 0">
+            <div class="mb-1 mt-1 automation-reason">
+              <div class="automation-reason-title">
+                <span class="ml-2 mr-4" translate>Reason:</span>
+              </div>
+              <div class="automation-reason-content ml-2">
+                <div class="ci-dark mr-1" [innerHTML]="'This automation is used in these stages' | translate"></div>
+              </div>
+            </div>
+            <div class="mb-1 mt-1 automation-reason">
+              <div class="automation-reason-title"></div>
+              <div class="automation-reason-content">
+                <ng-container *ngFor="let stage of stages; let i = index">
+                  <a class="c-pointer c-blue" [routerLink]="['/pipeline/' + stage.pipe_line]"
+                    target="_blank">"{{ stage.title | translate }}"</a>
+                  <span *ngIf="i < stages.length - 1">, </span>
+                  <span *ngIf="i === stages.length - 1">. </span>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="lead_forms && lead_forms.length > 0">
+            <div class="mb-1 mt-1 automation-reason">
+              <div class="automation-reason-title">
+                <span class="ml-2 mr-4" translate>Reason:</span>
+              </div>
+              <div class="automation-reason-content ml-2">
+                <div class="ci-dark mr-1" [innerHTML]="'This automation is used in these lead forms' | translate"></div>
+              </div>
+            </div>
+            <div class="mb-1 mt-1 automation-reason">
+              <div class="automation-reason-title"></div>
+              <div class="automation-reason-content">
+                <ng-container *ngFor="let lead_form of lead_forms; let i = index">
+                  <a class="c-pointer c-blue" [routerLink]="['/lead-hub/lead-capture']"
+                    target="_blank">"{{lead_form}}"</a>
+                  <span *ngIf="i < lead_forms.length - 1">, </span>
+                  <span *ngIf="i === lead_forms.length - 1">. </span>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="event_types && event_types.length > 0">
+            <div class="mb-1 mt-1 automation-reason">
+              <div class="automation-reason-title">
+                <span class="ml-2 mr-4" translate>Reason:</span>
+              </div>
+              <div class="automation-reason-content ml-2">
+                <div class="ci-dark mr-1" [innerHTML]="'This automation is used in these Scheduler' | translate"></div>
+              </div>
+            </div>
+            <div class="mb-1 mt-1 automation-reason">
+              <div class="automation-reason-title"></div>
+              <div class="automation-reason-content">
+                <ng-container *ngFor="let event_type of event_types; let i = index">
+                  <a class="c-pointer c-blue" [routerLink]="['/lead-hub/scheduler/event-type/' + event_type._id]" target="_blank">
+                   "{{event_type.title | translate}}"
+                  </a>
+                  <span *ngIf="i < event_types.length - 1">, </span>
+                  <span *ngIf="i === event_types.length - 1">. </span>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="automations && automations.length > 0">
+            <div class="mb-1 mt-1 automation-reason">
+              <div class="automation-reason-title">
+                <span class="ml-2 mr-4" ranslate>Reason:</span>
+              </div>
+              <div class="automation-reason-content ml-2">
+                <div class="ci-dark mr-1" [innerHTML]="'This automation is used in these automations' | translate"></div>
+              </div>
+            </div>
+            <div class="mb-1 mt-1 automation-reason">
+              <div class="automation-reason-title"></div>
+              <div class="automation-reason-content">
+                <ng-container *ngFor="let automation of automations; let i = index">
+                  <a class="c-pointer c-blue" [routerLink]="['/autoflow/edit/' + automation._id]"
+                    target="_blank">"{{ automation.title | translate }}"</a>
+                  <span *ngIf="i < automations.length - 1">, </span>
+                  <span *ngIf="i === automations.length - 1">. </span>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="smartCodes && smartCodes.length > 0">
+            <div class="mb-1 mt-1 automation-reason">
+              <div class="automation-reason-title">
+                <span class="ml-2 mr-4" translate>Reason:</span>
+              </div>
+              <div class="automation-reason-content ml-2">
+                <div class="ci-dark mr-1" [innerHTML]="'This automation is used in these smart codes' | translate"></div>
+              </div>
+            </div>
+            <div class="mb-1 mt-1 automation-reason">
+              <div class="automation-reason-title"></div>
+              <div class="automation-reason-content">
+                <ng-container *ngFor="let smartCode of smartCodes; let i = index">
+                  <a class="c-pointer c-blue" [routerLink]="['lead-hub/smart-codes']" target="_blank">"{{ smartCode | translate }}"</a>
+                  <span *ngIf="i < smartCodes.length - 1">, </span>
+                  <span *ngIf="i === smartCodes.length - 1">. </span>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="sharedTeams && sharedTeams.length > 0">
+            <div class="mb-1 mt-1 automation-reason">
+              <div class="automation-reason-title">
+                <span class="ml-2 mr-4" translate>Reason:</span>
+              </div>
+              <div class="automation-reason-content ml-2">
+                <div class="ci-dark mr-1" [innerHTML]="'This automation is shared in these teams' | translate"></div>
+              </div>
+            </div>
+            <div class="mb-1 mt-1 automation-reason">
+              <div class="automation-reason-title"></div>
+              <div class="automation-reason-content">
+                <ng-container *ngFor="let team of sharedTeams; let i = index">
+                  <a class="c-pointer c-blue" [routerLink]="['/community/' + team._id + '/members/root']"
+                    target="_blank">"{{team.name}}"</a>
+                  <span *ngIf="i < sharedTeams.length - 1">, </span>
+                  <span *ngIf="i === sharedTeams.length - 1">. </span>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="running">
+            <div class="mb-1 mt-1 automation-reason">
+              <div class="automation-reason-title">
+                <span class="ml-2 mr-4" translate>Reason:</span>
+              </div>
+              <div class="automation-reason-content ml-2">
+                <span class="ci-dark mr-1" translate>This automation is running now. Please confirm in</span>&nbsp;
+                <a [routerLink]="['/autoflow/edit/' + running_automation_id]" target="_blank" translate>here</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #bulkRemove>
+        <ng-container *ngFor="let error_messages of data?.additional">
+          <div class="v-center justify-content-center secondary-contact c-pointer w-100 mt-1"
+            (click)="expandDetails(error_messages.automation_id)">
+            <div class="automation-title">
+              <li class="ml-2 mt-2" translate>
+                {{error_messages.automation_title}}
+              </li>
+            </div>
+            <div class="automation-action">
+              <i class="d-block i-icon bgc-blue"
+                [ngClass]="{'i-expand-less': d_status[error_messages.automation_id], 'i-expand-more': !d_status[error_messages.automation_id]}"></i>
+            </div>
+          </div>
+          <div *ngFor="let error of error_messages.error_message"
+            [class.d-none]="!d_status[error_messages.automation_id]">
+            <div *ngIf="error.reason === 'automations'">
+              <div class="mb-1 mt-1 automation-reason">
+                <div class="automation-reason-title">
+                  <span class="ml-4 mr-4" translate>Reason:</span>
+                </div>
+                <div class="automation-reason-content ml-2">
+                  <div class="ci-dark mr-1" [innerHTML]="'This automation is used in these automations' | translate"></div>
+                </div>
+              </div>
+              <div class="mb-1 mt-1 automation-reason">
+                <div class="automation-reason-title"></div>
+                <div class="automation-reason-content">
+                  <ng-container *ngFor="let automation of error.automations; let i = index">
+                    <a class="c-pointer c-blue" [routerLink]="['/autoflow/edit/' + automation._id]"
+                      target="_blank">"{{automation.title | translate}}"</a>
+                    <span *ngIf="i < error.automations.length - 1">, </span>
+                    <span *ngIf="i === error.automations.length - 1">. </span>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="error.reason === 'stages'">
+              <div class="mb-1 mt-1 automation-reason">
+                <div class="automation-reason-title">
+                  <span class="ml-4 mr-4" translate>Reason:</span>
+                </div>
+                <div class="automation-reason-content ml-2">
+                  <div class="ci-dark mr-1" [innerHTML]="'This automation is used in these stages' | translate"></div>
+                </div>
+              </div>
+              <div class="mb-1 mt-1 automation-reason">
+                <div class="automation-reason-title"></div>
+                <div class="automation-reason-content">
+                  <ng-container *ngFor="let stage of error.stages; let i = index">
+                    <a class="c-pointer c-blue" [routerLink]="['/pipeline/' + stage.pipe_line]"
+                      target="_blank">"{{stage.title | translate}}"</a>
+                    <span *ngIf="i < error.stages.length - 1">, </span>
+                    <span *ngIf="i === error.stages.length - 1">. </span>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="error.reason === 'lead_forms'">
+              <div class="mb-1 mt-1 automation-reason">
+                <div class="automation-reason-title">
+                  <span class="ml-4 mr-4" translate>Reason:</span>
+                </div>
+                <div class="automation-reason-content ml-2">
+                  <div class="ci-dark mr-1" [innerHTML]="'This automation is used in these lead forms' | translate"></div>
+                </div>
+              </div>
+              <div class="mb-1 mt-1 automation-reason">
+                <div class="automation-reason-title"></div>
+                <div class="automation-reason-content">
+                  <ng-container *ngFor="let lead_form of error.lead_forms; let i = index">
+                    <a class="c-pointer c-blue" [routerLink]="['/lead-hub/lead-capture']"
+                      target="_blank">"{{lead_form}}"</a>
+                    <span *ngIf="i < error.lead_forms.length - 1">, </span>
+                    <span *ngIf="i === error.lead_forms.length - 1">. </span>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="error.reason === 'event_types'">
+              <div class="mb-1 mt-1 automation-reason">
+                <div class="automation-reason-title">
+                  <span class="ml-4 mr-4" translate>Reason:</span>
+                </div>
+                <div class="automation-reason-content ml-2">
+                  <div class="ci-dark mr-1" [innerHTML]="'This automation is used in these Scheduler' | translate"></div>
+                </div>
+              </div>
+              <div class="mb-1 mt-1 automation-reason">
+                <div class="automation-reason-title"></div>
+                <div class="automation-reason-content">
+                  <ng-container *ngFor="let event_type of error.event_types; let i = index">
+                    <a class="c-pointer c-blue" [routerLink]="['/lead-hub/scheduler/event-type/' + event_type._id]" target="_blank">"{{ event_type.title | translate }}"</a>
+                    <span *ngIf="i < error.event_types.length - 1">, </span>
+                    <span *ngIf="i === error.event_types.length - 1">. </span>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="error.reason === 'smartcodes'">
+              <div class="mb-1 mt-1 automation-reason">
+                <div class="automation-reason-title">
+                  <span class="ml-4 mr-4" translate>Reason:</span>
+                </div>
+                <div class="automation-reason-content ml-2">
+                  <div class="ci-dark mr-1" [innerHTML]="'This automation is used in these smart codes' | translate"></div>
+                </div>
+              </div>
+              <div class="mb-1 mt-1 automation-reason">
+                <div class="automation-reason-title"></div>
+                <div class="automation-reason-content">
+                  <ng-container *ngFor="let smartcode of error.smartcodes let i = index">
+                    <a class="c-pointer c-blue" [routerLink]="['lead-hub/smart-codes']"
+                      target="_blank">"{{ smartcode | translate }}"</a>
+                    <span *ngIf="i < error.smartcodes.length - 1">, </span>
+                    <span *ngIf="i === error.smartcodes.length - 1">. </span>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="error.reason === 'shared teams'">
+              <div class="mb-1 mt-1 automation-reason">
+                <div class="automation-reason-title">
+                  <span class="ml-4 mr-4" translate>Reason:</span>
+                </div>
+                <div class="automation-reason-content ml-2">
+                  <div class="ci-dark mr-1" [innerHTML]="'This automation is shared in these teams' | translate"></div>
+                </div>
+              </div>
+              <div class="mb-1 mt-1 automation-reason">
+                <div class="automation-reason-title"></div>
+                <div class="automation-reason-content">
+                  <ng-container *ngFor="let team of error.teams let i = index">
+                    <a class="c-pointer c-blue" [routerLink]="['/community/' + team._id + '/members/root']"
+                      target="_blank">"{{team.name}}"</a>
+                    <span *ngIf="i < error.teams.length - 1">, </span>
+                    <span *ngIf="i === error.teams.length - 1">. </span>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="error.reason === 'running'">
+              <div class="mb-1 mt-1 automation-reason">
+                <div class="automation-reason-title">
+                  <span class="ml-4 mr-4" translate>Reason:</span>
+                </div>
+                <div class="automation-reason-content ml-2">
+                  <span class="ci-dark mr-1" translate>This automation is running now. Please confirm in</span>
+                  <a [routerLink]="['/autoflow/edit/' + error_messages.automation_id]" target="_blank" translate>here</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-template>
+    </div>
+  </mat-dialog-content>
+</form>

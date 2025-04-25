@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>73B4F60A-0A1E-4FD3-AAB1-91A1B13FFC9E</title>
+    <g id="Main" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Timeline-Actions-Icons" transform="translate(-237.000000, -193.000000)">
+            <g id="Icons-/-PDF-Opened" transform="translate(237.000000, 193.000000)">
+                <g id="Icons-/-PDF-Copy" transform="translate(0.000000, 8.000000)"></g>
+                <polygon id="Rectangle" fill-opacity="0.1" fill="#FF0000" points="3 1 11.6153846 1 14.8461538 3.57220284 17 6.62136116 17 19 3 19"></polygon>
+                <path d="M18,3.3 L14.0986844,0 L13,2.58575614 C13,3.12974769 14.0174351,4 14.5998908,4 L18,3.3 Z" id="Path" fill="#D92121" fill-rule="nonzero"></path>
+                <path d="M13.1059668,1 L13.1059668,4.17464937 L17,4.27464937 L17,17 C17,17.5522847 16.7761424,18.0522847 16.4142136,18.4142136 C16.0522847,18.7761424 15.5522847,19 15,19 L15,19 L5,19 C4.44771525,19 3.94771525,18.7761424 3.58578644,18.4142136 C3.22385763,18.0522847 3,17.5522847 3,17 L3,17 L3,3 C3,2.44771525 3.22385763,1.94771525 3.58578644,1.58578644 C3.94771525,1.22385763 4.44771525,1 5,1 L5,1 L13.1059668,1 Z" id="Rectangle" stroke="#D92022" stroke-width="2"></path>
+                <g id="PDF" transform="translate(2.000000, 8.000000)">
+                    <path d="M7.999973,8 C4.3932251,8 1.35762615,6.324 0,4 C1.35762615,1.67596 4.3932161,0 7.999973,0 C11.6103745,0 14.6425898,1.675824 16,4 C14.6425898,6.32416 11.6103745,8 7.999973,8 Z" id="Path" stroke="#D92121" stroke-width="2" fill="#FFE5E4"></path>
+                    <circle id="Oval" fill="#D92121" fill-rule="nonzero" cx="8" cy="4" r="2"></circle>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

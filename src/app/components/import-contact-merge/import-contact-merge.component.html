@@ -1,0 +1,125 @@
+<h1 mat-dialog-title translate>Contacts merge</h1>
+<mat-dialog-content>
+  <div class="contact-wrapper">
+    <div class="mt-3">
+      <ng-container *ngFor="let field of fields2Merge">
+        <ng-container *ngIf="field === 'email' || field === 'secondary_email'">
+          <div class="v-center contact-row w-100 my-2" *ngIf="emails && emails.length">
+            <div class="contact-header f-3 text-uppercase">{{properties[field]}}</div>
+            <div class="contact-field">
+              <mat-select [(ngModel)]="previewContact[field]"
+                          [disabled]="emails && emails.length == 1"
+                          [class.disabled]="emails && emails.length == 1"
+              >
+                <mat-option *ngFor="let email of emails" value="{{email}}">
+                  <div class="f-3 c-black"
+                       [class.selected-option-text]="previewContact[field] == email">
+                    {{email}}
+                  </div>
+                </mat-option>
+              </mat-select>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="field === 'cell_phone' || field === 'secondary_phone'">
+          <div class="v-center contact-row w-100 my-2" *ngIf="phones && phones.length">
+            <div class="contact-header f-3 text-uppercase">{{properties[field]}}</div>
+            <div class="contact-field">
+              <mat-select [(ngModel)]="previewContact[field]"
+                          [disabled]="phones && phones.length == 1"
+                          [class.disabled]="phones && phones.length == 1"
+              >
+                <mat-option *ngFor="let phone of phones" value="{{phone}}">
+                  <div class="f-3 c-black"
+                       [class.selected-option-text]="previewContact[field] == phone">
+                    {{phone}}
+                  </div>
+                </mat-option>
+              </mat-select>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="field === 'tags' || field === 'notes'">
+          <div class="v-center contact-row w-100 my-2" *ngIf="collection[field] && collection[field].length">
+            <div class="contact-header f-3 text-uppercase">{{properties[field]}}</div>
+            <div class="contact-field">
+              <mat-select [(ngModel)]="previewContact[field]" multiple>
+                <mat-option *ngFor="let value of collection[field]" value="{{value}}">
+                  <div class="f-3 c-black"
+                       [class.selected-option-text]="previewContact[field] == value">
+                    {{value}}
+                  </div>
+                </mat-option>
+              </mat-select>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container  *ngIf="field !== 'tags' && field !== 'notes' && field !== 'email' && field !== 'secondary_email' && field !== 'cell_phone' && field !== 'secondary_phone'">
+          <div class="v-center contact-row w-100 my-2" *ngIf="collection[field] && collection[field].length">
+            <div class="contact-header f-3 text-uppercase">{{properties[field]}}</div>
+            <div class="contact-field">
+              <mat-select [(ngModel)]="previewContact[field]"
+                [disabled]="collection[field] && collection[field].length == 1"
+                [class.disabled]="collection[field] && collection[field].length == 1"
+              >
+                <mat-option *ngFor="let value of collection[field]" value="{{value}}">
+                  <div class="f-3 c-black"
+                       [class.selected-option-text]="previewContact[field] == value">
+                    {{value}}
+                  </div>
+                </mat-option>
+              </mat-select>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="merge_type == MERGETYPE.CONTACT">
+        <div class="v-center contact-row w-100 my-2">
+          <div class="contact-header f-3 text-uppercase" translate>Activity</div>
+          <div class="contact-field">
+            <mat-select [(ngModel)]="activity">
+              <mat-option *ngFor="let action of mergeActions" value="{{action}}">
+                <div class="f-3 c-black"
+                     [class.selected-option-text]="activity == action">
+                  {{action}}
+                </div>
+              </mat-option>
+            </mat-select>
+          </div>
+        </div>
+        <div class="v-center contact-row w-100 my-2">
+          <div class="contact-header f-3 text-uppercase" translate>Follow up</div>
+          <div class="contact-field">
+            <mat-select [(ngModel)]="followup">
+              <mat-option *ngFor="let action of mergeActions" value="{{action}}">
+                <div class="f-3 c-black"
+                     [class.selected-option-text]="followup == action">
+                  {{action}}
+                </div>
+              </mat-option>
+            </mat-select>
+          </div>
+        </div>
+        <div class="v-center contact-row w-100 my-2">
+          <div class="contact-header f-3 text-uppercase" translate>Automation</div>
+          <div class="contact-field">
+            <mat-select [(ngModel)]="automation">
+              <mat-option *ngFor="let action of automationMergeAction" value="{{action}}">
+                <div class="f-3 c-black"
+                     [class.selected-option-text]="automation == action">
+                  {{action}}
+                </div>
+              </mat-option>
+            </mat-select>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button type="button" class="btn c-blue" mat-dialog-close translate>Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="mergeCSV()" *ngIf="mergeType() == MERGETYPE.CSV" translate>Merge</button>
+  <button type="button" class="btn btn-primary" (click)="update()" *ngIf="mergeType() == MERGETYPE.CONTACT_CSV" [class.loading]="updating" translate>Update</button>
+  <button type="button" class="btn btn-primary" (click)="mergeContact()" *ngIf="mergeType() == MERGETYPE.CONTACT" [class.loading]="merging" translate>Merge</button>
+</mat-dialog-actions>

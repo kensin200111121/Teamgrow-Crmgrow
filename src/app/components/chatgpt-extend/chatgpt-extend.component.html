@@ -1,0 +1,142 @@
+
+<div class="d-flex flex-column align-items-start bgc-trans ai-container">
+  <div class="d-flex align-items-center w-100 justify-content-between">
+    <div class="p-2 flex-grow-1 d-flex justify-content-start">
+      <i class="i-icon d-block i-magic-bar bgc-dark"></i>
+      <h1 class="f-6 font-weight-bold text-dark mb-0 ml-1 mr-1" translate>Get help from AI</h1>
+      <span class="f-2 pl-2 pr-2 beta-rect">Beta</span>
+    </div>
+    <i class="mr-2 i-icon i-close c-pointer bgc-dark v-center" (click)="hideMe()"></i>
+  </div>
+  <div class="w-100">
+    <div class="page-header mb-2">
+      <app-slide-tab [tabs]="tabs" [selected]="selectedTab" (onChange)="changeTab($event)" type="plain" class="border-bottom pl-0 rounded-0">
+      </app-slide-tab>
+    </div>
+    <div>
+      <div [class.d-none]="selectedTab.id !== 'creator'">
+        <div *ngIf="creatorResultContent; else createEmpty" class="white-form-block p-2 m-2">
+          <div class="f-2 p-2 content-box">
+            {{creatorResultContent}}
+          </div>
+          <div *ngIf="!adjustMode; else adjust" class="mt-2 mb-3 d-flex justify-content-end">
+            <button 
+                type="button" 
+                class="btn btn-white text-blue br-default py-1 f-6 font-weight-bold shadow ml-auto"
+                [class.loading]="isSending"
+                (click)="compareContent()">
+              <span translate>Compare</span>
+            </button>
+            <button 
+                type="button" 
+                class="btn btn-white text-blue br-default py-1 f-6 font-weight-bold shadow ml-auto"
+                [class.loading]="isSending"
+                (click)="adjustContent()">
+              <span translate>Adjust</span>
+            </button>            
+            <button 
+                type="button" 
+                class="btn btn-blue text-white br-default py-1 f-6 font-weight-bold shadow ml-auto d-flex justify-content-between"
+                [class.loading]="isSending"
+                (click)="insertAnswer(creatorResultContent)">
+              <i class="i-icon i-check d-block bgc-white mr-1"></i>
+              <span translate>Insert</span>
+            </button>
+          </div>
+          <ng-template #adjust>
+            <div class="white-form-block p-2 m-2">
+              <div class="form-group search-form mb-2">
+                <div class="form-group mb-2">
+                  <input type="text" class="form-control pl-1" [placeholder]="'Input Adjust Order' | translate" aria-label="search" name="search"
+                    #search="ngModel" aria-describedby="search-addon" [(ngModel)]="adjustStr" [readonly]="isSending">
+                </div>
+                <ng-container *ngIf="adjustStr">
+                  <div class="cancel-action c-pointer" (click)="clearAdjustStr()">
+                    <i class="i-icon i-close d-block bgc-dark"></i>
+                  </div>
+                </ng-container>
+              </div>
+              <div class="d-flex align-items-center w-100 justify-content-between">
+                <button 
+                    type="button" 
+                    class="btn btn-blue text-white br-default py-1 f-6 font-weight-bold shadow ml-auto d-flex justify-content-between"
+                    [class.loading]="isSending"
+                    (click)="sendAdjustOrder()">
+                  <i class="i-icon i-send-ai d-block bgc-white mr-1"></i>
+                  <span translate>Update</span>
+                </button>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+        <ng-template #createEmpty>
+          <div class="empty-area v-center">
+            <span class="f-2 p-2" translate>Create content using AI. Use the input box below to get started with AI wizard. Tip: use the AI personality to compose in a different tone.</span>
+          </div>
+        </ng-template>
+        
+      </div>
+      <ng-container *ngIf="selectedTab.id === 'comparison'">
+        <ng-container *ngIf="comparisons[0]?.resultContent; else compareEmpty">
+          <div class="compare-list">
+            <ng-container *ngFor="let comp of comparisons">
+              <app-chatgpt-compare-block [compData]="comp" (removeMe)="removeComparison($event)" (insertAnswer)="insertAnswer($event)"></app-chatgpt-compare-block>
+            </ng-container>
+            <div ngbDropdown class="ml-2 v-center f-3 font-weight-bold c-blue p-2 add-compare" >
+              <button 
+                  type="button" 
+                  class="btn btn-blue text-white br-default py-1 f-6 font-weight-bold shadow ml-auto d-flex justify-content-between"
+                  [class.loading]="isSending"
+                  ngbDropdownToggle
+                  >
+                <i class="i-icon i-plus d-block bgc-white mr-1"></i>
+                <span translate>Add another comparison</span>
+              </button>
+              <div ngbDropdownMenu class="light py-1">
+                <ng-container *ngFor="let person of remainPersons">
+                  <div class="f-2 py-1 px-2 c-pointer dropdown-item" (click)="addComparison(person)">{{person.title}}</div>
+                </ng-container>
+                <div class="f-2 py-1 px-2 c-pointer dropdown-item v-center d-flex flex-row justify-content-start" (click)="managePersonality()">
+                  <i class="d-block i-icon i-person-manage bgc-black"></i>
+                  <span class="f-3 font-weight-bold ml-1">{{ 'Manage Personality' | translate }}</span>
+                </div>            
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #compareEmpty>
+          <div class="empty-area v-center">
+            <span class="f-2 p-2" translate>Compare content using AI. Use the input box below to get started with AI wizard.</span>
+          </div>
+        </ng-template>
+      </ng-container>
+      <div 
+        *ngIf="(selectedTab.id === 'creator' && !creatorResultContent) || (selectedTab.id === 'comparison' && !comparisons[0]?.resultContent)" 
+        class="white-form-block p-2 m-2">
+        <div class="form-group search-form mb-2">
+          <div class="form-group mb-2">
+            <input type="text" class="form-control pl-1" [placeholder]="'Input Question' | translate" aria-label="search" name="search"
+              #search="ngModel" aria-describedby="search-addon" [(ngModel)]="questionStr" [readonly]="isSending">
+          </div>
+          <ng-container *ngIf="questionStr">
+            <div class="cancel-action c-pointer" (click)="clearQuestionStr()">
+              <i class="i-icon i-close d-block bgc-dark"></i>
+            </div>
+          </ng-container>
+        </div>
+        <div class="d-flex align-items-center w-100 justify-content-between">
+          <app-personality-selector (selectPerson)="getPersonInfo($event)"></app-personality-selector>
+          <button 
+              type="button" 
+              class="btn btn-blue text-white br-default py-1 f-6 font-weight-bold shadow ml-auto d-flex justify-content-between"
+              [class.loading]="isSending"
+              (click)="sendQuestion(selectedTab.id)">
+            <i class="i-icon i-send-ai d-block bgc-white mr-1"></i>
+            <span translate>Generate</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

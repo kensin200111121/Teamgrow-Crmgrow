@@ -1,0 +1,66 @@
+<div class="v-center justify-content-between">
+    <h1 class="m-0" mat-dialog-title *ngIf="mode == 'create'" translate>
+        Add merge field
+    </h1>
+    <h1 class="m-0" mat-dialog-title *ngIf="mode == 'edit'" translate>
+        Edit merge field
+    </h1>
+    <i class="d-block i-icon i-close bgc-dark" (click)="close()"></i>
+</div>
+<form #actionForm="ngForm" (ngSubmit)="isSubmitted = true; actionForm.form.valid ? save() : false"
+    [class.was-validated]="isSubmitted">
+    <mat-dialog-content>
+        <div class="form-group">
+            <label for="token-name" translate>NAME</label>
+            <input class="form-control" type="text" [placeholder]="'Enter the template merge field name' | translate"
+                name="token_name" #token_name="ngModel" id="token-name" [(ngModel)]="tokenName"
+                (ngModelChange)="onChangeTokenName()" required />
+            <span class="invalid-feedback"
+                *ngIf="token_name.errors && (token_name.touched || token_name.dirty || isSubmitted) && isSubmitted"
+                translate>
+                Merge field name is required
+            </span>
+            <span class="f-3 mt-1 dot-error" *ngIf="existingName" translate>
+                Merge field name is already taken
+            </span>
+            <span class="f-3 mt-1 dot-error" *ngIf="specialAlphabet" translate>
+                Please remove the special character in the name
+            </span>
+        </div>
+        <div class="form-group">
+            <label for="token-match-field" translate>TYPE</label>
+            <select class="form-control f-5" [(ngModel)]="valueType" name="value_type"
+                id="value-type" #value_type="ngModel">
+                <option value="contact" translate>Contact</option>
+                <option value="static" translate>Custom Static Value</option>
+            </select>
+        </div>
+        <ng-container *ngIf="valueType === 'static'">
+            <div class="form-group">
+                <label for="token-value" translate>VALUE</label>
+                <input class="form-control c-blue" type="text" [placeholder]="'Enter the template merge field value' | translate"
+                    name="token_value" #token_value="ngModel" id="token-value" [(ngModel)]="tokenValue" />
+            </div>
+        </ng-container>
+        <ng-container *ngIf="valueType === 'contact'">
+            <div class="form-group">
+                <label for="token-match-field" translate>MATCH FIELD</label>
+                <select class="form-control c-blue f-5" [(ngModel)]="tokenMatchField" name="token_match_field"
+                    id="token-match-field" #token_match_field="ngModel">
+                    <option *ngFor="let field of fields" value="{{field.value}}" translate>
+                        {{field.label}}
+                    </option>
+                </select>
+            </div>
+        </ng-container>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <a class="btn btn-white f-6 font-weight-bold c-blue mr-2" (click)="close()" translate>Cancel</a>
+        <button [attr.data-action]="'token-create-add'" *ngIf="mode == 'create'; else updateButton" class="btn btn-primary f-6 font-weight-bold" type="submit"
+            [class.loading]="isSaving" translate>Add</button>
+        <ng-template #updateButton>
+            <button class="btn btn-primary f-6 font-weight-bold" type="submit" [class.loading]="isSaving"
+                translate>Update</button>
+        </ng-template>
+    </mat-dialog-actions>
+</form>

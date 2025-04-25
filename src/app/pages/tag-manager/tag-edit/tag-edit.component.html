@@ -1,0 +1,27 @@
+<div class="v-center justify-content-between">
+  <h1 class="m-0" mat-dialog-title translate>
+    Edit
+  </h1>
+  <i class="d-block i-icon i-close bgc-dark" mat-dialog-close></i>
+</div>
+<form #actionForm="ngForm"
+  (ngSubmit)="submitted = true; actionForm.form.valid ? updateTag() : false"
+  [class.was-validated]="submitted">
+  <mat-dialog-content>
+    <div class="form-group">
+      <label for="tag" translate>tag name</label>
+      <input class="form-control" type="text" name="tag_name"
+        #tag_name="ngModel" [(ngModel)]="tagName" required />
+      <span class="invalid-feedback"
+        *ngIf="tag_name.errors && (tag_name.touched || tag_name.dirty || submitted) && submitted" translate>
+        Tag name is required
+      </span>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <a class="btn btn-white f-6 font-weight-bold c-blue mr-2"
+      mat-dialog-close translate>Cancel</a>
+    <button [attr.data-action]="'contact-tag-edit-update'" class="btn btn-primary f-6 font-weight-bold" type="submit"
+      [class.loading]="saving" translate>Update</button>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,51 @@
+@import 'variables';
+
+.mat-basic-chip {
+  outline: none!important;
+  .chip {
+    align-items: center;
+    background: gainsboro;
+    border-radius: 24px;
+    margin-right: 2px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    padding: 0.25rem;
+
+    .icon-close {
+      background-color: white!important;
+      border-radius: 50%;
+      margin-left: 4px;
+    }
+  }
+}
+
+.dropdown-toggle {
+  &::after {
+    content: none;
+  }
+}
+
+.contact-space {
+  margin-right: 3px;
+}
+
+.more-address {
+  border: 1px solid rgba(16, 19, 54, 0.4);
+  border-radius: 5px;
+}
+
+.link-wrapper {
+  color: $color-dark;
+  text-decoration: none;
+
+  &:hover {
+    color: $color-dark;
+  }
+}
+
+:host ::ng-deep {
+  .mat-chip {
+    transform: none;
+    overflow: unset;
+  }
+}

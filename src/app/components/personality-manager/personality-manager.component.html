@@ -1,0 +1,164 @@
+<div class="v-center justify-content-between">
+  <h1 class="mb-3" mat-dialog-title translate>
+    Manage AI Personality
+  </h1>
+  <i class="d-block i-icon i-close bgc-dark" mat-dialog-close></i>
+</div>
+<mat-dialog-content>
+  <div class="d-flex">
+    <div class="left-panel">
+      <div class="d-flex mt-3 mb-5 justify-content-between">
+        <h1 class="f-6 font-weight-bold text-dark mb-0 ml-1 mr-1" translate>AI Personalities</h1>
+        <span class="f-3 c-blue c-pointer" (click)="createNew()" translate>+ Create New</span>
+      </div>
+      <div class="person-list">
+        <ng-container *ngFor="let person of personList">
+          <div *ngIf="person.role === 'admin'" class="d-flex ml-3 mb-3 v-center">
+            <i class="i-icon i-lock d-block bgc-black op-40 mr-2"></i>
+            <span class="c-black f-3 op-40">{{person.title}}</span>
+          </div>
+        </ng-container>
+        <ng-container *ngFor="let person of personList">
+          <div *ngIf="person.role === 'user'" class="d-flex ml-2  v-center p-2 pl-1 justify-content-between c-pointer c-black" [class.selected]="person === selected" (click)="selectPerson(person)">
+            <span class="f-3">{{person.title}}</span>
+            <i class="i-icon i-trash d-block c-pointer bgc-dark" (click)="onDelete(person)"></i>
+          </div>
+        </ng-container>
+        
+      </div>
+    </div>
+    <div class="right-panel ml-3 p-3">
+      <div *ngIf="mode !== ''; else empty">
+        <div *ngIf="mode === 'create'; else update">
+          <form #createForm="ngForm" (ngSubmit)="createForm.form.valid ? onCreate() : false" [class.was-validated]="createForm.submitted" class="general">
+            <div class="d-flex justify-content-between mb-3">
+              <h1 class="f-6 font-weight-bold text-dark" translate>Create New Personality</h1>
+            </div>
+            <div class="form-group mb-3">
+              <div class="d-flex justify-content-between">
+                <span class="f-3" for="person_title" translate>Title</span>
+                <span class="error" *ngIf="person_title.errors">
+                  <ng-container *ngIf="person_title.errors.required">
+                    {{ 'Required!' | translate }}
+                  </ng-container>
+                </span>
+                <span class="error" *ngIf="existedPerson">
+                  {{ 'Already Existed!' | translate }}
+                </span>
+              </div>
+              <input 
+                type="text" 
+                class="form-control f-3" 
+                [placeholder]="'Please insert title' | translate" 
+                id="person_title" 
+                name="person_title" 
+                #person_title="ngModel" 
+                [(ngModel)]="newPerson.title" 
+                (ngModelChange)="checkDuplication(newPerson.title)"
+                required>
+            </div>
+            <div class="form-group mb-3">
+              <div class="d-flex justify-content-between">
+                <span class="f-3" for="person_content">Prompt</span>
+                <span class="error" *ngIf="person_content.errors">
+                  <ng-container *ngIf="person_content.errors.required">
+                    {{ 'Required!' | translate }}
+                  </ng-container>
+                </span>
+              </div>
+              <textarea
+                class="form-control"
+                id="person_content" 
+                name="person_content"
+                #person_content="ngModel"
+                [(ngModel)]="newPerson.content"
+                class="form-control mb-2 mt-1"
+                [placeholder]="'call_note_placeholder' | translate"
+                rows="8"
+                required
+              ></textarea>                
+            </div>
+            <div class="d-flex justify-content-end">
+              <button class="btn btn-white f-6 font-weight-bold c-blue mr-2" (click)="onCancel()" translate>Cancel</button>
+              <button type="submit" class="btn btn-blue text-white f-6 font-weight-bold mr-2" translate>Create</button>
+            </div>
+          </form>
+        </div>
+        <ng-template #update>
+          <form #updateForm="ngForm" (ngSubmit)="updateForm.form.valid ? onUpdate() : false" [class.was-validated]="updateForm.submitted" class="general">
+            <div class="d-flex justify-content-between mb-3">
+              <h1 class="f-6 font-weight-bold text-dark" translate>{{selected.title}}</h1>
+              <div class="d-flex justify-content-start" (click)="onDelete(selected)">
+                <i class="i-icon i-trash d-block bgc-red c-pointer"></i>
+                <span class="f-3 c-red c-pointer" translate>Delete</span>
+              </div>
+            </div>
+            <div class="form-group mb-3">
+              <div class="d-flex justify-content-between">
+                <span class="f-3" for="selected_title">Title</span>  
+                <span class="error" *ngIf="selected_title.errors">
+                  <ng-container *ngIf="selected_title.errors.required">
+                    {{ 'Required!' | translate }}
+                  </ng-container>
+                </span>
+                <span class="error" *ngIf="existedPerson">
+                  {{ 'Already Existed!' | translate }}
+                </span>                
+              </div>
+              <input 
+                type="text" 
+                class="form-control f-3" 
+                [placeholder]="'Please insert name' | translate" 
+                name="selected_title" 
+                id="selected_title" 
+                #selected_title="ngModel" 
+                [(ngModel)]="selectedTitle" 
+                (ngModelChange)="checkDuplication(selectedTitle)"
+                required>
+            </div>
+            <div class="form-group">
+              <div class="d-flex justify-content-between">
+                <span class="f-3" for="selected_content" translate>Prompt</span>
+                <span class="error" *ngIf="selected_content.errors">
+                  <ng-container *ngIf="selected_content.errors.required">
+                    {{ 'Required!' | translate }}
+                  </ng-container>
+                </span>
+              </div>
+              <textarea
+                name="selected_content" 
+                id="selected_content" 
+                #selected_content="ngModel" 
+                [(ngModel)]="selectedContent"
+                class="form-control mb-2 mt-1"
+                [placeholder]="'call_note_placeholder' | translate"
+                rows="8"
+                required
+              ></textarea>
+            </div>
+            <div class="d-flex justify-content-end">
+              <button class="btn btn-white f-6 font-weight-bold c-blue mr-2" (click)="onCancel()" translate>Cancel</button>
+              <button type="submit" class="btn btn-blue text-white f-6 font-weight-bold mr-2" translate>Save</button>
+            </div>
+          </form>
+        </ng-template>
+        
+      </div>
+      <ng-template #empty>
+        <div class="v-center empty-list py-5 h-100">
+          <div class="object-icon v-center">
+            <i class="i-icon i-information d-block bgc-dark"></i>
+          </div>
+          <span class="f-2 mt-4 mb-3 c-gray" translate>
+            Select a personality in the left panel or create a new one.
+          </span>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button class="btn btn-blue text-white f-6 font-weight-bold mr-2" mat-dialog-close>
+    {{ 'Close' | translate }}
+  </button>
+</mat-dialog-actions>

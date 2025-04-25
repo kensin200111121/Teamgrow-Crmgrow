@@ -1,0 +1,527 @@
+<div class="v-center justify-content-end mt-xl-0 mt-0 team-list-actions">
+  <ng-container  *enableByFeatures="USER_FEATURES.COMMUNITY_CREATE">
+    <button
+      data-action="create-new-community"
+      type="button"
+      class="btn btn-primary shadow f-6"
+      [class.disable]="!isPackageTeam"
+      *ngIf="allowCreateTeam && (teamService.loading$ | async) == STATUS.SUCCESS"
+      (click)="openForm()"
+    >
+      <span class="font-weight-bold f-6" translate>Create new Community</span>
+    </button>
+  </ng-container>
+  <button
+    data-action="join-community"
+    type="button"
+    class="btn btn-white-blue ml-2 c-blue f-6 font-weight-bold"
+    (click)="joinForm()"
+    translate
+  >
+    Join community
+  </button>
+</div>
+<div class="my-3 position-relative team-list-container">
+  <ng-container
+    *ngIf="teams.length; else emptyListTemplate"
+  >
+    <div
+      class="updating-status"
+      *ngIf="(teamService.loading$ | async) === STATUS.REQUEST"
+      translate
+    >
+      LOADING
+    </div>
+    <table class="table teams-table page-table">
+      <thead>
+        <tr>
+          <th class="team-name" translate>Community Name
+          </th>
+          <th class="team-members count-col text-right" translate>
+            <div class="v-center c-pointer head-sort" (click)="changeSort('members')">
+              <span [class]="sortField == 'members' ? 'fw-600 c-dark' : ''" translate>Members</span>
+              <i class="i-icon d-block bgc-black ml-2" [class]="sortDir ? 'i-sort-down' : 'i-sort-up'"
+                *ngIf="sortField == 'members'"></i>
+            </div>
+          </th>
+          <th class="team-materials count-col text-right" translate>
+            <div class="v-center c-pointer head-sort" (click)="changeSort('materialCount')">
+              <span [class]="sortField == 'materialCount' ? 'fw-600 c-dark' : ''" translate>Materials</span>
+              <i class="i-icon d-block bgc-black ml-2" [class]="sortDir ? 'i-sort-down' : 'i-sort-up'"
+                *ngIf="sortField == 'materialCount'"></i>
+            </div>
+          </th>
+          <th class="team-automations count-col text-right" translate>
+            <div class="v-center c-pointer head-sort" (click)="changeSort('automations')">
+              <span [class]="sortField == 'automations' ? 'fw-600 c-dark' : ''" translate>Automations</span>
+              <i class="i-icon d-block bgc-black ml-2" [class]="sortDir ? 'i-sort-down' : 'i-sort-up'"
+                *ngIf="sortField == 'automations'"></i>
+            </div>
+          </th>
+          <th class="team-templates count-col text-right" translate>
+            <div class="v-center c-pointer head-sort" (click)="changeSort('email_templates')">
+              <span [class]="sortField == 'email_templates' ? 'fw-600 c-dark' : ''" translate>Templates</span>
+              <i class="i-icon d-block bgc-black ml-2" [class]="sortDir ? 'i-sort-down' : 'i-sort-up'"
+                *ngIf="sortField == 'email_templates'"></i>
+            </div>
+          </th>
+          <th class="team-pipelines count-col text-right" translate>
+            <div class="v-center c-pointer head-sort" (click)="changeSort('pipelines')">
+              <span [class]="sortField == 'pipelines' ? 'fw-600 c-dark' : ''" translate>Pipelines</span>
+              <i class="i-icon d-block bgc-black ml-2" [class]="sortDir ? 'i-sort-down' : 'i-sort-up'"
+                *ngIf="sortField == 'pipelines'"></i>
+            </div>
+          </th>
+          <th class="team-owner" translate>Owner</th>
+          <th class="team-status" translate>Role</th>
+          <th class="team-share" translate>Share</th>
+          <th class="team-actions"></th>
+        </tr>
+      </thead>
+      <tbody class="position-relative">
+        <tr
+          *ngFor="
+            let team of teams
+              | paginate
+                : {
+                    id: 'teamTable',
+                    itemsPerPage: pageSize.id,
+                    currentPage: page,
+                    totalItems: (teamService.teams$ | async).length
+                  }
+          "
+        >
+          <td class="team-name">
+            <a
+              class="v-center item-detail-link mr-2"
+              [routerLink]="['/community/' + team._id + '/members/root']"
+              *ngIf="
+                status(team) == 'Owner' ||
+                  (status(team) != 'Owner' && team.team_setting?.viewMembers);
+                else noViewMember
+              "
+            >
+              <div class="f-4 c-dark font-weight-bold">{{ team.name }}</div>
+              <div
+                class="invite-count ml-3 c-white f-2 font-weight-bold"
+                *ngIf="team.requests.length && isEditableUser(team)"
+              >
+                {{ team.requests.length }} {{ 'request waiting' | translate }}
+              </div>
+            </a>
+            <ng-template #noViewMember>
+              <a
+                class="v-center item-detail-link mr-2"
+                [routerLink]="['/community/' + team._id + '/materials/root']"
+              >
+                <div class="f-4 c-dark font-weight-bold">{{ team.name }}</div>
+                <div
+                  class="invite-count ml-3 c-white f-1 font-weight-bold"
+                  *ngIf="team.requests.length && isEditableUser(team)"
+                >
+                  {{ team.requests.length }} {{ 'request waiting' | translate }}
+                </div>
+              </a>
+            </ng-template>
+          </td>
+          <td class="team-members text-right count-col">
+            <div class="f-4 c-dark">
+              {{ team.owner.length + team.members.length }}
+            </div>
+          </td>
+          <td class="team-materials text-right count-col">
+            <div class="f-4 c-dark">{{ team.materialCount }}</div>
+          </td>
+          <td class="team-automations text-right count-col">
+            <div class="f-4 c-dark">
+              {{ team.automations.length }}
+            </div>
+          </td>
+          <td class="team-templates text-right count-col">
+            <div class="f-4 c-dark">
+              {{ team.email_templates.length }}
+            </div>
+          </td>
+          <td class="team-templates text-right count-col">
+            <div class="f-4 c-dark">
+              {{ team.pipelines.length }}
+            </div>
+          </td>
+          <td class="team-owner">
+            <div class="v-center">
+              <div class="owners v-center">
+                <ng-container *ngIf="team.owner">
+                  <ng-container
+                    *ngIf="team.owner.length < 5; else overTemplate"
+                  >
+                    <div class="owner" *ngFor="let own of team.owner">
+                      <ng-container
+                        *ngIf="own.picture_profile; else ownNamePlaceholder"
+                      >
+                        <img
+                          [src]="own.picture_profile"
+                          class="avatar"
+                          [class.shadow-avatar]="team.owner.length > 1"
+                        />
+                      </ng-container>
+                      <ng-template #ownNamePlaceholder>
+                        <div
+                          class="name-avatar"
+                          [class.shadow-avatar]="team.owner.length > 1"
+                        >
+                          {{ own.user_name[0] }}
+                        </div>
+                      </ng-template>
+                    </div>
+                  </ng-container>
+                  <ng-template #overTemplate>
+                    <div class="owner" *ngFor="let mIndex of [0, 1, 2, 3]">
+                      <ng-container
+                        *ngIf="
+                          team.owner[mIndex].picture_profile;
+                          else ownNamePlaceholder
+                        "
+                      >
+                        <img
+                          [src]="team.owner[mIndex].picture_profile"
+                          class="avatar shadow-avatar"
+                        />
+                      </ng-container>
+                      <ng-template #ownNamePlaceholder>
+                        <div class="name-avatar shadow-avatar">
+                          {{ team.owner[mIndex].username[0] }}
+                        </div>
+                      </ng-template>
+                    </div>
+                    <div class="owner remain-number">
+                      <div class="name-avatar shadow-avatar">
+                        +{{ team.owner.length - 4 }}
+                      </div>
+                    </div>
+                  </ng-template>
+                </ng-container>
+              </div>
+              <div class="owner-names">
+                <ng-container *ngIf="team.owner">
+                  <ng-container
+                    *ngIf="team.owner.length < 2; else overNameTemplate"
+                  >
+                    <div class="owner-main-name">
+                      {{ team.owner[0]?.user_name }}
+                    </div>
+                  </ng-container>
+                  <ng-template #overNameTemplate>
+                    <div class="owner-main-name">
+                      {{ team.owner[0]?.user_name }}
+                    </div>
+                    <div class="owner-remain-count f-2">
+                      (+ {{ team.owner.length - 1 }} {{ 'Owners' | translate }})
+                    </div>
+                  </ng-template>
+                </ng-container>
+              </div>
+            </div>
+          </td>
+          <td class="team-status">
+            <div
+              class="status font-weight-bold f-4 c-white"
+              [class]="status(team)"
+              translate
+            >
+              {{ status(team) }}
+            </div>
+          </td>
+          <td class="team-share">
+            <div class="f-4 c-dark" translate>
+              {{ team.is_public ? 'Public' : 'Private' }}
+            </div>
+          </td>
+          <td class="team-actions">
+            <div class="v-center justify-content-end">
+              <ng-container *ngIf="status(team) == 'Owner'; else leaveActions">
+                <button
+                  class="btn"
+                  (click)="settingTeam(team)"
+                  placement="bottom"
+                  ngbTooltip="{{ 'Setting' | translate }}"
+                  ngbButtonLabel
+                >
+                  <i
+                    class="i-icon i-setting bgc-dark d-block"
+                    aria-hidden="true"
+                  ></i>
+                </button>
+                <button
+                  class="btn"
+                  (click)="editTeam(team)"
+                  placement="bottom"
+                  ngbTooltip="{{ 'Edit' | translate }}"
+                  ngbButtonLabel
+                >
+                  <i
+                    class="i-icon i-edit bgc-dark d-block"
+                    aria-hidden="true"
+                  ></i>
+                </button>
+                <button
+                  class="btn"
+                  (click)="deleteTeam(team)"
+                  placement="bottom"
+                  ngbTooltip="{{ 'Delete' | translate }}"
+                  ngbButtonLabel
+                >
+                  <i
+                    class="i-icon i-trash bgc-dark d-block"
+                    aria-hidden="true"
+                  ></i>
+                </button>
+              </ng-container>
+              <ng-template #leaveActions>
+                <button
+                  class="btn ml-2 "
+                  (click)="leaveTeam(team)"
+                  placement="auto"
+                  ngbTooltip="{{ 'leave_community' | translate }}"
+                  ngbButtonLabel
+                  placement="left right"
+                >
+                  <i
+                    class="i-icon i-block bgc-dark d-block"
+                    aria-hidden="true"
+                  ></i>
+                </button>
+              </ng-template>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="table-control mode-1 py-2">
+      <div class="pagination-wrapper m-auto">
+        <pagination-controls
+          (pageChange)="changePage($event)"
+          (pageBoundsCorrection)="changePage($event)"
+          id="teamTable"
+          maxSize="5"
+          previousLabel=""
+          nextLabel=""
+          autoHide="(teamService.teams$ | async).length <= pageSize.id"
+        >
+        </pagination-controls>
+      </div>
+      <ng-container
+        *ngIf="(teamService.teams$ | async).length > PAGE_COUNTS[0].id"
+      >
+        <div
+          class="shadow-dropdown ml-auto page-size-control"
+          ngbDropdown
+          placement="top-right"
+        >
+          <div
+            class="v-center c-pointer f-3 p-3 font-weight-bold"
+            ngbDropdownToggle
+          >
+            <span
+              class="pr-2 c-blue"
+              [translateParams]="{ count: pageSize.id }"
+              translate
+              >pagination</span
+            >
+          </div>
+          <div ngbDropdownMenu aria-labelledby="contactPageSize">
+            <div
+              class="py-2"
+              ngbDropdownItem
+              *ngFor="let type of PAGE_COUNTS"
+              (click)="changePageSize(type)"
+            >
+              <span
+                class="f-3 v-center"
+                [class.font-weight-bold]="type.id === pageSize.id"
+              >
+                <span [translateParams]="{ count: type.id }" translate
+                  >pagination</span
+                >
+                <i
+                  class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                  *ngIf="type.id === pageSize.id"
+                ></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+  <ng-template #emptyListTemplate>
+    <ng-container [ngSwitch]="teamService.loading$ | async">
+      <div class="empty-list" *ngSwitchCase="STATUS.SUCCESS">
+        <div class="object-icon v-center">
+          <i class="i-icon i-teams d-block bgc-dark"></i>
+        </div>
+        <h4 class="font-weight-bold mt-4 mb-3" translate>
+          no_communities_related_with_you
+        </h4>
+        <p class="mb-4" translate>
+          create_community_or_join_another_community
+        </p>
+      </div>
+      <div class="list-loading text-center" *ngSwitchCase="STATUS.REQUEST">
+        <div class="loader mt-5 lg"></div>
+        <h4 class="fw-600 mt-2" translate>
+          Loading community that you are included...
+        </h4>
+      </div>
+    </ng-container>
+  </ng-template>
+
+  <!-- INVITES that user received -->
+  <ng-container *ngIf="(teamService.invites$ | async).length">
+    <div classs="f-6 font-weight-bold" translate>
+      You are invited from following teams
+    </div>
+    <table class="table teams-table mt-3">
+      <thead>
+        <th class="team-name" translate>Community Name</th>
+        <th class="team-members count-col text-right" translate>Members</th>
+        <th class="team-materials count-col text-right" translate>Materials</th>
+        <th class="team-contacts count-col text-right" translate>Contacts</th>
+        <th class="team-automations count-co text-rightl" translate>Automations</th>
+        <th class="team-templates count-col text-right" translate>Templates</th>
+        <th class="team-pipelines count-col text-right" translate>Pipelines</th>
+        <th class="team-owner" translate>Owner</th>
+        <th class="received_date" translate>Invite Received</th>
+        <th class="team-actions" translate>Actions</th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let team of teamService.invites$ | async">
+          <td class="team-name">
+            <div class="f-4 font-weight-bold c-blue">{{ team.name }}</div>
+          </td>
+          <td class="team-members text-right count-col">
+            <div class="f-4 c-dark">
+              {{ team.owner.length + team.members.length }}
+            </div>
+          </td>
+          <td class="team-materials text-right count-col">
+            <div class="f-4 c-dark">{{ team.materialCount }}</div>
+          </td>
+          <td class="team-contacts text-right count-col">
+            <div class="f-4 c-dark">{{ team.contacts.length }}</div>
+          </td>
+          <td class="team-automations text-right count-col">
+            <div class="f-4 c-dark">
+              {{ team.automations.length }}
+            </div>
+          </td>
+          <td class="team-templates text-right count-col">
+            <div class="f-4 c-dark">
+              {{ team.email_templates.length }}
+            </div>
+          </td>
+          <td class="team-templates text-right count-col">
+            <div class="f-4 c-dark">
+              {{ team.pipelines.length }}
+            </div>
+          </td>
+          <td class="team-owner">
+            <div class="v-center">
+              <div class="owners v-center">
+                <ng-container *ngIf="team.owner">
+                  <ng-container
+                    *ngIf="team.owner.length < 5; else overTemplate"
+                  >
+                    <div class="owner" *ngFor="let own of team.owner">
+                      <ng-container
+                        *ngIf="own.picture_profile; else ownNamePlaceholder"
+                      >
+                        <img
+                          [src]="own.picture_profile"
+                          class="avatar"
+                          [class.shadow-avatar]="team.owner.length > 1"
+                        />
+                      </ng-container>
+                      <ng-template #ownNamePlaceholder>
+                        <div
+                          class="name-avatar"
+                          [class.shadow-avatar]="team.owner.length > 1"
+                        >
+                          {{ own.user_name[0] }}
+                        </div>
+                      </ng-template>
+                    </div>
+                  </ng-container>
+                  <ng-template #overTemplate>
+                    <div class="owner" *ngFor="let mIndex of [0, 1, 2, 3]">
+                      <ng-container
+                        *ngIf="
+                          team.owner[mIndex].picture_profile;
+                          else ownNamePlaceholder
+                        "
+                      >
+                        <img
+                          [src]="team.owner[mIndex].picture_profile"
+                          class="avatar shadow-avatar"
+                        />
+                      </ng-container>
+                      <ng-template #ownNamePlaceholder>
+                        <div class="name-avatar shadow-avatar">
+                          {{ team.owner[mIndex].username[0] }}
+                        </div>
+                      </ng-template>
+                    </div>
+                    <div class="owner remain-number">
+                      <div class="name-avatar shadow-avatar">
+                        +{{ team.owner.length - 4 }}
+                      </div>
+                    </div>
+                  </ng-template>
+                </ng-container>
+              </div>
+              <div class="owner-names">
+                <ng-container *ngIf="team.owner">
+                  <ng-container
+                    *ngIf="team.owner.length < 2; else overNameTemplate"
+                  >
+                    <div class="owner-main-name">
+                      {{ team.owner[0].user_name }}
+                    </div>
+                  </ng-container>
+                  <ng-template #overNameTemplate>
+                    <div class="owner-main-name">
+                      {{ team.owner[0].user_name }}
+                    </div>
+                    <div class="owner-remain-count f-2">
+                      (+ {{ team.owner.length - 1 }} Owners)
+                    </div>
+                  </ng-template>
+                </ng-container>
+              </div>
+            </div>
+          </td>
+          <td class="received_date">
+            <div class="font-weight-bold f-4 c-dark">
+              {{ team.updated_at | date: 'MMM dd, yyyy h:mm a' }}
+            </div>
+          </td>
+          <td class="team_actions d-flex justify-content-end">
+            <button
+              class="btn btn-accept-outline f-3 mr-2 font-weight-bold"
+              [class.loading]="isAcceptInviting && acceptTeamId == team._id"
+              (click)="acceptInvitation(team)"
+            >
+              <span class="button-label" translate>Accept</span>
+            </button>
+            <button
+              class="btn btn-decline f-3 font-weight-bold"
+              [class.loading]="isDeclineInviting && declineTeamId == team._id"
+              (click)="declineInvitation(team)"
+            >
+              <span class="button-label" translate>Decline</span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-container>
+</div>

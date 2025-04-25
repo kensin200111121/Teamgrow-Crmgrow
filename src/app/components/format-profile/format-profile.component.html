@@ -1,0 +1,19 @@
+<div class="v-center justify-content-between">
+  <h1 class="m-0" mat-dialog-title translate>
+      {{data['title']}}
+  </h1>
+  <i class="d-block i-icon i-close bgc-dark" mat-dialog-close></i>
+</div>
+<mat-dialog-content class="description">
+  <div class="text-center f-5 c-dark mt-3" translate>
+    {{data['message']}}
+  </div>  
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="mx-0">
+  <button class="btn btn-white f-6 font-weight-bold c-blue mr-2" [mat-dialog-close]="false" translate>
+    {{data['cancelLabel'] || 'Cancel'}}
+  </button>
+  <button class="btn btn-red f-6 font-weight-bold text-white" (click)="deleteProfile()" cdkFocusInitial [class.loading]="removing" translate>
+    {{data['confirmLabel'] || 'OK'}}
+  </button>
+</mat-dialog-actions>

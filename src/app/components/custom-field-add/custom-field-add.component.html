@@ -1,0 +1,104 @@
+<div class="v-center justify-content-between mb-3">
+    <h1 class="m-0" mat-dialog-title *ngIf="mode == 'create'" translate>
+      Add Custom Field
+    </h1>
+    <h1 class="m-0" mat-dialog-title *ngIf="mode == 'edit'" translate>
+      Edit Custom Field
+    </h1>
+    <h1 class="m-0" mat-dialog-title *ngIf="mode == 'convert'" translate>
+      Convert to Global Custom Field
+    </h1>
+    <i class="d-block i-icon i-close bgc-dark" (click)="close()"></i>
+</div>
+<form
+    #actionForm="ngForm"
+    (ngSubmit)="submitted = true; actionForm.form.valid ? addField() : false"
+    [class.was-validated]="submitted"
+>
+    <mat-dialog-content>
+        <div class="form-group mb-3">
+            <label for="field-name" translate>name</label>
+            <input
+                class="form-control text-capitalize"
+                type="text"
+                [placeholder]="'Type in name of your custom field' | translate"
+                name="field_name"
+                #field_name="ngModel"
+                id="name"
+                [(ngModel)]="fieldName"
+                (ngModelChange)="confirmDuplicated()"
+                [disabled]="mode == 'convert'"
+                required
+            />
+            <span
+                class="invalid-feedback"
+                *ngIf="field_name.errors && (field_name.touched || field_name.dirty || submitted) && submitted"
+                translate
+            >
+                Field name is required
+            </span>
+            <span class="f-3 mt-1 dot-error" *ngIf="existingName"  translate>
+                Field name is already taken
+            </span>
+            <span class="f-3 mt-1 dot-error" *ngIf="special_alphabet"  translate>
+                Please remove the special character in the name
+            </span>
+            <span class="f-3 mt-1 dot-error" *ngIf="notAllowName"  translate>
+                not_allow_field_name
+            </span>
+        </div>
+        <div class="action-form">
+            <label class="f-1 c-dark text-uppercase type-label" for="type" translate>type</label>
+            <div class="row">
+                <div class="col-12 form-group m-0">
+                    <select class="form-control c-dark f-5"
+                        [(ngModel)]="fieldType"
+                        name="field" id="field"
+                        [disabled]="mode === 'update'"
+                        [class.disabled-cursor]="mode === 'update'"
+                        #field="ngModel"
+                    >
+                        <option *ngFor="let field of FIELD_TYPES" value="{{field.value}}">
+                        {{field.label}}
+                        </option>
+                    </select>
+                    <!-- <app-tab-option [options]="FIELD_TYPES" [(value)]="fieldType"></app-tab-option> -->
+                </div>
+                <div class="col-12 mt-3" *ngIf="fieldType === FieldTypeEnum.DROPDOWN">
+                    <div class="form-group mb-3">
+                        <label for="option" class="mb-0" translate>options</label>
+                        <div class="v-center mt-3 dropdown-options" *ngFor="let option of options; let index=index">
+                            <div class="dropdown-option w-100">
+                                <input
+                                    class="form-control"
+                                    type="text"
+                                    name="option-{{option.value}}"
+                                    [(ngModel)]="option.label"
+                                    (ngModelChange)="optionNameChange($event)"
+                                    (change)="optionValueChange(option)"
+                                    required
+                                />
+                            </div>
+                            <span class="f-1 font-weightb-bold c-blue ml-3 c-pointer" (click)="deleteOption(index)">
+                                <i class="d-block i-icon i-trash bgc-red"></i>
+                            </span>
+                        </div>
+                        <span class="invalid-option mt-1" *ngIf="isSame" translate>
+                            Duplicated options is existing.
+                        </span>
+                        <button class="v-center justify-content-center btn btn-white-blue w-100 py-2 mt-3" type="button" (click)="addOption()" [disabled]="isSame">
+                            <i class="d-block i-icon i-plus bgc-blue"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <a class="btn btn-white f-6 font-weight-bold c-dark mr-2" (click)="close()" translate>Cancel</a>
+        <button *ngIf="mode == 'create'; else updateButton" class="btn btn-primary f-6 font-weight-bold" type="submit" [class.loading]="saving" [disabled]="isSame" translate>Add</button>
+        <ng-template #updateButton>
+            <button class="btn btn-primary f-6 font-weight-bold" type="submit" [class.loading]="saving" [disabled]="isSame" translate>Update</button>
+        </ng-template>
+    </mat-dialog-actions>
+</form>

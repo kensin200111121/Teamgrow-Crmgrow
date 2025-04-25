@@ -1,0 +1,49 @@
+<!-- Added by Sylla -->
+<div class="page-container" [ngSwitch]="step">
+  <!-- BEGIN COLUMN MATCHING SECTION -->
+  <app-match-column *ngSwitchCase="1" [columns]="columns" [lines]="lines" (onNext)="onCompletedColumnMatching($event)"
+    (onPrev)="onCancel()">
+  </app-match-column>
+  <!-- END COLUMN MATCHING SECTION -->
+
+  <!-- BEGIN INVALID CONTACTS IN CSV FILE SECTION -->
+  <app-invalid-contacts *ngSwitchCase="2" [contactsToUpload]="importedContacts" [contacts]="invalidContacts"
+    [pcMatching]="pcMatching" (onNext)="onFixedInvalidContacts($event)" (onPrev)="onBack()">
+  </app-invalid-contacts>
+  <!-- END INVALID CONTACTS IN CSV FILE SECTION -->
+
+  <!-- BEGIN DUPLICATED CONTACTS IN CSV FILE SECTION -->
+  <app-duplicate-contacts-csv-file *ngSwitchCase="3" [contactsToUpload]="contacts" [csvContactGroups]="csvContactGroups"
+    [pcMatching]="pcMatching" (onNext)="onResolvedDuplicatedContactsCsv($event)" (onPrev)="onBack()">
+  </app-duplicate-contacts-csv-file>
+  <!-- END DUPLICATED CONTACTS IN CSV FILE SECTION -->
+
+  <!-- BEGIN REVIEW TO UPLOAD SECTION -->
+  <app-review-to-upload *ngSwitchCase="4" [contactsToUpload]="contactsToUpload" [pcMatching]="pcMatching"
+    (onNext)="onUploadContacts($event)" (onPrev)="onBack()">
+  </app-review-to-upload>
+  <!-- END REVIEW TO UPLOAD SECTION -->
+
+  <!-- BEGIN DUPLICATED CONTACTS SECTION -->
+  <app-duplicate-contacts-list *ngSwitchCase="5" [pcMatching]="pcMatching" [contactGroups]="contactGroups" [deals]="deals" [isDeal]="isDeal"
+    (onNext)="onResolvedDuplicatedContacts($event)" (onPrev)="onCancel()">
+  </app-duplicate-contacts-list>
+  <!-- END DUPLICATED CONTACTS SECTION -->
+
+  <!-- BEGIN CREATE DEALS SECTION -->
+  <app-create-deals *ngSwitchCase="6" [deals]="deals" [pcMatching]="pcMatching" [stages]="stages"
+    (onNext)="onCreateDeals($event)" (onPrev)="onCancel()">
+  </app-create-deals>
+  <!-- END CREATE DEALS SECTION -->
+
+  <!-- BEGIN DUPLICATE DEALS SECTION -->
+  <app-duplicate-deals *ngSwitchCase="7" [dealGroups]="dealGroups" [failedDeals]="failedDeals" [pcMatching]="pcMatching" [stages]="stages"
+    (onNext)="onResolvedDuplicatedDeals($event)" (onPrev)="onCancel()">
+  </app-duplicate-deals>
+  <!-- END DUPLICATE DEALS SECTION -->
+
+  <ng-container *ngSwitchCase="8">
+    <div></div>
+  </ng-container>
+</div>
+<!-- End by Sylla -->

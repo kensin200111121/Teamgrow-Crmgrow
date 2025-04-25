@@ -1,0 +1,489 @@
+<div class="page-content {{ wrapperClass }}">
+  <div class="template-container d-flex w-100">
+    <div class="template-content my-2">
+      <app-back-button defaultTitle="Templates" defaultRoute="/templates"></app-back-button>
+      <div class="v-center justify-content-between form-title">
+        <ng-container *ngIf="!!id && mode == 'edit' && !inline">
+          <h6 class="f-8 ls-2 font-weight-bold my-2" translate>
+            Edit Template
+          </h6>
+        </ng-container>
+        <ng-container *ngIf="!!id && mode == 'edit' && inline">
+          <h6 class="f-8 ls-2 font-weight-bold my-2" translate>
+            Edit Campaign Email
+          </h6>
+        </ng-container>
+        <ng-container *ngIf="!!id && mode == 'new'">
+          <h6 class="f-8 ls-2 font-weight-bold my-2" translate>
+            Clone Template
+          </h6>
+        </ng-container>
+        <ng-container *ngIf="!id">
+          <h6 class="f-8 ls-2 font-weight-bold my-2" translate>
+            Create New Template
+          </h6>
+        </ng-container>
+        <button
+          *ngIf="
+            template._id && mode == 'edit' && ownerId !== user?._id && !inline
+          "
+          class="v-center btn p-1 c-dark mr-4"
+          (click)="downloadTemplate(template)"
+          placement="bottom"
+          [ngbTooltip]="downloading ? '' : 'Download To Own List'"
+        >
+          <button
+            type="button"
+            class="btn btn-primary shadow"
+            [class.loading]="downloading"
+          >
+            <i
+              class="i-icon i-download template-download bgc-dark"
+              aria-hidden="true"
+            ></i>
+            <span class="font-weight-bold f-3" translate>Download</span>
+          </button>
+        </button>
+      </div>
+
+      <div class="v-center mt-3" *ngIf="!inline">
+        <div
+          class="custom-radio-container"
+          *ngIf="template.type === 'email' || !id || (!!id && !template.role)"
+        >
+          <input
+            class="custom-radio"
+            type="radio"
+            id="template-type-email"
+            name="template-type"
+            [value]="'email'"
+            [(ngModel)]="template_type"
+            (ngModelChange)="changeType('email')"
+            [checked]="template.type === 'email'"
+          />
+          <label
+            class="f-6 font-weight-bold"
+            for="template-type-email"
+            translate
+            >Email</label
+          >
+        </div>
+        <div
+          class="custom-radio-container"
+          *ngIf="template.type === 'text' || !id || (!!id && !template.role)"
+        >
+          <input
+            class="custom-radio"
+            type="radio"
+            id="template-type-text"
+            name="template-type"
+            [value]="'text'"
+            [(ngModel)]="template_type"
+            (ngModelChange)="changeType('text')"
+            [checked]="template.type === 'text'"
+          />
+          <label class="f-6 font-weight-bold" for="template-type-text" translate
+            >Text</label
+          >
+        </div>
+      </div>
+      <form
+        #templateForm="ngForm"
+        (ngSubmit)="templateForm.form.valid ? saveTemplate() : false"
+        [class.was-validated]="templateForm.submitted"
+      >
+        <div class="form-group mt-3" *ngIf="!inline">
+          <label>Title</label>
+          <input
+            type="text"
+            class="form-control"
+            [placeholder]="'Type title' | translate"
+            required
+            [(ngModel)]="template_title"
+            (ngModelChange)="stateChanged()"
+            name="title"
+            #title="ngModel"
+          />
+          <span
+            class="invalid-feedback"
+            *ngIf="title.errors && (title.touched || title.dirty)"
+            translate
+            >Please input template name.</span
+          >
+        </div>
+
+        <ng-container *ngIf="template.type === 'email'; else textTemplate">
+          <div class="form-group position-relative">
+            <div class="v-center justify-content-between">
+              <label translate>Subject</label>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              [placeholder]="'Type subject' | translate"
+              #subjectField
+              [(ngModel)]="template.subject"
+              (click)="setCursorPos(subjectField, 'subject')"
+              (keyup)="setCursorPos(subjectField, 'subject')"
+              (ngModelChange)="stateChanged()"
+              #mailSubject="ngModel"
+              [mention]="templateTokens"
+              (itemSelected)="onSubjectTokenSelected($event)"
+              [mentionConfig]="mentionConfig"
+              [name]="mailSubject"
+              required
+            />
+            <span
+              class="invalid-feedback"
+              *ngIf="
+                mailSubject.errors && (mailSubject.touched || mailSubject.dirty)
+              "
+              translate
+            >
+              Please input the email template subject.</span
+            >
+            <div ngbDropdown class="embed-token bottom-right mr-1">
+              <div class="v-center no-carot" ngbDropdownToggle>
+                <i class="d-block i-icon i-token bgc-dark"></i>
+              </div>
+              <div ngbDropdownMenu class="light py-1">
+                <ng-container *ngFor="let token of templateTokens">
+                  <div
+                    class="f-2 py-1 px-2 c-pointer menu-item dropdown-item"
+                    (click)="insertSubjectValue(token.name, true)"
+                  >
+                    {{ token.name | translate }}
+                  </div>
+                </ng-container>
+                <div
+                  class="f-2 py-1 px-2 c-pointer menu-item v-center dropdown-item"
+                  (click)="onCreateToken()"
+                >
+                  <i class="d-block sm i-icon i-plus bgc-blue"></i>
+                  <span class="ml-1 c-blue">{{
+                    'Create Merge field' | translate
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group mb-1">
+            <label>Content</label>
+            <app-html-editor
+              [(value)]="template.content"
+              [placeholder]="'Enter email content...' | translate"
+              [hasAttachment]="false"
+              [hasCalendly]="false"
+              [hasScheduler]="false"
+              required="true"
+              [style]="{ height: '320px' }"
+              (onFocus)="focusEditor()"
+              [mention]="tokens"
+              [mentionEnabled]="true"
+              #editor
+            >
+            </app-html-editor>
+          </div>
+        </ng-container>
+        <ng-template #textTemplate>
+          <div class="form-group mb-1">
+            <label translate>Content </label>
+            <span *ngIf="segments > 1" class="d-inline-flex ml-1 f-2">
+              ({{segments}} Segments
+              <i class="d-block i-icon i-information bgc-dark" (click)="onRedirectArticlePage()"></i>
+              )
+            </span>
+            <div class="position-relative">
+              <textarea
+                rows="10"
+                class="form-control"
+                [placeholder]="'Enter text content...' | translate"
+                [(ngModel)]="template.content"
+                name="content"
+                #content="ngModel"
+                required
+                #smsContentField
+                (click)="setCursorPos(smsContentField, 'content')"
+                (keyup)="setCursorPos(smsContentField, 'content')"
+                (ngModelChange)="stateChanged()"
+                [mention]="templateTokens"
+                (itemSelected)="onTextTokenSelected($event)"
+                [mentionConfig]="mentionConfig"
+              >
+              </textarea>
+              <span
+                class="invalid-feedback"
+                *ngIf="content.errors && (content.touched || content.dirty)"
+                translate
+                >Please input the template content.</span
+              >
+            </div>
+          </div>
+        </ng-template>
+        <ng-template #calendlyActionTemplate>
+          <div
+            ngbDropdown
+            class="insert-token bottom-right ml-2"
+            container="body"
+            *ngIf="isCalendly"
+          >
+            <div
+              class="v-center no-carot c-pointer"
+              ngbDropdownToggle
+              placement="bottom"
+              ngbTooltip="Calendly"
+            >
+              <i class="d-block i-icon i-calendly bgc-dark"></i>
+            </div>
+            <div ngbDropdownMenu class="light templates">
+              <ng-container
+                *ngFor="let calendly of connectService.calendlyAll$ | async"
+              >
+                <div
+                  class="template dropdown-item border-top px-2"
+                  (click)="selectCalendly(calendly.scheduling_url)"
+                >
+                  <div class="v-center h-100">
+                    <div
+                      class="f-3 font-weight-bold flex-grow-1 mr-1 h-100 v-center"
+                    >
+                      {{ calendly.name || '' | shorten : 35 : '...' }}
+                    </div>
+                    <a
+                      class="ml-auto"
+                      [href]="calendly.scheduling_url"
+                      target="_blank"
+                    >
+                      <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                    </a>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </ng-template>
+        <div class="v-center justify-content-end">
+          <i
+            class="d-block i-icon i-insert-material bgc-dark c-pointer"
+            (click)="openMaterialsDlg(template.type)"
+          ></i>
+          <ng-container *ngIf="template.type === 'text'">
+            <div ngbDropdown class="insert-template">
+              <div
+                class="v-center no-carot c-pointer"
+                ngbDropdownToggle
+                placement="bottom"
+                ngbTooltip="Emoji"
+              >
+                <img
+                  class="emoji-icon ml-2"
+                  [src]="sspaService.toAsset('img/icon_emoji.svg')"
+                />
+              </div>
+              <div ngbDropdownMenu class="light py-0">
+                <emoji-mart
+                  class="emoji-mart"
+                  [set]="'twitter'"
+                  [darkMode]="false"
+                  (emojiSelect)="insertValue($event.emoji.native)"
+                  title="Pick your emoji…"
+                >
+                </emoji-mart>
+              </div>
+            </div>
+            <ng-container *ngTemplateOutlet="calendlyActionTemplate;"></ng-container>
+            <div
+              ngbDropdown
+              class="insert-token bottom-right ml-2"
+              container="body"
+              placement="top-end"
+            >
+              <div class="v-center no-carot" ngbDropdownToggle>
+                <i class="d-block i-icon i-token bgc-dark"></i>
+              </div>
+              <div ngbDropdownMenu class="light templates">
+                <ng-container *ngFor="let token of templateTokens">
+                  <div
+                    class="f-2 py-1 px-2 c-pointer menu-item dropdown-item"
+                    (click)="insertValue(token.name, true)"
+                  >
+                    {{ token.name | translate }}
+                  </div>
+                </ng-container>
+                <div
+                  class="f-2 py-1 px-2 c-pointer menu-item v-center dropdown-item"
+                  (click)="onCreateToken()"
+                >
+                  <i class="d-block sm i-icon i-plus bgc-blue"></i>
+                  <span class="ml-1 c-blue">{{
+                    'Create Merge field' | translate
+                  }}</span>
+                </div>
+              </div>
+            </div>
+            <div
+              class="insert-token bottom-right ml-2"
+              container="body"
+              placement="top-end"
+              *ngIf="segments > 1"
+            >
+              <div class="v-center no-carot">
+                <i class="d-block i-icon i-information bgc-dark" (click)="onRedirectArticlePage()"></i>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="template.type === 'email'">
+            <div ngbDropdown class="insert-template">
+              <div
+                class="v-center no-carot c-pointer"
+                ngbDropdownToggle
+                placement="bottom"
+                ngbTooltip="Emoji"
+              >
+                <img
+                  class="emoji-icon ml-2"
+                  [src]="sspaService.toAsset('img/icon_emoji.svg')"
+                />
+              </div>
+              <div ngbDropdownMenu class="light py-0">
+                <emoji-mart
+                  class="emoji-mart"
+                  [set]="'twitter'"
+                  [darkMode]="false"
+                  (emojiSelect)="insertEmojiContentvalue($event.emoji.native)"
+                  title="Pick your emoji…"
+                >
+                </emoji-mart>
+              </div>
+            </div>
+            <ng-container *ngTemplateOutlet="calendlyActionTemplate;"></ng-container>
+            <div
+              ngbDropdown
+              class="insert-token bottom-right ml-2"
+              container="body"
+            >
+              <div class="v-center no-carot" ngbDropdownToggle>
+                <i class="d-block i-icon i-token bgc-dark"></i>
+              </div>
+              <div ngbDropdownMenu class="light templates">
+                <ng-container *ngFor="let token of templateTokens">
+                  <div
+                    class="f-2 py-1 px-2 c-pointer menu-item dropdown-item"
+                    (click)="insertEmailValue(token.name, true)"
+                  >
+                    {{ token.name | translate }}
+                  </div>
+                </ng-container>
+                <div
+                  class="f-2 py-1 px-2 c-pointer menu-item v-center dropdown-item"
+                  (click)="onCreateToken()"
+                >
+                  <i class="d-block sm i-icon i-plus bgc-blue"></i>
+                  <span class="ml-1 c-blue">{{
+                    'Create Merge field' | translate
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <div class="v-center justify-content-end mt-4">
+          <ng-container *ngIf="!!id && mode == 'new'">
+            <div class="v-center ml-auto">
+              <a
+                class="btn font-weight-bold"
+                [routerLink]="['/templates/own/root']"
+                translate
+                >Back</a
+              >
+              <button
+                class="btn btn-primary font-weight-bold ml-2"
+                [class.loading]="isSaving"
+                translate
+              >
+                Clone
+              </button>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="!id">
+          <div>
+            <div class="v-center ml-auto">
+              <a
+                class="btn font-weight-bold"
+                [routerLink]="['/templates/own/root']"
+                *ngIf="!inline"
+                translate
+                >Cancel</a
+              >
+              <button
+                class="btn font-weight-bold"
+                (click)="onClose()"
+                *ngIf="inline"
+                translate
+              >
+                Cancel
+              </button>
+              <button
+                [attr.data-action]="'bulk-email-save-btn'"
+                class="btn btn-primary font-weight-bold ml-2 segment-width"
+                [class.loading]="isSaving"
+                [class.d-none]="
+                  template._id &&
+                  mode == 'edit' &&
+                  ownerId !== user?._id &&
+                  !inline
+                "
+                translate
+              >
+                {{ !inline ? 'Create' : 'Save' }}
+              </button>
+            </div>
+            <div class="ml-auto text-center segment-width">
+              <span *ngIf="segments > 1" class="d-inline-flex ml-1 f-2">
+                {{segments}} Segments
+                <i class="d-block i-icon i-information bgc-dark" (click)="onRedirectArticlePage()"></i>
+              </span>
+            </div>
+          </div>
+          </ng-container>
+          <ng-container
+            *ngIf="template._id && (mode == 'edit' || ownerId === user?._id)"
+          >
+            <div
+              class="v-center ml-auto"
+              [class.d-none]="mode === 'new' && !!id"
+            >
+              <a
+                class="btn font-weight-bold"
+                [routerLink]="['/templates/own/root']"
+                *ngIf="!inline"
+                translate
+                >Cancel</a
+              >
+              <button
+                class="btn font-weight-bold"
+                (click)="onClose()"
+                *ngIf="inline"
+              >
+                Cancel
+              </button>
+              <button
+                class="btn btn-primary font-weight-bold ml-2"
+                [class.loading]="isSaving"
+                [class.d-none]="
+                  template._id &&
+                  mode == 'edit' &&
+                  ownerId !== user?._id &&
+                  !inline
+                "
+                translate
+              >
+                Save
+              </button>
+            </div>
+          </ng-container>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,398 @@
+.back-menu .i-icon {
+  width: 10px;
+  min-width: 10px;
+}
+
+.steps {
+  display: flex;
+
+  .step {
+    margin-right: 80px;
+    color: black;
+    font-size: 13px;
+    border-radius: 15px;
+    line-height: 13px;
+    text-align: center;
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 70px;
+      height: 1px;
+      background: gainsboro;
+      top: 50%;
+      right: -5px;
+      transform: translateX(100%);
+    }
+
+    &:last-child::after {
+      display: none;
+    }
+
+    .step-index {
+      margin-right: 8px;
+      font-weight: 600;
+      width: 24px;
+      height: 24px;
+      text-align: center;
+      background: gray;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .step-title {
+      font-size: 14px;
+      font-weight: 400;
+    }
+
+    &.active .step-index {
+      background-color: blue;
+      color: white;
+    }
+  }
+}
+
+.step-container {
+  margin-top: 16px;
+
+  .step-title {
+    font-size: 20px;
+    font-weight: 600;
+  }
+}
+
+// Contacts List
+.loading-contacts table .custom-checkbox {
+  opacity: 0.7;
+  pointer-events: none;
+}
+.contact-avatar {
+  position: relative;
+}
+.shared-by,
+.shared-with {
+  position: absolute;
+  display: block;
+  width: 22px;
+  height: 22px;
+  background: transparent;
+  border-radius: 10px;
+  bottom: -6px;
+  right: -6px;
+
+  .i-icon {
+    width: 22px;
+    height: 22px;
+  }
+}
+.name-cell-inner {
+  max-width: 110px;
+}
+.email-cell-inner {
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+:host ::ng-deep {
+  table {
+    .custom-mat-field:not(.label_form) {
+      width: 120px !important;
+    }
+  }
+}
+.selection-select-cell {
+  max-width: 44px;
+  width: 44px;
+}
+
+// Template List
+.sections-container {
+  display: grid;
+  grid-template-columns: 350px auto;
+  grid-column-gap: 32px;
+  margin-top: 32px;
+
+  .empty-list-wrapper {
+    max-width: 380px;
+  }
+
+  .tooltip-content {
+    min-width: 190px;
+  }
+
+  @media screen and (max-width: 1110px) {
+    display: block;
+
+    .add-option {
+      max-width: 380px;
+      margin-bottom: 24px;
+    }
+  }
+}
+
+// Calendar
+
+.calendar-controls {
+  max-width: 650px;
+}
+
+.i-cal-ctrl {
+  width: 34px;
+  height: 34px;
+}
+
+// Review
+.review-step {
+  max-width: 400px;
+
+  .info-title {
+    font-size: 13px;
+    min-width: 120px;
+  }
+
+  .thumb-wrapper {
+    .thumbnail {
+      width: 90px;
+    }
+  }
+}
+
+.first-step-next {
+  margin-top: -42px;
+  position: relative;
+  z-index: 2;
+  width: fit-content;
+  margin-left: auto;
+}
+
+:host ::ng-deep {
+  .over-page .template-content {
+    padding: 0px !important;
+    margin: 0px !important;
+  }
+  .over-page .page-content {
+    padding: 0px !important;
+    margin: 0px !important;
+  }
+}
+
+.template-browser-result {
+  position: relative;
+  border: 1px solid #d9d9df;
+  .template-header {
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 22px;
+    color: #1301ff;
+    width: 85%;
+  }
+  .template-edit {
+    position: absolute;
+    top: 17px;
+    right: 35px;
+    color: #1301ff;
+  }
+  .template-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    .template-action {
+      a {
+        background-color: transparent;
+      }
+    }
+  }
+  .newsletter-thumbnail {
+    width: 320px;
+
+    img {
+      width: 100%;
+    }
+  }
+
+  .thumb-wrapper {
+    .thumbnail {
+      width: 90px;
+    }
+  }
+}
+
+.visible-hidden {
+  visibility: hidden;
+}
+
+.content-wrapper {
+  max-width: 480px;
+  
+}
+
+:host ::ng-deep {
+  ul {list-style: unset !important;}  
+}  
+
+.section-container {
+  .section-header {
+    display: flex;
+    align-items: center;
+
+    .section-circle-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: #101336;
+      border-radius: 64px;
+      font-size: 12px;
+      color: #ffffff;
+    }
+    .section-title {
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 22px;
+      color: #101336;
+      margin-left: 13px;
+    }
+  }
+  .section-body {
+    margin-top: 18px;
+    margin-left: 37px;
+    label {
+      font-size: 13px;
+      line-height: 18px;
+      color: #101336;
+    }
+    .red-status {
+      // position: absolute;
+      width: 10px;
+      height: 10px;
+      display: block;
+      background: #e02020;
+      border-radius: 50%;
+      top: 10px;
+      left: 38px;
+      content: '';
+    }
+  }
+}
+
+// Date select step style
+:host ::ng-deep {
+  .calendar-wrapper {
+    .date-picker-overlay.mode1 {
+      padding: 12px;
+      width: unset;
+
+      .ngb-dp-header {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+      }
+
+      .ngb-dp-day {
+        width: 2.5rem !important;
+        height: 2.5rem !important;
+        [ngbDatepickerDayView] {
+          width: 2.5rem !important;
+          height: 2.5rem !important;
+          line-height: 2.5rem !important;
+        }
+      }
+    }
+  }
+
+  .custom-select:first-child {
+    color: #19181a !important;
+    background: #fff url(/assets/img/chevron_down_grey.svg) no-repeat right
+      0.75rem center/8px 10px !important;
+  }
+}
+
+// Review Step
+.review-step-container {
+  display: grid;
+  grid-template-columns: auto 350px;
+  grid-column-gap: 20px;
+  max-width: 800px;
+  margin-top: 32px;
+}
+
+// Contact Select Step
+.contacts-step {
+  display: grid;
+  grid-template-columns: 300px auto;
+  grid-column-gap: 30px;
+  margin-top: 32px;
+
+  &.has-empty {
+    grid-template-columns: 0px 300px;
+
+    .contacts-actions {
+      margin-top: 24px;
+
+      & > div:first-child {
+        margin-bottom: 32px;
+      }
+    }
+  }
+
+  .contacts-actions {
+    position: sticky;
+    top: 160px;
+    text-align: center;
+  }
+
+  .empty-list .object-icon {
+    width: 60px;
+    height: 60px;
+    margin: auto;
+  }
+
+  @media screen and (max-width: 1024px) {
+    display: flex;
+    flex-direction: column-reverse;
+
+    .contacts-actions {
+      display: flex;
+      flex-direction: row;
+      padding: 0px;
+
+      .object-icon {
+        display: none;
+      }
+
+      h5 {
+        display: none;
+      }
+
+      & > div:first-child {
+        margin-bottom: 0px !important;
+      }
+
+      & > div:last-child {
+        margin-left: auto;
+      }
+    }
+  }
+
+  @media screen and (max-width: 575px) {
+    .contacts-actions {
+      flex-direction: column;
+      align-items: flex-start;
+      margin-top: 0px !important;
+
+      & > div:last-child {
+        margin-left: 0px;
+        margin-top: 10px;
+      }
+    }
+  }
+}

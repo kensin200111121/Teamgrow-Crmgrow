@@ -1,0 +1,65 @@
+<div class="v-center justify-content-between">
+  <h1 mat-dialog-title class="m-0" translate>
+    Call Report
+  </h1>
+  <button class="v-center border-0 bgc-trans" mat-dialog-close>
+      <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</div>
+<mat-dialog-content>
+
+  <div class="form-group rate-form mt-2">
+    <label class="d-block mb-0" translate>Call status</label>
+    <mat-select [(ngModel)]="dialCallStatus" name="dial-call-status" #callLabelSelector>
+      <mat-option *ngFor="let label of (userService.callLabels$ | async)" [value]="label">
+        <div class="d-flex chip py-2">
+          <div class="info">
+            <div class="f-4 fw-600">{{label}}</div>
+          </div>
+        </div>
+      </mat-option>
+    </mat-select>
+  </div>
+  <div class="form-group mb-2">
+    <label class="d-block mb-0" translate>Call note</label>
+    <textarea
+      [(ngModel)]="dialCallNote"
+      class="form-control mb-2"
+      [placeholder]="'call_note_placeholder' | translate"
+      rows="4"
+      required
+    >
+    </textarea>
+  </div>
+  <div class="spliter v-center">
+    <hr class="flex-grow-1 my-1"/> <span class="mx-3 f-3 op-75 fw-600" translate>AND</span> <hr class="flex-grow-1 my-1"/>
+  </div>
+  
+  <div class="history-list-wrapper">
+    <ng-container *ngFor="let log of logs; let last = last">
+      <div class="history-item">
+        <div class="v-center mt-2">
+          <div class="font-weight-bold">{{log.name}}</div>          
+          <span *ngIf="log.duration" class="op-75 fw-600 ml-2">{{log.duration * 1000 | timeDuration}}</span>
+          <span class="op-75 fw-600 f-0 ml-1">{{log.outcome}}</span>
+        </div>
+    
+        <div class="form-group mt-2" *ngIf="log.content">
+          <label class="d-block mb-0" translate>Call note</label>
+          <div class="note" [class.empty]="!log.content">
+            <ng-container *ngIf="log.content; else emptyContent">{{log.content}}</ng-container>
+            <ng-template #emptyContent>
+              {{ 'empty_call_note' | translate }}
+            </ng-template>
+          </div>
+        </div>
+        <div class="spliter v-center" *ngIf="!last ">
+          <hr class="flex-grow-1 my-1"/> <span class="mx-3 f-3 op-75 fw-600" translate>AND</span> <hr class="flex-grow-1 my-1"/>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button class="btn btn-blue f-6 font-weight-bold text-white" (click)="close()" [class.loading]="saving" translate>Close</button>
+</mat-dialog-actions>

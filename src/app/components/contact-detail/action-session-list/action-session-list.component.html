@@ -1,0 +1,106 @@
+<label translate>Sessions</label>
+<div class="timelines">
+  <div class="timeline" *ngFor="let activity of _sessionList">
+    <div class="header v-center">
+      <i class="act-icon act-{{activity.type}} {{activity?.trackerInfo?.mediaTracker?.type}} d-block mr-2"></i>
+      <div *ngIf="activity.type !== 'form_trackers'">{{activity.content}}</div>
+      <div *ngIf="activity.type === 'form_trackers'" class="v-center">
+        <span translate>Submitted lead form</span>        
+      </div>
+      <div class="ml-4 mr-2" *ngIf="activity?.subContent">               
+        {{activity.subContent}}
+      </div>
+      <ng-container *ngIf="activity.type === 'video_trackers'">
+        <div class="mat-thumb c-pointer" (click)="openDetail(activity?.material, $event, 'video')">
+          <img src="{{activity?.material?.preview}}" />
+        </div>
+      </ng-container>
+      <ng-container *ngIf="activity.type === 'pdf_trackers'">
+        <div class="mat-thumb c-pointer" (click)="openDetail(activity?.material, $event,'pdf')">
+          <img src="{{activity?.material?.preview}}" />
+        </div>
+      </ng-container>
+      <ng-container *ngIf="activity.type === 'image_trackers'">
+        <div class="mat-thumb c-pointer" (click)="openDetail(activity?.material, $event,'image')">
+          <img src="{{activity?.material?.preview}}" />
+        </div>
+      </ng-container>
+      <span class="time f-3 ml-auto op-56">
+        {{ activity.created_at | datetimeFormat }}
+      </span>
+    </div>
+    <div class="content ml-4">
+      <ng-container *ngIf="activity.type === 'video_trackers' && activity?.trackerInfo?.mediaTracker?.type === 'watch'">
+        <app-play-timelines [data]="activity?.trackerInfo?.mediaTracker" [type]="activity?.trackerInfo?.type"
+          [duration]="activity?.trackerInfo?.duration">
+        </app-play-timelines>
+      </ng-container>
+      <ng-container *ngIf="activity.type === 'pdf_trackers' && activity?.trackerInfo?.mediaTracker?.type === 'review'">
+        <app-play-timelines [data]="activity?.trackerInfo?.mediaTracker" [type]="activity?.trackerInfo?.type"
+          [duration]="activity?.trackerInfo?.duration">
+        </app-play-timelines>
+      </ng-container>
+      <ng-container *ngIf="activity.type === 'email_trackers' && activity?.trackerInfo?.mediaTracker?.type === 'click'">
+        <a class="f-3 fw-600 mt-2 mb-2 d-block" href="{{activity?.trackerInfo?.mediaTracker?.link}}"
+          target="_blank">{{activity?.trackerInfo?.mediaTracker?.link}}</a>
+      </ng-container>
+      <ng-container *ngIf="activity.type === 'landing_pages' && activity?.landing_pages?._id">
+        <div>
+          You sent this landing page 
+          <a class="f-3 fw-600" [routerLink]="'/lead-hub/landing-pages/' + activity.landing_pages._id" target="_blank">
+            {{ activity.landing_pages.name }}
+          </a>
+           to this contact.
+        </div>         
+      </ng-container>
+      <ng-container *ngIf="activity.type === 'form_trackers' && activity?.trackerInfo?.mediaTracker?.data">
+        <div class="mt-2">
+          This contact submitted the 
+          <span class="font-weight-bold">{{ activity?.trackerInfo?.mediaTracker?.lead_form?.name || 'UnNamed' }}</span>
+          form. Click 
+          <a href="{{siteUrl}}/lead-hub/lead-capture/{{activity?.trackerInfo?.mediaTracker?.lead_form?._id || ''}}">here</a>
+          to view the form.
+        </div>
+        <span class="font-weight-bold mb-2 mt-2">Response</span>
+        <div *ngFor="let entry of activity?.trackerInfo?.mediaTracker?.data | keyvalue">
+          <div class="v-center" *ngIf="!unneededFields.includes(entry.key)">
+            <div [ngSwitch]="entry.key">
+              <div class="op-56" *ngSwitchCase="'cell_phone'">Primary Phone</div>
+              <div class="op-56" *ngSwitchCase="'email'">Primary Email</div>
+              <div class="op-56" *ngSwitchDefault>{{ entry.key | titlecase }}</div>
+            </div>
+            <div class="ml-auto">
+              <span>{{ entry.value }}</span>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+<a *ngIf="isShowCollapse" class="more f-3 mt-3 c-pointer fw-600 d-block w-fit" (click)="collapse()"
+  translate>Collapse</a>
+<ng-template #materialDetailPortal>
+  <div class="bg-white w-100 shadow rounded detail-panel">
+    <div class="material">
+      <div class="title d-flex">
+        <span>{{detailMaterial?.title}}</span>
+        <ng-container [ngSwitch]="detailMaterial?.material_type">
+          <a *ngSwitchCase="'video'" class="ml-auto" href="{{SITE}}/video/{{detailMaterial?._id}}" target="_blank">
+            <i class="i-icon i-expand d-block bgc-dark"></i>
+          </a>
+          <a *ngSwitchCase="'pdf'" class="ml-auto" href="{{SITE}}/pdf/{{detailMaterial?._id}}" target="_blank">
+            <i class="i-icon i-expand d-block bgc-dark"></i>
+          </a>
+          <a *ngSwitchCase="'image'" class="ml-auto" href="{{SITE}}/image/{{detailMaterial?._id}}" target="_blank">
+            <i class="i-icon i-expand d-block bgc-dark"></i>
+          </a>
+        </ng-container>
+      </div>
+      <div class="thumbnail">
+        <img [src]="detailMaterial?.preview" alt="Material Thumbnail">
+      </div>
+
+    </div>
+  </div>
+</ng-template>

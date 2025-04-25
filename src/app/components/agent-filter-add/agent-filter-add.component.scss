@@ -1,0 +1,12 @@
+.description {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    color: #989898;
+}
+
+:host ::ng-deep {
+    .mat-radio-label {
+        text-transform: none;
+    }
+}

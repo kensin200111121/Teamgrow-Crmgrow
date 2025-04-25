@@ -1,0 +1,26 @@
+<div class="page-content">
+  <div class="v-center justify-content-between mb-3">
+    <h1 class="page-title" translate>Automations</h1>
+    <ng-container *ngIf="selectedTab.id === 'own'">
+      <button [attr.data-action]="'create-new-automation'" type="button" class="btn btn-primary font-weight-bold btn-font-bold ml-auto" (click)="create()"
+        [class.disable]="!isPackageAutomation">
+        <span translate>New Automation</span>
+      </button>
+      <button [attr.data-action]="'create-new-folder-automation'" type="button" class="btn btn-white-blue ml-2" (click)="createFolder()"
+              [class.disable]="!isPackageAutomation">
+        <span translate>New Folder</span>
+      </button>
+    </ng-container>
+  </div>
+  <div class="page-header mb-2">
+    <app-slide-tab [tabs]="tabs" [selected]="selectedTab" (onChange)="changeTab($event)" type="plain"
+      class="border-bottom pl-0 rounded-0">
+    </app-slide-tab>
+  </div>
+  <div>
+    <app-automations-own #automationsList [class.d-none]="selectedTab?.id !== 'own'"></app-automations-own>
+    <app-automations-library [class.d-none]="selectedTab?.id === 'own'"></app-automations-library>
+    <!-- <app-automations-list #automationsList [class.d-none]="selectedTab.id !== 'own'"></app-automations-list>
+    <app-automations-lib [class.d-none]="selectedTab.id === 'own'"></app-automations-lib> -->
+  </div>
+</div>

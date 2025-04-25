@@ -1,0 +1,45 @@
+<div class="history-list mb-0">
+  <ng-container *ngIf="!!dataSource.firstLoading; else firstLoaded">
+    <div class="empty-list">
+      <div class="v-center justify-content-center">
+        <div class="list-loading v-center">
+          <div class="loader md"></div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #firstLoaded> 
+    <div class="v-center justify-content-end c-pointer ml-auto" (click)="openCall()" *ngIf="
+          (_type === 'phone_log') &&
+          !isPending
+        ">
+      <span class="f-3 font-weight-bold c-blue mr-2" translate>New Call</span>
+    </div>
+    <ng-container *ngIf="!!dataSource.isEmptyData ; else listview">
+      <div class="empty-list mt-5">
+        <div class="object-icon v-center">
+          <i class="i-icon i-{{_type}} d-block bgc-dark"></i>
+        </div>   
+        <h4 class="font-weight-bold mt-4 mb-3" translate>
+          {{ 'no_contact_activity_' + _type }}
+        </h4>   
+      </div>
+    </ng-container>
+    <ng-template #listview>
+      <div class="cdk-scroll-viewport">
+        <ng-scrollbar visibility="hover">
+          <cdk-virtual-scroll-viewport
+           [itemSize]="50" [minBufferPx]="350" 
+           [maxBufferPx]="1000" 
+           class="scroll-viewport virtual-viewport"
+          (scrolledIndexChange)="onScrolledIndexChange($event)" #viewport scrollViewport>
+            <ng-container *cdkVirtualFor="let item of dataSource; let i = index; trackBy: trackByIdx">
+              <app-contact-activity-super-item [contactId]="contactId"  [activity]="item" [isPending]="isPending" [isActionItem]="true">
+              </app-contact-activity-super-item>
+            </ng-container>
+          </cdk-virtual-scroll-viewport>
+        </ng-scrollbar>
+      </div>
+    </ng-template>
+  </ng-template> 
+</div>

@@ -1,0 +1,22 @@
+name: redx sspa
+on:
+  push:
+    branches: [redx]
+
+jobs:
+  update_gitlab:
+    name: sync
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure SSH key
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Push to GitLab
+        run: |
+          GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git remote add gitlab git@gitlab.com:greenseed/redx/vortex-parent/teamgrow/crm-client.git
+          GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git push gitlab -f redx:redx

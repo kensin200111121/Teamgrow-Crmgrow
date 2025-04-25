@@ -1,0 +1,94 @@
+<div class="v-center main-actions">   
+  <button class="btn btn-default td-none fw-600 mr-3"
+   (click)="settingTeam()" translate>Setting</button>
+  <button class="btn btn-primary td-none fw-600 text-white mr-3" data-action="team-new-user"
+    (click)="newAccount()" translate>New User</button>
+  
+</div>
+<ng-container>
+  <table  class="table my-5">
+    <thead>
+      <th class="f-2" translate>user name</th>
+      <th class="f-2" translate>company name</th>
+      <th class="f-2" translate>phone number</th>
+      <th class="f-2" translate>time zone</th>
+      <th class="f-2" translate></th>
+    </thead>
+    <tbody>      
+      <ng-container *ngIf="loading; else showTable">
+        <tr>
+            <td colspan="5">
+            <div class="list-loading text-center">
+              <div class="loader my-5 lg"></div>
+              <h4 class="fw-600 mt-2" translate>Loading account informations...</h4>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-template #showTable>
+        <ng-container *ngFor="let user of userList">
+          <tr>
+            <td class="pl-0">
+              <div class="v-center c-pointer">
+                <img *ngIf="user.picture_profile; else avatarNameTemplate"
+                  [src]="user.picture_profile"
+                  (error)="sspaService.imgError($event,'img/user_avatar.svg')"
+                  class="form-avatar contact-avatar rounded-circle mr-1" />
+                <ng-template #avatarNameTemplate>
+                  <div class="contact-avatar f-3 mr-2">
+                    {{getAvatarName(user.user_name)}}
+                  </div>
+                </ng-template>
+                <span class="fw-600">{{user.user_name}}</span>
+              </div>
+            </td>
+            <td>
+              <span class="">{{user.company}}</span>
+            </td>
+            <td>
+              <span class="c-blue font-weight-bold">{{user.phone.number |
+                phone_format}}</span>
+            </td>
+            <td>
+              <span class="">{{TIME_ZONE_NAMES[user.time_zone_info] || user.time_zone_info}}</span>
+            </td>
+            <td class="pr-0">
+              <div class="d-flex justify-content-end"
+                *ngIf="!user.is_primary; else primaryMark">
+                <a (click)="settingAccount(user)"
+                  class="c-pointer user-action empty-popover" ngbPopover=""
+                  popoverTitle="{{'Profile permission' | translate}}"
+                  triggers="mouseenter:mouseleave" placement="left">
+                  <i class="i-icon d-block i-setting bgc-dark"></i>
+                </a>
+                <a (click)="editAccount(user)"
+                  class="ml-2 c-pointer user-action empty-popover" ngbPopover=""
+                  popoverTitle="{{'Edit Profile' | translate}}" triggers="mouseenter:mouseleave"
+                  placement="left">
+                  <i class="i-icon d-block i-edit bgc-dark"></i>
+                </a>
+                <a *ngIf="user.login_enabled" (click)="changePassword(user)"
+                  class="ml-2 c-pointer user-action empty-popover" ngbPopover=""
+                  popoverTitle="{{'Change Password' | translate}}" triggers="mouseenter:mouseleave"
+                  placement="left">
+                  <i class="i-icon d-block i-lock bgc-dark"></i>
+                </a>
+                <a (click)="deleteAccount(user)"
+                  class="ml-2 c-pointer user-action empty-popover" ngbPopover=""
+                  popoverTitle="{{'Cancel Profile' | translate}}" triggers="mouseenter:mouseleave"
+                  placement="left">
+                  <i class="i-icon d-block i-trash bgc-dark"></i>
+                </a>
+              </div>
+              <ng-template #primaryMark>
+                <div class="v-center justify-content-end">
+                  <span class="badge badge-primary" translate>PRIMARY</span>
+                </div>
+              </ng-template>
+            </td>
+          </tr>
+        </ng-container>
+      </ng-template>
+    </tbody>
+  </table>
+</ng-container>

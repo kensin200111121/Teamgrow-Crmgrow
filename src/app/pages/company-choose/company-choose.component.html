@@ -1,0 +1,61 @@
+<div class="company-card border-0">
+    <div class="company-card-header">
+        <div class="v-center justify-content-between user-info">
+            <h4 class="f-24 font-weight-bold" [translateParams]="{name: user?.user_name}" translate>
+                auth.company.title
+            </h4>
+            <div class="v-center justify-content-between step-group">
+                <div class="step" [class.active]="step === 1"></div>
+                <div class="step" [class.active]="step === 2"></div>
+            </div>
+        </div>
+        <div class="f-3 fw-600">
+            {{'auth.company.desc' | translate}} 
+        </div>
+    </div>
+    <div class="company-card-body p-3">
+        <ng-container *ngIf="step === 1">
+            <div class="f-3 fw-600 c-blue">
+                {{'auth.company.quiz_1' | translate}}
+            </div>
+            <div class="company-list mt-3">
+                <span class="f-3 font-weigth-bold text-center text-white c-pointer company" (click)="setJob('realtor')">
+                    {{'auth.company.realtor' | translate}}
+                </span>
+                <span class="f-3 font-weigth-bold text-center text-white c-pointer company" (click)="focus('job')" *ngIf="!is_focus">
+                    {{'auth.company.other' | translate}}
+                </span>
+                <div class="form-group position-relative c-pointer" *ngIf="is_focus">
+                    <input type="text" class="form-control" [(ngModel)]="otherCompany" #jobField>
+                    <span class="v-center return-btn c-grey" (click)="blur('job')">
+                        {{'auth.company.done' | translate}}  <i class="d-block i-icon i-return bgc-grey ml-1"></i>
+                    </span>
+                </div>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="step === 2">
+            <div class="f-3 fw-600 c-blue">
+                {{'auth.company.quiz_2' | translate}} 
+            </div>
+            <div class="company-list mt-3">
+                <ng-container *ngFor="let company of companies">
+                    <span class="f-3 font-weigth-bold text-center text-white c-pointer company"
+                        *ngIf="company.type !== 'other'; else other" (click)="setCompany(company.label)">
+                        {{company.label}}
+                    </span>
+                    <ng-template #other>
+                        <span class="f-3 font-weigth-bold text-center text-white c-pointer company" (click)="focus('company')" *ngIf="!is_focus">
+                            {{company.label}}
+                        </span>
+                        <div class="form-group position-relative c-pointer" *ngIf="is_focus">
+                            <input type="text" class="form-control" [(ngModel)]="otherCompany" #companyField>
+                            <span class="v-center return-btn c-grey" (click)="blur('company')">
+                                {{'auth.company.return' | translate}}  <i class="d-block i-icon i-return bgc-grey ml-1"></i>
+                            </span>
+                        </div>
+                    </ng-template>
+                </ng-container>
+            </div>
+        </ng-container>
+    </div>
+</div>

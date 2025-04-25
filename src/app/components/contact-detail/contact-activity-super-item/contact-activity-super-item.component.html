@@ -1,0 +1,83 @@
+<div
+  [class.history-detail]="!isActionItem || activity?.type !== 'text'"
+  [class.action-detail]="!!isActionItem && activity?.type === 'text'"
+  [class.note-background]="activity?.type === 'note'">
+
+  <ng-container [ngSwitch]="activity?.type">
+
+    <ng-container *ngSwitchCase="'email'">
+      <app-contact-email-action-item [contactId]="contactId" [activity]="activity"
+        [isPending]="isPending"></app-contact-email-action-item>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'note'">
+      <app-contact-note-action-item [contactId]="contactId" [activity]="activity"
+        [isPending]="isPending"></app-contact-note-action-item>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'text'">
+      <app-contact-text-action-item [contactId]="contactId" [activity]="activity" [isActionItem]="isActionItem"
+        [isPending]="isPending"></app-contact-text-action-item>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'appointment'">
+      <app-contact-meeting-action-item [contactId]="contactId" [activity]="activity"
+        [isPending]="isPending"></app-contact-meeting-action-item>
+    </ng-container>
+    <ng-container *ngSwitchCase="'follow_up'">
+      <app-contact-task-action-item [contactId]="contactId" [activity]="activity"
+        [isPending]="isPending"></app-contact-task-action-item>
+    </ng-container>
+    <ng-container *ngSwitchCase="'deal'">
+      <app-contact-deal-action-item [contactId]="contactId" [activity]="activity"
+        [isPending]="isPending"></app-contact-deal-action-item>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'phone_log'">
+      <app-contact-call-action-item [contactId]="contactId" [activity]="activity"
+        [isPending]="isPending"></app-contact-call-action-item>
+    </ng-container>
+    <ng-container *ngSwitchCase="'automation'">
+      <app-contact-automation-action-item [contactId]="contactId" [activity]="activity"
+        [isPending]="isPending"></app-contact-automation-action-item>
+    </ng-container>
+    <ng-container *ngSwitchCase="'event'">
+      <app-contact-event-action-item [contactId]="contactId" [activity]="activity"
+        [isPending]="isPending"></app-contact-event-action-item>
+    </ng-container>
+    <ng-container *ngSwitchCase="'assigner'">
+      <app-contact-universal-action-item [contactId]="contactId" [activity]="activity" [isPending]="isPending"
+        type="assigner"></app-contact-universal-action-item>
+    </ng-container>
+    <ng-container *ngSwitchCase="'user'">
+      <app-contact-universal-action-item [contactId]="contactId" [activity]="activity" [isPending]="isPending"
+        type="user"></app-contact-universal-action-item>
+    </ng-container>
+    <ng-container *ngSwitchCase="'team'">
+      <app-contact-universal-action-item [contactId]="contactId" [activity]="activity" [isPending]="isPending"
+        type="team"></app-contact-universal-action-item>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'activity'">
+      <app-contact-activity-action-item [contactId]="contactId" [activity]="activity"
+        [isPending]="isPending"></app-contact-activity-action-item>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'single_id'">
+      <app-contact-activity-action-item [contactId]="contactId" [activity]="activity" [prospectId]="prospectId"
+        [isPending]="isPending"></app-contact-activity-action-item>
+    </ng-container>
+
+    <ng-container *ngSwitchDefault>
+      <div id="ghost-element">
+        <div class="short-line"></div>
+        <div class="line"></div>
+        <div class="middle-line"></div>
+      </div>
+    </ng-container>
+  </ng-container>
+  <ng-template #loading>
+    <button class="btn c-blue email-loading" [class.loading]="true"></button>
+  </ng-template>
+
+</div>

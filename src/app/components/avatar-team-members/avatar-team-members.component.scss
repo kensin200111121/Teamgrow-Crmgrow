@@ -1,0 +1,11 @@
+@import 'variables';
+.account {
+    .avatar {
+        min-width: 24px;
+        min-height: 24px;
+        background-color: $color-avatar;
+        border: 1px solid $color-white;
+        margin-right: -8px;
+        box-shadow: unset;
+    }
+}

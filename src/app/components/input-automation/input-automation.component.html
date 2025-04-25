@@ -1,0 +1,71 @@
+<div class="custom-mat-field mat-select-wrapper">
+  <mat-form-field [attr.data-name]="'contact-input-automation-select'" style="display: block;" appearance="outline">
+    <mat-select [formControl]="formControl" placeholder={{placeholder}} #selector [disableOptionCentering]="true">
+      <mat-select-trigger>
+        <ng-container *ngIf="formControl.value">
+          <ng-container *ngIf="resultItemTemplate; else defaultResult" [ngTemplateOutlet]="resultItemTemplate"
+            [ngTemplateOutletContext]="{ $implicit: formControl.value }">
+          </ng-container>
+          <ng-template #defaultResult>
+            <div class="v-center">
+              <div class="v-center selected-value">
+                <div class="f-3 font-weight-bold automation-name" title="{{formControl.value.title}}">
+                  {{formControl.value.title}}</div>
+                <div class="f-1 c-badge circle bgc-leafy-green mx-1">{{formControl.value.meta?.action_count || 0}}</div>
+                <div class="f-1 c-badge rect text-uppercase mr-1" [class]="formControl.value.role || 'own'" translate>
+                  {{formControl.value.role || 'own'}}</div>
+              </div>
+              <div class="icon-close ml-auto" (click)="remove()"></div>
+            </div>
+          </ng-template>
+        </ng-container>
+      </mat-select-trigger>
+      <mat-option>
+        <ngx-mat-select-search [formControl]="inputControl" [searching]="searching || isLoading" [placeholderLabel]="formPlaceholder"
+          noEntriesFoundLabel="There is no searched results." preventHomeEndKeyPropagation="true">
+        </ngx-mat-select-search>
+      </mat-option>
+      <mat-option [disabled]="true" *ngIf="currentFolder"
+        style="height: unset; line-height: unset; cursor: pointer; color: #101366!important">
+        <div class="v-center py-3 justify-content-between" (click)="goToFolder($event, '')">
+          <i class="i-icon i-folder bgc-dark mr-1"></i>
+          <div class="f-3 font-weight-bold automation-name">
+            <span class="item-title">.. to root</span>
+          </div>
+        </div>
+      </mat-option>
+      <mat-option [disabled]="true" *ngIf="currentFolder"
+        style="height: unset; line-height: unset; cursor: pointer; color: #101366!important">
+        <div class="v-center py-3 justify-content-between" (click)="goToParentFolder($event)">
+          <i class="i-icon i-folder bgc-dark mr-1"></i>
+          <div class="f-3 font-weight-bold automation-name">
+            <span class="item-title">.. to prev</span>
+          </div>
+        </div>
+      </mat-option>
+      <mat-option [attr.data-name]="'contact-input-automation-select-' + item.title" *ngFor="let item of allList" [value]="item" [ngClass]="{'d-none' : hideOption(item._id)  }"
+        style="height: unset; line-height: unset; cursor: pointer; color: #101366!important">
+        <ng-container *ngIf="item.item_type == 'folder'; else normalAutomation">
+          <div class="v-center py-3 justify-content-between" (click)="goToFolder($event, item)">
+            <i class="i-icon i-folder bgc-dark mr-1"></i>
+            <div class="f-3 font-weight-bold automation-name" title="{{item.title}}">
+              <span class="item-title">{{item.title}}</span>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #normalAutomation>
+          <div class="v-center py-3 justify-content-between">
+            <i class="i-icon i-shared-by d-block bgc-grey" *ngIf="item.shared"></i>
+            <div class="f-3 font-weight-bold automation-name" title="{{item.title}}">
+              <span class="item-title">{{item.title}}</span>
+            </div>
+            <div class="f-1 c-badge circle bgc-leafy-green mx-2">{{item.meta?.action_count || 0}}</div>
+            <a target='_blank' [routerLink]="['/autoflow/edit/' + item?._id]">
+              <i class="d-block i-icon i-expand bgc-dark"></i>
+            </a>
+          </div>
+        </ng-template>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

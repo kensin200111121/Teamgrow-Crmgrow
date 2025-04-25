@@ -1,0 +1,183 @@
+@import 'variables';
+
+.emails-detail,.email_trackers-detail {
+  br {
+    display: none;
+  }
+
+}
+.act-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.included-materials {
+  .material-thumbnail {
+    display: block;
+    margin-right: 4px;
+    margin-bottom: 4px;
+  }
+}
+
+.material-thumbnail {
+  img {
+    width: 120px;
+    height: 66px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+}
+
+.material {
+  .material-content {
+    .description {
+      color: gray;
+
+      @media screen and (max-width: 400px) {
+        display: none;
+      }
+    }
+    time {
+      margin-top: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      color: gray;
+    }
+  }
+}
+
+label.session {
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #949393;
+}
+
+.timelines {
+  position: relative;
+
+  .timeline {
+    margin-top: 4px;
+    margin-bottom: 12px;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 0px;
+    height: calc(100% - 16px);
+    border-left: 2px dashed gainsboro;
+    left: 7px;
+    z-index: -1;
+    top: 10px;
+  }
+}
+
+.mat-thumb {
+  width: 50px;
+  height: 28px;
+  margin-left: 8px;
+  border-radius: 6px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.detail-panel {
+  box-shadow: 0px 0px 20px -4px #0005!important;
+
+  .material {
+    padding: 12px 8px;
+    .title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    .thumbnail {
+      img {
+        width: 100%;
+        max-height: 160px;
+      }
+    }
+    .description{
+      font-size: 13px;
+      opacity: .56;
+    }
+  }
+}
+
+:host ::ng-deep {
+  .contact-member-wrapper {
+    .contact-member {
+      .main-info {
+        display: flex;
+        .picture {
+          width: 24px;
+          height: 24px;
+          text-align: center;
+          background: black;
+          color: white;
+          font-weight: 600;
+          border-radius: 50%;
+          line-height: 24px;
+          font-size: 12px;
+        }
+        .full-name {
+          margin-left: 8px;
+        }
+      }
+    }
+  }
+
+  .dropdown-menu {
+    a:hover {
+      color: #101336
+    }
+  }
+
+  .email-content {
+    font-family: "Helvetica", "Arial", "sans-serif", "TwemojiMozilla";
+    white-space: pre-wrap;
+    ul {
+      list-style: disc;
+      list-style-type: disc;
+    }
+
+    li {
+      list-style: disc;
+      list-style-type: disc;
+    }
+
+    .ql-indent-1 {
+      margin-left: 3em;
+    }
+  }
+
+
+}
+.contact-member-wrapper {
+  margin-top: -4px;
+}
+
+.related-contact {
+  margin-left: -8px;
+
+  .avatar {
+    line-height: 28px;
+  }
+}
+
+.email-loading {
+  width: 30px;
+  height: 30px;
+}
+
+.attachment {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+

@@ -1,0 +1,23 @@
+<div class="v-center justify-content-between">
+  <h1 class="m-0" mat-dialog-title translate>
+    Select a condition
+  </h1>
+  <i class="d-block i-icon i-close bgc-dark c-pointer" (click)="close()"></i>
+</div>
+<mat-dialog-content class="description">
+  <div class="text-center f-5 c-dark mt-3">
+    {{ 'Which branch would you connect the following actions to' | translate }}
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="mx-0">
+  <button class="btn btn-accept f-6 font-weight-bold text-white" (click)="onConfirm('yes')" cdkFocusInitial>
+    {{ 'Yes branch' | translate }}
+  </button>
+  <button class="btn btn-red ml-2 f-6 font-weight-bold text-white" (click)="onConfirm('no')">
+    {{ 'No branch' | translate }}
+  </button>
+  <button class="btn btn-white ml-2 f-6 font-weight-bold c-blue" (click)="close()">
+    {{ 'Cancel' | translate }}
+  </button>
+</mat-dialog-actions>
+

@@ -1,0 +1,25 @@
+.skeleton-loader {
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  background: #eff1f6 no-repeat;
+  border-radius: 4px;
+  width: 100%;
+  height: 20px;
+  display: inline-block;
+  will-change: transform;
+  cursor: wait;
+
+  &::before {
+    background-image: linear-gradient(90deg, #fff0, #fff9, #fff0);
+    background-size: 200px 100%;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100%;
+    content: "";
+    animation: loader 2s ease-in-out infinite;
+  }
+}

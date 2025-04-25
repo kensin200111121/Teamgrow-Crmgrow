@@ -1,0 +1,131 @@
+<form #form="ngForm" (ngSubmit)="form.form.valid ? submit() : false" [class.was-validated]="form.submitted"
+  class="general">
+  <h1 mat-dialog-title translate>Create task</h1>
+  <mat-dialog-content cdkScrollable>
+    <ng-container *ngIf="type === 'deal'; else normalTaskContacts">
+      <div class="f-6 mb-2">
+        {{ 'Adding to' | translate }}
+      </div>
+      <div class="new-contacts-wrapper my-2" (click)="setFocus()">
+        <app-input-contact-chip [selectedContacts]="contacts" [display]="'email'" [shouldFromSearch]="true"
+          [shouldBeSubscriber]="false" [isDealContact]="true" (onFocus)="setFocus()" [focus]="isFocus()" class="w-100">
+        </app-input-contact-chip>
+      </div>
+    </ng-container>
+    <ng-template #normalTaskContacts>
+      <ng-container *ngIf="isSelected">
+        <div class="f-6 mb-2">
+          {{ 'Adding to' | translate }}
+          <span class="f-6 c-blue font-weight-bold">{{ contacts[0].fullName }}</span>
+          <ng-container *ngIf="contacts.length > 1">
+            {{ 'and' | translate }}
+            <span class="f-6 c-blue font-weight-bold pr-0">{{contacts.length - 1}} {{(contacts.length - 1) === 1 ? ('other.' | translate) : ('others.' | translate)}}</span>
+          </ng-container>
+          <sapn class="p-0 m-0" translate>.</sapn>
+        </div>
+      </ng-container>
+    </ng-template>
+
+    <div class="form-group" (click)="blueAll()">
+      <label class="mb-0" translate>Task Type</label>
+      <div>
+        <app-task-type [(value)]="task.type"></app-task-type>
+      </div>
+    </div>
+
+    <div class="form-group" (click)="blueAll()">
+      <div class="v-center">
+        <label for="content_tc" class="mb-0" translate>Task Subject</label>
+        <span class="error ml-auto" *ngIf="content.errors">
+          <ng-container *ngIf="content.errors.required">
+            {{ 'Required!' | translate }}
+          </ng-container>
+        </span>
+      </div>
+      <input type="text" class="form-control" id="content_tc" name="content" #content="ngModel"
+        [(ngModel)]="task.content" required>
+    </div>
+
+    <div class="form-group" (click)="blueAll()">
+      <div class="v-center">
+        <label for="description_tc" class="mb-0" translate>Task Description</label>
+      </div>
+      <textarea name="description" id="description_tc" class="form-control" rows="3" #description="ngModel" [(ngModel)]="task.description"></textarea>
+    </div>
+
+    <ng-container *ngIf="!isSelected">
+      <div class="form-group">
+        <div class="v-center">
+          <label for="contact_tc" class="mb-0" translate>Assign to contact</label>
+        </div>
+        <app-input-contacts [placeholder]="'Search for Contact' | translate" [display]="''" #inputContacts
+          [selectedContacts]="contacts">
+        </app-input-contacts>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="assignee_enabled">
+      <div class="form-group">
+        <div class="v-center">
+          <label class="mb-0" translate>Assign to</label>
+        </div>
+        <app-assignee-select
+          #assigneeSelect
+          class="w-50"
+          [disabled]="!assignee_editable"
+          [value]="selectedAssignee"
+          type="form"
+          (valueChange)="changeAssignee($event)"
+        >
+        </app-assignee-select>
+      </div>
+    </ng-container>
+
+      <app-business-date-time-picker
+        [selectedDay]="getSelectedDate()"
+        [selectedTime]="time"
+        [time_zone]="time_zone"
+        [hideTime]="task.is_full"
+        [mode]="'popup'"
+        (onSelectDateTime)="onSelectDateTime($event)"
+        [isCreateMode] = "true"
+        [isBusinessEnabled] = "false"
+      >
+      </app-business-date-time-picker>
+
+      <div
+        class="d-flex align-items-center justify-content-between">
+        <div class="custom-control custom-checkbox v-center">
+          <input type="checkbox" class="custom-control-input" id="all_day_tc" [checked]="task.is_full"
+            (change)="toggleTimeSelector($event)" />
+          <label class="custom-control-label f-3 fw-600 pt-1" for="all_day_tc" data-name="all_day_tc" translate>All Day Task</label>
+        </div>
+      </div>
+
+    <div class="row mb-3">
+      <div class="col-12 v-center">
+        <div *ngIf="type !== 'deal'" class="custom-control custom-checkbox mr-3 v-center">
+          <input type="checkbox" class="custom-control-input" id="repeat_tc" [checked]="task.set_recurrence"
+            (change)="toggleRepeatSetting()" />
+          <label class="custom-control-label f-3 fw-600 pt-1" for="repeat_tc" data-name="repeat_tc" translate>Set as recurring event</label>
+        </div>
+        <div class="form-group ml-auto mb-0">
+          <select [attr.data-name]="'task-recurring-select'" *ngIf="task.set_recurrence" class="form-control c-blue font-weight-bold"
+            [(ngModel)]="task.recurrence_mode" name="duration" #duration="ngModel">
+            <option *ngFor="let type of REPEAT_DURATIONS" [attr.data-name]="'task-recurring-select-item-' + type.label" [value]="type.value" [selected]="type.value == 'DAILY'">
+              {{ type.label | translate }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button class="btn c-blue btn-font-bold" mat-dialog-close>
+      {{ 'Cancel' | translate }}
+    </button>
+    <button class="btn btn-primary btn-font-bold" [class.loading]="saving" [attr.data-action]="'new-task-create'">
+      {{ 'Create' | translate }}
+    </button>
+  </mat-dialog-actions>
+</form>

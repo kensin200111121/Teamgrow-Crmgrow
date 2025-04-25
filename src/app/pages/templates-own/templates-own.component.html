@@ -1,0 +1,717 @@
+<div class="custom-mat-table">
+  <!-- List Header -->
+  <div class="d-flex table-control-header v-center mt-3">
+    <app-folder-tree
+      [setFolder]="currentFolder"
+      [baseRoute] = "BASE_URL" >
+    </app-folder-tree>
+    <div class="form-group mb-0 search-form ml-auto">
+      <div class="input-group-prepend">
+        <i class="i-icon i-search d-block bgc-dark"></i>
+      </div>
+      <input
+        type="text"
+        class="form-control"
+        [placeholder]="'Search' | translate"
+        aria-label="search"
+        aria-describedby="search-addon"
+        [(ngModel)]="filterParam.search"
+        (ngModelChange)="this.onChangeKeyword.next($event)"
+      />
+      <ng-container *ngIf="filterParam.search">
+        <div class="cancel-action c-pointer" (click)="this.onChangeKeyword.next('')">
+          <i class="i-icon i-close d-block bgc-dark"></i>
+        </div>
+      </ng-container>
+    </div>
+    <div class="ml-2" ngbDropdown placement="bottom-right">
+      <div
+        class="sort-dropdown v-center c-pointer f-3 p-2 mr-2 font-weight-bold"
+        ngbDropdownToggle
+      >
+        <span class="pr-2">
+          <ng-container>
+            <span class="font-weight-bold" translate>Sort by</span>
+          </ng-container>
+          <!-- <ng-template #deadlineTemplate>
+            <span class="font-weight-bold">{{
+              sortType.label | translate
+            }}</span>
+          </ng-template> -->
+        </span>
+      </div>
+      <div ngbDropdownMenu aria-labelledby="taskSortTypes">
+        <div
+          class="py-2"
+          ngbDropdownItem
+          *ngFor="let type of SORT_TYPES"
+          (click)="onChangeSort(type)"
+        >
+          <span
+            class="f-3 v-center"
+            [class.font-weight-bold]="type.id === sortType.id"
+          >
+            {{ type.label | translate }}
+            <i
+              class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+              *ngIf="type.id === sortType.id"
+            ></i>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="border-left pl-3 pr-0 py-1 text-center ml-3 mr-2">
+      <a
+        class="ml-3 f-3 font-weight-bold c-dark td-none c-pointer v-center"
+        (click)="drawer.toggle()"
+      >
+       <img
+         class="mr-1"
+         [src]="sspaService.toAsset('img/filter.svg')"
+         alt="filter-icon"
+         style="width: 16px; height: 16px;"
+       />
+       <span translate>Filter</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="position-relative mt-2">
+    <!-- List View -->
+    <div class="mat-table-wrapper" [class.empty]="!filteredItems.length">
+      <table
+        class="w-100 page-table"
+        mat-table
+        [dataSource]="
+          filteredItems
+            | paginate
+              : {
+                  id: 'templates',
+                  itemsPerPage: pageSize.id,
+                  currentPage: page,
+                  totalItems: filteredItems.length
+                }
+        "
+        [class.selected-files]="selectedFiles.length"
+      >
+        <ng-container matColumnDef="loader-cell">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            colspan="12"
+            class="loader-cell"
+          >
+            <div
+              class="updating-status"
+              *ngIf="filteredItems.length && isLoading"
+              translate
+            >
+              LOADING
+            </div>
+          </th>
+        </ng-container>
+
+        <!-- Selection Info & Master Toggle Actions -->
+        <ng-container matColumnDef="selection_info">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            colspan="12"
+            class="text-center"
+          >
+            <span
+              *ngIf="!isAllSelected(); else deselectTemplate"
+              [translateParams]="{ length: selectedFiles.length }"
+              translate
+            >
+              template_trans.template_selected
+              <span
+                class="c-blue font-weight-bold c-pointer ml-2"
+                (click)="toggleAllItems()"
+                [translateParams]="{ length: fileCount }"
+                translate
+              >
+                template_trans.select_template
+              </span>
+            </span>
+            <ng-template #deselectTemplate>
+              <span
+                [translateParams]="{ length: selectedFiles.length }"
+                translate
+                >template_trans.selected_all</span
+              >
+              <span
+                class="c-blue c-pointer font-weight-bold ml-2"
+                (click)="toggleAllItems()"
+                translate
+                >Clear selection</span
+              >
+            </ng-template>
+          </th>
+        </ng-container>
+
+        <!-- Select Box -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef class="pl-0 checkbox-col">
+            <div
+              class="custom-control custom-checkbox"
+              [class.indeterminate]="selectedCount && !isAllSelected()"
+            >
+              <input
+                type="checkbox"
+                class="custom-control-input"
+                id="selectAllTemplates"
+                (change)="$event ? togglePageItems() : null"
+                [checked]="isPageSelected()"
+              />
+              <label
+                class="custom-control-label"
+                for="selectAllTemplates"
+              ></label>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let element" class="pl-0 checkbox-col">
+            <div class="custom-control custom-checkbox">
+              <input
+                type="checkbox"
+                class="custom-control-input"
+                id="template-{{ element._id }}"
+                (change)="toggleItem(element)"
+                [checked]="isSelected(element)"
+              />
+              <label
+                class="custom-control-label"
+                for="template-{{ element._id }}"
+              ></label>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Thumbnail & Title -->
+        <ng-container matColumnDef="title">
+          <ng-container *matHeaderCellDef>
+            <th
+              mat-header-cell
+              *ngIf="!selectedCount; else toolHeader"
+              class="name-col"
+            >
+              <div
+                class="v-center c-pointer head-sort"
+                (click)="changeSort('title')"
+              >
+                <span
+                  [class]="sortField == 'title' ? 'fw-600 c-dark' : ''"
+                  translate
+                  >Name</span
+                >
+                <i
+                  class="i-icon d-block bgc-black ml-2"
+                  [class]="sortDir ? 'i-sort-down' : 'i-sort-up'"
+                  *ngIf="sortField == 'title'"
+                >
+                </i>
+              </div>
+            </th>
+            <ng-template #toolHeader>
+              <th mat-header-cell colspan="12">
+                <div class="v-center">
+                  <ng-container
+                    *ngIf="selectedFiles.length; else folderSelectedStatus"
+                  >
+                    <span
+                      class="c-dark f-3 text-lowercase font-weight-bold"
+                      translate
+                      [translateParams]="{ count: selectedFiles.length }"
+                    >
+                      count selected
+                    </span>
+                    <app-actions-header
+                      [actions]="BULK_ACTIONS"
+                      (doCommand)="doAction($event)"
+                    ></app-actions-header>
+                  </ng-container>
+                  <ng-template #folderSelectedStatus>
+                    <span
+                      class="c-dark f-3 text-lowercase font-weight-bold"
+                      translate
+                      [translateParams]="{ count: selectedFolders.length }"
+                    >
+                      count selected
+                    </span>
+                    <app-actions-header
+                      [actions]="FOLDER_ACTIONS"
+                      (doCommand)="doFolderAction($event)"
+                    ></app-actions-header>
+                  </ng-template>
+                </div>
+              </th>
+            </ng-template>
+          </ng-container>
+
+          <td mat-cell *matCellDef="let element" class="name-col">
+            <ng-container
+              *ngIf="element.item_type === 'folder'; else templateInfoTemplate"
+            >
+              <a
+                class="v-center c-pointer template-main-info td-none"
+                [routerLink]="['/templates/own/' + element._id]"
+                [state]="{folderId: element._id, folderName: element.title, isOwn: true}"
+              >
+                <div class="thumbnail">
+                  <a>
+                    <div class="folder-thumb"></div>
+                  </a>
+                </div>
+                <span class="font-weight-bold ci-dark">{{
+                  element.title || '' | shorten: 40:'...'
+                }}</span>
+              </a>
+            </ng-container>
+            <ng-template #templateInfoTemplate>
+              <div class="v-center c-pointer template-main-info">
+                <a
+                  class="v-center c-pointer template-main-info td-none"
+                  [routerLink]="['/templates/edit/' + element._id]"
+                >
+                    <span class="font-weight-bold ci-dark">{{
+                        element.title || '' | shorten: 40:'...'
+                    }}</span>
+                </a>
+              </div>
+              <div class="responsive-data">
+                <div class="type">
+                  <span class="info-title">type:</span>
+                  <span class="info-value">{{ element.item_type }}</span>
+                </div>
+              </div>
+            </ng-template>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="content">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell class="template-content" *ngIf="!selectedCount"
+              translate>Template</th>
+          </ng-container>
+          <td mat-cell *matCellDef="let template" class="template-content">
+            <ng-container *ngIf="template.item_type !== 'folder'">
+              <h5 class="font-weight-bold f-4 c-dark mb-1">{{template.subject | removeEntity | shorten: 40: '...'}}</h5>
+              <span class="f-2 c-dark" [innerHTML]="template.meta?.excerpt || ''"></span>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <!-- Shared With -->
+        <ng-container matColumnDef="share">
+          <ng-container *matHeaderCellDef>
+            <th
+              mat-header-cell
+              *ngIf="!selectedCount"
+              class="share-col"
+              translate
+            >
+              shared with
+            </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="share-col">
+            <ng-container
+              *ngIf="element.sharedTeamCount; else noSharedTeamTemplate"
+            >
+              <span class="tag rounded mr-2">{{ element.sharedTeamInfo }}</span>
+              <span class="f-2 op-56" *ngIf="element.sharedTeamCount > 1"
+                >+{{ element.sharedTeamCount - 1 }} more</span
+              >
+            </ng-container>
+            <ng-template #noSharedTeamTemplate>
+              <span>---</span>
+            </ng-template>
+          </td>
+        </ng-container>
+
+        <!-- Shared With -->
+        <ng-container matColumnDef="download">
+          <ng-container *matHeaderCellDef>
+            <th
+              mat-header-cell
+              *ngIf="!selectedCount"
+              class="share-col"
+              translate
+            >
+              Download from
+            </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="share-col">
+            <ng-container
+              *ngIf="element.downloadInfo; else noSharedTeamTemplate"
+            >
+              <span class="tag rounded mr-2">{{ element.downloadInfo }}</span>
+            </ng-container>
+            <ng-template #noSharedTeamTemplate>
+              <span>---</span>
+            </ng-template>
+          </td>
+        </ng-container>
+
+        <!-- Type -->
+        <ng-container matColumnDef="type">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell *ngIf="!selectedCount" class="type-col">
+              <div
+                class="v-center c-pointer head-sort"
+                (click)="changeSort('type')"
+              >
+                <span
+                  [class]="sortField == 'type' ? 'fw-600 c-dark' : ''"
+                  translate
+                  >Type</span
+                >
+                <i
+                  class="i-icon d-block bgc-black ml-2"
+                  [class]="sortDir ? 'i-sort-down' : 'i-sort-up'"
+                  *ngIf="sortField == 'type'"
+                ></i>
+              </div>
+            </th>
+          </ng-container>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            class="type-col {{ element.item_type }}"
+          >
+            <div class="v-center">
+              <i class="i-icon bgc-dark i-{{ICONS[element.item_type]}} mr-1"></i>
+              <span translate>{{ element.item_type }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Created -->
+        <ng-container matColumnDef="created_at">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell class="time-col" *ngIf="!selectedCount">
+              <div
+                class="v-center c-pointer head-sort"
+                (click)="changeSort('created_at')"
+              >
+                <span
+                  [class]="sortField == 'created_at' ? 'fw-600 c-dark' : ''"
+                  translate
+                  >Added</span
+                >
+                <i
+                  class="i-icon d-block bgc-black ml-2"
+                  [class]="sortDir ? 'i-sort-down' : 'i-sort-up'"
+                  *ngIf="sortField == 'created_at'"
+                ></i>
+              </div>
+            </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="time-col">
+            {{ element.created_at | date: 'mediumDate' }}
+          </td>
+        </ng-container>
+
+        <!-- Default -->
+        <ng-container matColumnDef="default">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell class="template-action" *ngIf="!selectedCount" translate>
+              Default
+            </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let template" class="template-action">
+            <div class="v-center" *ngIf="template.item_type !== 'folder'">
+              <label class="custom-toggle mb-0" placement="top"
+                ngbTooltip="{{'Set as' | translate}} {{template.type == 'email' ? 'Default Email' : 'Default Text'}}">
+                <input type="checkbox" [checked]="template._id == emailDefault || template._id == smsDefault"
+                  (change)="setDefault(template)">
+                <span class="custom-toggle-slider rounded-circle"></span>
+              </label>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- More Actions -->
+        <ng-container matColumnDef="actions">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell *ngIf="!selectedCount" class="item-action"></th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="item-action">
+            <div class="v-center material-actions" #menuWrapper>
+              <ng-container *ngIf="element.item_type === 'folder'; else templateQuickAction">
+                <div class="icon-button v-center justify-content-center" (click)="editFolder(element)"
+                  placement="bottom" ngbTooltip="{{'Edit Folder' | translate}}">
+                  <i class="i-icon bgc-dark i-edit"></i>
+                </div>
+                <div class="icon-button v-center justify-content-center" (click)="deleteFolder(element)"
+                  placement="bottom" ngbTooltip="{{'Delete Folder' | translate}}">
+                  <i class="i-icon bgc-dark i-trash ml-2"></i>
+                </div>
+              </ng-container>
+              <ng-template #templateQuickAction>
+                <a class="icon-button v-center justify-content-center"
+                  [routerLink]="['/templates/edit/' + element._id]"
+                  placement="bottom" ngbTooltip="{{'Edit' | translate}}">
+                  <i class="i-icon bgc-dark i-edit"></i>
+                </a>
+                <div class="icon-button v-center justify-content-center" (click)="deleteTemplate([element._id])"
+                  placement="bottom" ngbTooltip="{{'Delete' | translate}}">
+                  <i class="i-icon bgc-dark i-trash ml-2"></i>
+                </div>
+              </ng-template>
+              <div
+                ngbDropdown
+                class="ml-auto"
+                container="body"
+                #mainDrop="ngbDropdown"
+              >
+                <a
+                  ngbDropdownToggle
+                  class="v-center btn bgc-white c-dark f-3 no-carot px-0"
+                >
+                  <i class="d-block i-icon i-menu-more bgc-dark mr-2"></i>
+                </a>
+
+                <div ngbDropdownMenu class="light">
+                  <ng-container
+                    *ngIf="
+                      element.item_type === 'folder';
+                      else materialActionsTemplate
+                    "
+                  >
+                    <button
+                      class="v-center border-0 py-2 c-dark"
+                      ngbDropdownItem
+                      (click)="stopShare(element)"
+                      *ngIf="element.role === 'team'"
+                    >
+                      <i
+                        class="i-icon i-share-off d-block bgc-dark"
+                        aria-hidden="true"
+                      ></i>
+                      <span class="f-3 ml-3 font-weight-bold" translate
+                        >Stop Share</span
+                      >
+                    </button>
+                    <button
+                      class="v-center border-0 py-2 c-dark"
+                      ngbDropdownItem
+                      (click)="share(element)"
+                    >
+                      <i
+                        class="i-icon i-share-team d-block bgc-dark"
+                        aria-hidden="true"
+                      ></i>
+                      <span class="f-3 ml-3 font-weight-bold" translate
+                        >Share</span
+                      >
+                    </button>
+                    <button
+                      *ngIf="!rootFolderInfo?.folders.includes(element._id)"
+                      class="v-center border-0 py-2 c-dark"
+                      ngbDropdownItem
+                      (click)="gotoParentFolder(element)"
+                      >
+                      <i
+                        class="i-icon i-share-team bgc-dark ml-1"
+                        aria-hidden="true"
+                      ></i>
+                      <span class="ml-3 f-3 font-weight-bold" translate
+                        >Goto Folder</span
+                      >
+                    </button>
+                  </ng-container>
+
+                  <ng-template #materialActionsTemplate>
+                    <a
+                      class="v-center border-0 py-2 c-dark"
+                      ngbDropdownItem
+                      [routerLink]="['/templates/new/' + element._id]"
+                    >
+                      <i
+                        class="i-icon i-duplicate bgc-dark ml-1"
+                        aria-hidden="true"
+                      ></i>
+                      <span class="ml-3 f-3 font-weight-bold" translate
+                        >Clone</span
+                      >
+                    </a>
+                    <button
+                      class="v-center border-0 py-2 c-dark"
+                      ngbDropdownItem
+                      (click)="share(element)"
+                    >
+                      <i
+                        class="i-icon i-share-team bgc-dark ml-1"
+                        aria-hidden="true"
+                      ></i>
+                      <span class="ml-3 f-3 font-weight-bold" translate
+                        >Share</span
+                      >
+                    </button>
+                    <button
+                      class="v-center border-0 py-2 c-dark"
+                      ngbDropdownItem
+                      (click)="stopShare(element)"
+                      *ngIf="element.role === 'team'"
+                    >
+                      <i
+                        class="i-icon i-share-team bgc-dark ml-1"
+                        aria-hidden="true"
+                      ></i>
+                      <span class="ml-3 f-3 font-weight-bold" translate
+                        >Stop Share</span
+                      >
+                    </button>
+                    <button
+                      class="v-center border-0 py-2 c-dark"
+                      ngbDropdownItem
+                      (click)="moveToOtherFolder(element)"
+                    >
+                      <i
+                        class="i-icon i-folder bgc-dark ml-1"
+                        aria-hidden="true"
+                      ></i>
+                      <span class="ml-3 f-3 font-weight-bold" translate
+                        >Move To</span
+                      >
+                    </button>
+                    <button
+                      *ngIf="!rootFolderInfo?.templates.includes(element._id)"
+                      class="v-center border-0 py-2 c-dark"
+                      ngbDropdownItem
+                      (click)="gotoParentFolder(element)"
+                      >
+                      <i
+                        class="i-icon i-share-team bgc-dark ml-1"
+                        aria-hidden="true"
+                      ></i>
+                      <span class="ml-3 f-3 font-weight-bold" translate
+                        >Goto Folder</span
+                      >
+                    </button>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="['loader-cell']"
+          class="loader-row"
+        ></tr>
+        <tr
+          mat-header-row
+          *matHeaderRowDef="DISPLAY_COLUMNS"
+          [class.selected]="selectedFiles.length + selectedFolders.length"
+          class="table-header"
+        ></tr>
+        <tr
+          mat-header-row
+          *matHeaderRowDef="['selection_info']"
+          [class.d-none]="!selectedFiles.length"
+          class="selection-info"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; let index = index; columns: DISPLAY_COLUMNS"
+          [class.folder-row]="row.item_type === 'folder'"
+        ></tr>
+      </table>
+      <div class="my-2 table-control mode-1">
+        <div class="pagination-wrapper m-auto" [class.invisible]="filteredItems.length < pageSize.id">
+          <pagination-controls
+            id="templates"
+            maxSize="5"
+            previousLabel=""
+            nextLabel=""
+            (pageChange)="changePage($event)"
+            (pageBoundsCorrection)="changePage($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div
+          *ngIf="filteredItems.length > PAGE_COUNTS[0].id"
+          class="shadow-dropdown ml-auto page-size-control"
+          ngbDropdown
+          placement="top-right"
+        >
+          <div
+            class="v-center c-pointer f-3 p-3 font-weight-bold"
+            ngbDropdownToggle
+          >
+            <span
+              [attr.data-name]="'template-list-pagesize'"
+              class="pr-2 c-blue"
+              translate
+              [translateParams]="{ count: pageSize.id }"
+            >
+              pagination
+            </span>
+          </div>
+          <div ngbDropdownMenu aria-labelledby="contactPageSize">
+            <div
+              class="py-2"
+              ngbDropdownItem
+              *ngFor="let type of PAGE_COUNTS"
+              (click)="changePageSize(type)"
+              [attr.data-name]="'template-list-pagesize-' + type.label"
+            >
+              <span
+                class="f-3 v-center"
+                [class.font-weight-bold]="type.id === pageSize.id"
+              >
+                <span translate [translateParams]="{ count: type.label }">
+                  pagination
+                </span>
+                <i
+                  class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                  *ngIf="type.id === pageSize.id"
+                ></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty & Loading View -->
+    <ng-container *ngIf="!filteredItems.length">
+      <div class="empty-list py-5" *ngIf="!isLoading; else loadingTemplate">
+        <div class="object-icon v-center">
+          <i class="i-icon i-template d-block bgc-dark"></i>
+        </div>
+        <h4 class="font-weight-bold mt-4 mb-3" translate>empty_template_list</h4>
+      </div>
+      <ng-template #loadingTemplate>
+        <div class="list-loading text-center">
+          <div class="loader mt-5 lg"></div>
+          <h4 class="fw-600 mt-2" translate>Loading templates...</h4>
+        </div>
+      </ng-template>
+    </ng-container>
+  </div>
+</div>
+<mat-drawer-container [hasBackdrop]="true">
+  <mat-drawer #drawer position="end">
+    <div class="p-4c panel">
+      <div class="v-center mb-3">
+        <h4 class="font-weight-bold mb-0 title" translate>Advanced Filter</h4>
+        <div class="c-blue f-1 text-uppercase ml-2 mt-2 c-pointer" (click)="clearFilterOptions()">Clear All Filters</div>
+        <button class="v-center border-0 bgc-trans ml-auto" type="button" (click)="drawer.toggle()">
+          <i class="d-block i-icon i-close bgc-dark"></i>
+        </button>
+      </div>
+      <app-resource-filters
+        [mode]="FilterMode.TEAM"
+        [teamOptions]="filterParam.teamOptions"
+        [typeOptions]="filterParam.typeOptions"
+        [resourTypes]="FILTER_TYPES"
+        (onChangeTeamOptions)="onChangeTeamOptions($event)"
+        (onChangeTypeOptions)="onChangeTypeOptions($event)"
+      >
+      </app-resource-filters>
+    </div>
+  </mat-drawer>
+</mat-drawer-container>

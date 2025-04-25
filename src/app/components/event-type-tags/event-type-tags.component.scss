@@ -1,0 +1,12 @@
+@import "variables";
+
+textarea {
+    background-color: $color-wheat;
+    resize: none;
+    &.form-control {
+        &:focus {
+            background-color: $color-wheat;
+            color: $color-dark;
+        }
+    }
+}

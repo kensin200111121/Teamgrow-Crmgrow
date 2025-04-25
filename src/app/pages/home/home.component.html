@@ -1,0 +1,42 @@
+<div class="page-content bg-white">
+  <ng-container *ngIf="isSspa; else normalTemplate">
+    <div class="v-center mb-3">
+      <h1 class="page-title" translate>Welcome</h1>
+      <h3 class="mb-0">, </h3>
+      <h5 class="mb-0 pl-3">{{user_name}}</h5>
+    </div>
+    <div
+      *ngIf="onboardingService.pendingStepCount"
+      class="onboarding-banner-container"
+    >
+      <span class="banner-description">
+        <i class="d-block i-icon i-warning-gray bgc-dark"></i>
+        You've completed <span class="banner-count">{{ onboardingService.skippedOrCompletedStepCount }}</span> out of <span class="banner-count">{{ onboardingService.totalStepCount }}</span> steps of your setup checklist
+      </span>
+      <button class="banner-button" (click)="openOnbording($event)">
+        Continue
+      </button>
+    </div>
+    <div>
+      <app-overview></app-overview>
+    </div>
+  </ng-container>
+  <ng-template #normalTemplate>
+    <div class="v-center mb-3">
+      <h1 class="page-title" translate>Dashboard</h1>
+    </div>
+    <div class="page-header mb-2">
+      <app-slide-tab [tabs]="tabs" [selected]="selectedTab" (onChange)="changeTab($event)" type="plain" class="border-bottom pl-0 rounded-0">
+      </app-slide-tab>
+    </div>
+    <div>
+      <ng-container *ngIf="selectedTab.id === 'overview'">
+        <app-overview (changeTab)="changeTab($event)"></app-overview>
+      </ng-container>
+      <app-activities [class.d-none]="selectedTab.id !== 'activities'"></app-activities>
+      <ng-container *ngIf="selectedTab.id === 'reports'">
+        <app-analytics-dashboard></app-analytics-dashboard>
+      </ng-container>
+    </div>
+  </ng-template>
+</div>

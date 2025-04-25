@@ -1,0 +1,87 @@
+<h1 mat-dialog-title class="m-0" translate>
+  Add phone number
+</h1>
+<mat-dialog-content>
+  <div class="form-group my-4">
+    <div>
+      <div class="f-4" translate>Which local area code are you looking for?</div>
+      <div class="row">
+        <div class="col-12 search-phone-wrapper v-center mt-2">
+          <i class="i-icon i-search d-block bgc-dark" (click)="searchPhone()"></i>
+          <div class="flag-container" ngbDropdown>
+            <div ngbDropdownToggle class="v-center c-pointer no-carot">
+              <div class="iti__flag" [ngClass]="selectedCountry?.flagClass"></div>
+              <div class="selected-dial-code f-3 mx-1">+{{selectedCountry?.dialCode}}</div>
+              <div class="iti__arrow"></div>
+            </div>
+            <div ngbDropdownMenu class="countries-wrapper p-0">
+              <div class="dropdown-item c-pointer" *ngFor="let country of COUNTRIES" (click)="onCountrySelect(country, control)">
+                <div class="v-center">
+                  <div class="iti__flag" [ngClass]="country.flagClass"></div>
+                  <div class="iti__label mx-1">{{country.name}}</div>
+                  <div class="dial-code op-75 f-3">+{{country.dialCode}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="searchCode"
+            name="search-phone"
+            id="search-phone"
+            maxlength="3"
+            placeholder="e.g.123"
+            (keyup.enter)="searchPhone()"
+            cdkFocusInitial
+          />
+        </div>
+      </div>
+      <div class="phones-container mt-2">
+        <ng-container *ngIf="loading; else phones">
+          <div class="list-loading text-center">
+              <div class="loader mt-5 lg"></div>
+              <h4 class="fw-600 mt-2" translate>Loading ...</h4>
+          </div>
+        </ng-container>
+        <ng-template #phones>
+          <ng-container *ngIf="phoneNumbers?.length > 0; else empty">
+            <div class="phone-wrapper v-center mb-1" *ngFor="let phone of phoneNumbers; let i = index">
+              <div class="custom-radio-container mr-3" (click)="selectPhone(phone.number)">
+                <input class="custom-radio" type="radio" [id]="'select-phone-' + i" [name]="'select-phone-' + i" [checked]="isSelected(phone.number)">
+                <label class="f-6 font-weight-bold"></label>
+              </div>
+              <div class="v-center ml-4 mt-3 c-pointer" (click)="selectPhone(phone.number)">
+                <i class="i-icon i-phone d-block bgc-dark"></i>
+                <div class="ml-2">
+                  <div class="f-3 font-weight-bold">{{phone.number}}</div>
+                  <div class="f-3">{{phone.locality}}, {{phone.region}}</div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #empty>
+            <div class="empty-list py-5">
+              <div class="object-icon v-center">
+                  <i class="i-icon i-information d-block bgc-dark"></i>
+              </div>
+              <h4 class="text-center font-weight-bold mt-4 mb-3" translate>
+                There are no phone numbers.
+              </h4>
+            </div>
+          </ng-template>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <div class="f-4 c-dark mt-4" translate>
+    <ng-container *ngIf="type == 'edit'"  translate>
+      By initiating a phone number change and clicking YES, you are agreeing to a one time charge of $9.99.
+    </ng-container>
+    Please feel free to search and choose a third party number to use for your sms texting within your account.
+  </div>  
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button [attr.data-action]="'sms-change-phone-cancel'" class="btn btn-white font-weight-bold" mat-dialog-close translate>Cancel</button>
+  <button [attr.data-action]="'sms-change-phone-save'" class="btn btn-primary f-6 font-weight-bold px-3 ml-2" [class.loading]="saving" (click)="save()" translate>Save</button>
+</mat-dialog-actions>

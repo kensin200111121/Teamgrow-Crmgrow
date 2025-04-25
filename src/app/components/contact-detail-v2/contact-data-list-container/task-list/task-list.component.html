@@ -1,0 +1,132 @@
+<div class="data-section-content">
+  <ng-scrollbar visibility="hover">
+    <div class="w-full mb-1 px-3" *ngFor="let task of tasks">
+      <div
+        class="task-summary task-automation v-center justify-content-between"
+      >
+        <div class="v-center">
+          <div class="d-flex align-items-center object-icon mr-2">
+            <i
+              class="act-icon act-{{
+                task.task_original_type || task.type
+              }}s d-block"
+            ></i>
+          </div>
+          <a
+            class="task-type v-center c-pointer"
+            [routerLink]="task.detail_page"
+          >
+            {{ task.task_type }}
+          </a>
+        </div>
+        <div class="v-center">
+          <span class="f-3 op-56 ml-auto">
+            {{ task.created_at | datetimeFormat }}
+          </span>
+          <div
+            *ngIf="!isPending"
+            ngbDropdown
+            class="button-more p-1 rounded contact-action-btn"
+            placement="bottom-right"
+          >
+            <a
+              class="d-flex c-pointer no-carot"
+              ngbDropdownToggle
+            >
+              <i
+                class="i-icon i-menu-more bg-dark"
+                aria-hidden="true"
+              ></i>
+            </a>
+            <div ngbDropdownMenu class="light py-1">
+              <button
+                class="v-center border-0 py-1 c-dark dropdown-item"
+                (click)="removeScheduleItem(task)"
+              >
+                <i
+                  class="i-icon i-trash bgc-dark ml-1"
+                  aria-hidden="true"
+                ></i>
+                <span class="ml-3 f-2 font-weight-bold" translate
+                  >Delete</span
+                >
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-1">
+        <span
+          class="ml-1 f-6 font-weight-bold c-dark"
+          *ngIf="
+            task.task_original_type == 'email' ||
+            task.type == 'email'
+          "
+        >
+          ({{ task?.action?.subject }})
+        </span>
+        <div class="task-info">
+          <ng-container
+            *ngIf="!mores[task._id]; else fullContent"
+          >
+            <div class="d-block">
+              <span
+                class="f-6 c-dark"
+                [innerHTML]="
+                  task?.action?.content || ''
+                    | stripTags
+                    | shorten: 200:'...'
+                "
+              ></span>
+              <a
+                class="more ml-2 mt-1 f-3 c-pointer"
+                (click)="mores[task._id] = true"
+                translate
+                >More</a
+              >
+            </div>
+          </ng-container>
+          <ng-template #fullContent>
+            <div class="d-block">
+              <span
+                class="f-6 c-dark"
+                [innerHTML]="task.action ? task.action.content : task.campaign.content"
+              ></span>
+              <a
+                class="more ml-2 mt-1 f-3 c-pointer fw-600"
+                (click)="mores[task._id] = false"
+                translate
+                >Less</a
+              >
+            </div>
+          </ng-template>
+        </div>
+        <div class="d-flex align-items-start mt-1">
+          <div class="mr-2">
+            <div class="v-center">
+              <i
+                class="d-block i-icon i-calendar bgc-dark mr-2"
+              ></i>
+              <span class="f-4 c-dark">
+                {{ task.due_date | date: 'MMM/d/y' }}
+                at
+                {{ task.due_date | date: 'h:mm a' }}
+              </span>
+            </div>
+          </div>
+          <div class="ml-2 d-flex" *ngIf="task.recurrence_mode">
+            <div
+              class="f-4 font-weight-bold c-dark op-40"
+              translate
+            >
+              Recurrence
+            </div>
+            <div class="f-4 c-dark">
+              {{ task.recurrence_mode }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-scrollbar>
+</div>

@@ -1,0 +1,115 @@
+:host ::ng-deep {
+  .dropdown-menu {
+    padding: 0;
+    min-width: 8rem;
+  }
+
+  .picker-body {
+    ngb-datepicker {
+      border: none;
+      background-color: white;
+      .ngb-dp-header,
+      .ngb-dp-weekdays {
+        background-color: white;
+        border-bottom: none;
+      }
+      .ngb-dp-weekday {
+        color: #101336;
+        font-style: normal;
+        font-size: 13px;
+        font-weight: bold;
+      }
+      .ngb-dp-day {
+        &:focus {
+          outline: unset;
+        }
+      }
+    }
+    .custom-select {
+      background: none;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      text-align-last: center;
+      color: #101336;
+      &:focus {
+        box-shadow: none;
+      }
+    }
+    .btn-light {
+      color: #101336;
+      font-size: 13px;
+    }
+    .ngb-dp-navigation-chevron {
+      border-bottom: 6px solid #101336;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      transform: none;
+      width: 0;
+      height: 0;
+      border-top-width: 0;
+    }
+    .ngb-dp-arrow {
+      transform: rotate(-90deg);
+      margin-top: 2px;
+    }
+    .ngb-dp-arrow.right {
+      transform: rotate(90deg);
+    }
+    .ngb-dp-arrow-btn:focus {
+      outline-width: 0;
+    }
+  }
+  .dropdown-toggle::after {
+    display: none;
+  }
+}
+
+:host ::ng-deep {
+  .new-contacts-wrapper {
+    .custom-mat-field .mat-form-field-flex {
+      padding: 0 0.25em 0.25em;
+    }
+    .custom-mat-field
+      .mat-form-field-appearance-outline
+      .mat-form-field-outline:not(.mat-form-field-outline-thick) {
+      display: none;
+    }
+    .custom-mat-field .mat-form-field-appearance-outline .mat-form-field-infix {
+      padding: 0px !important;
+    }
+  }
+  .custom-control {
+    min-height: 40px;
+  }
+  .time-zone {
+    mat-form-field {
+      width: 100%;
+      .mat-form-field-wrapper {
+        padding: 0;
+        .mat-form-field-infix {
+          width: 100%;
+          padding: 0;
+          border: none;
+          .mat-select-trigger {
+            padding-top: 4px;
+          }
+        }
+        .mat-form-field-underline {
+          height: 0;
+          span {
+            height: 0 !important;
+          }
+        }
+      }
+    }
+  }
+
+  .time-wrapper {
+    mat-form-field {
+      .mat-form-field-wrapper {
+        max-width: unset;
+      }
+    }
+  }
+}

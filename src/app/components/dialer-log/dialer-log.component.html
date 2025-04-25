@@ -1,0 +1,60 @@
+<div class="v-center justify-content-between">
+  <h3 mat-dialog-title class="m-0 f-20" style="font-size: 20px;" translate>
+    Save the call history
+  </h3>
+  <button class="v-center border-0 bgc-trans" mat-dialog-close>
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</div>
+<mat-dialog-content>
+  <div class="history-list-wrapper">
+    <!-- {{ log | json }} -->
+    <div class="v-center mt-2">
+      <div class="font-weight-bold">{{log.name}}</div>      
+      <span *ngIf="log.duration" class="op-75 fw-600 ml-2">{{log.duration * 1000 | timeDuration}}</span>
+      <span class="op-75 fw-600 f-0 ml-1" translate>{{log.outcome}}</span>
+    </div>
+
+    <div class="form-group rate-form mt-2">
+      <label class="d-block mb-0" translate>Call status</label>
+      <div style="display: flex;">
+        <mat-select [(ngModel)]="log.label" name="contact-country" #callLabelSelector>
+          <mat-select-trigger>
+            {{log.label}}
+          </mat-select-trigger>
+          <mat-option style="height: unset; line-height: unset;" [disabled]="true">
+            <a class="py-2 text-primary f-2 v-center border rounded mt-2 mb-2 px-2 td-none c-pointer manage-label" (click)="openCallLabelManager(log, callLabelSelector)">
+              <i class="i-icon i-setting bgc-blue mr-1 sm"></i>
+              <span class="c-blue fw-600" translate>Create new status</span>
+            </a>
+          </mat-option>
+          <mat-option *ngFor="let label of (userService.callLabels$ | async)" [value]="label">
+            <div class="d-flex chip py-2">
+              <div class="info">
+                <span style="width: inherit;">{{label}}</span><a class="c-pointer v-center" *ngIf="is_editable(label)" (click)="edit($event, callLabelSelector, label)">
+                  <i class="i-icon i-edit d-block bgc-dark"></i>
+                </a>
+              </div>
+            </div>
+          </mat-option>
+        </mat-select>
+      </div>
+    </div>
+
+    <div class="form-group mt-2">
+      <label class="d-block mb-0" translate>Call note</label>
+      <textarea
+        [(ngModel)]="log.content"
+        class="form-control mb-2"
+        [placeholder]="'call_note_placeholder' | translate"
+        rows="3"
+        required
+      >
+      </textarea>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button class="btn btn-white f-6 font-weight-bold c-blue mr-2" (click)="close()" translate>Cancel</button>
+  <button class="btn btn-blue f-6 font-weight-bold text-white" (click)="update()" cdkFocusInitial [class.loading]="saving" translate>Save</button>
+</mat-dialog-actions>

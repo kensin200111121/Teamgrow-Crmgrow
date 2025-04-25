@@ -1,0 +1,65 @@
+@import 'variables';
+
+
+.sms-token {
+  .dropdown-menu {
+      background: white;
+      border: 1px solid gainsboro;
+      padding: 0px 0px;
+      border-radius: 4px;
+      box-shadow: 0px 0px 6px #bbb8;
+      width: 280px;
+      max-height: 250px;
+      overflow: auto;
+
+      .dropdown-item {
+          padding: 4px 6px;
+          border-top: 1px solid gainsboro;
+          cursor: pointer;
+          min-height: 36px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          i {
+              width: 14px;
+              height: 14px;
+              min-width: 14px;
+          }
+      }
+  }
+  .dropdown-toggle {
+      &:after {
+          content: none;
+      }
+  }
+  .emoji-icon {
+      width: 24px;
+  }
+  .dropdown-toggle {
+      .i-triangle-up {
+          display: none !important;
+      }
+      .i-triangle-down, .i-triangle-up {
+          width: 8px !important;
+          height: 8px !important;
+          min-width: 8px !important;
+      }
+  }
+  &.show {
+      .dropdown-toggle {
+          .i-triangle-down {
+              display: none !important;
+          }
+          .i-triangle-up {
+              display: block !important;
+          }
+      }
+  }
+  .menu-item:hover {
+      background-color: gainsboro;
+  }
+  .menu-item:active {
+      background-color: blue;
+      color: white;
+  }
+}

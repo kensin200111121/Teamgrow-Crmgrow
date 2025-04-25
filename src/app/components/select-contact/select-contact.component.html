@@ -1,0 +1,55 @@
+<div class="custom-mat-field mat-select-wrapper">
+  <mat-form-field style="display: block;" appearance="outline" #formField>
+    <mat-select [formControl]="formControl" placeholder="{{ placeholder | translate }}" #selector
+      [disableOptionCentering]="true">
+      <mat-select-trigger>
+        <ng-container *ngIf="formControl.value">
+          <ng-container *ngIf="resultItemTemplate; else defaultResult" [ngTemplateOutlet]="resultItemTemplate"
+            [ngTemplateOutletContext]="{ $implicit: formControl.value }">
+          </ng-container>
+          <ng-template #defaultResult>
+            <div class="chip d-flex justify-content-between align-items-center">
+              <div class="v-center">
+                <div class="form-avatar rounded-circle bg-dark mr-1">{{formControl.value.avatarName}}</div>
+                <div class="info">
+                  <div class="f-4">{{formControl.value.fullName}}</div>
+                </div>
+              </div>
+              <div (click)="cancelSelect()">
+                <i class="d-block i-icon i-close bgc-dark"></i>
+              </div>
+            </div>
+          </ng-template>
+        </ng-container>
+      </mat-select-trigger>
+      <mat-option>
+        <ngx-mat-select-search [formControl]="inputControl" [searching]="searching" [placeholderLabel]="formPlaceholder | translate"
+          [disableScrollToActiveOnOptionsChanged]="true"
+          noEntriesFoundLabel="{{ 'There is no searched results' | translate }}" preventHomeEndKeyPropagation="true">
+        </ngx-mat-select-search>
+      </mat-option>
+      <mat-option *ngFor="let item of filteredResults | async" [value]="item"
+        style="height: unset; line-height: unset;">
+        <div class="d-flex chip py-2">
+          <div class="form-avatar rounded-circle bg-dark mr-3 mt-1">{{ item.avatarName }}</div>
+          <div class="info">
+            <div class="f-5 font-weight-bold">{{ item.fullName }}</div>
+            <div class="f-2">{{ item['email'] || ('Undefined' | translate) }}</div>
+            <div class="f-2">{{ item['cell_phone'] || ('Undefined' | translate) }}</div>
+          </div>
+        </div>
+      </mat-option>
+      <mat-option *ngIf="(filteredResults | async)?.length && hasMore" [disabled]="true">
+        <div class="d-flex v-center justify-content-center more-button-container p-2" (click)="loadMore()"
+          [class.c-pointer]="!loadingMore">
+          <div class="v-center">
+            <i class="small-spinner" *ngIf="loadingMore"></i>
+            <i class="d-block i-icon sm i-plus bgc-blue" *ngIf="!loadingMore"></i>
+            <span class="f-2 font-weight-bold c-blue">&nbsp;</span>
+            <span class="f-2 font-weight-bold c-blue ml-2" translate>Load more</span>
+          </div>
+        </div>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

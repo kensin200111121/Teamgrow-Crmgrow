@@ -1,0 +1,132 @@
+<div class="appointments-detail">
+  <div class="v-center justify-content-between mb-3">
+    <div class="v-center">
+      <div class="history-icon mr-1">
+        <i class="act-icon act-appointments"></i>
+      </div>
+      <div class="d-flex v-center">
+        <span class="text-capitalize">{{ activity.activityOverView.content }}</span>
+        <ng-container *ngIf="activity?.activityOverView?.user">
+          <app-contact-action-user [user]="activity.activityOverView.user"></app-contact-action-user>
+        </ng-container>
+      </div>
+    </div>
+    <div class="v-center ml-auto">
+      <span class="f-3 op-56">
+        {{ activity.activityOverView.created_at | datetimeFormat }}
+      </span>
+      <div *ngIf="!isPending" ngbDropdown class="button-more p-1 rounded contact-action-btn" placement="bottom-right">
+        <a class="d-flex c-pointer no-carot" ngbDropdownToggle>
+          <i class="i-icon i-menu-more bg-dark" aria-hidden="true"></i>
+        </a>
+        <div ngbDropdownMenu class="light py-1">
+          <button class="v-center border-0 py-1 c-dark dropdown-item" (click)="openAppointmentDlg(activity)">
+            <i class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i>
+            <span class="ml-3 f-2 font-weight-bold" translate>Edit</span>
+          </button>
+          <button class="v-center border-0 py-1 c-dark dropdown-item" (click)="
+                                removeActivity(activity)
+                                ">
+            <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+            <span class="ml-3 f-2 font-weight-bold" translate>Delete activity</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="collapsed" *ngIf="!isExpanded">
+    <div class="f-6">
+      <span>{{ activity.action?.title }}</span>
+    </div>
+    <span class="appointment-content" [innerHTML]="activity.action?.description || ''
+                                  | stripTags
+                                  | removeEntity
+                                  | shorten: 300:'...'
+                                  | makeRedirect
+                              "></span>
+    <a class="more f-3 mt-3 c-pointer fw-600 d-block w-fit" (click)="expandMoreDetail()" translate>Expand</a>
+  </div>
+  <div class="expanded" *ngIf="isExpanded">
+    <button class="btn c-blue appointment-loading" [class.loading]="detailLoading"></button>
+    <div class="f-6">
+      <span>{{ activity.action?.title }}</span>
+    </div>
+    <ng-container *ngIf="!!activity.action?.description">
+      <div class="appointment-content" [innerHTML]="activity.action?.description || '' | makeRedirect
+                    ">
+      </div>
+    </ng-container>
+    <a class="more f-3 mt-2 c-pointer fw-600 d-block w-fit" (click)="hideMoreDetail()" translate>Collapse</a>
+  </div>
+  <div class="v-center mt-3">
+    <div class="date">
+      <div class="f-4 fw-600 op-40">Date</div>
+      <div class="v-center mt-1">
+        <i class="d-block i-icon i-calendar bgc-dark mr-1"></i>
+        <span class="f-4">{{
+          activity.action?.due_start | datetimeFormat : 'MMM DD, YYYY'
+          }}</span>
+      </div>
+    </div>
+    <div class="time ml-5">
+      <div class="f-4 fw-600 op-40">Time</div>
+      <div class="v-center mt-1">
+        <span class="f-4">{{
+          activity.action?.due_start | datetimeFormat : 'hh:mm a'
+          }}</span>
+      </div>
+    </div>
+    <div class="time ml-5">
+      <div class="f-4 fw-600 op-40">Duration</div>
+      <div class="v-center mt-1">
+        <i class="d-block i-icon i-timer bgc-dark mr-1"></i>
+        <span class="f-4">{{
+          getTime(
+          activity.action?.due_start,
+          activity.action?.due_end
+          )
+          }}</span>
+      </div>
+    </div>
+    <div class="location ml-5" *ngIf="
+                  activity.action?.location
+                  ">
+      <div class="f-4 fw-600 op-40" translate>
+        Location
+      </div>
+      <div class="v-center mt-1">
+        <i class="d-block i-icon i-location bgc-dark mr-1"></i>
+        <span class="f-4">{{
+          activity.action?.location
+          }}</span>
+      </div>
+    </div>
+    <div class="recurrence ml-5" *ngIf="
+                  activity.action?.recurrence
+                  ">
+      <div class="f-3 fw-600 op-40">
+        {{ 'Recurrence' | translate }}
+      </div>
+      <div class="v-center mt-1">
+        <i class="d-block i-icon i-calendar-recurrence bgc-dark mr-2"></i>
+        <span class="f-3">{{
+          activity.action?.recurrence
+          }}</span>
+      </div>
+    </div>
+  </div>
+  <ng-container *ngIf="
+            activity.action?.zoom_link
+            ">
+    <div class="mt-4">
+      <div class="f-4 fw-600 op-40" translate>
+        Zoom meeting
+      </div>
+      <div class="f-4 c-blue mt-1">
+        {{
+        activity.action?.zoom_link
+        }}
+      </div>
+    </div>
+  </ng-container>
+</div>

@@ -1,0 +1,38 @@
+<div class="d-flex conversation" [class.completed]="isCompleted">
+  <div class="name ml-0 d-flex align-items-center c-pointer" (click)="openContact(contact)">
+    <div class="contact-avatar f-3 mr-2">
+      {{ contact.avatarName }}
+    </div>
+    <div>
+      {{ contact.fullName }}
+      <div *ngIf="contact.email" class="f-2 op-64">{{ contact.email }}</div>
+    </div>
+  </div>
+  <div class="buckets">
+    <ng-container *ngIf="bucket">
+      <span [class]="'score score-' + bucket.score">
+        {{ bucket.name }}
+      </span>
+    </ng-container>
+  </div>
+  <div class="referrral">
+    <span class="score vip">{{ SCORES[contact.action_score] }}</span>
+  </div>
+  <div class="phone">
+    <div *ngIf="contact.cell_phone">{{ contact.cell_phone | phone_format }}</div>
+  </div>
+  <div *ngIf="type !== 'first'" class="contact-at">
+    {{ lastContactAt | datetimeFormat : 'y MMM DD' }} <br/>
+    <ng-container *ngIf="isMissed">
+      <span class="c-red font-weight-bold f-2">MISSED</span>
+    </ng-container>
+  </div>
+  <div class="action mr-0">
+    <ng-container *ngFor="let action of actions">
+      <a class="action-btn" (click)="doAction(action)">
+        <i [class]="'i-icon d-block i-' + action"></i>
+      </a>  
+    </ng-container>
+    <a class="mark-btn ml-2" (click)="markAsComplete()">Mark as Completed</a>
+  </div>
+</div>

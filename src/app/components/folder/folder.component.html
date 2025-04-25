@@ -1,0 +1,50 @@
+<form
+  #form="ngForm"
+  (ngSubmit)="form.form.valid ? save() : false"
+  [class.was-validated]="form.submitted"
+  class="general"
+>
+  <h1 mat-dialog-title class="v-center d-flex">
+    <span translate>{{
+      folder._id || folders.length ? 'Rename folder' : 'Create New Folder'
+    }}</span>
+    <button class="border-0 bgc-trans ml-auto" mat-dialog-close>
+      <i class="d-block i-icon i-close bgc-dark"></i>
+    </button>
+  </h1>
+  <mat-dialog-content>
+    <div class="form-group">
+      <div class="v-center">
+        <label for="folder_name" class="mb-0" translate>{{
+          folder._id || folders.length ? 'Name' : 'folder name'
+        }}</label>
+        <span class="error ml-auto" *ngIf="name.errors">
+          <ng-container *ngIf="name.errors.required" translate
+            >Required!</ng-container
+          >
+        </span>
+      </div>
+      <div class="input-div">
+        <input
+          [attr.data-name]="'material-folder-name'"
+          style="border: none;"
+          type="text"
+          class="form-control"
+          id="folder_name"
+          name="name"
+          #name="ngModel"
+          [(ngModel)]="folder.title"
+          required
+          cdkFocusInitial
+        />
+        <i class="i-icon i-close d-block bgc-black remove-i" (click)="removeInput()"></i>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button class="btn" mat-dialog-close translate>Cancel</button>
+    <button class="btn btn-primary" [class.loading]="saving" [attr.data-action]="'material-folder-create-save'" translate>
+      {{ folder._id || folders.length ? 'Update' : 'Submit' }}
+    </button>
+  </mat-dialog-actions>
+</form>

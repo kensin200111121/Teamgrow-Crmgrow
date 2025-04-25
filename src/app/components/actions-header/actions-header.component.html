@@ -1,0 +1,95 @@
+<div class="actions-header v-center c-blue">
+  <ng-container *ngFor="let action of showActions; let i = index" [ngSwitch]="action.type">
+    <ng-container *enableByFeatures="action.feature">
+      <ng-container *ngIf="!hasProp(action, 'spliter') || (hasProp(action, 'spliter') && action.spliter)">
+        <div *ngSwitchCase="'button'"
+            [attr.data-name]="'material-action-item-' + action.label"
+            class="action-item c-pointer v-center"
+            [class.disable]="isDisableAction(action)"
+            (click)="runCommand(action)"
+        >
+          <ng-container *ngIf="action.loading; else normalTemplate">
+            <i class="small-spinner"></i>
+            <span class="f-2 font-weight-bold ml-1" translate>{{action.loadingLabel || action.label}}</span>
+          </ng-container>
+          <ng-template #normalTemplate>
+            <i class="i-icon bgc-blue d-block mr-1" [ngClass]="[action.icon, iconSize]" *ngIf="action.icon"></i>
+            <span id="task-action-header-items-{{i}}" class="f-2 font-weight-bold" translate>{{action.label}}</span>
+          </ng-template>
+        </div>
+      </ng-container>
+      <div *ngSwitchCase="'toggle'" class="v-center action-item c-pointer" [class.disable]="isDisableAction(action)">
+        <label class="custom-toggle mb-0" placement="top">
+          <input type="checkbox" (change)="runCommand(action)" [checked]="action.status">
+          <span class="custom-toggle-slider rounded-circle"></span>
+        </label>
+        <span class="ml-1 f-2 font-weight-bold" translate>{{action.label}}</span>
+      </div>
+      <div *ngSwitchCase="'dropdown'" class="action-item c-pointer" [class.disable]="isDisableAction(action)" ngbDropdown>
+        <div ngbDropdownToggle>
+          <i class="i-icon mr-1" [ngClass]="[action.icon, iconSize]" *ngIf="action.icon"></i>
+          <span class="f-2 font-weight-bold" translate>{{action.label}}</span>
+        </div>
+        <div ngbDropdownMenu class="light">
+          <div class="dropdown-item c-dark" *ngFor="let item of action.items" [class]="item.class" (click)="runCommand(item)" translate>
+            {{item.label}}
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+  <div class="action-item c-pointer" ngbDropdown *ngIf="moreActions.length" #moreDrop="ngbDropdown" placement="bottom-start">
+    <div [attr.data-name]="'material-action-item-More'" ngbDropdownToggle>
+      <span class="f-2 font-weight-bold" translate>More</span>
+    </div>
+    <div ngbDropdownMenu class="light">
+      <ng-container *ngFor="let action of moreActions" [ngSwitch]="action.type">
+        <ng-container *enableByFeatures="action.feature">
+          <div [attr.data-name]="'material-action-item-More-' + action.label" class="dropdown-item c-dark"
+              [class.disable]="isDisableAction(action)"
+              *ngSwitchCase="'button'"
+              (click)="runCommand(action, true)">
+            <div class="inline action-item c-pointer v-center">
+              <div class="d-flex">
+                <ng-container *ngIf="action.loading; else normalMoreTemplate">
+                  <i class="small-spinner mr-1"></i>
+                  <span class="f-2 font-weight-bold" translate>{{action.loadingLabel || action.label}}</span>
+                </ng-container>
+                <ng-template #normalMoreTemplate>
+                  <i class="i-icon bgc-blue d-block mr-1" [ngClass]="[action.icon, iconSize]" *ngIf="action.icon"></i>
+                  <span class="f-2 font-weight-bold" translate>{{action.label}}</span>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+          <div class="dropdown-item c-dark" *ngSwitchCase="'toggle'" [class.disable]="isDisableAction(action)">
+            <div class="inline v-center action-item c-pointer">
+              <div class="d-flex">
+                <label class="custom-toggle mb-0" placement="top">
+                  <input type="checkbox" (change)="runCommand(action, true)" [checked]="action.status">
+                  <span class="custom-toggle-slider rounded-circle"></span>
+                </label>
+                <span class="ml-1 f-2 font-weight-bold" translate>{{action.label}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="dropdown-item c-dark" *ngSwitchCase="'dropdown'" [class.disable]="isDisableAction(action)">
+            <div *ngSwitchCase="'dropdown'" class="inline action-item c-pointer" ngbDropdown>
+              <div class="d-flex">
+                <div ngbDropdownToggle>
+                  <i class="i-icon mr-1" [ngClass]="[action.icon, iconSize]" *ngIf="action.icon"></i>
+                  <span class="f-2 font-weight-bold" translate>{{action.label}}</span>
+                </div>
+                <div ngbDropdownMenu class="light">
+                  <div class="dropdown-item c-dark" *ngFor="let item of action.items" [class]="item.class" (click)="runCommand(item, true)" translate>
+                    {{item.label}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>  
+      </ng-container>
+    </div>
+  </div>
+</div>

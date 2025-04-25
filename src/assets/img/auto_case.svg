@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="44" viewBox="0 0 40 44">
+  <g>
+    <path fill="rgb(0,180,96)" fill-rule="evenodd" d="M3 0h34c1.65574507 0 3 1.34425493 3 3v14c0 1.65574507-1.34425493 3-3 3H3c-1.65574507 0-3-1.34425493-3-3V3c0-1.65574507 1.34425493-3 3-3z"/>
+    <text font-size="0" style="white-space:pre">
+      <tspan x="11" y="12" fill="rgb(255,255,255)" font-family="Arial" font-size="9" font-weight="400" style="white-space:pre;text-transform:uppercase">yes</tspan>
+    </text>
+    <path fill="rgb(255,19,49)" fill-rule="evenodd" d="M3 24h34c1.65574507 0 3 1.34425493 3 3v14c0 1.65574507-1.34425493 3-3 3H3c-1.65574507 0-3-1.34425493-3-3V27c0-1.65574507 1.34425493-3 3-3z"/>
+    <text font-size="0" style="white-space:pre">
+      <tspan x="13" y="36" fill="rgb(255,255,255)" font-family="Arial" font-size="9" font-weight="400" style="white-space:pre;text-transform:uppercase">no</tspan>
+    </text>
+  </g>
+</svg>

@@ -1,0 +1,63 @@
+textarea {
+  padding-right: 26px;
+  min-height: 100px;
+}
+
+.close-action {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  padding: 4px;
+  background: #dcdcdceb;
+  border-radius: 4px;
+}
+
+.message-box-list-1 .close-action {
+  display: none;
+}
+
+.submitted .ng-invalid + .error {
+    display: block;
+}
+
+.description-box {
+  position: relative;
+
+  .error {
+    position: absolute;
+    right: 8px;
+    bottom: 10px;
+  }
+}
+
+.message-box {
+  position: relative;
+
+  .error {
+    position: absolute;
+    bottom: 18px;
+    right: 8px;
+  }
+}
+
+.description {
+  font-size: 14px;
+  background: rgb(235, 244, 255);
+  padding: 8px;
+  border-radius: 6px;
+  margin: 8px 0px;
+}
+
+label a, .description a {
+  color: blue;
+  font-weight: 600;
+  margin-left: 8px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+:host ::ng-deep {
+  .popover {
+    max-width: unset;
+  }
+}

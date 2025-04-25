@@ -1,0 +1,89 @@
+.main-view {
+  display: flex;
+  position: relative;
+}
+
+.preview-side {
+  min-width: 350px;
+  max-width: 350px;
+  border-left: 1px solid gainsboro;
+
+  @media screen and (max-width: 1024px) {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    z-index: 994;
+    background-color: white;
+    box-shadow: -8px 16px 24px 8px rgb(0 0 0 / 24%);
+  }
+}
+
+.navigation-side {
+  min-width: 240px;
+
+  @media screen and (max-width: 1024px) {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    z-index: 993;
+    transform: translateX(-300px);
+    transition: all .2s;
+
+    &.opened {
+      transform: translateX(0px)
+    }
+  }
+}
+
+.main-area {
+  flex-grow: 1;
+}
+
+.open-nav {
+  display: none;
+}
+
+@media screen and (max-width: 1024px) {
+  .open-nav {
+    left: 8px;
+    position: absolute;
+    top: 8px;
+    display: block;
+  }
+}
+
+:host ::ng-deep {
+  @media screen and (max-width: 1024px) {
+    .main-area .table-control-header {
+      margin-left: 24px;
+    }
+  }
+
+  .page-table thead tr.table-header th {
+    top: -2rem;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.tab {
+  font-size: 14px;
+  color: #4d4d4d;
+  font-weight: 400;
+  padding-bottom: 8px;
+  margin-bottom: -2px;
+}
+
+.selected {
+  color: #066FD3;
+  font-weight: 700;
+  border-bottom: 2px solid #066FD3;
+}
+
+.tab-container {
+  width: 100%;
+  border-bottom: 1px solid #E6E6E6;
+}

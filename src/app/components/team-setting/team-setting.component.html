@@ -1,0 +1,91 @@
+<div class="v-center justify-content-between">
+  <h1 mat-dialog-title class="m-0" translate>Community Setting</h1>
+  <button class="v-center border-0 bgc-trans" mat-dialog-close>
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</div>
+<form (ngSubmit)="submitted = true; save()">
+  <mat-dialog-content>
+    <div class="mt-5 mb-3 ml-4 setting-panel">
+      <div class="v-center justify-content-between">
+        <div class="f-4" translate>Public</div>
+        <label class="custom-toggle mb-0">
+          <input
+            type="checkbox"
+            name="public"
+            [checked]="is_public"
+            (change)="setPrivate()"
+          />
+          <span class="custom-toggle-slider rounded-circle"></span>
+        </label>
+      </div>
+      <div class="v-center justify-content-between my-3">
+        <div class="f-4" translate>View member list</div>
+        <label class="custom-toggle mb-0">
+          <input
+            type="checkbox"
+            name="member"
+            [checked]="team_setting.viewMembers"
+            (change)="setTeamSetting('viewMembers')"
+          />
+          <span class="custom-toggle-slider rounded-circle"></span>
+        </label>
+      </div>
+      <div class="v-center justify-content-between my-3">
+        <div class="f-4" translate>Send community invites</div>
+        <label class="custom-toggle mb-0">
+          <input
+            type="checkbox"
+            name="invite"
+            (change)="setTeamSetting('requestInvite')"
+            [checked]="team_setting.requestInvite"
+          />
+          <span class="custom-toggle-slider rounded-circle"></span>
+        </label>
+      </div>
+      <div class="v-center justify-content-between my-3">
+        <div class="f-4" translate>Re-share content</div>
+        <label class="custom-toggle mb-0">
+          <input
+            type="checkbox"
+            name="share"
+            (change)="setTeamSetting('shareMaterial')"
+            [checked]="team_setting.shareMaterial"
+          />
+          <span class="custom-toggle-slider rounded-circle"></span>
+        </label>
+      </div>
+      <div class="v-center justify-content-between my-3">
+        <div class="f-4" translate>Source download</div>
+        <label class="custom-toggle mb-0">
+          <input
+            type="checkbox"
+            name="download"
+            (change)="setTeamSetting('downloadMaterial')"
+            [checked]="team_setting.downloadMaterial"
+          />
+          <span class="custom-toggle-slider rounded-circle"></span>
+        </label>
+      </div>      
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button
+      class="btn btn-white f-6 font-weight-bold mr-2"
+      type="button"
+      mat-dialog-close
+      translate
+    >
+      Cancel
+    </button>
+    <button
+      [attr.data-action]="'community-setting-save'"
+      class="btn btn-primary f-6 font-weight-bold"
+      type="submit"
+      [class.loading]="saving"
+      translate
+    >
+      Save
+    </button>
+  </mat-dialog-actions>
+</form>

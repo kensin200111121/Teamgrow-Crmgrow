@@ -1,0 +1,1469 @@
+<ng-container *ngIf="isShowAutomationGraph(fullNode); else normalView">
+  <div class="graph-container">
+    <div class="v-center justify-content-between">
+      <h1 mat-dialog-title class="f-6 font-weight-bold m-0">{{fullNode.label}}</h1>
+      <span class="mr-2 c-pointer ml-auto" (click)="expand(fullNode['automation_id'])" *ngIf="type != 'view' && !loadingTimelines"><i class="i-icon i-expand d-block bgc-black"></i></span>
+      <span class="mr-2 c-pointer" (click)="update()" *ngIf="type != 'view' && !loadingTimelines"><i class="i-icon i-edit d-block bgc-blue"></i></span>
+      <span class="c-pointer" (click)="remove()" *ngIf="type != 'view' && !loadingTimelines"><i class="i-icon i-trash d-block bgc-red"></i></span>
+    </div>
+    <div class="f-1 font-weight-bold text-uppercase op-56">Title</div>
+    <div class="f-3 mt-1 mb-2">{{automation?.title}}</div>
+    <div class="mt-2">
+      <div class="f-1 font-weight-bold text-uppercase op-56">time delay</div>
+      <div class="f-3 mt-1">{{fullNode.period | duration}}</div>
+    </div>
+    <div class="card-body mt-2">
+      <div class="flows-container" #wrapper>
+        <div class="zoom-button-wrapper">
+          <button class="v-center justify-content-center btn btn-white font-weight-bold"
+                  [class.disabled]="zoomLevel <= 0.4 || !nodes.length"
+                  (click)="zoomOut()"
+          >
+            <i class="i-icon i-zoom-out"
+               [class.bgc-blue]="zoomLevel >= 0.4 && nodes.length"
+               [class.bgc-grey]="zoomLevel < 0.4 || !nodes.length"
+            ></i>
+          </button>
+          <button class="v-center justify-content-center btn btn-white font-weight-bold"
+                  [class.disabled]="zoomLevel > 1.5 || !nodes.length"
+                  (click)="zoomIn()"
+          >
+            <i class="i-icon i-zoom-in"
+               [class.bgc-blue]="zoomLevel <= 1.5 && nodes.length"
+               [class.bgc-grey]="zoomLevel > 1.5 || !nodes.length"
+            ></i>
+          </button>
+        </div>
+        <div class="count-container">
+          <div class="actions-count">
+            <label class="f-1 text-uppercase">Actions</label>
+            <div class="content actions">
+              <p class="count font-weight-bold">{{automation && automation.automations.length ? automation.automations.length : 0}}</p>
+            </div>
+          </div>
+        </div>
+        <ng-container *ngIf="!nodes.length; else flowTemplate">
+          <div class="init-graph-container">
+            <ngx-graph class="chart-container init-container" [links]="initEdges" [nodes]="initNodes"
+                       [layoutSettings]="layoutSettings" [layout]="layout" [curve]="curve" [draggingEnabled]="false"
+                       [panningEnabled]="false" [view]="[300, 200]">
+              <ng-template #nodeTemplate let-node>
+                <svg:g class="node">
+                  <svg:rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height"
+                            fill="transparent" />
+                </svg:g>
+              </ng-template>
+            </ngx-graph>
+          </div>
+        </ng-container>
+
+        <ng-template #flowTemplate>
+          <ngx-graph class="chart-container" [links]="edges" [nodes]="nodes" [layoutSettings]="layoutSettings"
+                     [autoCenter]="autoCenter" [panToNode$]="panToNode$" [layout]="layout" [curve]="curve" [center$]="center$" [draggingEnabled]="false"
+                     [autoZoom]="autoZoom" [minZoomLevel]="0.4" [maxZoomLevel]="1.5" [zoomSpeed]="0.1" [zoomLevel]="zoomLevel" [animate]="true" [enableZoom]="true" #graphWrapper>
+            <ng-template #defsTemplate>
+              <svg:marker id="arrow" viewBox="0 0 20 20" refX="20" refY="10" markerWidth="8" markerHeight="8"
+                          orient="auto">
+                <circle cx="10" cy="10" r="10" stroke="green" stroke-width="0" fill="gray" />
+              </svg:marker>
+              <svg:pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+                <svg:path d="M-1,1 l2,-2
+                         M0,4 l4,-4
+                         M3,5 l2,-2" style="stroke:#eee; stroke-width:1" />
+              </svg:pattern>
+            </ng-template>
+
+            <ng-template #nodeTemplate let-node>
+              <svg:g class="node" *ngIf="node.category === 'NORMAL'">
+                <svg:rect [attr.width]="node.dimension.width" [attr.height]="node.leaf ? 200 : 110"
+                          fill="transparent" />
+                <svg:foreignObject width="200" [attr.height]="node.leaf ? 200 : 110">
+                  <xhtml:div class="cardContainer c-pointer"
+                             #treeNode
+                             (click)="easyView($event, node, treeNode, treeOverlay)"
+                             style="text-align: center; position: relative; padding: 3px;"
+                             xmlns="http://www.w3.org/1999/xhtml">
+                    <img [attr.src]="ICONS[node.type]" x="75" y="0" height="50px" width="50px" />
+                  </xhtml:div>
+                  <ng-container *ngIf="node.leaf; else leafNode">
+                    <xhtml:div class="cardContainer"
+                               style="background-color: transparent; padding: 5px 8px 20px 8px; margin-bottom: 15px; text-align: center;"
+                               xmlns="http://www.w3.org/1999/xhtml">
+                      <label class="name" style="margin: 0; font-size: 14px; font-weight: bold;">{{node.label}}</label>
+                      <ng-container *ngIf="node.type === 'contact_condition'">
+                        <label class="name" style="margin: 0; margin-left: 3px; font-size: 11px;">({{node.condition_field}})</label>
+                      </ng-container>
+                      <ng-container *ngIf="fullNode['no_timelines']; else hasTimelines">
+                        <label class="name" style="margin: 0; font-size: 11px; color: #f28422; display: block;">{{node.period | duration}}</label>
+                      </ng-container>
+                      <ng-template #hasTimelines>
+                        <label class="name {{node.status}} text-uppercase"
+                               style="margin: 0; font-size: 11px; display: block;"
+                               *ngIf="showStatus(node)"
+                        >
+                          {{node.status}}
+                        </label>
+                      </ng-template>
+                    </xhtml:div>
+                  </ng-container>
+                  <ng-template #leafNode>
+                    <xhtml:div class="cardContainer"
+                               style="background-color: transparent; text-align: center;"
+                               xmlns="http://www.w3.org/1999/xhtml">
+                      <label class="name" style="margin: 0; font-size: 14px; font-weight: bold;">{{node.label}}</label>
+                      <ng-container *ngIf="node.type === 'contact_condition'">
+                        <label class="name" style="margin: 0; margin-left: 3px; font-size: 11px;">({{node.condition_field}})</label>
+                      </ng-container>
+                      <ng-container *ngIf="fullNode['no_timelines']; else hasTimelines">
+                        <label class="name" style="margin: 0; font-size: 11px; color: #f28422; display: block;">{{node.period | duration}}</label>
+                      </ng-container>
+                      <ng-template #hasTimelines>
+                        <label class="name {{node.status}} text-uppercase"
+                               style="margin: 0; font-size: 11px; display: block;"
+                               *ngIf="showStatus(node)"
+                        >
+                          {{node.status}}
+                        </label>
+                      </ng-template>
+                      <ng-container *ngIf="hasMultipleBranch(node)">
+                        <img [src]="sspaService.toAsset('img/automations/branch.png')"
+                             style="margin-top: -22px; transform: rotate(180deg)" height="20px" width="20px"
+                        />
+                      </ng-container>
+                    </xhtml:div>
+                  </ng-template>
+                  <ng-container *ngIf="node.leaf">
+                    <xhtml:div
+                      style="background-color: transparent; border-left: 2px dashed #aaa; width: 2px; height: 30px; margin-top: -15px; margin-left: auto; margin-right: auto;"
+                      xmlns="http://www.w3.org/1999/xhtml">
+                    </xhtml:div>
+                    <xhtml:div class="cardContainer"
+                               style="margin-bottom: 5px; margin-top: 5px; text-align: center;"
+                               xmlns="http://www.w3.org/1999/xhtml">
+                      <img [src]="sspaService.toAsset('img/automations/automation_start.svg')" x="75" y="0" height="42px"
+                           width="42px" />
+                    </xhtml:div>
+                  </ng-container>
+                </svg:foreignObject>
+              </svg:g>
+              <svg:g class="node" *ngIf="node.category === 'CONDITION'">
+                <ng-container *ngIf="node.type === 'contact_condition'; else normalCondition">
+                  <svg:rect [attr.width]="node.dimension.width" [attr.height]="40"
+                            fill="transparent" />
+                  <svg:foreignObject width="140" [attr.height]="40" style="overflow: visible">
+                    <xhtml:div class="contact-condition-case"
+                               xmlns="http://www.w3.org/1999/xhtml"
+                               *ngIf="node.condition && node.condition.case !== 'else'"
+                    >
+                      <label class="name" style="margin: 0; font-size: 12px; font-weight: bold;">{{getContactConditionLabel(node)}}</label>
+                    </xhtml:div>
+                    <xhtml:div class="contact-condition-case else"
+                               xmlns="http://www.w3.org/1999/xhtml"
+                               *ngIf="node.condition && node.condition.case === 'else'"
+                    >
+                      <label class="name" style="margin: 0; font-size: 12px; font-weight: bold;">ELSE</label>
+                    </xhtml:div>
+                    <ng-container *ngIf="node.leaf">
+                      <xhtml:div
+                        style="background-color: transparent; border-left: 2px dashed #aaa; width: 2px; height: 30px; margin-top: -15px; margin-left: auto; margin-right: auto;"
+                        xmlns="http://www.w3.org/1999/xhtml">
+                      </xhtml:div>
+                      <xhtml:div class="cardContainer c-pointer"
+                                 style="margin-bottom: 5px; margin-top: 5px; text-align: center;"
+                                 xmlns="http://www.w3.org/1999/xhtml">
+                        <img [src]="sspaService.toAsset('img/automations/automation_start.svg')" x="75" y="0" height="42px"
+                             width="42px" />
+                      </xhtml:div>
+                    </ng-container>
+                  </svg:foreignObject>
+                </ng-container>
+                <ng-template #normalCondition>
+                  <svg:rect [attr.width]="node.dimension.width" [attr.height]="40"
+                            fill="transparent" />
+                  <svg:foreignObject width="140" [attr.height]="40" style="overflow: visible">
+                    <xhtml:div [class.trueCase]="node.condition.answer" [class.falseCase]="!node.condition.answer"
+                               xmlns="http://www.w3.org/1999/xhtml">
+                      <ng-container *ngIf="node.label == 'YES'; else falseCase">
+                        <label class="name" style="margin: 0; font-size: 12px; font-weight: bold;">{{'YES' | translate}}</label>
+                      </ng-container>
+                      <ng-template #falseCase>
+                        <label class="name" style="margin: 0; font-size: 12px; font-weight: bold;">{{'NO' | translate}}</label>
+                      </ng-template>
+                    </xhtml:div>
+                    <ng-container *ngIf="node.leaf">
+                      <xhtml:div
+                        style="background-color: transparent; border-left: 2px dashed #aaa; width: 2px; height: 30px; margin-top: -15px; margin-left: auto; margin-right: auto;"
+                        xmlns="http://www.w3.org/1999/xhtml">
+                      </xhtml:div>
+                      <xhtml:div class="cardContainer"
+                                 style="margin-bottom: 5px; margin-top: 5px; text-align: center;"
+                                 xmlns="http://www.w3.org/1999/xhtml">
+                        <img [src]="sspaService.toAsset('img/automations/automation_start.svg')" x="75" y="0" height="42px"
+                          width="42px" />
+                      </xhtml:div>
+                    </ng-container>
+                  </svg:foreignObject>
+                </ng-template>
+              </svg:g>
+            </ng-template>
+            <ng-template #linkTemplate let-link>
+              <svg:g class="edge">
+                <svg:path class="line {{link.status}}" stroke="#aaa" stroke-width="2" marker-start="url(#arrow)">
+                </svg:path>
+              </svg:g>
+              <svg:g class="label" *ngIf="link.hasLabel && link.points && link.points[0]" [attr.transform]="'translate(' + (link.points[0].x - 40) + ',' + (link.points[0].y + 40) + ')'">
+                <svg:rect [attr.width]="90" [attr.height]="60"
+                          fill="transparent" />
+                <svg:foreignObject width="90" [attr.height]="60">
+                  <xhtml:div class="caseLabel"
+                             style="background-color: transparent; text-align: center;"
+                             xmlns="http://www.w3.org/1999/xhtml">
+                    <label class="name" style="margin-top: 20px; margin-bottom: 0px; font-size: 14px;">{{CASE_ACTIONS[link.type]}}</label>
+                  </xhtml:div>
+                </svg:foreignObject>
+              </svg:g>
+            </ng-template>
+          </ngx-graph>
+        </ng-template>
+        <!--  -->
+      </div>
+    </div>
+    <ng-template #treeOverlay let-close="close" let-data>
+      <app-automation-detail-overlay
+        [fullDataSource]="data.data"
+        [type]="'view'"
+        [automationType]="automation_type"
+        [disableOverlay]="true"
+        class="second-overlay"
+        [class]="data.data && data.data.type != 'automation' ? 'side' : ''"
+      >
+      </app-automation-detail-overlay>
+    </ng-template>
+  </div>
+</ng-container>
+<ng-template #normalView>
+  <div class="tree-overlay">
+    <ng-container *ngIf="type == 'view' || type == 'edit'; else easyTemplate">
+      <div class="v-center justify-content-between">
+        <h1 mat-dialog-title class="f-6 font-weight-bold m-0">{{fullNode.label}}</h1>
+        <span class="mr-2 c-pointer ml-auto" (click)="update()" *ngIf="type != 'view' && !loadingTimelines"><i class="i-icon i-edit d-block bgc-blue"></i></span>
+        <span class="c-pointer" (click)="remove()" *ngIf="type != 'view' && !loadingTimelines"><i class="i-icon i-trash d-block bgc-red"></i></span>
+      </div>
+      <div class="automation-detail mt-2">
+        <div class="mb-2" *ngIf="isShowAssignAt(fullNode)">
+          <div class="f-1 font-weight-bold text-uppercase op-56" translate>Assign at</div>
+          <div class="f-3 mt-1">{{getAssignAt(fullNode.group)}}</div>
+        </div>
+        <ng-container [ngSwitch]="fullNode.type">
+          <div *ngSwitchCase="'send_email_video'">
+            <div class="v-center thumb-prev-wrapper video">
+              <a href="{{siteUrl}}/video/{{fullNodeParsedInfo?.material._id}}" target="_blank">
+                <img [src]="fullNodeParsedInfo?.material.thumbnail" class="thumbnail"/>
+                <img [src]="fullNodeParsedInfo?.material.preview" class="preview"/>
+              </a>
+              <span class="f-3 font-weight-bold ml-2">
+                            {{fullNodeParsedInfo?.material.title}}
+                        </span>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+              <div class="f-3 mt-1">{{fullNode.subject}}</div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity | shorten: 170: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity}}</div>
+            </div>
+            <div class="read-more text-right mt-1" *ngIf="(fullNodeParsedInfo.content | stripTags | removeEntity).length > 170">
+                        <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                            See more
+                        </span>
+              <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                            See less
+                        </span>
+            </div>
+          </div>
+          <div *ngSwitchCase="'send_text_video'">
+            <div class="v-center thumb-prev-wrapper video">
+              <a href="{{siteUrl}}/video/{{fullNodeParsedInfo?.material._id}}" target="_blank">
+                <img [src]="fullNodeParsedInfo?.material.thumbnail" class="thumbnail"/>
+                <img [src]="fullNodeParsedInfo?.material.preview" class="preview"/>
+              </a>
+              <span class="f-3 font-weight-bold ml-2">
+                            {{fullNodeParsedInfo?.material.title}}
+                        </span>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity | shorten: 170: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity}}</div>
+            </div>
+            <div class="read-more text-right mt-1" *ngIf="(fullNodeParsedInfo.content | stripTags | removeEntity).length > 170">
+                        <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                            See more
+                        </span>
+              <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                            See less
+                        </span>
+            </div>
+          </div>
+          <div *ngSwitchCase="'send_email_pdf'">
+            <div class="v-center thumb-prev-wrapper">
+              <a href="{{siteUrl}}/pdf/{{fullNodeParsedInfo?.material._id}}" target="_blank">
+                <img [src]="fullNodeParsedInfo?.material.preview" class="thumbnail"/>
+              </a>
+              <span class="f-3 font-weight-bold ml-2">
+                            {{fullNodeParsedInfo?.material.title}}
+                        </span>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+              <div class="f-3 mt-1">{{fullNode.subject}}</div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity | shorten: 170: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity}}</div>
+            </div>
+            <div class="read-more text-right mt-1" *ngIf="(fullNodeParsedInfo.content | stripTags | removeEntity).length > 170">
+                        <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                            See more
+                        </span>
+              <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                            See less
+                        </span>
+            </div>
+          </div>
+          <div *ngSwitchCase="'send_text_pdf'">
+            <div class="v-center thumb-prev-wrapper">
+              <a href="{{siteUrl}}/pdf/{{fullNodeParsedInfo?.material._id}}" target="_blank">
+                <img [src]="fullNodeParsedInfo?.material.preview" class="thumbnail"/>
+              </a>
+              <span class="f-3 font-weight-bold ml-2">
+                            {{fullNodeParsedInfo?.material.title}}
+                        </span>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity | shorten: 170: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity}}</div>
+            </div>
+            <div class="read-more text-right mt-1" *ngIf="(fullNodeParsedInfo.content | stripTags | removeEntity).length > 170">
+                        <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                            See more
+                        </span>
+              <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                            See less
+                        </span>
+            </div>
+          </div>
+          <div *ngSwitchCase="'send_email_image'">
+            <div class="v-center thumb-prev-wrapper">
+              <a href="{{siteUrl}}/image/{{fullNodeParsedInfo?.material._id}}" target="_blank">
+                <img [src]="fullNodeParsedInfo?.material.preview" class="thumbnail"/>
+              </a>
+              <span class="f-3 font-weight-bold ml-2">
+                            {{fullNodeParsedInfo?.material.title}}
+                        </span>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+              <div class="f-3 mt-1">{{fullNode.subject}}</div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity | shorten: 170: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity}}</div>
+            </div>
+            <div class="read-more text-right mt-1" *ngIf="(fullNodeParsedInfo.content | stripTags | removeEntity).length > 170">
+                        <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                            See more
+                        </span>
+              <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                            See less
+                        </span>
+            </div>
+          </div>
+          <div *ngSwitchCase="'send_text_image'">
+            <div class="v-center thumb-prev-wrapper">
+              <a href="{{siteUrl}}/image/{{fullNodeParsedInfo?.material._id}}" target="_blank">
+                <img [src]="fullNodeParsedInfo?.material.preview" class="thumbnail"/>
+              </a>
+              <span class="f-3 font-weight-bold ml-2">
+                            {{fullNodeParsedInfo?.material.title}}
+                        </span>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity | shorten: 170: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity}}</div>
+            </div>
+            <div class="read-more text-right mt-1" *ngIf="(fullNodeParsedInfo.content | stripTags | removeEntity).length > 170">
+                        <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                            See more
+                        </span>
+              <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                            See less
+                        </span>
+            </div>
+          </div>
+          <div *ngSwitchCase="'send_email_material'">
+            <ng-container *ngIf="fullNodeParsedInfo?.previewType == 'video'">
+              <div class="v-center thumb-prev-wrapper video">
+                <a href="{{siteUrl}}/video/{{fullNodeParsedInfo?.material._id}}" target="_blank">
+                  <img [src]="fullNodeParsedInfo?.material.thumbnail" class="thumbnail"/>
+                  <img [src]="fullNodeParsedInfo?.material.preview" class="preview"/>
+                </a>
+                <span class="f-3 font-weight-bold ml-2">
+                              {{fullNodeParsedInfo?.material.title}}
+                          </span>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="fullNodeParsedInfo?.previewType == 'pdf'">
+              <div class="v-center thumb-prev-wrapper pdf">
+                <a href="{{siteUrl}}/pdf/{{fullNodeParsedInfo?.material._id}}" target="_blank">
+                  <img [src]="fullNodeParsedInfo?.material.preview" class="preview"/>
+                </a>
+                <span class="f-3 font-weight-bold ml-2">
+                              {{fullNodeParsedInfo?.material.title}}
+                          </span>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="fullNodeParsedInfo?.previewType == 'image'">
+              <div class="v-center thumb-prev-wrapper image">
+                <a href="{{siteUrl}}/image/{{fullNodeParsedInfo?.material._id}}" target="_blank">
+                  <img [src]="fullNodeParsedInfo?.material.preview" class="preview"/>
+                </a>
+                <span class="f-3 font-weight-bold ml-2">
+                              {{fullNodeParsedInfo?.material.title}}
+                          </span>
+              </div>
+            </ng-container>
+            <div class="d-flex">
+              <div class="v-center mt-3 material-more px-1 py-0 mx-auto"
+                   *ngIf="fullNodeParsedInfo?.videoCount ||
+                                fullNodeParsedInfo?.pdfCount ||
+                                fullNodeParsedInfo?.imageCount
+                          ">
+                <div class="v-center mx-1 my-1" *ngIf="fullNodeParsedInfo?.videoCount > 0"
+                     [translateParams]="{total: fullNodeParsedInfo?.videoCount}" translate
+                >
+                  <i class="d-block i-icon act-videos mr-1"></i>
+                  autoflow.total_videos
+                </div>
+                <div class="v-center mx-1 my-1" *ngIf="fullNodeParsedInfo?.pdfCount > 0"
+                     [translateParams]="{total: fullNodeParsedInfo?.pdfCount}" translate
+                >
+                  <i class="d-block i-icon act-pdfs mr-1"></i>
+                  autoflow.total_pdfs
+                </div>
+                <div class="v-center mx-1 my-1" *ngIf="fullNodeParsedInfo?.imageCount > 0"
+                     [translateParams]="{total: fullNodeParsedInfo?.imageCount}" translate
+                >
+                  <i class="d-block i-icon act-images mr-1"></i>
+                  autoflow.total_images
+                </div>
+              </div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+              <div class="f-3 mt-1">{{fullNode.subject}}</div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity | shorten: 170: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity}}</div>
+            </div>
+            <div class="read-more text-right mt-1" *ngIf="(fullNodeParsedInfo.content | stripTags | removeEntity).length > 170">
+                          <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                              See more
+                          </span>
+              <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                              See less
+                          </span>
+            </div>
+          </div>
+          <div *ngSwitchCase="'send_text_material'">
+            <ng-container *ngIf="fullNodeParsedInfo?.previewType == 'video'">
+              <div class="v-center thumb-prev-wrapper video">
+                <a href="{{siteUrl}}/video/{{fullNodeParsedInfo?.material._id}}" target="_blank">
+                  <img [src]="fullNodeParsedInfo?.material.thumbnail" class="thumbnail"/>
+                  <img [src]="fullNodeParsedInfo?.material.preview" class="preview"/>
+                </a>
+                <span class="f-3 font-weight-bold ml-2">
+                                {{fullNodeParsedInfo?.material.title}}
+                            </span>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="fullNodeParsedInfo?.previewType == 'pdf'">
+              <div class="v-center thumb-prev-wrapper pdf">
+                <a href="{{siteUrl}}/pdf/{{fullNodeParsedInfo?.material._id}}" target="_blank">
+                  <img [src]="fullNodeParsedInfo?.material.preview" class="preview"/>
+                </a>
+                <span class="f-3 font-weight-bold ml-2">
+                                {{fullNodeParsedInfo?.material.title}}
+                            </span>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="fullNodeParsedInfo?.previewType == 'image'">
+              <div class="v-center thumb-prev-wrapper image">
+                <a href="{{siteUrl}}/image/{{fullNodeParsedInfo?.material._id}}" target="_blank">
+                  <img [src]="fullNodeParsedInfo?.material.preview" class="preview"/>
+                </a>
+                <span class="f-3 font-weight-bold ml-2">
+                                {{fullNodeParsedInfo?.material.title}}
+                            </span>
+              </div>
+            </ng-container>
+            <div class="d-flex">
+              <div class="v-center mt-3 material-more px-1 py-0 mx-auto"
+                   *ngIf="fullNodeParsedInfo?.videoCount ||
+                                fullNodeParsedInfo?.pdfCount ||
+                                fullNodeParsedInfo?.imageCount
+                          ">
+                <div class="v-center mx-1 my-1" *ngIf="fullNodeParsedInfo?.videoCount > 0"
+                     [translateParams]="{total: fullNodeParsedInfo?.videoCount}" translate
+                >
+                  <i class="d-block i-icon act-videos mr-1"></i>
+                  autoflow.total_videos
+                </div>
+                <div class="v-center mx-1 my-1" *ngIf="fullNodeParsedInfo?.pdfCount > 0"
+                     [translateParams]="{total: fullNodeParsedInfo?.pdfCount}" translate
+                >
+                  <i class="d-block i-icon act-pdfs mr-1"></i>
+                  autoflow.total_pdfs
+                </div>
+                <div class="v-center mx-1 my-1" *ngIf="fullNodeParsedInfo?.imageCount > 0"
+                     [translateParams]="{total: fullNodeParsedInfo?.imageCount}" translate
+                >
+                  <i class="d-block i-icon act-images mr-1"></i>
+                  autoflow.total_images
+                </div>
+              </div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity | shorten: 170: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity}}</div>
+            </div>
+            <div class="read-more text-right mt-1" *ngIf="(fullNodeParsedInfo.content | stripTags | removeEntity).length > 170">
+                            <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                                See more
+                            </span>
+              <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                                See less
+                            </span>
+            </div>
+          </div>
+          <div *ngSwitchCase="'email'">
+            <div>
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+              <div class="f-3 mt-1">{{fullNode.subject}}</div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56">content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity | shorten: 170: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity}}</div>
+            </div>
+            <div class="read-more text-right mt-1" *ngIf="(fullNodeParsedInfo.content | stripTags | removeEntity).length > 170">
+                        <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                            See more
+                        </span>
+              <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                            See less
+                        </span>
+            </div>
+          </div>
+          <div *ngSwitchCase="'text'">
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity | shorten: 170: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity}}</div>
+            </div>
+            <div class="read-more text-right mt-1" *ngIf="(fullNodeParsedInfo.content | stripTags | removeEntity).length > 170">
+                            <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                                See more
+                            </span>
+              <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                                See less
+                            </span>
+            </div>
+          </div>
+          <div *ngSwitchCase="'deal'">
+            <div>
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Name</div>
+              <div class="f-3 mt-1">{{fullNode.deal_name}}</div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Stage</div>
+              <div class="f-3 mt-1">{{getDealStageName(fullNode.deal_stage)}}</div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'move_deal'">
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Stage</div>
+              <div class="f-3 mt-1" *ngIf="fullNode.deal_stage">{{getDealStageName(fullNode.deal_stage)}}</div>
+              <div class="f-3 mt-1" *ngIf="!fullNode.deal_stage" translate>Next Stage</div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'follow_up'">
+            <div>
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNode.content | stripTags | removeEntity | shorten: 170: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNode.content | stripTags | removeEntity}}</div>
+            </div>
+            <div class="read-more text-right mt-1" *ngIf="(fullNode.content | stripTags | removeEntity).length > 170">
+                        <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                            See more
+                        </span>
+              <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                            See less
+                        </span>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>description</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">
+                {{fullNode?.description ? (fullNode.description | stripTags | removeEntity | shorten: 170: '...') : ''}}
+              </div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">
+                {{fullNode?.description ? (fullNode.description | stripTags | removeEntity) : ''}}
+              </div>
+            </div>
+            <div class="read-more text-right mt-1" *ngIf="fullNode.description && fullNode.description.length > 170">
+                        <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                            See more
+                        </span>
+              <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                            See less
+                        </span>
+            </div>
+            <div class="mt-2" *ngIf="fullNode.due_date">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>date</div>
+              <div class="f-3 mt-1">{{fullNode.due_date | date: 'MMM dd yyyy, hh:mm a'}}</div>
+            </div>
+            <div class="mt-2" *ngIf="fullNode.due_duration">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>duration</div>
+              <div class="f-3 mt-1">{{getDuration(fullNode.due_duration)}}</div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'update_follow_up'">
+            <div *ngIf="fullNode.command == 'update_follow_up'">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+              <div class="f-3 mt-1" translate>Update follow up</div>
+            </div>
+            <div *ngIf="fullNode.command == 'complete_follow_up'">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+              <div class="f-3 mt-1" translate>Complete follow up</div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity | shorten: 170: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity}}</div>
+            </div>
+            <div class="read-more text-right mt-1" *ngIf="(fullNodeParsedInfo.content | stripTags | removeEntity).length > 170">
+                        <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                            See more
+                        </span>
+              <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                            See less
+                        </span>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>description</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">
+                {{fullNode?.description ? (fullNode.description | stripTags | removeEntity | shorten: 170: '...') : ''}}
+              </div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">
+                {{fullNode?.description ? (fullNode.description | stripTags | removeEntity) : ''}}
+              </div>
+            </div>
+            <div class="read-more text-right mt-1" *ngIf="((fullNode?.description || '') | stripTags | removeEntity).length > 170">
+                        <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                            See more
+                        </span>
+              <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                            See less
+                        </span>
+            </div>
+            <div class="mt-2" *ngIf="fullNode.task_type">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>task type</div>
+              <div class="f-3 mt-1">{{fullNode.task_type}}</div>
+            </div>
+            <div *ngIf="fullNode.command == 'update_follow_up'">
+              <div class="mt-2" *ngIf="fullNode.due_date">
+                <div class="f-1 font-weight-bold text-uppercase op-56" translate>update date</div>
+                <div class="f-3 mt-1">{{fullNode.due_date | datetimeFormat : 'y MMM d, HH:mm:ss'}}</div>
+              </div>
+              <div class="mt-2" *ngIf="fullNode.due_duration">
+                <div class="f-1 font-weight-bold text-uppercase op-56" translate>update duration</div>
+                <div class="f-3 mt-1">{{getDuration(fullNode.due_duration)}}</div>
+              </div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'note'">
+            <div>
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <ng-container *ngIf="fullNodeParsedInfo.content">
+                <div class="f-3 mt-1" *ngIf="!isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity | shorten: 170: '...'}}</div>
+                <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNodeParsedInfo.content | stripTags | removeEntity}}</div>
+                <div class="read-more text-right mt-1" *ngIf="(fullNodeParsedInfo.content | stripTags | removeEntity).length > 170">
+                        <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                            See more
+                        </span>
+                  <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                            See less
+                        </span>
+                </div>
+              </ng-container>
+            </div>
+            <div class="mt-1">
+              <app-audio-note
+                [url]="fullNode.audio"
+                [readOnly]="true"
+                #recorder
+                *ngIf="fullNode.audio"
+              >
+              </app-audio-note>
+            </div>
+          </div>
+          <div *ngSwitchCase="'update_contact'">
+            <ng-container
+              *ngIf="isActionCommandEnabled(fullNode, 0)"
+            >
+              <div>
+                <div class="f-1 font-weight-bold text-uppercase op-56" translate>command</div>
+                <div class="f-3 mt-1" translate>Update label</div>
+              </div>
+              <div class="mt-2">
+                <div class="f-1 font-weight-bold text-uppercase op-56" translate>label</div>
+                <ng-container *ngFor="let item of labelService.labels$ | async">
+                  <div class="v-center f-3 fw-600 mt-1" *ngIf="fullNodeParsedInfo.content && fullNodeParsedInfo.content[0] == item._id">
+                    <i class="i-icon i-label d-block mr-2" [style.backgroundColor]="item.color === '#FFF' ? '#000' : item.color"></i>
+                    <span>{{item.name}}</span>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+            <ng-container
+              *ngIf="isActionCommandEnabled(fullNode, 1)"
+            >
+              <div>
+                <div class="f-1 font-weight-bold text-uppercase op-56" translate>command</div>
+                <div class="f-3 mt-1" translate>Insert tags</div>
+              </div>
+              <div class="mt-2">
+                <div class="f-1 font-weight-bold text-uppercase op-56" translate>tags</div>
+                <div class="f-3 mt-1">
+                                <span class="tag-el" *ngFor="let tag of fullNodeParsedInfo.content[1]">
+                                    {{tag}}
+                                </span>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container
+              *ngIf="isActionCommandEnabled(fullNode, 2)"
+            >
+              <div>
+                <div class="f-1 font-weight-bold text-uppercase op-56" translate>command</div>
+                <div class="f-3 mt-1" translate>Remove tags</div>
+              </div>
+              <div class="mt-2">
+                <div class="f-1 font-weight-bold text-uppercase op-56" translate>tags</div>
+                <div class="f-3 mt-1">
+                                <span class="tag-el" *ngFor="let tag of fullNodeParsedInfo.content[2]">
+                                    {{tag}}
+                                </span>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <div *ngSwitchCase="'appointment'">
+            <div>
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Calendar</div>
+              <div class="f-3">{{fullNode.appointment.calendar.account}} ({{fullNode.appointment.calendar.title}})</div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Title</div>
+              <div class="f-3">{{fullNode.appointment.title}}</div>
+            </div>
+            <div class="mt-2" *ngIf="fullNode.due_date">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>date</div>
+              <div class="f-3">{{fullNode.due_date | date: 'MMM dd yyyy, hh:mm a'}}</div>
+            </div>
+            <div class="mt-2" *ngIf="fullNode.due_duration">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>duration</div>
+              <div class="f-3">{{fullNode.due_duration + ' HOURS'}}</div>
+            </div>
+            <div class="mt-2" *ngIf="fullNode.appointment.duration">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Duration</div>
+              <div class="f-3">{{getCalendarDuration(fullNode.appointment.duration)}}</div>
+            </div>
+            <div class="mt-2" *ngIf="fullNode.appointment.location">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Location</div>
+              <div class="v-center">
+                <span class="mr-2"><i class="i-icon i-location d-block bgc-blue"></i></span>
+                <div class="f-3 font-weight-bold text-primary" [innerHtml]="fullNode.appointment.location || '' | linkify"></div>
+              </div>
+            </div>
+            <div class="mt-2" *ngIf="fullNode.appointment.description">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Description</div>
+              <div class="f-3 description" [innerHTML]="fullNode.appointment.description || '' | linkify"></div>
+            </div>
+            <div class="mt-2" *ngIf="fullNode.appointment.contacts">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Contacts</div>
+              <div class="v-center">
+                <div class="v-center chip p-1">
+                  <div class="form-avatar rounded-circle bg-dark mr-1">
+                    {{getContact(fullNode.appointment.contacts[0]).avatarName}}
+                    <div class="response {{getContact(fullNode.appointment.contacts[0]).response}}"
+                         *ngIf="getContact(fullNode.appointment.contacts[0]).response"></div>
+                  </div>
+                  <div class="info">
+                    <div class="f-2 font-weight-bold">{{getContact(fullNode.appointment.contacts[0]).fullName}}</div>
+                    <div class="f-1">{{getContact(fullNode.appointment.contacts[0])['email']}}</div>
+                  </div>
+                </div>
+                <div class="f-3 font-weight-bold ml-3" *ngIf="fullNode.appointment.contacts.length > 1">
+                  +{{fullNode.appointment.contacts.length - 1}}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'update_appointment'">
+            <div>
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Title</div>
+              <div class="f-3">{{fullNode.appointment.title}}</div>
+            </div>
+            <div class="mt-2" *ngIf="fullNode.due_date">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>date</div>
+              <div class="f-3">{{fullNode.due_date | date: 'MMM dd yyyy, hh:mm a'}}</div>
+            </div>
+            <div class="mt-2" *ngIf="fullNode.due_duration">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>duration</div>
+              <div class="f-3">{{fullNode.due_duration + ' HOURS'}}</div>
+            </div>
+            <div class="mt-2" *ngIf="fullNode.appointment.duration">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Duration</div>
+              <div class="f-3">{{getCalendarDuration(fullNode.appointment.duration)}}</div>
+            </div>
+            <div class="mt-2" *ngIf="fullNode.appointment.location">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Location</div>
+              <div class="v-center">
+                <span class="mr-2"><i class="i-icon i-location d-block bgc-blue"></i></span>
+                <div class="f-3 font-weight-bold text-primary" [innerHtml]="fullNode.appointment.location || '' | linkify"></div>
+              </div>
+            </div>
+            <div class="mt-2" *ngIf="fullNode.appointment.description">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Description</div>
+              <div class="f-3 description" [innerHTML]="fullNode.appointment.description || '' | linkify"></div>
+            </div>
+            <div class="mt-2" *ngIf="fullNode.appointment.contacts">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Contacts</div>
+              <div class="v-center">
+                <div class="v-center chip p-1">
+                  <div class="form-avatar rounded-circle bg-dark mr-1">
+                    {{getContact(fullNode.appointment.contacts[0]).avatarName}}
+                    <div class="response {{getContact(fullNode.appointment.contacts[0]).response}}"
+                         *ngIf="getContact(fullNode.appointment.contacts[0]).response"></div>
+                  </div>
+                  <div class="info">
+                    <div class="f-2 font-weight-bold">{{getContact(fullNode.appointment.contacts[0]).fullName}}</div>
+                    <div class="f-1">{{getContact(fullNode.appointment.contacts[0])['email']}}</div>
+                  </div>
+                </div>
+                <div class="f-3 font-weight-bold ml-3" *ngIf="fullNode.appointment.contacts.length > 1">
+                  +{{fullNode.appointment.contacts.length - 1}}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'automation'">
+            <div class="f-1 font-weight-bold text-uppercase op-56" translate>Title</div>
+            <div class="f-3 mt-1">{{getAutomationTitle(fullNode.automation)}}</div>
+          </div>
+          <div *ngSwitchCase="'contact_condition'">
+            <div class="f-1 font-weight-bold text-uppercase op-56" translate>Condition Field</div>
+            <div class="f-3 mt-1">{{fullNode.condition_field}}</div>
+            <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>Conditions</div>
+            <div class="f-3 mt-1" *ngFor="let condition of fullNode.contact_conditions">{{getFormattedCondition(fullNode, condition)}}</div>
+          </div>
+          <div *ngSwitchCase="'audio'">
+            <ng-container *ngIf="getVoicemailInfo(fullNode.voicemail); else createVoiceMail">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Name</div>
+              <div class="f-3">{{getVoicemailInfo(fullNode.voicemail).name}}</div>
+              <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>Second</div>
+              <div class="f-3">{{getVoicemailInfo(fullNode.voicemail).seconds}}s</div>
+              <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>Created At</div>
+              <div class="f-3">{{getVoicemailInfo(fullNode.voicemail).createdAt | date: 'MMMM dd yyyy, hh:mm a'}}</div>
+            </ng-container>
+            <ng-template #createVoiceMail>
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Name</div>
+              <div class="f-3 mt-1" translate>Create</div>
+            </ng-template>
+          </div>
+          <div *ngSwitchCase="'share_contact'">
+            <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>Share Community/Team</div>
+            <div class="f-3 mt-1">{{getCommunityTeam(fullNode.share_team)}}</div>
+            <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>Share Member</div>
+            <ng-container *ngIf="fullNode.share_all_member || fullNode.round_robin; else shareUsers">
+              <div class="f-3 mt-1" *ngIf="fullNode.share_all_member">All members</div>
+              <div class="f-3 mt-1" *ngIf="fullNode.round_robin">Round Robin</div>
+            </ng-container>
+            <ng-template #shareUsers>
+              <ng-container *ngFor="let user of getMembers(fullNode.share_team, fullNode.share_users)">
+                <div class="v-center mt-1">
+                  <img *ngIf="user.picture_profile; else avatarNameTemplate"
+                       [src]="user.picture_profile" (error)="sspaService.imgError($event,'img/user_avatar.svg')"
+                       class="form-avatar rounded-circle mr-1" />
+                  <ng-template #avatarNameTemplate>
+                    <div class="form-avatar rounded-circle bg-dark mr-3">{{ getAvatarName(user) }}</div>
+                  </ng-template>
+                  <div class="info">
+                    <div class="f-4">{{ user.user_name }}</div>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-template>
+          </div>
+          <div *ngSwitchCase="'move_contact'">
+            <div class="f-1 font-weight-bold text-uppercase op-56" translate>Share type</div>
+            <div class="f-3 mt-1">{{getShareOption(fullNode.share_type)}}</div>
+            <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>Share Community/Team</div>
+            <div class="f-3 mt-1">{{getCommunityTeam(fullNode.share_team)}}</div>
+            <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>Share Member</div>
+            <ng-container *ngIf="fullNode.share_all_member || fullNode.round_robin; else shareUsers">
+              <div class="f-3 mt-1" *ngIf="fullNode.share_all_member">All members</div>
+              <div class="f-3 mt-1" *ngIf="fullNode.round_robin">Round Robin</div>
+            </ng-container>
+            <ng-template #shareUsers>
+              <ng-container *ngFor="let user of getMembers(fullNode.share_team, fullNode.share_users)">
+                <div class="v-center mt-1">
+                  <img *ngIf="user.picture_profile; else avatarNameTemplate"
+                       [src]="user.picture_profile" (error)="sspaService.imgError($event,'img/user_avatar.svg')"
+                       class="form-avatar rounded-circle mr-1" />
+                  <ng-template #avatarNameTemplate>
+                    <div class="form-avatar rounded-circle bg-dark mr-3">{{ getAvatarName(user) }}</div>
+                  </ng-template>
+                  <div class="info">
+                    <div class="f-4">{{ user.user_name }}</div>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-template>
+          </div>
+          <div class="mt-2">
+            <div class="f-1 font-weight-bold text-uppercase op-56" translate>time delay</div>
+            <div class="f-3 mt-1">{{fullNode.period | duration}}</div>
+          </div>
+        </ng-container>
+      </div>
+      <div class="overlay-triangle" *ngIf="fullNode.type != 'automation'"></div>
+      <ng-container *ngIf="fullNode['automation_type'] === 'contact'">
+        <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>Assigned Contacts</div>
+        <ng-container *ngIf="loadingTimelines; else showAssignedContacts">
+          <div class="loader sm"></div>
+        </ng-container>
+        <ng-template #showAssignedContacts>
+          <ng-container *ngIf="runningContacts.length > 0; else nonContacts">
+            <div class="v-center mt-1" (click)="update('list')">
+              <div class="related-contact v-center c-pointer" *ngFor="let contact of runningContacts.slice(0, 5)">
+                <div class="v-center">
+                  <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">{{contact.avatarName}}</div>
+                </div>
+              </div>
+              <ng-container *ngIf="runningContacts.length > 5">
+                <div class="related-contact v-center justify-content-center avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer">
+                  +{{runningContacts.length - 5}}
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+          <ng-template #nonContacts>
+            <div class="f-3 c-dark" translate>Not assigned.</div>
+          </ng-template>
+        </ng-template>
+      </ng-container>
+      <ng-container *ngIf="fullNode['automation_type'] === 'deal'">
+        <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>Assigned Deals</div>
+        <ng-container *ngIf="loadingTimelines; else showAssignedDeals">
+          <div class="loader sm"></div>
+        </ng-container>
+        <ng-template #showAssignedDeals>
+          <ng-container *ngIf="runningDeals.length > 0; else nonDeals">
+            <div class="v-center flex-wrap mt-1" (click)="update('list')">
+              <div class="v-center" *ngFor="let deal of runningDeals.slice(0, 3)">
+                <div class="deal-name-wrapper bgc-blue-grey f-2 c-dark mr-1 c-pointer">{{deal.title}}</div>
+              </div>
+              <ng-container *ngIf="runningDeals.length > 3">
+                <div class="f-4 font-weight-bold c-pointer">
+                  +{{runningDeals.length - 3}}
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+          <ng-template #nonDeals>
+            <div class="f-3 c-dark" translate>Not assigned.</div>
+          </ng-template>
+        </ng-template>
+      </ng-container>
+    </ng-container>
+    <ng-template #easyTemplate>
+      <div class="v-center justify-content-between">
+        <h1 mat-dialog-title class="f-6 font-weight-bold m-0" translate>{{fullNode.action.label}}</h1>
+        <div class="v-center justify-content-center">
+          <span class="mr-2 ml-auto" (click)="updateFullNodeStatus('forward')" *ngIf="fullNode.status == 'active'">
+            <i class="i-icon i-forward d-block bgc-black c-pointer"></i>
+          </span>
+          <span class="mr-2 ml-auto" (click)="updateFullNodeStatus('paused')" *ngIf="fullNode.status == 'active'">
+            <i class="i-icon i-record-pause sm d-block bgc-black c-pointer"></i>
+          </span>
+          <span class="mr-2 ml-auto" (click)="updateFullNodeStatus('restart')" *ngIf="fullNode.status == 'paused'">
+            <i class="i-icon i-record-play sm d-block bgc-black c-pointer"></i>
+          </span>
+          <span class="mr-2 ml-auto" (click)="updateFullNodeStatus('revise')" *ngIf="fullNode.status == 'active'">
+            <i class="i-icon i-calendar sm d-block bgc-black c-pointer"></i>
+          </span>
+        </div>
+      </div>
+      <div class="automation-detail mt-1">
+        <div class="mb-2" *ngIf="isShowAssignAt(fullNode)">
+          <div class="f-1 font-weight-bold text-uppercase op-56" translate>Assign at</div>
+          <div class="f-3 mt-1">{{getAssignAt(fullNode.group)}}</div>
+        </div>
+        <ng-container [ngSwitch]="fullNode.action.type">
+          <div *ngSwitchCase="'contact_condition'">
+            <div class="f-1 font-weight-bold text-uppercase op-56" translate>Condition Field</div>
+            <div class="f-3 mt-1">{{fullNode.action.condition_field}}</div>
+            <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>Conditions</div>
+            <div class="f-3 mt-1" *ngFor="let condition of fullNode.action.contact_conditions">{{getFormattedCondition(fullNode.action, condition)}}</div>
+          </div>
+          <div *ngSwitchCase="'send_email_video'">
+            <div class="v-center justify-content-center thumb-prev-wrapper video">
+              <img [src]="getMaterialInfo(fullNode.action).material.thumbnail" class="thumbnail"/>
+              <img [src]="getMaterialInfo(fullNode.action).material.preview" class="preview"/>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+              <div class="f-3 mt-1">{{fullNode.action.subject}}</div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNode.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNode.action.content | stripTags | removeEntity}}</div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'send_text_video'">
+            <div class="v-center justify-content-center thumb-prev-wrapper video">
+              <img [src]="getMaterialInfo(fullNode.action).material.thumbnail" class="thumbnail"/>
+              <img [src]="getMaterialInfo(fullNode.action).material.preview" class="preview"/>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNode.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNode.action.content | stripTags | removeEntity}}</div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'send_email_pdf'">
+            <div class="v-center justify-content-center thumb-prev-wrapper">
+              <img [src]="getMaterialInfo(fullNode.action).material.preview" class="thumbnail"/>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+              <div class="f-3 mt-1">{{fullNode.action.subject}}</div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNode.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNode.action.content | stripTags | removeEntity}}</div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'send_text_pdf'">
+            <div class="v-center justify-content-center thumb-prev-wrapper">
+              <img [src]="getMaterialInfo(fullNode.action).material.preview" class="thumbnail"/>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNode.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNode.action.content | stripTags | removeEntity}}</div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'send_email_image'">
+            <div class="v-center justify-content-center thumb-prev-wrapper">
+              <img [src]="getMaterialInfo(fullNode.action).material.preview" class="thumbnail"/>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+              <div class="f-3 mt-1">{{fullNode.action.subject}}</div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNode.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNode.action.content | stripTags | removeEntity}}</div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'send_text_image'">
+            <div class="v-center justify-content-center thumb-prev-wrapper">
+              <img [src]="getMaterialInfo(fullNode.action).material.preview" class="thumbnail"/>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNode.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNode.action.content | stripTags | removeEntity}}</div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'send_email_material'">
+            <ng-container *ngIf="getMaterialInfo(fullNode.action).previewType == 'video'">
+              <div class="v-center justify-content-center thumb-prev-wrapper video">
+                <a href="{{siteUrl}}/video/{{getMaterialInfo(fullNode.action).material._id}}" target="_blank">
+                  <img [src]="getMaterialInfo(fullNode.action).material.thumbnail" class="thumbnail"/>
+                  <img [src]="getMaterialInfo(fullNode.action).material.preview" class="preview"/>
+                </a>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="getMaterialInfo(fullNode.action).previewType == 'pdf'">
+              <div class="v-center justify-content-center thumb-prev-wrapper pdf">
+                <a href="{{siteUrl}}/pdf/{{getMaterialInfo(fullNode.action).material._id}}" target="_blank">
+                  <img [src]="getMaterialInfo(fullNode.action).material.preview" class="preview"/>
+                </a>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="getMaterialInfo(fullNode.action).previewType == 'image'">
+              <div class="v-center justify-content-center thumb-prev-wrapper image">
+                <a href="{{siteUrl}}/image/{{getMaterialInfo(fullNode.action).material._id}}" target="_blank">
+                  <img [src]="getMaterialInfo(fullNode.action).material.preview" class="preview"/>
+                </a>
+              </div>
+            </ng-container>
+            <div class="d-flex">
+              <div class="v-center mt-3 material-more px-1 py-0 mx-auto"
+                   *ngIf="getMaterialInfo(fullNode.action).videoCount ||
+                                  getMaterialInfo(fullNode.action).pdfCount ||
+                                  getMaterialInfo(fullNode.action).imageCount
+                            ">
+                <div class="v-center mx-1 my-1" *ngIf="getMaterialInfo(fullNode.action).videoCount > 0"
+                     [translateParams]="{total: getMaterialInfo(fullNode.action).videoCount}" translate
+                >
+                  <i class="d-block i-icon act-videos mr-1"></i>
+                  autoflow.total_videos
+                </div>
+                <div class="v-center mx-1 my-1" *ngIf="getMaterialInfo(fullNode.action).pdfCount > 0"
+                     [translateParams]="{total: getMaterialInfo(fullNode.action).pdfCount}" translate
+                >
+                  <i class="d-block i-icon act-pdfs mr-1"></i>
+                  autoflow.total_pdfs
+                </div>
+                <div class="v-center mx-1 my-1" *ngIf="getMaterialInfo(fullNode.action).imageCount > 0"
+                     [translateParams]="{total: getMaterialInfo(fullNode.action).imageCount}" translate
+                >
+                  <i class="d-block i-icon act-images mr-1"></i>
+                  autoflow.total_images
+                </div>
+              </div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+              <div class="f-3 mt-1">{{fullNode.action.subject}}</div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNode.action.content | stripTags | removeEntity | shorten: 170: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNode.action.content | stripTags | removeEntity}}</div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'send_text_material'">
+            <ng-container *ngIf="getMaterialInfo(fullNode.action).previewType == 'video'">
+              <div class="v-center justify-content-center thumb-prev-wrapper video">
+                <a href="{{siteUrl}}/video/{{getMaterialInfo(fullNode.action).material._id}}" target="_blank">
+                  <img [src]="getMaterialInfo(fullNode.action).material.thumbnail" class="thumbnail"/>
+                  <img [src]="getMaterialInfo(fullNode.action).material.preview" class="preview"/>
+                </a>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="getMaterialInfo(fullNode.action).previewType == 'pdf'">
+              <div class="v-center justify-content-center thumb-prev-wrapper pdf">
+                <a href="{{siteUrl}}/pdf/{{getMaterialInfo(fullNode.action).material._id}}" target="_blank">
+                  <img [src]="getMaterialInfo(fullNode.action).material.preview" class="preview"/>
+                </a>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="getMaterialInfo(fullNode.action).previewType == 'image'">
+              <div class="v-center justify-content-center thumb-prev-wrapper image">
+                <a href="{{siteUrl}}/image/{{getMaterialInfo(fullNode.action).material._id}}" target="_blank">
+                  <img [src]="getMaterialInfo(fullNode.action).material.preview" class="preview"/>
+                </a>
+              </div>
+            </ng-container>
+            <div class="d-flex">
+              <div class="v-center mt-3 material-more px-1 py-0 mx-auto"
+                   *ngIf="getMaterialInfo(fullNode.action).videoCount ||
+                                  getMaterialInfo(fullNode.action).pdfCount ||
+                                  getMaterialInfo(fullNode.action).imageCount
+                            ">
+                <div class="v-center mx-1 my-1" *ngIf="getMaterialInfo(fullNode.action).videoCount > 0"
+                     [translateParams]="{total: getMaterialInfo(fullNode.action).videoCount}" translate
+                >
+                  <i class="d-block i-icon act-videos mr-1"></i>
+                  autoflow.total_videos
+                </div>
+                <div class="v-center mx-1 my-1" *ngIf="getMaterialInfo(fullNode.action).pdfCount > 0"
+                     [translateParams]="{total: getMaterialInfo(fullNode.action).pdfCount}" translate
+                >
+                  <i class="d-block i-icon act-pdfs mr-1"></i>
+                  autoflow.total_pdfs
+                </div>
+                <div class="v-center mx-1 my-1" *ngIf="getMaterialInfo(fullNode.action).imageCount > 0"
+                     [translateParams]="{total: getMaterialInfo(fullNode.action).imageCount}" translate
+                >
+                  <i class="d-block i-icon act-images mr-1"></i>
+                  autoflow.total_images
+                </div>
+              </div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNode.action.content | stripTags | removeEntity | shorten: 170: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNode.action.content | stripTags | removeEntity}}</div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'email'">
+            <div>
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+              <div class="f-3 mt-1">{{fullNode.action.subject}}</div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNode.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNode.action.content | stripTags | removeEntity}}</div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'text'">
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNode.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNode.action.content | stripTags | removeEntity}}</div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'follow_up'">
+            <div>
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNode.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNode.action.content | stripTags | removeEntity}}</div>
+              <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>description</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">
+                {{fullNode.action?.description ? (fullNode.action.description | stripTags | removeEntity | shorten: 85: '...') : ''}}
+              </div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">
+                {{fullNode.action?.description ? (fullNode.action.description | stripTags | removeEntity) : ''}}
+              </div>
+              <div class="mt-2" *ngIf="fullNode.action.due_duration">
+                <div class="f-1 font-weight-bold text-uppercase op-56" translate>duration</div>
+                <div class="f-3 mt-1">{{getDuration(fullNode.action.due_duration)}}</div>
+              </div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'update_follow_up'">
+            <div *ngIf="fullNode.action.command == 'update_follow_up'">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+              <div class="f-3 mt-1" translate>Update follow up</div>
+            </div>
+            <div *ngIf="fullNode.action.command == 'complete_follow_up'">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>subject</div>
+              <div class="f-3 mt-1" translate>Complete follow up</div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">{{fullNode.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNode.action.content | stripTags | removeEntity}}</div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>description</div>
+              <div class="f-3 mt-1" *ngIf="!isShow">
+                {{fullNode.action?.description ? (fullNode.action.description | stripTags | removeEntity | shorten: 85: '...') : ''}}
+              </div>
+              <div class="f-3 mt-1 content-overview" *ngIf="isShow">
+                {{fullNode.action?.description ? (fullNode.action.description | stripTags | removeEntity) : ''}}
+              </div>
+            </div>
+            <div class="mt-2" *ngIf="fullNode.action.due_duration">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>duration</div>
+              <div class="f-3 mt-1">{{getDuration(fullNode.action.due_duration)}}</div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'note'">
+            <div>
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>content</div>
+              <ng-container *ngIf="fullNode?.action?.content">
+                <div class="f-3 mt-1" *ngIf="!isShow">{{fullNode.action.content | stripTags | removeEntity | shorten: 85: '...'}}</div>
+                <div class="f-3 mt-1 content-overview" *ngIf="isShow">{{fullNode.action.content | stripTags | removeEntity}}</div>
+                <div class="mt-1">
+                  <app-audio-note
+                    class="mt-2"
+                    [url]="fullNode.action.audio"
+                    [readOnly]="true"
+                    #recorder
+                    *ngIf="fullNode.action.audio"
+                  >
+                  </app-audio-note>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+          <div *ngSwitchCase="'update_contact'">
+            <ng-container
+              *ngIf="isActionCommandEnabled(fullNode.action, 0)"
+            >
+              <div>
+                <div class="f-1 font-weight-bold text-uppercase op-56" translate>command</div>
+                <div class="f-3 mt-1" translate>Update label</div>
+              </div>
+              <div class="mt-2">
+                <div class="f-1 font-weight-bold text-uppercase op-56" translate>label</div>
+                <ng-container *ngFor="let item of labelService.labels$ | async">
+                  <div class="v-center f-3 fw-600 mt-1" *ngIf="fullNode.action.content[0] == item._id">
+                    <i class="i-icon i-label d-block mr-2" [style.backgroundColor]="item.color === '#FFF' ? '#000' : item.color"></i>
+                    <span>{{item.name}}</span>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+            <ng-container
+              *ngIf="isActionCommandEnabled(fullNode.action, 1)"
+            >
+              <div>
+                <div class="f-1 font-weight-bold text-uppercase op-56" translate>command</div>
+                <div class="f-3 mt-1" translate>Insert tags</div>
+              </div>
+              <div class="mt-2">
+                <div class="f-1 font-weight-bold text-uppercase op-56" translate>tags</div>
+                <div class="f-3 mt-1">
+                                <span class="tag-el" *ngFor="let tag of fullNode.action.content[1]">
+                                    {{tag}}
+                                </span>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container
+              *ngIf="isActionCommandEnabled(fullNode.action, 2)"
+            >
+              <div>
+                <div class="f-1 font-weight-bold text-uppercase op-56" translate>command</div>
+                <div class="f-3 mt-1" translate>Remove tags</div>
+              </div>
+              <div class="mt-2">
+                <div class="f-1 font-weight-bold text-uppercase op-56" translate>tags</div>
+                <div class="f-3 mt-1">
+                                <span class="tag-el" *ngFor="let tag of fullNode.action.content[2]">
+                                    {{tag}}
+                                </span>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <div *ngSwitchCase="'deal'">
+            <div>
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Name</div>
+              <div class="f-3 mt-1">{{fullNode.action.deal_name}}</div>
+            </div>
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Stage</div>
+              <div class="f-3 mt-1">{{getDealStageName(fullNode.action.deal_stage)}}</div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'move_deal'">
+            <div class="mt-2">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Stage</div>
+              <div class="f-3 mt-1" *ngIf="fullNode.action.deal_stage">{{getDealStageName(fullNode.action.deal_stage)}}</div>
+              <div class="f-3 mt-1" *ngIf="!fullNode.action.deal_stage" translate>Next Stage</div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'automation'">
+            <div class="f-1 font-weight-bold text-uppercase op-56" translate>Title</div>
+            <div class="f-3 mt-1">{{getAutomationTitle(fullNode.action.automation_id)}}</div>
+          </div>
+          <div *ngSwitchCase="'audio'">
+            <ng-container *ngIf="getVoicemailInfo(fullNode.action.voicemail); else createVoiceMail">
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Name</div>
+              <div class="f-3">{{getVoicemailInfo(fullNode.action.voicemail).name}}</div>
+              <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>URL</div>
+              <a [routerLink]="getVoicemailInfo(fullNode.action.voicemail).url" class="td-none url-text f-3" target="_blank">{{getVoicemailInfo(fullNode.action.voicemail).url}}</a>
+              <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>Second</div>
+              <div class="f-3">{{getVoicemailInfo(fullNode.action.voicemail).seconds}}s</div>
+              <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>Created At</div>
+              <div class="f-3">{{getVoicemailInfo(fullNode.action.voicemail).createdAt | date: 'MMMM dd yyyy, hh:mm a'}}</div>
+            </ng-container>
+            <ng-template #createVoiceMail>
+              <div class="f-1 font-weight-bold text-uppercase op-56" translate>Name</div>
+              <div class="f-3 mt-1" translate>Create</div>
+            </ng-template>
+          </div>
+          <div *ngSwitchCase="'share_contact'">
+            <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>Share Community/Team</div>
+            <div class="f-3 mt-1">{{getCommunityTeam(fullNode.action.share_team)}}</div>
+            <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>Share Member</div>
+            <ng-container *ngIf="fullNode.action.share_all_member || fullNode.action.round_robin; else shareUsers">
+              <div class="f-3 mt-1" *ngIf="fullNode.action.share_all_member">All members</div>
+              <div class="f-3 mt-1" *ngIf="fullNode.action.round_robin">Round Robin</div>
+            </ng-container>
+            <ng-template #shareUsers>
+              <ng-container *ngFor="let user of getMembers(fullNode.action.share_team, fullNode.action.share_users)">
+                <div class="v-center mt-1">
+                  <img *ngIf="user.picture_profile; else avatarNameTemplate"
+                       [src]="user.picture_profile" (error)="sspaService.imgError($event,'img/user_avatar.svg')"
+                       class="form-avatar rounded-circle mr-1" />
+                  <ng-template #avatarNameTemplate>
+                    <div class="form-avatar rounded-circle bg-dark mr-3">{{ getAvatarName(user) }}</div>
+                  </ng-template>
+                  <div class="info">
+                    <div class="f-4">{{ user.user_name }}</div>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-template>
+          </div>
+          <div *ngSwitchCase="'move_contact'">
+            <div class="f-1 font-weight-bold text-uppercase op-56" translate>Share type</div>
+            <div class="f-3 mt-1">{{getShareOption(fullNode.action.share_type)}}</div>
+            <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>Share Community/Team</div>
+            <div class="f-3 mt-1">{{getCommunityTeam(fullNode.action.share_team)}}</div>
+            <div class="f-1 font-weight-bold text-uppercase op-56 mt-2" translate>Share Member</div>
+            <ng-container *ngIf="fullNode.action.share_all_member || fullNode.action.round_robin; else shareUsers">
+              <div class="f-3 mt-1" *ngIf="fullNode.action.share_all_member">All members</div>
+              <div class="f-3 mt-1" *ngIf="fullNode.action.round_robin">Round Robin</div>
+            </ng-container>
+            <ng-container *ngIf="fullNode.action.round_robin; else shareUsers">
+              <div class="f-3 mt-1">Round Robin</div>
+            </ng-container>
+            <ng-template #shareUsers>
+              <ng-container *ngFor="let user of getMembers(fullNode.action.share_team, fullNode.action.share_users)">
+                <div class="v-center mt-1">
+                  <img *ngIf="user.picture_profile; else avatarNameTemplate"
+                       [src]="user.picture_profile" (error)="sspaService.imgError($event,'img/user_avatar.svg')"
+                       class="form-avatar rounded-circle mr-1" />
+                  <ng-template #avatarNameTemplate>
+                    <div class="form-avatar rounded-circle bg-dark mr-3">{{ getAvatarName(user) }}</div>
+                  </ng-template>
+                  <div class="info">
+                    <div class="f-4">{{ user.user_name }}</div>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-template>
+          </div>
+        </ng-container>
+        <div class="read-more text-right mt-1" *ngIf="fullNode.action.content && fullNode.action.content.length > 90">
+                <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="!isShow" (click)="seeMore()" translate>
+                    See more
+                </span>
+          <span class="f-1 font-weight-bold c-blue c-pointer" [class.show]="isShow" (click)="seeMore()" translate>
+                    See less
+                </span>
+        </div>
+        <div class="mt-2">
+          <div class="f-1 font-weight-bold text-uppercase op-56" translate>time delay</div>
+          <div class="f-3 mt-1">{{fullNode.period | duration}}</div>
+        </div>
+      </div>
+      <div class="overlay-triangle" *ngIf="fullNode.action.type != 'automation'"></div>
+    </ng-template>
+  </div>
+</ng-template>

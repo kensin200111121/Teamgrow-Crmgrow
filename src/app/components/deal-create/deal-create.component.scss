@@ -1,0 +1,45 @@
+@import "variables";
+
+.input-container {
+    position: relative;
+    width: 100%;
+}
+.prefix {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #aaa;
+    pointer-events: none; /* Prevent interaction */
+}
+.postfix {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #aaa;
+    pointer-events: none; /* Prevent interaction */
+}
+.currency-input {
+    width: 100%;
+    padding: 10px 10px 10px 30px; /* Add padding to make space for the prefix */
+}
+.percent-input {
+    width: 100%;
+    padding: 10px 25px 10px 10px; /* Add padding to make space for the prefix */
+    text-align: right;
+}
+.no-prefix {
+    padding-left: 10px;
+}
+.mat-dialog-content {
+    margin-right: -1.3rem;
+}
+.percent-type {
+    width: 70%;
+}
+::ng-deep .cdk-global-overlay-wrapper {
+    z-index: 1001;
+}

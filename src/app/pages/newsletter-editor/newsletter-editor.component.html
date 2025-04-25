@@ -1,0 +1,82 @@
+<div class="page-content pb-0 pr-3">
+  <div class="v-center op-56 c-pointer mb-2 back-menu w-fit" (click)="goToBack()">
+    <i class="d-block i-icon i-triangle-left bgc-dark mr-2"></i>
+    <span class="f-5 font-weight-bold">Back to Newsletters</span>
+  </div>
+  <div class="v-center justify-content-between">
+    <ng-container *ngIf="mode == 'edit'">
+      <h6 class="f-8 ls-2 font-weight-bold text-uppercase my-2">Edit newsletter</h6>
+    </ng-container>
+    <ng-container *ngIf="mode == 'clone'">
+      <h6 class="f-8 ls-2 font-weight-bold text-uppercase my-2">Duplicate newsletter</h6>
+    </ng-container>
+    <ng-container *ngIf="mode === 'create'">
+      <h6 class="f-8 ls-2 font-weight-bold text-uppercase my-2">Create new newsletter</h6>
+    </ng-container>
+  </div>
+  <form #form="ngForm" (ngSubmit)="form.form.valid ? saveDesign() : false;" style="margin-top: -36px;">
+    <div class="d-flex justify-content-end w-fit ml-auto">
+      <button [attr.data-action]="'create-newsletter-save'" type="submit" class="btn btn-primary f-4" [class.loading]="isSaving">Save</button>
+      <button [attr.data-action]="'create-newsletter-start-from-template'" type="button" class="btn btn-default f-4 ml-1 border border-primary c-blue" style="height: 38px;" (click)="importDialog()" [class.disabled]="isLoading || isSaving">Start from template</button>
+    </div>
+    <div class="form-group theme-title-wrapper mb-0" [ngClass]="{invalid: form.submitted && title.invalid && (title.dirty || title.touched || form.submitted)}">
+      <label class="mb-0 d-block">TITLE</label>
+      <input class="form-control mr-1" name="title" #title="ngModel" [placeholder]="'Newsletter title' | translate" [(ngModel)]="theme.title" required>
+    </div>
+    <div class="form-group theme-subject-wrapper mb-2 mt-2" [ngClass]="{invalid: form.submitted && subject.invalid && (subject.dirty || subject.touched || form.submitted)}">
+      <div class="d-flex">
+        <label class="mb-0 d-block">SUBJECT</label>
+        <div ngbDropdown class="insert-token bottom-right mr-1 ml-auto">
+          <div class="v-center no-carot" ngbDropdownToggle>
+            <span class="f-1 font-weight-bold mr-1">Merge field</span>
+            <i class="d-block i-icon i-triangle-down bgc-dark"></i>
+            <i class="d-block i-icon i-triangle-up bgc-dark"></i>
+          </div>
+          <div ngbDropdownMenu class="light py-1">
+            <ng-container *ngFor="let token of templateTokens">
+              <div class="f-2 py-1 px-2 c-pointer menu-item dropdown-item" (click)="insertSubjectToken(token.name)">
+                {{ token.name | translate }}
+              </div>
+            </ng-container>
+            <div class="f-2 py-1 px-2 c-pointer menu-item v-center dropdown-item" (click)="onCreateToken()">
+              <i class="d-block sm i-icon i-plus bgc-blue"></i>
+              <span class="ml-1 c-blue">{{ 'Create Merge field' | translate }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <input
+        (click)="setCursorPos(subjectField)"
+        (keyup)="setCursorPos(subjectField)"
+        class="form-control mr-1"
+        name="subject"
+        #subject="ngModel"
+        [placeholder]="'Newsletter subject' | translate"
+        [(ngModel)]="theme.subject"
+        [mention]="tokens"
+        (itemSelected)="onSubjectTokenSelected($event)"
+        [mentionConfig]="mentionConfig"
+        required
+        #subjectField
+      >
+    </div>
+  </form>
+  <div class="bg-white flex-grow-1">
+      <ng-container *ngIf="!isLoading">
+          <email-editor
+              class="h-100"
+              [options]="options"
+              (loaded)="editorLoaded($event)"
+              #editor
+          ></email-editor>
+      </ng-container>
+      <ng-container *ngIf="isLoading">
+        <div class="px-3 pb-3">
+          <div class="bg-white rounded">
+            <div class="loader"></div>
+          </div>
+        </div>
+      </ng-container>
+  </div>
+</div>
+<div id="preview-thumbnail"></div>

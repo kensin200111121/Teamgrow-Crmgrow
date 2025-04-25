@@ -1,0 +1,274 @@
+@import 'variables';
+
+// .d-grid {
+//   display: grid;
+//   grid-gap: 10px;
+// }
+
+// .btn.disabled {
+//   pointer-events: none;
+//   opacity: 1;
+// }
+
+.page-title {
+  height: unset;
+}
+
+.affiliate-page {
+  max-width: 720px;
+  .affiliate-action {
+    button {
+      height: 38px;
+    }
+  }
+  .afiliate-workflow {
+    position: relative;
+    padding: 24px;
+    background: #F6F5FF;
+    border-radius: 4px;
+    .workflows {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      grid-gap: 10px;
+    }
+    img {
+      width: 100%;
+    }
+  }
+  .close-icon {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
+
+  .affiliate-plans {
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      grid-gap: 10px;
+    }
+    .plan-starter {
+      border-left: 1px solid #B0E0D4;
+      border-right: 1px solid #B0E0D4;
+      border-bottom: 1px solid #B0E0D4;
+      border-top: 2px solid #138E6E;
+      border-radius: 4px;
+      padding: 1rem;
+      .percent-symbol {
+        color: #138E6E;
+      }
+    }
+    .plan-growth {
+      border-left: 1px solid #FDEDDE;
+      border-right: 1px solid #FDEDDE;
+      border-bottom: 1px solid #FDEDDE;
+      border-top: 2px solid #F28422;;
+      border-radius: 4px;
+      padding: 1rem;
+      .percent-symbol {
+        color: #F28422;
+      }
+    }
+    .plan-influencer {
+      border-left: 1px solid rgba(127, 0, 255, 0.15);
+      border-right: 1px solid rgba(127, 0, 255, 0.15);
+      border-bottom: 1px solid rgba(127, 0, 255, 0.15);
+      border-top: 2px solid #7F00FF;
+      border-radius: 4px;
+      padding: 1rem;
+      .percent-symbol {
+        color: #7F00FF;
+      }
+    }
+    .plan-divider {
+      height: 0;
+      margin: 16px 0 8px;
+      border-top: 1px solid #C4C4C4;
+    }
+    .plan-title {
+      font-size: 22px;
+      font-weight: bold;
+    }
+    .plan-summary {
+      font-size: 17px;
+    }
+    .percent {
+      font-size: 32px;
+      font-weight: bold;
+    }
+  }
+}
+
+@media screen and (max-width: 1080px) {
+  .affiliate-page {
+    .affiliate-plans {
+      .plan-title {
+        font-size: 18px;
+      }
+      .plan-summary {
+        font-size: 16px;
+      }
+      .percent {
+        font-size: 28px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .affiliate-page {
+    .affiliate-action {
+      .main-action {
+        width: 60px;
+        flex: none;
+      }
+      .action-title {
+        display: none;
+      }
+    }
+    .afiliate-workflow {
+      .workflows {
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 20px;
+      }
+    }
+    .affiliate-plans {
+      .plans {
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 20px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 420px) {
+  .affiliate-page {
+    .affiliate-action {
+      .main-action {
+        width: 50px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 420px) {
+  .affiliate-page {
+    .afiliate-workflow {
+      .workflows {
+        grid-template-columns: repeat(1, 1fr);
+      }
+    }
+    .affiliate-plans {
+      .plans {
+        grid-template-columns: repeat(1, 1fr);
+      }
+    }
+  }
+}
+
+// @media screen and (max-width: 576px) {
+//   .affiliate-table {
+//     th:nth-child(2), td:nth-child(2) {
+//       display: none;
+//     }
+//   }
+
+//   .paypal-logo {
+//     width: 60px;
+//   }
+
+//   .paypal-address {
+//     margin-left: 4px;
+//   }
+// }
+
+// .cards {
+//   grid-template-columns: repeat(3, 1fr);
+//   width: 100%;
+
+//   .card-item {
+//     border: 1px solid $color-blue-weak;
+//     max-height: 200px;
+//     width: 100%;
+//     text-transform: uppercase;
+//   }
+
+//   .card-value {
+//     font-size: 30px;
+//   }
+// }
+
+// @media screen and (max-width: 576px) {
+//   .cards {
+//     grid-template-columns: repeat(1, 1fr);
+//     width: 100%;
+//   }
+// }
+
+// .status {
+//   color: #ffffff;
+//   width: 64px;
+//   height: 20px;
+//   text-align: center;
+//   border-radius: 3px;
+//   padding: 4px 5px;
+//   font-size: 10px;
+
+//   &.active {
+//     background-color: #00CA7F;
+//   }
+
+//   &.pending {
+//     background-color: #f26419;
+//   }
+// }
+
+// .loading-screen {
+//   flex: 1;
+//   min-height: 300px;
+//   margin-top: 10px;
+//   max-width: 1000px;
+//   background: transparent;
+// }
+
+
+.affiliate-action .main-action {
+  flex: 1;
+  justify-content: center;
+}
+
+button.email-share {
+  width: 60px;
+
+  i {
+    margin: auto;
+  }
+  @media screen and (max-width: 420px) {
+    width: 50px;
+  }
+}
+:host ::ng-deep {
+  share-button{
+    border: solid 1px $color-blue;
+    border-radius: 4px;
+    width: 60px;
+
+    button {
+      height: 36px;
+      min-width:3.3em;
+      margin: auto;
+      width: 100%;
+    }
+
+    path {
+      fill: $color-blue !important;
+    }
+    @media screen and (max-width: 420px) {
+      width: 50px;
+    }
+  }
+
+  .affiliate-action svg {
+    margin-top: 10px;
+  }
+}

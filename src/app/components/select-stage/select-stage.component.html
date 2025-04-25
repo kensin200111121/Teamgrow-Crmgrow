@@ -1,0 +1,108 @@
+<div
+  [ngClass]="{
+    'd-flex': viewMode != 'row'
+  }"
+>
+  <div class="row" [ngClass]="{ 'flex-grow-1': viewMode != 'row' }">
+    <div
+      [ngClass]="{
+        'col-md-6': viewMode == 'row',
+        'col-md-12': viewMode != 'row'
+      }"
+      *ngIf="!isHidePipelineSelector"
+    >
+      <div class="form-group bg-transparent">
+        <label class="d-block" *ngIf="!isHideLabel" translate
+          >{{pipelineTitle}}<span *ngIf="required">*</span></label
+        >
+        <div class="pipeline-dropdown" placement="bottom-left" ngbDropdown>
+          <div
+            data-name="pipeline-name-list"
+            class="btn dropdown-toggle font-weight-bold c-dark c-pointer rounded justify-content-end min-width-200 w-100"
+            ngbDropdownToggle
+          >
+            <span class="font-weight-bold label-in-dropdown">{{
+              selectedPipelineWithStages?.detail?.title | shorten: 20:'...'
+            }}</span>
+          </div>
+          <div ngbDropdownMenu aria-labelledby="taskSortTypes" class="dropdown-height pipeline-list">
+            <div class="px-2">
+              <input
+                id="searchInputPipeline"
+                type="text"
+                placeholder="Search..."
+                [(ngModel)]="searchTermPipeline"
+                (ngModelChange)="valueChangePipeline($event)"
+                class="form-control"
+              />
+            </div>
+            <div
+              class="py-1"
+              ngbDropdownItem
+              *ngFor="let pipeline of pipelines"
+              (click)="onChangePipeline(pipeline)"
+              [attr.data-name]="'pipeline-title-' + pipeline.title"
+            >
+              <span>
+                <span class="pipeline-title">{{ pipeline.detail.title | shorten: 20:'...' }}</span><br />
+                <span class="creator-name c-secondary">{{ pipeline.detail.user_name | shorten: 24:'...' }}</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <span
+          class="invalid-error f-3 c-secondary ml-auto"
+          *ngIf="!selectedPipeline && submitted"
+          translate
+          >*Required</span
+        >
+      </div>
+    </div>
+    <div
+      [ngClass]="{
+        'col-md-6': !isHidePipelineSelector && viewMode == 'row',
+        'col-md-12 mt-2': isHidePipelineSelector || viewMode != 'row'
+      }"
+    >
+      <div class="form-group bg-transparent" *ngIf="selectedPipeline">
+        <label class="d-block" translate *ngIf="!isHideLabel"
+          >{{stageTitle}}<span *ngIf="required">*</span></label
+        >
+        <div class="d-flex">
+          <select
+            class="form-control"
+            [(ngModel)]="selectedStage"
+            (ngModelChange)="onValueChange($event)"
+          >
+            <option
+              *ngFor="let stage of stages; let i = index"
+              value="{{ stage._id }}"
+            >
+              {{ stage.title }}
+            </option>
+          </select>
+          <div
+            *ngIf="showReset && viewMode == 'row'"
+            (click)="removeStage()"
+            class="c-pointer ml-2 v-center justify-content-center"
+          >
+            <i class="d-block i-icon bgc-red i-circle-minus"></i>
+          </div>
+        </div>
+        <span
+          class="invalid-error f-3 c-secondary ml-auto"
+          *ngIf="!selectedStage && submitted"
+          translate
+          >*Required</span
+        >
+      </div>
+    </div>
+  </div>
+  <div
+    *ngIf="showReset && viewMode != 'row'"
+    (click)="removeStage()"
+    class="c-pointer ml-2 v-center justify-content-center"
+  >
+    <i class="d-block i-icon bgc-red i-circle-minus"></i>
+  </div>
+</div>

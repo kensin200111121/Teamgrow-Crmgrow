@@ -1,0 +1,16 @@
+<div class="cal-more-event p-1">
+    <div class="v-center justify-content-center" #monthEventView>
+        <div class="cal-week-date">
+            {{events.date | calendarDate:'monthViewDayNumber'}}
+        </div>
+    </div>
+    <div class="cal-event m-1 c-pointer" *ngFor="let event of events.events.slice(2)"
+        [ngStyle]="{'background-color': calendars[event.meta.calendar_id]?.color}"
+        [attr.event]="event.meta?.event_id"
+        (click)="openDetail(event, monthEventView)"
+    >
+        <div [attr.data-name]="'calendar-event-body-day-' + events.date" class="f-2 font-weight-bold c-white p-1 cal-event-body">
+            {{(event.title || '(No Title)') | stripTags | removeEntity | shorten: 20: '...'}}
+        </div>
+    </div>
+</div>

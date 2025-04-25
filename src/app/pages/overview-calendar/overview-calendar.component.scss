@@ -1,0 +1,26 @@
+.card-header {
+  background-color: transparent!important;
+  border-bottom: none!important;
+}
+
+.cal-event {
+  border: 1px solid #d1e8ff;
+}
+
+:host ::ng-deep {
+  .cal-day-timelabel {
+    height: 100%;
+
+    .cal-hour-segment {
+      height: 100%;
+    }
+  }
+}
+
+.dropdown-menu {
+  & .dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

@@ -1,0 +1,191 @@
+<div class="card border-0 rounded-lg px-2 py-5 px-sm-5" *ngIf="step != 0">
+  <ng-container [ngSwitch]="step">
+    <!-- Basic Profile Information Step -->
+    <div class="mx-3 my-2" *ngSwitchCase="1">
+      <img class="logo" [src]="sspaService.toAsset('img/crmgrow-logo.svg')">
+     <button type="button" class="v-center social-btn btn border-primary w-100 mt-4 font-weight-bold d-flex"
+       (click)="connectService('gmail')">
+       <img class="social-icon" [src]="sspaService.toAsset('img/google.svg')" alt="">
+       <div class="social-text">{{'auth.register.google_register' | translate}}</div>
+     </button>
+      <button type="button" class="v-center social-btn btn border-primary w-100 mt-2 font-weight-bold d-flex"
+        (click)="connectService('outlook')">
+        <img class="social-icon" [src]="sspaService.toAsset('img/microsoft.svg')" alt="">
+        <div class="social-text">{{'auth.register.outlook_register' | translate}}</div>
+      </button>
+      <div class="v-center my-3">
+        <hr class="flex-grow-1" />
+        <span class="mx-3">{{'auth.register.or' | translate}}</span>
+        <hr class="flex-grow-1" />
+      </div>
+      <form #registerForm="ngForm" (ngSubmit)="registerForm.form.valid ? gotoBasic() : false">
+        <button type="submit" class="btn btn-primary d-block w-100 font-weight-bold mt-4">
+          {{'auth.register.email_register' | translate}}
+        </button>
+      </form>
+    </div>
+    <!-- End Basic Profile Information Step -->
+
+    <!-- Main Profile Information Step -->
+    <div class="mx-3 my-2" *ngSwitchCase="2">
+      <img class="logo" [src]="sspaService.toAsset('img/crmgrow-logo.svg')">
+      <h4 class="text-center font-weight-bold mb-4">
+        {{ 'auth.register.register_title' | translate }}
+      </h4>
+      <p class="f-3 text-center">
+        {{ 'auth.register.register_desc_2' | translate }}
+      </p>
+      <form #basicForm="ngForm" (ngSubmit)="basicForm.form.valid ? fillBasic() : false">
+        <div class="form-group"
+          [ngClass]="{invalid: basicForm.submitted && username.invalid && (username.dirty || username.touched || basicForm.submitted)}">
+          <div class="d-flex">
+            <label for="username" class="mr-auto">
+              {{ 'auth.register.full_name' | translate }}
+            </label>
+            <span class="error" *ngIf="username.errors">
+              <ng-container *ngIf="username.errors.required">
+                {{ 'auth.register.required' | translate }}
+              </ng-container>
+            </span>
+          </div>
+          <input type="text" placeholder="John Doe" class="form-control" [(ngModel)]="user.user_name" name="username"
+            id="username" required #username="ngModel" />
+        </div>
+        <div class="form-group email-form"
+          [ngClass]="{invalid: basicForm.submitted && email.invalid && (email.dirty || email.touched || basicForm.submitted)}">
+          <div class="d-flex">
+            <label for="email" class="mr-auto">
+              {{ 'auth.register.email' | translate }}
+            </label>
+            <span class="error" *ngIf="email.errors">
+              <ng-container *ngIf="email.errors.required">{{ 'auth.register.required' | translate }}</ng-container>
+              <ng-container *ngIf="email.errors.pattern">{{ 'auth.register.email_invalid' | translate }}</ng-container>
+            </span>
+            <span class="error d-inline-block" *ngIf="!checkingUser && existing">{{ 'auth.register.email_exist' | translate }}</span>
+          </div>
+          <input type="email" placeholder="{{ 'auth.register.email_placeholder' | translate }}" class="form-control" [(ngModel)]="user.email" name="email"
+            id="email" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$" #email="ngModel"
+            (ngModelChange)="this.confirmEmail.next($event)" />
+          <img class="check-spinner" [src]="sspaService.toAsset('img/spinner.gif')" alt="" *ngIf="checkingUser">
+        </div>
+        <div class="position-relative form-group"
+          [ngClass]="{invalid: basicForm.submitted && password.invalid && (password.dirty || password.touched || basicForm.submitted)}"
+          *ngIf="!isSocialUser">
+          <div class="d-flex">
+            <label for="password" class="mr-auto">{{ 'auth.register.password' | translate }}</label>
+            <span class="error" *ngIf="password.errors">
+              <ng-container *ngIf="password.errors.required">{{ 'auth.register.required' | translate }}</ng-container>
+              <ng-container *ngIf="password.errors.minlength">{{ 'auth.register.password_invalid' | translate }}</ng-container>
+            </span>
+          </div>
+          <input [type]="password_type ? 'text' : 'password'" placeholder="{{ 'auth.register.password_placeholder' | translate }}" class="form-control"
+            [(ngModel)]="user.password" name="password" id="password" required minlength="6" #password="ngModel" />
+          <span class="f-3 c-blue password-type c-pointer" *ngIf="!password_type"
+            (click)="password_type = !password_type">{{ 'auth.register.show' | translate }}</span>
+          <span class="f-3 c-blue password-type c-pointer" *ngIf="password_type"
+            (click)="password_type = !password_type">{{ 'auth.register.hide' | translate }}</span>
+        </div>
+        <button type="submit" class="btn btn-primary d-block w-100 font-weight-bold mt-4">
+          {{ 'auth.register.register_submit_2' | translate }}
+        </button>
+      </form>
+    </div>
+
+    <div class="mx-3 my-2" *ngSwitchCase="3">
+      <img class="logo" [src]="sspaService.toAsset('img/crmgrow-logo.svg')">
+      <h4 class="text-center font-weight-bold mb-4">
+        {{ 'auth.register.register_title' | translate }}
+      </h4>
+      <p class="f-3 text-center">
+        {{ 'auth.register.register_desc_2' | translate }}
+      </p>
+      <form #profileForm="ngForm" (ngSubmit)="submitted = true; profileForm.form.valid ? fillProfile() : false"
+        class="mt-4">
+        <div class="form-group phone-form">
+          <div class="d-flex">
+            <label for="phone" class="mr-auto">
+              {{ 'auth.register.cell_phone' | translate }}
+            </label>
+            <span class="error" [class.d-block]="submitted">
+              <ng-container *ngIf="checkPhoneRequired(); else wrongTemplate;">
+                {{ 'auth.register.required' | translate }}
+              </ng-container>
+              <ng-template #wrongTemplate>
+                <ng-container *ngIf="!checkPhoneValid()">
+                  {{ 'auth.register.cell_phone_invalid' | translate }}
+                </ng-container>
+              </ng-template>
+            </span>
+            <span class="error d-inline-block" *ngIf="!checkingPhone && phoneExisting">
+              {{ 'auth.register.cell_phone_exist' | translate }}
+            </span>
+          </div>
+          <app-phone-input [cssClass]="'form-control phone-form'" [onlyCountries]="countries"
+            [selectedCountryISO]="CountryISO.UnitedStates" [(ngModel)]="user.phone"
+            (ngModelChange)="confirmPhone($event)" name="phone" #phoneControl>
+          </app-phone-input>
+          <img class="check-spinner" [src]="sspaService.toAsset('img/spinner.gif')" alt="" *ngIf="checkingPhone">
+        </div>
+        <div class="form-group"
+          [ngClass]="{invalid: submitted && !timezone.value}">
+          <div class="d-flex">
+            <label for="timezone" class="mr-auto">
+              {{ 'auth.register.timezone' | translate }}
+            </label>
+            <span class="error" *ngIf="!timezone.value">
+              {{ 'auth.register.required' | translate }}
+            </span>
+          </div>
+          <app-select-timezone [(timezone)]="user.time_zone_info"
+          #timezone id="timezone" name="timezone"></app-select-timezone>
+        </div>
+        <div class="form-group mt-4" [ngClass]="{invalid: submitted && invalidError != ''}">
+          <div class="d-flex justify-content-between">
+            <div class="v-center">
+              <label for="card_number">{{ 'auth.register.card' | translate }}</label>
+              <span class="f-3 card-detail">{{ 'auth.register.card_claim' | translate }}</span>
+            </div>
+            <span class="error" *ngIf="submitted && invalidError != ''">
+              <ng-container *ngIf="submitted && invalidError == 'require'">{{ 'auth.register.required' | translate }}</ng-container>
+              <ng-container *ngIf="submitted && invalidError == 'invalid'">{{ 'auth.register.invalid' | translate }}</ng-container>
+            </span>
+          </div>
+          <stripe-card #stripeCard [options]="stripeOptions" (invalidChange)="cardInvalid($event)"
+            (completeChange)="cardComplete($event)"></stripe-card>
+          <div class="form-group mt-4 promo-wrapper">
+            <div class="d-flex">
+              <label for="username" class="mr-auto mb-1">{{ 'auth.register.promo_code' | translate }}</label>
+            </div>
+            <input type="text" placeholder="{{ 'auth.register.promo_code_placeholder' | translate }}" class="form-control" [(ngModel)]="promo" name="promocode"
+              id="promocode" #promocode="ngModel" />
+          </div>
+        </div>
+        <div class="form-group mt-4">
+          <re-captcha id="recaptcha" name="recaptcha" #recaptcha="ngModel" [(ngModel)]="captchaToken" required></re-captcha>
+          <span class="error mt-1" [class.d-block]="submitted">
+            <ng-container *ngIf="!captchaToken">
+              {{ 'Please check if you are not a robot' | translate }}
+            </ng-container>
+          </span>
+        </div>
+        <button type="submit" class="btn btn-primary d-block w-100 font-weight-bold mt-4" [class.loading]="saving">
+          {{ 'auth.register.register_submit_3' | translate }}
+        </button>
+        <p class="f-3 text-center mt-4">
+          {{ 'auth.register.term1' | translate }}
+          <a target="_blank"
+            href="https://crmgrow.com/terms_of_service.html" class="c-blue td-none font-weight-bold c-pointer">
+            {{ 'auth.register.term2' | translate }}
+          </a>
+          {{ 'auth.register.term3' | translate }}
+          <a target="_blank" href="https://crmgrow.com/privacy.html"
+            class="c-blue td-none font-weight-bold c-pointer">
+            {{ 'auth.register.term4' | translate }}
+          </a></p>
+      </form>
+    </div>
+    <!-- End main Profile Information Step -->
+  </ng-container>
+</div>
+<p class="f-3 text-center mt-4" *ngIf="step != 0">{{ 'auth.register.already_have_account' | translate }}   <a class="font-weight-bold td-underline c-pointer"
+    [routerLink]="['/login' + (package_level ? '?level=' + package_level : '')]">{{ 'auth.register.sign_in' | translate }}  </a></p>

@@ -1,0 +1,42 @@
+diff --git a/node_modules/ngx-toastr/esm2020/overlay/overlay-container.mjs b/node_modules/ngx-toastr/esm2020/overlay/overlay-container.mjs
+index 2d23225..419a2aa 100644
+--- a/node_modules/ngx-toastr/esm2020/overlay/overlay-container.mjs
++++ b/node_modules/ngx-toastr/esm2020/overlay/overlay-container.mjs
+@@ -32,7 +32,8 @@ export class OverlayContainer {
+         const container = this._document.createElement('div');
+         container.classList.add('overlay-container');
+         container.setAttribute('aria-live', 'polite');
+-        this._document.body.appendChild(container);
++        const wrapper = this._document.querySelector("app-root") || this._document.body;
++        wrapper.appendChild(container);
+         this._containerElement = container;
+     }
+ }
+diff --git a/node_modules/ngx-toastr/fesm2015/ngx-toastr.mjs b/node_modules/ngx-toastr/fesm2015/ngx-toastr.mjs
+index e1f28c7..f84653a 100644
+--- a/node_modules/ngx-toastr/fesm2015/ngx-toastr.mjs
++++ b/node_modules/ngx-toastr/fesm2015/ngx-toastr.mjs
+@@ -336,7 +336,8 @@ class OverlayContainer {
+         const container = this._document.createElement('div');
+         container.classList.add('overlay-container');
+         container.setAttribute('aria-live', 'polite');
+-        this._document.body.appendChild(container);
++        const wrapper = this._document.querySelector("app-root") || this._document.body;
++        wrapper.appendChild(container);
+         this._containerElement = container;
+     }
+ }
+diff --git a/node_modules/ngx-toastr/fesm2020/ngx-toastr.mjs b/node_modules/ngx-toastr/fesm2020/ngx-toastr.mjs
+index 0df6d8d..600907d 100644
+--- a/node_modules/ngx-toastr/fesm2020/ngx-toastr.mjs
++++ b/node_modules/ngx-toastr/fesm2020/ngx-toastr.mjs
+@@ -336,7 +336,8 @@ class OverlayContainer {
+         const container = this._document.createElement('div');
+         container.classList.add('overlay-container');
+         container.setAttribute('aria-live', 'polite');
+-        this._document.body.appendChild(container);
++        const wrapper = this._document.querySelector("app-root") || this._document.body;
++        wrapper.appendChild(container);
+         this._containerElement = container;
+     }
+ }

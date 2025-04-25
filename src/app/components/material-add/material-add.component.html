@@ -1,0 +1,159 @@
+<h1 mat-dialog-title translate>Attach media</h1>
+<mat-dialog-content class="position-relative">
+  <div class="template-container">
+    <app-slide-tab [tabs]="tabs" [selected]="selectedTab" (onChange)="changeTab($event)" type="same">
+    </app-slide-tab>
+    <ng-container *ngIf="selectedTab.label == 'VIDEO'">
+      <ng-container *ngIf="(storeService.videos$ | async).length; else emptyVideos">
+        <div class="material-container mt-3">
+          <ng-container *ngFor="let material of storeService.videos$ | async">
+            <div class="material-item" (click)="toggleMaterial(material)" [class.active]="selectedMaterialIds.indexOf(material._id) !== -1" [class.d-none]="hideMaterials.indexOf(material._id) !== -1">
+              <img class="confirm" [src]="sspaService.toAsset('img/confirm.svg')" alt="check" *ngIf="selectedMaterialIds.indexOf(material._id) !== -1">
+              <div class="thumb-wrapper video-wrapper">
+                <img [src]="material.thumbnail" class="thumbnail" (error)="sspaService.imgError($event,'img/video_thumb.jpg')"/>
+                <img [src]="material.preview" class="preview" (error)="sspaService.imgError($event,'img/video_thumb.jpg')"/>
+              </div>
+              <div class="material-title f-1 font-weight-bold mt-3">
+                {{material.title}}
+              </div>
+              <div class="material-description f-1 mt-2">
+                {{material.description || '' | stripTags | removeEntity | shorten: 80: '...'}}
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
+      <ng-template #emptyVideos>
+        <ng-container [ngSwitch]="(materialService.loadingVideo$ | async)">
+          <div class="empty-list" *ngSwitchCase="STATUS.SUCCESS">
+            <div class="object-icon v-center">
+              <i class="i-icon i-template d-block bgc-dark"></i>
+            </div>
+            <h4 class="font-weight-bold mt-4 mb-3" translate>
+              There is no video yet.
+            </h4>
+          </div>
+          <div class="list-loading text-center" *ngSwitchCase="STATUS.REQUEST">
+            <div class="loader mt-5 lg"></div>
+            <h4 class="fw-600 mt-2" translate>Loading videos...</h4>
+          </div>
+        </ng-container>
+      </ng-template>
+    </ng-container>
+
+    <ng-container *ngIf="selectedTab.label == 'PDF'">
+      <ng-container *ngIf="(storeService.pdfs$ | async).length; else emptyPdfs">
+        <div class="material-container mt-3">
+          <ng-container *ngFor="let material of storeService.pdfs$ | async">
+            <div class="material-item" (click)="toggleMaterial(material)" [class.active]="selectedMaterialIds.indexOf(material._id) !== -1"  [class.d-none]="hideMaterials.indexOf(material._id) !== -1">
+              <img class="confirm" [src]="sspaService.toAsset('img/confirm.svg')" alt="check" *ngIf="selectedMaterialIds.indexOf(material._id) !== -1">
+              <div class="thumb-wrapper">
+                <img class="thumbnail" src="{{material.thumbnail || material.preview}}" alt="{{material.title}}" (error)="sspaService.imgError($event,'img/pdf_overlay.png')" />
+              </div>
+              <div class="material-title f-1 font-weight-bold mt-3">
+                {{material.title}}
+              </div>
+              <div class="material-description f-1 mt-2">
+                {{material.description || '' | stripTags | removeEntity | shorten: 80: '...'}}
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
+      <ng-template #emptyPdfs>
+        <ng-container [ngSwitch]="(materialService.loadingPdf$ | async)">
+          <div class="empty-list" *ngSwitchCase="STATUS.SUCCESS">
+            <div class="object-icon v-center">
+              <i class="i-icon i-template d-block bgc-dark"></i>
+            </div>
+            <h4 class="font-weight-bold mt-4 mb-3" translate>
+              There is no pdf yet.
+            </h4>
+          </div>
+          <div class="list-loading text-center" *ngSwitchCase="STATUS.REQUEST">
+            <div class="loader mt-5 lg"></div>
+            <h4 class="fw-600 mt-2" translate>Loading pdfs...</h4>
+          </div>
+        </ng-container>
+      </ng-template>
+    </ng-container>
+
+    <ng-container *ngIf="selectedTab.label == 'IMAGE'">
+      <ng-container *ngIf="(storeService.images$ | async).length; else emptyImages">
+        <div class="material-container mt-3">
+          <ng-container *ngFor="let material of storeService.images$ | async">
+            <div class="material-item" (click)="toggleMaterial(material)" [class.active]="selectedMaterialIds.indexOf(material._id) !== -1"  [class.d-none]="hideMaterials.indexOf(material._id) !== -1">
+              <img class="confirm" [src]="sspaService.toAsset('img/confirm.svg')" alt="check" *ngIf="selectedMaterialIds.indexOf(material._id) !== -1">
+              <div class="thumb-wrapper">
+                <img class="thumbnail" src="{{material.thumbnail || material.preview}}" alt="{{material.title}}" (error)="sspaService.imgError($event,'img/image_overlay.png')" />
+              </div>
+              <div class="material-title f-1 font-weight-bold mt-3">
+                {{material.title}}
+              </div>
+              <div class="material-description f-1 mt-2">
+                {{material.description || '' | stripTags | removeEntity | shorten: 80: '...'}}
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
+      <ng-template #emptyImages>
+        <ng-container [ngSwitch]="(materialService.loadingPdf$ | async)">
+          <div class="empty-list" *ngSwitchCase="STATUS.SUCCESS">
+            <div class="object-icon v-center">
+              <i class="i-icon i-template d-block bgc-dark"></i>
+            </div>
+            <h4 class="font-weight-bold mt-4 mb-3" translate>
+              There is no image yet.
+            </h4>
+          </div>
+          <div class="list-loading text-center" *ngSwitchCase="STATUS.REQUEST">
+            <div class="loader mt-5 lg"></div>
+            <h4 class="fw-600 mt-2" translate>Loading images...</h4>
+          </div>
+        </ng-container>
+      </ng-template>
+    </ng-container>
+
+  </div>
+  <div class="selected-materials mt-3" *ngIf="mode !== 'filter'">
+    <table class="table">
+      <thead>
+      <th class="selected-media p-0 op-full pb-1">
+        <div class="v-center">
+          <div translate>Selected Media</div>
+          <div class="media-count ml-3 f-1 c-white bgc-blue rounded" *ngIf="selectedMaterials.length">{{selectedMaterials.length}}</div>
+        </div>
+      </th>
+      <th class="type p-0 op-full pb-1" translate>Type</th>
+      <th class="action p-0 op-full pb-1"></th>
+      </thead>
+      <tbody>
+      <tr *ngFor="let material of selectedMaterials">
+        <td class="selected-media">
+          <div class="c-blue f-2 font-weight-bold">{{material.title}}</div>
+        </td>
+        <td class="type">
+          <div class="v-center border-0 bgc-trans">
+            <i class="i-icon bgc-black" aria-hidden="true"
+               [class.i-video]="getMaterialType(material) == 'Video'"
+               [class.i-pdf]="getMaterialType(material) == 'PDF'"
+               [class.i-image]="getMaterialType(material) == 'Image'"
+            ></i>
+            <span class="f-2 ml-2">{{getMaterialType(material)}}</span>
+          </div>
+        </td>
+        <td class="action">
+          <button class="v-center justify-content-end border-0 bgc-trans" type="button" (click)="deselectMaterial(material)">
+            <i class="i-icon i-close bgc-black" aria-hidden="true"></i>
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button class="btn c-blue" mat-dialog-close translate>Cancel</button>
+  <button class="btn btn-primary" (click)="attachMaterial()" translate>Attach</button>
+</mat-dialog-actions>

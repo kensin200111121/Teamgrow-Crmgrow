@@ -1,0 +1,66 @@
+<div class="panel-container d-flex rounded shadow position-relative">
+  <div (click)="collapseForm()" class="toggle-btn" [class.is-expanded]="!collapsed">
+    <i class="i-icon i-arrow-up d-block bgc-dark sm"></i>
+  </div>
+
+  <app-slide-tab
+    [tabs]="tabs"
+    [selected]="tab"
+    (onChange)="changeTab($event)"
+    type="plain"
+    class="pl-0 rounded-0"
+    [viewMode]="'colorful'"
+  >
+  </app-slide-tab>
+
+  <div class="mt-0">
+    <ng-container [ngSwitch]="tab.id">
+      <ng-container *ngSwitchCase="'note'">
+        <app-inline-note-editor
+          [contact]="contactId"
+          [disableHideContent]="true"
+          [isFocused]="!collapsed"
+          (onCreated)="onCreateNote()"
+          (onFocus)="expandForm()"
+          class="position-relative"
+        >
+        </app-inline-note-editor>
+      </ng-container>
+      <ng-container *ngSwitchCase="'email'">
+        <app-inline-send-email
+          class="position-relative"
+          [contactId]="contactId"
+          [setDraft]="draftEmail"
+          [setContact]="contactMainInfo"
+          [emailType]="'contact_email'"
+          [isFocused]="!collapsed"
+          [draftContactEmails]="draftContactEmails"
+          [hasMaterial]="enabledMaterial"
+          (onCallbackDestroySendEmail)="onCallbackDestroySendEmail($event)"
+          (onClose)="onCloseSendEmail($event)"
+          (onSend)="onSendEmail($event)"
+          (onFocus)="expandForm()"
+        >
+        </app-inline-send-email>
+      </ng-container>
+      <ng-container *ngSwitchCase="'text'">
+        <app-inline-send-text
+          class="position-relative"
+          [contactId]="contactId"
+          [setDraft]="draftText"
+          (onClose)="onCloseSendText($event)"
+          (onSend)="onSendText($event)"
+          [setContact]="contactMainInfo"
+          (onFocus)="expandForm()"
+          [type]="'single'"
+          [textType]="'contact_text'"
+          [isFocused]="!collapsed"
+          [draftContactPhones]="draftContactPhones"
+          (onCallbackDestroySendPhone)="onCallbackDestroySendPhone($event)"
+        >
+        </app-inline-send-text>
+      </ng-container>
+      <ng-container *ngSwitchDefault> </ng-container>
+    </ng-container>
+  </div>
+</div>

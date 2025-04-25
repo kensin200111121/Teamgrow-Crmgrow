@@ -1,0 +1,55 @@
+  <h1 mat-dialog-title translate>Assign Watched Percentage</h1>
+  <mat-dialog-content class="description">
+
+    <div class="mt-3">
+      <ng-container *ngIf="inputPercentage ===false ; else showInputTemplate">
+        <div class="f-3 c-dark mt-3" translate>
+          What view percentage triggers a YES to watched?
+        </div>
+        <div class="mt-3">
+          <div class="v-center">
+            <div class="custom-radio-container" (click)="selectOption(0)">
+              <input class="custom-radio" type="radio" id="see-all-materials" name="see-all" [checked]="selectedOption == 0">
+              <label class="f-5 font-weight-bold"></label>
+            </div>
+            <div class="f-5 font-weight-bold ml-2" translate>Set View Percentage</div>
+          </div>
+          <div class="v-center mt-2">
+            <div class="custom-radio-container" (click)="selectOption(1)">
+              <input class="custom-radio" type="radio" id="at-least-material" name="at-least" [checked]="selectedOption == 1">
+              <label class="f-5 font-weight-bold"></label>
+            </div>
+            <div class="f-5 font-weight-bold ml-2" translate>Don’t Set View Percentage</div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #showInputTemplate>
+        <ng-container>
+          <div class="f-3 c-dark mt-3" translate>
+            Please input percentage...
+          </div>
+          <div class="action-list">
+              <input
+                type="number"
+                step="1"
+                min="1"
+                max="100"
+                class="form-control"
+                name="percentage"
+                [(ngModel)]="percentage"
+                required
+              />
+              <span class='invalid' *ngIf='invalid' translate>Percentage value must be between 1 and 100</span>
+          </div>
+        </ng-container>
+
+
+      </ng-template>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end" class="mx-0">
+    <button type="button" class="btn btn-white c-blue mr-2" (click)="back()" translate>Cancel</button>
+    <button type="button" class="btn btn-primary"  (click)="confirm()" *ngIf="inputPercentage==false" translate>Ok</button>
+    <button type="button" class="btn btn-primary"  (click)="assign()" *ngIf="inputPercentage" translate>Assign</button>
+
+  </mat-dialog-actions>

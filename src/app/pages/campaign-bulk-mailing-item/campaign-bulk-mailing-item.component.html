@@ -1,0 +1,666 @@
+<div class="page-content d-flex">
+  <div class="campaign-bulk-mailing-item-page">
+    <app-back-button defaultTitle="Bulk Mail" defaultRoute="/bulk-mail/bulk"></app-back-button>
+    <div class="v-center justify-content-between">
+      <div class="page-title font-weight-bold">
+        <span *ngIf="campaign">{{campaign.title}}</span>
+      </div>
+      <a class="c-blue fw-600 c-pointer ml-3 f-3 td-none" *ngIf="currentPanel !== 'all'" (click)="loadActivities()" translate>Show all</a>
+    </div>
+    <div class="bulk-contents mt-3">
+      <div class="bulk-mailing-status">
+        <div class="status-item green-item" (click)="changePanel('contact')">
+          <div class="v-center category">
+            <i class="i-icon i-contact" aria-hidden="true"></i>
+            <span class="f-1 font-weight-bold ml-2 text-uppercase" translate>Contacts</span>
+          </div>
+          <div class="mt-2 f-30 count-number">{{loading ? '--' : status.contact}}</div>
+        </div>
+        <div class="status-item green-item" (click)="changePanel('sent')">
+          <div class="v-center category">
+            <i class="i-icon i-sent-mail" aria-hidden="true"></i>
+            <span class="f-1 font-weight-bold ml-2 text-uppercase" translate>Sent</span>
+          </div>
+          <div class="mt-2 f-30 count-number">{{loading ? '--' : status.sent}}</div>
+        </div>
+        <div class="status-item blue-item" (click)="changePanel('awaiting')">
+          <div class="v-center category">
+            <i class="i-icon i-opened-mail" aria-hidden="true"></i>
+            <span class="f-1 font-weight-bold ml-2 text-uppercase" translate>Awaiting</span>
+          </div>
+          <div class="mt-2 f-30 count-number">{{loading ? '--' : status.awaiting}}</div>
+        </div>
+        <div class="status-item green-item" (click)="changePanel('delivered')">
+          <div class="v-center category">
+            <i class="i-icon i-delivered-mail" aria-hidden="true"></i>
+            <span class="f-1 font-weight-bold ml-2 text-uppercase" translate>Delivered</span>
+          </div>
+          <div class="mt-2 f-30 count-number">{{loading ? '--' : status.delivered}}</div>
+        </div>
+        <div class="status-item red-item" (click)="changePanel('failed')">
+          <div class="v-center category">
+            <i class="i-icon i-delivered-mail" aria-hidden="true"></i>
+            <span class="f-1 font-weight-bold ml-2 text-uppercase" translate>Failed</span>
+          </div>
+          <div class="mt-2 f-30 count-number">{{loading ? '--' : status.failed}}</div>
+        </div>
+        <div class="status-item red-item" (click)="changePanel('unsubscribe')">
+          <div class="v-center category">
+            <i class="i-icon i-unsubscribed-mail" aria-hidden="true"></i>
+            <span class="f-1 font-weight-bold ml-2 text-uppercase" translate>Unsubscribed</span>
+          </div>
+          <div class="mt-2 f-30 count-number">{{loading ? '--' : status.unsubscribe}}</div>
+        </div>
+        <div class="status-item red-item" (click)="changePanel('open')">
+          <div class="v-center category">
+            <i class="i-icon i-opened-mail" aria-hidden="true"></i>
+            <span class="f-1 font-weight-bold ml-2 text-uppercase" translate>Opened</span>
+          </div>
+          <div class="mt-2 f-30 count-number">{{loading ? '--' : status.open}}</div>
+        </div>
+        <div class="status-item red-item" (click)="changePanel('click')">
+          <div class="v-center category">
+            <i class="i-icon i-clicked-link" aria-hidden="true"></i>
+            <span class="f-1 font-weight-bold ml-2 text-uppercase" translate>Clicked</span>
+          </div>
+          <div class="mt-2 f-30 count-number">{{loading ? '--' : status.click}}</div>
+        </div>
+        <div class="status-item blue-item" (click)="changePanel('watched')">
+          <div class="v-center category">
+            <i class="i-icon i-clicked-mail" aria-hidden="true"></i>
+            <span class="f-1 font-weight-bold ml-2 text-uppercase" translate>Watched</span>
+          </div>
+          <div class="mt-2 f-30 count-number">{{loading ? '--' : status.watched}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="templates-container mt-5 form-group">
+      <div>
+        <label translate>Email template</label>
+        <ng-container *ngIf="!loading">
+          <div class="v-center" *ngIf="mailTemplate?._id; else pureContent">
+            <div class="f-3 font-weight-bold c-dark">{{(mailTemplate?.title || 'Unnamed Template') | shorten: 50: '...'}}</div>
+          </div>
+          <ng-template #pureContent>
+            <ng-container *ngIf="!editingTemplate">
+              <div class="d-flex">
+                <div class="f-4 font-weight-bold mr-2">{{mailTemplate?.subject}}</div>
+                <a (click)="editEmailContent()" class="ml-auto" *ngIf="isAbleEdit">
+                  <i class="i-icon bgc-dark i-edit d-block"></i>
+                </a>
+              </div>
+              <div class="content f-3 op-75" [innerHTML]="mailTemplate?.content | removeEntity | safeHtml"></div>
+            </ng-container>
+            <app-template  *ngIf="editingTemplate" [inline]="true" [initMode]="'inline-edit'" [initTemplate]="mailTemplate" [wrapperClass]="'inline-form-editor'" (onClosePage)="onEditTemplate($event)" ></app-template>
+          </ng-template>
+        </ng-container>
+      </div>
+    </div>
+    <ng-container *ngIf="loading">
+      <div class="loader lg"></div>
+    </ng-container>
+    <div class="session-container mt-5" *ngIf="!loading">
+      <table class="table session-table">
+        <thead>
+        <th class="session">#</th>
+        <th class="sent" translate>Contacts</th>
+        <th class="sent" translate>Failed</th>
+        <th class="sent" translate>Delivered</th>
+        <th class="date" translate>Time</th>
+        <th class="completed" translate>Status</th>
+        <th class="action"></th>
+        </thead>
+        <ng-container *ngIf="!sessionLoading && sessions.length">
+          <tbody>
+            <tr *ngFor="let session of sessions; let i = index;">
+              <td class="session f-3">{{i + 1}}</td>
+              <td class="sent f-3">{{session.contacts}}</td>
+              <td class="sent f-3">{{session.failed}}</td>
+              <td class="sent f-3">{{session.delivered}}</td>
+              <td class="date f-2">
+                <div><span class="op-56" translate>START AT:</span><br /> <span class="f-1">{{session.start_at | datetimeFormat: 'MM/DD/yyyy hh:mm a'}}</span></div>
+                <div><span class="op-56" translate>END AT:</span><br /> <span class="f-1">{{session.end_at | datetimeFormat: 'MM/DD/yyyy hh:mm a'}}</span></div>
+              </td>
+              <td class="completed f-3 text-capitalize">{{session.status}}</td>
+              <td class="action">
+                <ng-container *ngIf="session.status != 'done'">
+                  <div class="icon-button v-center justify-content-center c-pointer" (click)="cancelSession(session)" placement="left" ngbTooltip="Cancel">
+                    <i class="i-icon bgc-dark i-trash"></i>
+                  </div>
+                </ng-container>
+              </td>
+            </tr>
+          </tbody>
+        </ng-container>
+        <ng-container *ngIf="!sessionLoading && !sessions.length">
+          <tbody>
+            <tr>
+              <td colspan="6">
+                <div class="text-center mt-5" translate>There are no sessions</div>
+              </td>
+            </tr>
+          </tbody>
+        </ng-container>
+        <ng-container *ngIf="sessionLoading">
+          <tbody>
+            <tr>
+              <td colspan="6">
+                <div class="loader"></div>
+              </td>
+            </tr>
+          </tbody>
+        </ng-container>
+
+      </table>
+    </div>
+  </div>
+  <div class="action-panel position-relative" *ngIf="!loading">
+
+    <div class="action-panel-header d-flex" >
+      <ng-container *ngIf="activities[currentPanel].loading && activities[currentPanel].data.length">
+        <div class="updating-status" translate>
+          LOADING...
+        </div>
+      </ng-container>
+      <ng-container
+        *ngIf="activities[currentPanel].data.length &&
+          currentPanel !== 'sent' &&
+          currentPanel !== 'failed' &&
+          currentPanel !== 'awaiting' &&
+          currentPanel !== 'contact' &&
+          currentPanel !== 'delivered'; else contactsList">
+        <div class="ml-auto"
+          ngbDropdown
+          placement="bottom-right">
+          <div class="v-center c-pointer f-3 mr-2 font-weight-bold"
+            ngbDropdownToggle>
+            <span class="pr-2">Sort by</span>
+          </div>
+          <div ngbDropdownMenu
+            aria-labelledby="activityFilterTypes">
+            <div class="py-2"
+              ngbDropdownItem
+              *ngFor="let type of FILTER_TYPES"
+              (click)="changeMode(type.id)">
+              <span class="f-3 v-center"
+                [class.font-weight-bold]="type.id === showMode">
+                {{type.label}}
+                <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                  *ngIf="type.id === showMode"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <ng-container *ngIf="currentPanel === 'sent' || currentPanel === 'failed' || currentPanel === 'awaiting' || currentPanel === 'contact'; else activityList">
+
+      <table class="w-100 page-table"
+        mat-table
+        multiTemplateDataRows
+        [dataSource]="(activities[currentPanel].data || []) 
+          | paginate
+              : {
+                  id: 'panelPage', 
+                  itemsPerPage: pageSize.id, 
+                  currentPage: activities[currentPanel]?.page || 1, 
+                  totalItems: status[currentPanel]
+                }
+          "
+      >
+        <ng-container matColumnDef="contact_name">
+          <th mat-header-cell *matHeaderCellDef translate>Contact Name</th>
+          <td mat-cell *matCellDef="let element">
+            <div class="v-center c-pointer" (click)="openContact(element)">
+              <div class="contact-avatar f-3 mr-2">
+                {{element.avatarName}}
+              </div>
+              <span class="contact-name">
+                <ng-container *ngIf="element?.not_found; else normalTemplate;">
+                  {{element.fullName | shorten: 8: '...'}}
+                </ng-container>
+                <ng-template #normalTemplate>
+                  {{element.fullName}}
+                </ng-template>
+              </span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="contact_label">
+          <ng-container *matHeaderCellDef="let element">
+            <ng-container *ngIf="element?.not_found; else normalTemplate;">
+              <th mat-header-cell colspan="10"></th>
+            </ng-container>
+            <ng-template #normalTemplate>
+              <th mat-header-cell translate>Status</th>
+            </ng-template>
+          </ng-container>
+          <ng-container *matCellDef="let element">
+            <ng-container *ngIf="element?.not_found; else normalTemplate;">
+              <td mat-cell colspan="10" translate>
+                This contact has been deleted.
+              </td>
+            </ng-container>
+            <ng-template #normalTemplate>
+              <td mat-cell>
+                <app-label-display
+                  [value]="element?.label"
+                ></app-label-display>
+              </td>
+            </ng-template>
+          </ng-container>
+        </ng-container>
+        <ng-container matColumnDef="last_activity">
+          <ng-container *matHeaderCellDef="let element">
+            <th mat-header-cell *ngIf="!element?.not_found" translate>
+              Last Activity
+            </th>
+          </ng-container>
+          <ng-container *matCellDef="let element">
+            <td mat-cell *ngIf="!element?.not_found">
+              <div class="v-center">
+                <i class="act-icon normal {{'act-'+element.last_activity?.type}} d-block mr-2"></i>
+                <span>{{element.last_activity?.content | shorten: 20: '...'}}</span>
+              </div>
+            </td>
+          </ng-container>
+        </ng-container>
+        <ng-container matColumnDef="contact_email">
+          <ng-container *matHeaderCellDef="let element">
+            <th mat-header-cell *ngIf="!element?.not_found" translate>
+              Email
+            </th>
+          </ng-container>
+          <ng-container *matCellDef="let element">
+            <td mat-cell *ngIf="!element?.not_found">
+              <span class="contact-email">{{element.email}}</span>
+            </td>
+          </ng-container>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <ng-container *matHeaderCellDef="let element">
+            <th mat-header-cell *ngIf="!element?.not_found" translate>
+              Campaign Status
+            </th>
+          </ng-container>
+          <ng-container *matCellDef="let element">
+            <td mat-cell *ngIf="!element?.not_found" class="text-capitalize">
+              {{element.status}}
+            </td>
+          </ng-container>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+          <ng-container *matHeaderCellDef="let element">
+            <th mat-header-cell *ngIf="!element?.not_found"></th>
+          </ng-container>
+          <ng-container *matCellDef="let element">
+            <td mat-cell *ngIf="!element?.not_found">
+              <ng-container *ngIf="element?.status == 'awaiting'">
+                <div class="icon-button v-center justify-content-center c-pointer" (click)="cancelContact(element)" placement="left" ngbTooltip="Cancel">
+                  <i class="i-icon bgc-dark i-trash"></i>
+                </div>
+              </ng-container>
+            </td>
+          </ng-container>
+        </ng-container>
+
+        <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let element" colspan="10">
+            {{element?.failed_reason}}
+          </td>
+        </ng-container>
+
+        <tr mat-header-row
+            *matHeaderRowDef="DISPLAY_COLUMNS" class="table-header"></tr>
+        <tr mat-row
+            *matRowDef="let row; columns: DISPLAY_COLUMNS;" [class.failed]="row.not_found || row.status === 'failed' || row.failed"></tr>
+        <tr mat-row
+            *matRowDef="let row; columns: ['expandedDetail'];" [class.d-none]="!(row.failed)" class="failed-reason"></tr>
+      </table>
+    </ng-container>
+    <ng-template #activityList>
+      <ng-container *ngIf="showMode ==='contact'; else timelineList">
+        <table class="w-100 page-table"
+          mat-table
+          multiTemplateDataRows
+          [dataSource]="(activities[currentPanel].contacts || []) 
+            | paginate
+                : {
+                    id: 'panelPage', 
+                    itemsPerPage: pageSize.id, 
+                    currentPage: activities[currentPanel]?.page || 1, 
+                    totalItems: status[currentPanel]
+                  }
+          "
+        >
+          <ng-container matColumnDef="contact_name">
+            <th mat-header-cell *matHeaderCellDef translate>Contact Name</th>
+            <td mat-cell *matCellDef="let contact">
+              <div class="v-center c-pointer" (click)="openContact(contact)">
+                <div class="contact-avatar f-3 mr-2">
+                  {{contact?.avatarName}}
+                </div>
+                <span class="contact-name">{{contact?.fullName}}</span>
+              </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="contact_label">
+            <th mat-header-cell *matHeaderCellDef translate>Status</th>
+            <td mat-cell *matCellDef="let contact">
+              <app-label-display
+                [value]="contact?.label"
+              ></app-label-display>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="last_activity">
+            <th mat-header-cell *matHeaderCellDef translate>Campaign Last Activity</th>
+            <td mat-cell *matCellDef="let contact">
+              <div class="v-center">
+                <i class="act-icon normal {{'act-'+activities[currentPanel].activities[contact._id][0]?.type}} d-block mr-2"></i>
+                <span>{{activities[currentPanel].activities[contact._id][0]?.content | shorten: 20: '...'}}</span>
+              </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="contact_email">
+            <th mat-header-cell *matHeaderCellDef translate>Email</th>
+            <td mat-cell *matCellDef="let contact">
+              <span class="contact-email">{{contact?.email}}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let contact">
+              <i class="i-icon i-arrow-down bgc-dark d-block i-action" (click)="selectContact(contact)"></i>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell></th>
+            </ng-container>
+            <ng-container *matCellDef="let contact">
+              <td mat-cell></td>
+            </ng-container>
+          </ng-container>
+
+          <ng-container matColumnDef="expandedDetail">
+            <td mat-cell *matCellDef="let contact" colspan="12" class="history-item">
+              <div class="contact-timeline">
+                <ng-container *ngFor="let activity of activities[currentPanel].activities[contact._id]">
+                  <div class="history-item">
+                    <div class="v-center justify-content-between mb-3">
+                      <div class="v-center">
+                        <div class="history-icon mr-1"><i class="act-icon normal {{'act-' + activity.type}}" ></i></div>
+                        <div class="f-6">
+                          <span>{{activity.content}}</span>
+                        </div>
+                      </div>
+                      <span class="f-3 op-56 ml-auto">{{activity.created_at | datetimeFormat :'MMM d, hh:mm a'}}</span>
+                    </div>
+                    <div class="main-data" *ngIf="activity.type != 'emails' ">
+                      <ng-container *ngIf="activity.type === 'email_trackers' && activity.email_trackers?.type === 'click'">
+                        <a target="_blank" class="f-3 c-pointer c-blue fw-600">{{activity.email_trackers?.link}}</a>
+                      </ng-container>
+                      <!-- <ng-container *ngIf="activity.type === 'video_trackers'">
+                        <div class="watched-material" *ngIf="materialJSON[activity['video_trackers']?.video]">
+                          <img [src]="materialJSON[activity['video_trackers']?.video]?.preview" class="material-thumbnail"/>
+                          <div class="material-title">{{materialJSON[activity['video_trackers']?.video]?.title}}</div>
+                        </div>
+                        <app-play-timelines
+                          [data]="activity['video_trackers']"
+                          [duration]="materialJSON[activity['video_trackers']?.video]?.duration">
+                        </app-play-timelines>
+                      </ng-container>
+                      <ng-container *ngIf="activity.type === 'pdf_trackers'">
+                        <div class="watched-material" *ngIf="materialJSON[activity['pdf_trackers']?.pdf]">
+                          <img [src]="materialJSON[activity['pdf_trackers']?.pdf]?.preview" class="material-thumbnail"/>
+                          <div class="material-title">{{materialJSON[activity['pdf_trackers']?.pdf]?.title}}</div>
+                        </div>
+                        <app-play-timelines
+                          [data]="activity['pdf_trackers']"
+                          [type]="'pdf_trackers'">
+                        </app-play-timelines>
+                      </ng-container>
+                      <ng-container *ngIf="activity.type === 'image_trackers'">
+                        <app-play-timelines
+                          [data]="activity['image_trackers']"
+                          [type]="'image_trackers'">
+                        </app-play-timelines>
+                      </ng-container> -->
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row
+              *matHeaderRowDef="DISPLAY_COLUMNS" class="table-header"></tr>
+          <tr mat-row
+              *matRowDef="let row; columns: DISPLAY_COLUMNS;"
+              [class.expanded-row]="selectedContact === row._id" [class.failed]="row.not_found || row.status === 'failed' || row.failed"></tr>
+          <tr mat-row
+              *matRowDef="let row; columns: ['expandedDetail']" class="activity-detail-row"></tr>
+        </table>
+      </ng-container>
+      <ng-template #timelineList>
+        <table class="w-100 page-table"
+          mat-table
+          multiTemplateDataRows
+          [dataSource]="(activities[currentPanel].data || []) 
+            | paginate
+                : {
+                    id: 'panelPage', 
+                    itemsPerPage: pageSize.id,
+                    currentPage: activities[currentPanel]?.page || 1, 
+                    totalItems: status[currentPanel]
+                  }
+          "
+        >
+          <ng-container matColumnDef="contact_name">
+            <th mat-header-cell *matHeaderCellDef translate>Contact Name</th>
+            <td mat-cell *matCellDef="let activity">
+              <div class="v-center c-pointer" (click)="openContact(activity.contact)">
+                <div class="contact-avatar f-3 mr-2">
+                  {{activity.contact?.avatarName}}
+                </div>
+                <span class="contact-name">{{activity.contact?.fullName}}</span>
+              </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="contact_label">
+            <th mat-header-cell *matHeaderCellDef translate>Status</th>
+            <td mat-cell *matCellDef="let activity">
+              <app-label-display
+                [value]="activity.contact?.label"
+              ></app-label-display>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="last_activity">
+            <th mat-header-cell *matHeaderCellDef translate>Campaign Activity</th>
+            <td mat-cell *matCellDef="let activity">
+              <div class="v-center activity-cell"
+                [class.disabled]="activity[activity.type]?.type === 'open' || activity[activity.type]?.type === 'unsubscribe' || activity.type === 'emails'"
+                (click)="selectActivity(activity)"
+              >
+                <i class="act-icon normal {{'act-'+activity?.type}} d-block mr-2"></i>
+                <span>{{activity.content | shorten: 20: '...'}}</span>
+              </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="contact_email">
+            <th mat-header-cell *matHeaderCellDef translate>Email</th>
+            <td mat-cell *matCellDef="let activity">
+              <span class="contact-email">{{activity.contact?.email}}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef translate>Activity Time</th>
+            <td mat-cell *matCellDef="let activity">
+              {{activity.created_at | datetimeFormat :'MMM DD, hh:mm a'}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell></th>
+            </ng-container>
+            <ng-container *matCellDef="let contact">
+              <td mat-cell></td>
+            </ng-container>
+          </ng-container>
+
+          <ng-container matColumnDef="expandedDetail">
+            <td mat-cell *matCellDef="let activity" colspan="12" class="history-item">
+              <div class="main-data">
+                <ng-container *ngIf="activity.type === 'email_trackers' && activity.email_trackers?.type === 'click'">
+                  <a target="_blank" class="f-3 c-pointer c-blue fw-600">{{activity.email_trackers?.link}}</a>
+                </ng-container>
+                <!-- <ng-container *ngIf="activity.type === 'video_trackers'">
+                  <div class="watched-material" *ngIf="materialJSON[activity['video_trackers']?.video]">
+                    <img [src]="materialJSON[activity['video_trackers']?.video]?.preview" class="material-thumbnail"/>
+                    <div class="material-title">{{materialJSON[activity['video_trackers']?.video]?.title}}</div>
+                  </div>
+                  <app-play-timelines
+                    [data]="activity['video_trackers']"
+                    [duration]="materialJSON[activity['video_trackers']?.video]?.duration">
+                  </app-play-timelines>
+                </ng-container>
+                <ng-container *ngIf="activity.type === 'pdf_trackers'">
+                  <div class="watched-material" *ngIf="materialJSON[activity['pdf_trackers']?.pdf]">
+                    <img [src]="materialJSON[activity['pdf_trackers']?.pdf]?.preview" class="material-thumbnail"/>
+                    <div class="material-title">{{materialJSON[activity['pdf_trackers']?.pdf]?.title}}</div>
+                  </div>
+                  <app-play-timelines
+                    [data]="activity['pdf_trackers']"
+                    [type]="'pdf_trackers'">
+                  </app-play-timelines>
+                </ng-container>
+                <ng-container *ngIf="activity.type === 'image_trackers'">
+                  <app-play-timelines
+                    [data]="activity['image_trackers']"
+                    [type]="'image_trackers'">
+                  </app-play-timelines>
+                </ng-container> -->
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row
+              *matHeaderRowDef="DISPLAY_COLUMNS" class="table-header"></tr>
+          <tr mat-row
+              *matRowDef="let row; columns: DISPLAY_COLUMNS;"
+              [class.expanded-row]="selectedActivity === row._id"></tr>
+          <tr mat-row
+              *matRowDef="let row; columns: ['expandedDetail']" class="activity-detail-row"></tr>
+        </table>
+      </ng-template>
+    </ng-template>
+
+    <ng-container *ngIf="!activities[currentPanel].loading && !activities[currentPanel].data.length">
+      <div class="empty-list">
+        <div class="object-icon v-center mt-5 mb-4">
+          <i class="i-icon i-lunch d-block bgc-dark"></i>
+        </div>
+        <div class="text-center pt-0 font-weight-bold">
+          <ng-container [ngSwitch]="currentPanel">
+            <span *ngSwitchCase="'sent'" translate>
+              We have not sent the campaign emails to anybody.
+            </span>
+            <span *ngSwitchCase="'failed'" translate>
+              There are no failed contacts in campaign email sending.
+            </span>
+            <span *ngSwitchCase="'awaiting'" translate>
+              We've sent campaign email to all of contacts.
+            </span>
+            <span *ngSwitchCase="'contact'" translate>
+              There are no contacts for this campaign.
+            </span>
+            <span *ngSwitchCase="'all'" translate>
+              There are no any activities in this campaign.
+            </span>
+            <span *ngSwitchCase="'delivered'" translate>
+              There are no contacts that received the email from this campaign.
+            </span>
+            <span *ngSwitchCase="'open'" translate>
+              Nobody opened the email from this campaign.
+            </span>
+            <span *ngSwitchCase="'click'" translate>
+              Nobody clicked the link from this campaign email.
+            </span>
+            <span *ngSwitchCase="'unsubscribe'" translate>
+              Nobody unsubscribed in this campaign.
+            </span>
+            <span *ngSwitchCase="'watched'" translate>
+              Nobody watched any material from this campaign email.
+            </span>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="activities[currentPanel].loading && !activities[currentPanel].data.length">
+      <div class="list-loading text-center">
+        <div class="loader mt-2"></div>
+        <h6 class="fw-600 mt-2" translate>Loading...</h6>
+      </div>
+    </ng-container>
+
+    <div class="my-2 table-control mode-1">
+      <div class="pagination-wrapper m-auto" [class.invisible]="status[currentPanel] < pageSize.id">
+        <pagination-controls
+          id="panelPage"
+          maxSize="5"
+          previousLabel=""
+          nextLabel=""
+          (pageChange)="changePage($event)"
+          (pageBoundsCorrection)="changePage($event)"
+        >
+        </pagination-controls>
+      </div>
+      <div
+        *ngIf="status[currentPanel] > PAGE_COUNTS[0].id"
+        class="shadow-dropdown ml-auto page-size-control"
+        ngbDropdown
+        placement="top-right"
+      >
+        <div
+          class="v-center c-pointer f-3 p-3 font-weight-bold"
+          ngbDropdownToggle
+        >
+          <span
+            class="pr-2 c-blue"
+            translate
+            [translateParams]="{ count: pageSize.id }"
+          >
+            pagination
+          </span>
+        </div>
+        <div ngbDropdownMenu aria-labelledby="contactPageSize">
+          <div
+            class="py-2"
+            ngbDropdownItem
+            *ngFor="let type of PAGE_COUNTS"
+            (click)="changePageSize(type)"
+          >
+            <span
+              class="f-3 v-center"
+              [class.font-weight-bold]="type.id === pageSize.id"
+            >
+              <span translate [translateParams]="{ count: type.label }">
+                pagination
+              </span>
+              <i
+                class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                *ngIf="type.id === pageSize.id"
+              ></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

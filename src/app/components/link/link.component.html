@@ -1,0 +1,8 @@
+<ng-container *ngIf="isUrl; else normalText;">
+    <a class="f-3 text-decoration-none c-blue" [href]="url" target="_blank">
+        {{ _value }}
+    </a>
+</ng-container>
+<ng-template #normalText>
+    <span class="f-3">{{ _value }}</span>
+</ng-template>

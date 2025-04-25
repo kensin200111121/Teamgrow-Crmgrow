@@ -1,0 +1,89 @@
+.sub-sidebar {
+  width: 140px;
+  min-width: 140px;
+  @media screen and (max-width: 576px) {
+    display: none;
+  }
+}
+.smtp-container {
+  max-width: 360px;
+  width: 100%;
+
+  @media screen and (max-width: 576px) {
+    display: block;
+    max-width: 100%;
+  }
+}
+
+form div.form-group.disabled input {
+  pointer-events: none !important;
+  opacity: 0.4 !important;
+}
+form.disabled .custom-toggle {
+  pointer-events: none !important;
+  opacity: 0.4 !important;
+}
+
+.info-section {
+  border: 1.6px solid #0000ff70;
+  border-radius: 4.8px;
+  background-color: #f5f5ff50;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+:host ::ng-deep {
+  .mat-accent .mat-slider-track-fill,
+  .mat-accent .mat-slider-thumb,
+  .mat-accent .mat-slider-thumb-label {
+    background-color: blue;
+  }
+  .mat-slider-thumb {
+    width: 10px !important;
+    height: 10px !important;
+    bottom: -5px !important;
+    right: -5px !important;
+    transform: scale(2) !important;
+  }
+  .mat-slider-horizontal .mat-slider-track-wrapper,
+  .mat-slider-horizontal .mat-slider-track-background,
+  .mat-slider-horizontal .mat-slider-track-fill,
+  .mat-slider-horizontal .mat-slider-ticks-container {
+    height: 5px;
+  }
+  .mat-slider-thumb-label {
+    height: 50px;
+    width: 50px;
+  }
+}
+
+form .custom-control-label {
+  font-size: 14px;
+}
+
+.weekday-text:first-letter {
+  text-transform: uppercase;
+}
+
+::ng-deep {
+  .mat-radio-label,
+  .mat-checkbox-layout {
+    margin-bottom: 0px;
+  }
+  .mat-select-trigger {
+    display: flex !important;
+    align-items: center;
+    width: 100%;
+  }
+  .mat-select-value {
+    max-width: none !important;
+  }
+
+  .cdk-overlay-pane {
+    margin: 30px 0px !important;
+  }
+}

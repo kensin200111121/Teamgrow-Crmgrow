@@ -1,0 +1,60 @@
+<form #cardForm="ngForm" (ngSubmit)="cardForm.form.valid ? editPayment() : false;">
+  <div class="v-center justify-content-between">
+    <h1 mat-dialog-title translate>Update payment information</h1>
+    <i class="i-icon i-close d-block bgc-black c-pointer" (click)="close()"></i>
+  </div>
+  <mat-dialog-content>
+    <ng-container [ngSwitch]="isStep">
+      <ng-container *ngSwitchCase="1">
+        <div class="v-center">
+          <div class="card-img">
+              <ng-container [ngSwitch]="card.card_brand">
+                  <img [src]="sspaService.toAsset('img/card_visa.svg')" *ngSwitchCase="'Visa'">
+                  <img [src]="sspaService.toAsset('img/card_amex.svg')" *ngSwitchCase="'American Express'">
+                  <img [src]="sspaService.toAsset('img/card_master.svg')" *ngSwitchCase="'MasterCard'">
+                  <img [src]="sspaService.toAsset('img/card_jcb.svg')" *ngSwitchCase="'JCB'">
+                  <img [src]="sspaService.toAsset('img/card_discover.svg')" *ngSwitchCase="'Discover'">
+                  <img [src]="sspaService.toAsset('img/card_diners.svg')" *ngSwitchCase="'Diners'">
+                  <img [src]="sspaService.toAsset('img/card_visa.svg')" *ngSwitchDefault>
+              </ng-container>
+          </div>
+          <div class="f-4 ml-3">
+              {{previewCardNumber}}
+          </div>
+          <div class="f-4 ml-auto">
+            {{card.exp_month}} / {{card.exp_year}}
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="2">
+        <div class="form-group card-detail mt-3">
+          <label translate>Credit or Debit Card</label>
+          <stripe-card #stripeCard [options]="stripeOptions" (invalidChange)="cardInvalid($event)"
+            (completeChange)="cardComplete($event)"></stripe-card>
+        </div>
+        <div class="cards-preview v-center mt-3">
+          <img [src]="sspaService.toAsset('img/card_visa.svg')" alt="visa">
+          <img [src]="sspaService.toAsset('img/card_amex.svg')" alt="amex">
+          <img [src]="sspaService.toAsset('img/card_master.svg')" alt="master">
+          <img [src]="sspaService.toAsset('img/card_jcb.svg')" alt="jcb">
+          <img [src]="sspaService.toAsset('img/card_discover.svg')" alt="discover">
+          <img [src]="sspaService.toAsset('img/card_diners.svg')" alt="diners">
+          <img [src]="sspaService.toAsset('img/card_unionpay.svg')" alt="unionpay">
+        </div>
+      </ng-container>
+    </ng-container>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button class="btn c-dark" mat-dialog-close translate>Cancel</button>
+    <button class="btn btn-primary" type="submit" [class.loading]="saving" translate *ngIf="isStep == 2">Save</button>
+    <button class="btn btn-primary mr-2" type="button" (click)="isStep = 2" translate *ngIf="isStep == 1">New card</button>
+    <button class="btn btn-primary" type="button" [class.loading]="proceedLoading" (click)="proceed_plan()" translate *ngIf="isStep == 1">Pay now</button>
+    <!-- <ng-container *ngIf="sleep_mode; else plan_mode">
+      <button class="btn btn-primary" type="button" [class.loading]="proceedLoading" (click)="proceed_sleep()" translate *ngIf="isStep == 1">Proceed</button>
+    </ng-container>
+    <ng-template #plan_mode>
+      <button class="btn btn-primary" type="button" [class.loading]="proceedLoading" (click)="proceed_plan()" translate *ngIf="isStep == 1">Pay now</button>
+    </ng-template> -->
+    
+  </mat-dialog-actions>
+</form>

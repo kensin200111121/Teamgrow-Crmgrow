@@ -1,0 +1,99 @@
+//
+// Custom toggle
+//
+
+.custom-toggle {
+    position: relative;
+    display: inline-block;
+    width: $custom-toggle-width;
+    height: 8px;
+
+    input {
+        display: none;
+
+        &:checked {
+             + .custom-toggle-slider {
+               background: #83B9F5;
+
+                &:before {
+                    transform: translateX(24px);
+                }
+            }
+        }
+
+        &:disabled {
+            &:checked {
+                + .custom-toggle-slider {
+
+                    &:before {
+                        background-color: lighten($color-silver, 10%);
+                    }
+                }
+            }
+        }
+    }
+
+  &.sm {
+    width: 40px;
+    height: 1.2rem;
+  }
+}
+
+.sm .custom-toggle-slider {
+  &:before {
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+  }
+}
+
+.custom-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 34px !important;
+    background-color: $color-silver;
+    transition: $input-transition;
+
+  &:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 0px;
+      bottom: -6px;
+      border-radius: 50% !important;
+      background-color: $color-blue;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.16);
+      transition: $input-transition;
+  }
+}
+.custom-toggle-slider-disabled {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 34px !important;
+    background-color: $color-placeholder;
+    transition: $input-transition;
+
+  &:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 0px;
+      bottom: -6px;
+      border-radius: 50% !important;
+      background-color: white;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.16);
+      transition: $input-transition;
+  }
+}
+

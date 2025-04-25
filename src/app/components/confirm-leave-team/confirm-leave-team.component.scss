@@ -1,0 +1,76 @@
+@import "variables";
+.title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.description {
+  font-size: 15px;
+  color: #555;
+}
+
+button {
+  border: none;
+
+  &.cancel:hover {
+    background-color: $color-silver;
+  }
+}
+.thumbnail {
+  padding: 0px;
+  width: 54px;
+  height: 30px;
+  object-fit: contain;
+  border: none;
+  margin: 0px;
+  border-radius: 0px;
+  margin-right: 12px;
+}
+.preview {
+  display: none;
+  padding: 0px;
+  width: 54px;
+  height: 30px;
+  object-fit: contain;
+  border: none;
+  margin: 0px;
+  border-radius: 0px;
+  margin-right: 12px;
+}
+.thumb-prev-wrapper:hover {
+  .thumbnail {
+    display: none;
+  }
+  .preview {
+    display: block;
+  }
+}
+
+.team-avatar {
+  width: 15%;
+  height: auto;
+}
+.team-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 80%;
+}
+
+.team-action {
+  width: 5%;
+}
+
+.team-reason {
+  width: 100%;
+  display: flex;
+}
+
+.team-reason-title {
+  width: 15%;
+}
+
+.team-reason-content {
+  width: 85%;
+  display: flex;
+}

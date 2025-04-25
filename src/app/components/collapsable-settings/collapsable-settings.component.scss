@@ -1,0 +1,54 @@
+@import 'variables';
+
+:host {
+  background-color: transparent !important;
+  h6 {
+    margin-bottom: 0;
+  }
+  .i-close {
+    background-color: $color-light-gray;
+  }
+  .completed {
+    background-color: $color-green-light;
+    color: $color-white;
+    padding: 0.125rem 0.5rem;
+  }
+  .empty-box {
+    width: 32px;
+    height: 32px;
+  }
+
+  .skip-btn {
+    padding: 0.375rem 1rem;
+    background-color: transparent;
+    &:hover {
+      background-color: $color-placeholder;
+    }
+  }
+  .undo-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    width: 32px;
+    height: 32px;
+    &:hover {
+      background-color: $color-placeholder;
+    }
+    & i {
+      background-color: $color-light-gray;
+    }
+  }
+  .skipped {
+    background-color: $color-grey-25;
+    color: $color-dark;
+    padding: 0.125rem 0.5rem;
+    height: 24px;
+  }
+}
+.card {
+  background-color: $color-white;
+  border-radius: 4px;
+  border: 1px solid $color-grey-25;
+  box-shadow: 0px 2px 4px 0px #00000029;
+}

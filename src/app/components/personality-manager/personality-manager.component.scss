@@ -1,0 +1,23 @@
+.left-panel {
+  width: 300px;
+}
+.right-panel {
+  width: 400px;
+  border-style: solid;
+  border-radius: 10px;
+  border-width: 1px;
+  border-color: rgba(16, 19, 54, 0.04);
+}
+
+.person-list {
+  height: 350px;
+  overflow-y: auto;
+}
+.selected {
+  background-color: #066FD3;
+  border-radius: 5px;
+  color: white;
+}
+.selected i {
+  background-color: white;
+}

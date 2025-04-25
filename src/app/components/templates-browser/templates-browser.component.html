@@ -1,0 +1,120 @@
+<div class="v-center justify-content-between mx-0 mt-4 px-4">
+  <h4 class="f-22 font-weight-bold c-black" translate>Select Template</h4>
+  <button class="v-center border-0 bgc-trans p-0" (click)="closeDrawer(false)">
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</div>
+<div class="px-4 my-3 panel">
+  <div>
+    <div class="v-center mt-2">
+      <div class="form-group mb-0 search-form">
+        <div class="input-group-prepend">
+          <i class="i-icon i-search d-block bgc-dark"></i>
+        </div>
+        <input type="text" class="form-control" [placeholder]="'Search' | translate" aria-label="search" aria-describedby="search-addon"
+          [(ngModel)]="searchTemplateStr" (ngModelChange)="changeTemplateSearchStr($event)">
+        <ng-container *ngIf="searchTemplateStr">
+          <div class="cancel-action c-pointer" (click)="changeTemplateSearchStr('')">
+            <i class="i-icon i-close d-block bgc-dark"></i>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="templats-step-wrapper">
+      <div class="w-100">
+        <ng-container *ngIf="templates.length">
+          <table class="w-100 template-table page-table" mat-table
+            [dataSource]="filteredResult | paginate: {itemsPerPage: 25, currentPage: templatePage, id: 'templateTable', total: filteredResult.length}">
+            <ng-container matColumnDef="title">
+              <th mat-header-cell *matHeaderCellDef class="title">
+                <div class="v-center c-pointer head-sort" (click)="sort('title')">
+                  <span [class]="selectedSort == 'title' ? 'fw-600 c-dark' : ''" translate>Title</span>
+                  <i class="i-icon d-block bgc-black ml-2" [class]="searchCondition.title ? 'i-sort-down' : 'i-sort-up'"
+                    *ngIf="selectedSort == 'title'"></i>
+                </div>
+              </th>
+              <td mat-cell *matCellDef="let template" class="title">
+                <a class="td-none title-inner m-text-overflow-ellipsis">
+                  <span class="f-3 font-weight-bold">{{template.title}}</span>
+                </a>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="template-content">
+              <th mat-header-cell *matHeaderCellDef class="template-content" translate>Template</th>
+              <td mat-cell *matCellDef="let template" class="template-content">
+                <div [class.newsletter]="template.type === 'newsletter'">
+                  <h5 class="font-weight-bold f-5 c-black mb-1">{{(template.subject || '') | stripTags | removeEntity | shorten: 40: '...'}}</h5>
+                  <ng-container *ngIf="template.type === 'email'; else newsletter">
+                    <span [innerHTML]="(template.content || '') | stripTags | removeEntity | shorten: 80: '...'"></span>
+                  </ng-container>
+                  <ng-template #newsletter>
+                    <div class="template-thumbnail-wrapper">
+                      <img [src]="template.thumbnail" class="template-thumbnail" />
+                    </div>
+                  </ng-template>
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="template-material">
+              <th mat-header-cell *matHeaderCellDef class="template-material" translate>Materials</th>
+              <td mat-cell *matCellDef="let template" class="template-material">
+                <div *ngIf="template.type === 'newsletter'; else emailMaterials">
+                  <div><span class="item-title">Videos:</span><span class="item-content">{{template.videos?.length || 0}}</span></div>
+                  <div><span class="item-title">PDFs:</span><span class="item-content">{{template.pdfs?.length || 0}}</span></div>
+                  <div><span class="item-title">Images:</span><span class="item-content">{{template.images?.length || 0}}</span></div>
+                </div>
+                <ng-template #emailMaterials>
+                  <div><span class="item-title">Videos:</span><span class="item-content">{{template.video_ids?.length || 0}}</span></div>
+                  <div><span class="item-title">PDFs:</span><span class="item-content">{{template.pdf_ids?.length || 0}}</span></div>
+                  <div><span class="item-title">Images:</span><span class="item-content">{{template.image_ids?.length || 0}}</span></div>
+                </ng-template>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="TEMPLATE_COLUMNS"></tr>
+            <tr mat-row *matRowDef="let element; columns: TEMPLATE_COLUMNS;" [class.selected]="element._id === selectedTemplate?._id"
+              (click)="selectTemplate(element)"></tr>
+          </table>
+          <ng-container *ngIf="filteredResult.length">
+            <div class="py-2 table-control mode-1">
+              <div class="pagination-wrapper m-auto">
+                <pagination-controls (pageChange)="templatePage = $event" (pageBoundsCorrection)="templatePage = $event" id="templateTable"
+                  maxSize="5" previousLabel="" nextLabel="">
+                </pagination-controls>
+              </div>
+              <div class="page-size-control d-flex">
+                <button type="button" class="btn btn-white f-6 font-weight-bold ml-auto" (click)="closeDrawer(false)" translate>
+                  Cancel
+                </button>
+                <button type="submit" class="btn btn-primary font-weight-bold f-6 ml-2" (click)="closeDrawer(true)" translate>
+                  Select
+                </button>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+        <ng-template #showingStatusTemplate>
+          <ng-container *ngIf="!filteredResult?.length">
+            <div class="empty-list py-5">
+              <div class="object-icon v-center">
+                <i class="i-icon i-template d-block bgc-dark"></i>
+              </div>
+              <h4 class="font-weight-bold text-center mt-4 mb-3" translate>
+                empty_template_filtered
+              </h4>
+            </div>
+          </ng-container>
+        </ng-template>
+      </div>
+      <ng-containter
+        *ngIf="(templateService.loading$ | async) === STATUS.REQUEST || (themeService.newslettersLoading$ | async) === STATUS.REQUEST">
+        <div class="list-loading text-center">
+          <div class="loader mt-5 lg"></div>
+          <h4 class="fw-600 mt-2" translate>loading_email_templates</h4>
+        </div>
+      </ng-containter>
+    </div>
+  </div>
+</div>

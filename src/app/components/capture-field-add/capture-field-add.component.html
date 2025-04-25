@@ -1,0 +1,305 @@
+<div *ngIf="isField; else customField">
+  <div class="v-center justify-content-between mb-2">
+    <h1
+      class="m-0"
+      mat-dialog-title
+      *ngIf="type == 'create'; else editCustomField"
+      translate
+    >
+      Add field
+    </h1>
+    <ng-template #editCustomField>
+      <h1 class="m-0" mat-dialog-title translate>Edit field</h1>
+    </ng-template>
+    <i class="d-block i-icon i-close bgc-dark" mat-dialog-close></i>
+  </div>
+  <form
+    #actionForm="ngForm"
+    (ngSubmit)="submitted = true; actionForm.form.valid ? addField() : false"
+    [class.was-validated]="submitted"
+  >
+    <mat-dialog-content>
+      <div class="form-group match-field">
+        <div>
+          <label class="mb-2" translate> match field </label>
+          <div class="d-flex justify-content-between">
+            <select
+              class="form-control c-blue f-5 mr-4"
+              [(ngModel)]="match_field"
+              name="match"
+              id="match"
+              #match="ngModel"
+              (ngModelChange)="changeMatchField()"
+            >
+              <option *ngFor="let field of fields" value="{{ field.name }}">
+                {{ field.label }}
+              </option>
+            </select>
+            <div
+              class="btn btn-white f-4 font-weight-bold btn-font-bold c-blue c-pointer px-3"
+            >
+              <div class="d-flex" (click)="showCustomField()">
+                <i
+                  class="sm i-icon i-plus bgc-blue font-weight-normal mr-2 mt-1"
+                ></i>
+                <span translate>New</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="field-name" translate>Field Name*</label>
+        <input
+          class="form-control"
+          type="text"
+          placeholder="Enter the label for this input box"
+          name="field_name"
+          #field_name="ngModel"
+          id="name"
+          [(ngModel)]="fieldName"
+          (ngModelChange)="confirm_NameDuplicated()"
+          required
+        />
+        <span
+          class="invalid-feedback"
+          *ngIf="
+            field_name.errors &&
+            (field_name.touched || field_name.dirty || submitted) &&
+            submitted
+          "
+          translate
+        >
+          Field name is required
+        </span>
+        <span class="f-3 mt-1 name-error" *ngIf="name_duplicated" translate>
+          Already field exist!
+        </span>
+      </div>
+
+      <div class="action-form">
+        <div>
+          <div class="form-group">
+            <label for="placeholder" translate>placeholder</label>
+            <input
+              class="form-control"
+              type="text"
+              placeholder="What question are you asking?"
+              name="placeholder_text"
+              id="placeholder"
+              #placeholder_text="ngModel"
+              [(ngModel)]="placeholder"
+            />
+          </div>
+        </div>
+        <label *ngIf="fieldType" class="f-4 type-label" for="type" translate
+          >Type*</label
+        >
+        <div class="row" *ngIf="fieldType">
+          <div class="col-12 form-group m-0">
+            <span>
+              {{ getFieldLabel(fieldType) }}
+            </span>
+          </div>
+          <div
+            class="col-12 mt-3"
+            *ngIf="fieldType === FieldTypeEnum.DROPDOWN && selectedOption.length"
+          >
+            <label class="f-4" for="type" translate>Dropdown Options</label>
+            <div>
+              <span
+                class="option-label"
+                *ngFor="
+                  let option of selectedOption;
+                  let isLast = last
+                "
+                >{{ option.label }}<span *ngIf="!isLast">,</span></span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <a
+        class="btn btn-white f-6 font-weight-bold c-blue mr-2"
+        mat-dialog-close
+        translate
+        >Cancel</a
+      >
+      <button
+        *ngIf="type == 'create'; else updateButton"
+        class="btn btn-primary f-6 font-weight-bold"
+        type="submit"
+        [class.loading]="saving"
+        [disabled]="isSame"
+        translate
+      >
+        Add
+      </button>
+      <ng-template #updateButton>
+        <button
+          class="btn btn-primary f-6 font-weight-bold"
+          type="submit"
+          [class.loading]="saving"
+          [disabled]="isSame"
+          translate
+        >
+          Update
+        </button>
+      </ng-template>
+    </mat-dialog-actions>
+  </form>
+</div>
+
+<ng-template #customField>
+  <div class="v-center justify-content-between mb-3">
+    <h1 class="m-0" mat-dialog-title translate>Add Custom Field</h1>
+    <i class="d-block i-icon i-close bgc-dark" (click)="close()"></i>
+  </div>
+  <form
+    #actionForm="ngForm"
+    (ngSubmit)="
+      customsubmitted = true; actionForm.form.valid ? addCustomField() : false
+    "
+    [class.was-validated]="customsubmitted"
+  >
+    <mat-dialog-content>
+      <div class="form-group mb-3">
+        <label for="field-name" translate>name</label>
+        <input
+          class="form-control"
+          type="text"
+          [placeholder]="'Type in name of your custom field' | translate"
+          name="field_name"
+          #field_name="ngModel"
+          id="name"
+          [(ngModel)]="customFieldName"
+          (ngModelChange)="confirmDuplicated()"
+          required
+        />
+        <span
+          class="invalid-feedback"
+          *ngIf="
+            field_name.errors &&
+            (field_name.touched || field_name.dirty || customsubmitted) &&
+            customsubmitted
+          "
+          translate
+        >
+          Field name is required
+        </span>
+        <span class="f-3 mt-1 dot-error" *ngIf="existingName" translate>
+          Field name is already taken
+        </span>
+        <span class="f-3 mt-1 dot-error" *ngIf="special_alphabet" translate>
+          Please remove the special character in the name
+        </span>
+        <span class="f-3 mt-1 dot-error" *ngIf="notAllowName" translate>
+          not_allow_field_name
+        </span>
+      </div>
+      <div class="action-form">
+        <label class="f-1 c-dark text-uppercase type-label" for="type" translate
+          >type</label
+        >
+        <div class="row">
+          <div class="col-12 form-group m-0">
+            <select
+              class="form-control c-dark f-5"
+              [(ngModel)]="customFieldType"
+              name="field"
+              id="field"
+              #field="ngModel"
+            >
+              <option
+                *ngFor="let field of FIELD_TYPES"
+                value="{{ field.value }}"
+              >
+                {{ field.label }}
+              </option>
+            </select>
+          </div>
+          <div
+            class="col-12 mt-3"
+            *ngIf="
+              customFieldType === FieldTypeEnum.DROPDOWN;
+              else customTextFieldType
+            "
+          >
+            <div class="form-group mb-3">
+              <label for="option" class="mb-0" translate>options</label>
+              <div
+                class="v-center mt-3 dropdown-options"
+                *ngFor="let option of customOptions; let index = index"
+              >
+                <div class="dropdown-option w-100">
+                  <input
+                    class="form-control"
+                    type="text"
+                    name="option-{{ option.value }}"
+                    [(ngModel)]="option.label"
+                    (ngModelChange)="customOptionNameChange($event)"
+                    (change)="customOptionValueChange(option)"
+                    required
+                  />
+                </div>
+                <span
+                  class="f-1 font-weightb-bold c-blue ml-3 c-pointer"
+                  (click)="customDeleteOption(index)"
+                >
+                  <i class="d-block i-icon i-trash bgc-red"></i>
+                </span>
+              </div>
+              <span class="invalid-option mt-1" *ngIf="customIsSame" translate>
+                Duplicated options is existing.
+              </span>
+              <button
+                class="v-center justify-content-center btn btn-white-blue w-100 py-2 mt-3"
+                type="button"
+                (click)="addCustomOption()"
+                [disabled]="customIsSame"
+              >
+                <i class="d-block i-icon i-plus bgc-blue"></i>
+              </button>
+            </div>
+          </div>
+          <ng-template #customTextFieldType>
+            <div class="col-12 mt-3">
+              <div class="form-group">
+                <label for="placeholder" translate>placeholder</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [placeholder]="'Input suggestion text' | translate"
+                  name="placeholder_text"
+                  id="customPlaceholder"
+                  #placeholder_text="ngModel"
+                  [(ngModel)]="customPlaceholder"
+                />
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <a
+        class="btn btn-white f-6 font-weight-bold c-dark mr-2"
+        (click)="close()"
+        translate
+        >Cancel</a
+      >
+      <button
+        class="btn btn-primary f-6 font-weight-bold"
+        type="submit"
+        [class.loading]="saving"
+        [disabled]="customIsSame"
+        translate
+      >
+        Add
+      </button>
+    </mat-dialog-actions>
+  </form>
+</ng-template>

@@ -1,0 +1,15 @@
+<div class="v-center justify-content-end">
+  <button class="v-center border-0 bgc-trans" mat-dialog-close>
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</div>
+<div class="upgrade-package-wrapper">
+  <i class="i-icon header-icon i-information d-block bgc-blue mx-auto"></i>
+  <p class="my-4" translate>Payment Failed</p>
+  <div class="f-4 text-center" translate>payment_failed_error</div>
+</div>
+<mat-dialog-actions align="center" style="margin-left: 30px;margin-right: 30px;">
+  <button class="btn btn-primary f-5 font-weight-bold px-2 mx-auto" (click)="gotoBilling()" translate>Manage Billing</button>
+  <button class="btn border border-primary bg-white f-5 font-weight-bold ml-2" [class.loading]="isSaving"
+    (click)="downloadCSV()" translate>Download CSV</button>
+</mat-dialog-actions>

@@ -1,0 +1,66 @@
+@import 'variables';
+
+.table-control-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.track-data-list {
+  background-color: whitesmoke;
+  border-radius: 8px;
+  border: 1px solid #E6E6E6;
+  padding: 0 4px;
+}
+
+:host ::ng-deep {
+  .mat-table-wrapper table {
+    min-width: fit-content !important;
+  }
+
+  tr.mat-header-row {
+    height: 26px;
+  }
+
+  .track-data-list {
+    table {
+      background-color: whitesmoke !important;
+      th, td {
+        background-color: whitesmoke !important;
+        padding-left: 10px;
+      }
+    }
+  }
+}
+
+.table-control.mode-1 {
+  grid-template-columns: 10px auto 200px;
+  background: whitesmoke;
+
+  .pagination-wrapper {
+    margin-left: 0px!important;
+  }
+}
+
+.reloading {
+  animation-name: rotateEffect;
+  animation-duration: 0.6s;
+  animation-iteration-count: infinite;
+  animation-delay: 0s;
+}
+
+@keyframes rotateEffect {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.progress-box {
+  // width: 54px;
+}
+
+.date-box {
+  width: 60px;
+}

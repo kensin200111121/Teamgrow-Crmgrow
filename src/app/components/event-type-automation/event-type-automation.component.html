@@ -1,0 +1,65 @@
+<div class="v-center justify-content-between">
+  <h1 mat-dialog-title class="m-0" translate>Assign Automation</h1>
+  <button class="v-center border-0 bgc-trans" mat-dialog-close>
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</div>
+<form (ngSubmit)="submitted = true;  setAutomation() ">
+  <mat-dialog-content>
+    <div class="form-group mt-2">
+      <div class="v-center">
+        <label class="theme-label">Automation happens</label>
+        <span class="invalid-error f-3 c-red ml-auto" *ngIf="!eventType.auto_trigger_type && submitted" translate>
+          Required!
+        </span>
+      </div>
+      <mat-select class="form-control d-flex align-items-center" [(value)]="eventType.auto_trigger_type" name="remind-event"
+        disableOptionCentering (selectionChange)="changeAutoTriggerType($event)">
+        <mat-option *ngFor="let trigger of autoTriggers" [value]="trigger.value">{{ trigger.name }}</mat-option>
+      </mat-select>
+
+      <div *ngIf="eventType.auto_trigger_type" class="mt-3 form-group ">
+        <label class="theme-label ml-5" [translateParams]="{triggerName: selectedAutoTrigger.name | lowercase}" translate>trigger.selected_name</label>
+        <mat-radio-group name="trigger-type" class="d-flex flex-column" [(ngModel)]="selectedTriggerTime">
+          <mat-radio-button *ngIf="auto_trigger_type!=2" class=" f-4 ml-5 mb-2" [color]="'primary'" [value]="'immediate'"
+            (change)="changeAutoTriggerTime($event)" translate>
+            Immediately
+          </mat-radio-button>
+
+          <div class="v-center col-sm-6 px-0">
+            <mat-radio-button class=" ml-5 my-1 f-4" [color]="'primary'" [value]="'custom'"
+              (change)="changeAutoTriggerTime($event)">
+            </mat-radio-button>
+            <input type="number" class="form-control mr-2" name="custom-duration-input"
+              [(ngModel)]="eventType.auto_trigger_duration" required min="1" [disabled]="selectedTriggerTime!=='custom'" />
+            <mat-select class="form-control d-flex align-items-center" [(value)]="eventType.auto_trigger_time" name="remind-time"
+              disableOptionCentering [disabled]="selectedTriggerTime!=='custom'">
+              <mat-option *ngFor="let time of autoTriggerTimes" [value]="time.value">{{ time.name }}</mat-option>
+            </mat-select>
+          </div>
+        </mat-radio-group>
+      </div>
+      <div class="v-center mt-2">
+        <label class="theme-label">
+          <span translate>Automation</span>
+        </label>
+        <span class="invalid-error f-3 c-red ml-auto" *ngIf="!selectedAutomation && submitted">
+          Required!
+        </span>
+      </div>
+      <app-input-automation [automation]="selectedAutomation" (automationChange)="selectAutomation($event)" [type]="'contact'">
+      </app-input-automation>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button class="btn btn-white f-6 font-weight-bold mr-2" type="button" mat-dialog-close translate>
+      Cancel
+    </button>
+    <button class="btn btn-white f-6 font-weight-bold mr-2" type="button" translate (click)="unassignAutomation()" *ngIf="isAutomation">
+      Unassign
+    </button>
+    <button class="btn btn-primary f-6 font-weight-bold" type="submit" [class.loading]="saving" translate>
+      Assign
+    </button>
+  </mat-dialog-actions>
+</form>

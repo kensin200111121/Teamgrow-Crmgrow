@@ -1,0 +1,28 @@
+@import 'variables';
+
+.box {
+  background-color: $color-grey-15;
+  border: 1px solid $color-grey-25;
+  width: 256px;
+}
+hr {
+  border: 1px solid $color-grey-25;
+}
+.link_c {
+  color: $color-blue;
+  &:hover {
+    color: $color-white;
+    background-color: $color-blue;
+  }
+}
+.bg-dark {
+  background-color: $color-light-gray !important;
+}
+.contact-us-warpper {
+  div {
+    i {
+      width: 16px !important;
+      height: 16px !important;
+    }
+  }
+}

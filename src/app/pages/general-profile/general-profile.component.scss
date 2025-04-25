@@ -1,0 +1,45 @@
+button,
+a {
+
+  &:hover,
+  &:active {
+    box-shadow: 0 5px 16px -5px rgba(16, 19, 54, 0.35);
+  }
+}
+
+:host ::ng-deep {
+  mat-form-field {
+    width: 100%;
+
+    .mat-form-field-wrapper {
+      padding: 0;
+
+      .mat-form-field-infix {
+        width: 100%;
+        padding: 0;
+        border: none;
+
+        .mat-select-trigger {
+          .mat-select-value {
+            // color: #066FD3;
+          }
+        }
+      }
+
+      .mat-form-field-underline {
+        height: 0;
+
+        span {
+          height: 0 !important;
+        }
+      }
+
+    }
+
+    .mat-option-text {
+      font-weight: bold;
+    }
+  }
+
+}
+

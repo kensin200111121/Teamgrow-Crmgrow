@@ -1,0 +1,224 @@
+<div class="v-center justify-content-between">
+    <h1 mat-dialog-title class="m-0" translate>
+        {{filterId ? saveOption != 'save_as' ? 'Save Filtered List' : 'Edit Filtered List' : 'New Filtered List' }}
+    </h1>
+    <button type="button" class="v-center border-0 bgc-trans close-button" mat-dialog-close>
+        <i class="i-icon i-close bgc-black ml-1" aria-hidden="true"></i>
+    </button>
+</div>
+<form #filterForm="ngForm" (ngSubmit)="submitted = true; filterForm.form.valid ? saveFilter() : false" [class.was-validateed]="submitted">
+    <mat-dialog-content>
+       <ng-container ngHide="saveOption!='save_as'">
+         <div class="form-group mt-3">
+             <label translate>name</label>
+             <input
+                 class="form-control"
+                 type="text"
+                 name="name"
+                 [(ngModel)]="filterName"
+                 required
+             />
+             <span
+                 class="invalid-error f-3 font-weight-bold c-red"
+                 *ngIf="filterName == '' && submitted"
+                 translate
+             >
+                 Name is required
+             </span>
+         </div>
+         <div class="form-group mt-3" >
+             <label translate>Description</label>
+             <textarea
+                 class="form-control"
+                 type="text"
+                 name="description"
+                 [(ngModel)]="filterDescription"
+             >
+             </textarea>
+         </div>
+         <div class="form-group mt-3" *ngIf="userIsOnTeam">
+             <label translate>Visibility</label>
+             <select
+                 class="form-control"
+                 [(ngModel)]="filterType"
+                 name="filter_type"
+                 #filter_type="ngModel"
+             >
+                 <option [value]="'own'">Private</option>
+                 <option [value]="'team'">Public</option>
+             </select>
+           <div class="f-2  op-40 mt-2 mr-2">Private lists are only visible to you. Public lists are visible to everyone on your team.</div>
+
+         </div>
+       </ng-container>
+        <div class="v-center mt-3">
+            <div class="f-1 font-weight-bold op-40 text-uppercase mr-2">active filters</div>
+            <div class="v-center justify-content-center filter-count bgc-blue c-white f-3 fw-600">
+                {{searchOption.getActiveOptions()}}
+            </div>
+        </div>
+
+        <div class="d-flex align-items-start mt-3" *ngIf="searchOption.labelCondition.length">
+            <div class="label-type f-3 font-weight-bold mr-3" *ngIf="searchOption.includeLabel; else excludeLabel"  translate>
+                Including status:
+            </div>
+            <ng-template #excludeLabel>
+                <div class="label-type f-3 font-weight-bold mr-3" translate>
+                    Excluding status:
+                </div>
+            </ng-template>
+            <div class="label-container v-center flex-wrap">
+                <div class="v-center mb-1 ml-2" *ngFor="let item of selectedLabels">
+                  <ng-container *ngIf="item; else noLabelTemplate">
+                    <i class="d-block i-icon i-label mr-1"
+                       [style.backgroundColor]="item.color === '#FFF' ? '#000' : item.color">
+                    </i>
+                    <span class="f-3 fw-600">{{item.name}}</span>
+                  </ng-container>
+                  <ng-template #noLabelTemplate>
+                    <i class="i-icon i-label d-block mr-2" [style.backgroundColor]="'#000'"></i>
+                    <span class="f-3 fw-600 mt-1">No Status</span>
+                  </ng-template>
+                </div>
+            </div>
+        </div>
+
+        <div class="v-center mt-2" *ngIf="selectedAction != '' && selectedMaterial.length > 0">
+            <div class="f-3 font-weight-bold">
+                {{selectedAction}}
+            </div>
+            <div class="v-center ml-2">
+                <i class="i-icon bgc-black mr-2" aria-hidden="true"
+                [class.i-video]="getMaterialType() === 'Video'"
+                [class.i-pdf]="getMaterialType() === 'PDF'"
+                [class.i-image]="getMaterialType() === 'Image'"
+                ></i>
+                <span class="f-3 font-weight-bold c-blue">{{selectedMaterial[0].title}}</span>
+            </div>
+        </div>
+
+        <div class="v-center mt-2" *ngIf="searchOption.countryCondition.length">
+            <div class="f-3 font-weight-bold" translate>
+                Including country:
+            </div>
+            <div class="v-center">
+                <div class="f-3 fw-600 ml-2">
+                    {{searchOption.countryCondition.join(', ')}}
+                </div>
+            </div>
+        </div>
+
+        <div class="v-center mt-2" *ngIf="searchOption.regionCondition.length">
+            <div class="f-3 font-weight-bold" translate>
+                Including state:
+            </div>
+            <div class="v-center">
+                <div class="f-3 fw-600 ml-2">
+                    {{searchOption.regionCondition.join(', ')}}
+                </div>
+            </div>
+        </div>
+
+        <div class="v-center mt-2" *ngIf="searchOption.cityCondition.length">
+            <div class="f-3 font-weight-bold" translate>
+                Including city:
+            </div>
+            <div class="v-center">
+                <div class="f-3 fw-600 ml-2">
+                    {{searchOption.cityCondition}}
+                </div>
+            </div>
+        </div>
+
+        <div class="v-center mt-2" *ngIf="searchOption.zipcodeCondition.length">
+            <div class="f-3 font-weight-bold" translate>
+                Including zipcode:
+            </div>
+            <div class="v-center">
+                <div class="f-3 fw-600 ml-2">
+                    {{searchOption.zipcodeCondition}}
+                </div>
+            </div>
+        </div>
+
+        <div class="v-center mt-2" *ngIf="searchOption.sourceCondition.length">
+            <div class="f-3 font-weight-bold" *ngIf="searchOption.includeSource; else excludeSource" translate>
+                Including sources:
+            </div>
+            <ng-template #excludeSource>
+                <div class="f-3 font-weight-bold" translate>
+                    Excluding sources:
+                </div>
+            </ng-template>
+            <div class="v-center">
+                <div class="f-3 fw-600 ml-2" *ngFor="let item of searchOption.sourceCondition">
+                    {{item ? item : 'No source'}}
+                </div>
+            </div>
+        </div>
+
+        <div class="v-center mt-2" *ngIf="searchOption.brokerageCondition.length">
+            <div class="f-3 font-weight-bold" *ngIf="searchOption.includeBrokerage; else excludeBrokerage" translate>
+                Including companies:
+            </div>
+            <ng-template #excludeBrokerage>
+                <div class="f-3 font-weight-bold" translate>
+                    Excluding companies:
+                </div>
+            </ng-template>
+            <div class="v-center">
+                <div class="f-3 fw-600 ml-2" *ngFor="let item of searchOption.brokerageCondition">
+                    {{item ? item : 'No company'}}
+                </div>
+            </div>
+        </div>
+
+        <div class="v-center mt-2" *ngIf="searchOption.tagsCondition.length">
+            <div class="f-3 font-weight-bold" *ngIf="searchOption.includeTag; else excludeTag" translate>
+                Including tags:
+            </div>
+            <ng-template #excludeTag>
+                <div class="f-3 font-weight-bold" translate>
+                    Excluding tags:
+                </div>
+            </ng-template>
+            <div class="v-center">
+                <div class="tag rounded f-3 fw-600 ml-2" *ngFor="let item of searchOption.tagsCondition">
+                    {{item ? item : 'No tag'}}
+                </div>
+            </div>
+        </div>
+
+        <div class="v-center mt-2" *ngIf="activityConditions.length"
+        >
+            <div class="d-flex align-items-start">
+              <div class="f-3 font-weight-bold mr-2" translate>
+                Including last activities:
+              </div>
+              <div class="f-3">
+                {{activityConditions.join(', ')}}
+              </div>
+            </div>
+        </div>
+        <div class="v-center mt-2" *ngIf="searchOption.activityStart">
+            <div class="f-3 font-weight-bold" translate>
+                Activity start date:
+            </div>
+            <div class="f-3 fw-600 c-blue ml-2">
+                {{searchOption.activityStart.year}}-{{searchOption.activityStart.month}}-{{searchOption.activityStart.day}}
+            </div>
+        </div>
+        <div class="v-center mt-2" *ngIf="searchOption.activityEnd">
+            <div class="f-3 font-weight-bold" translate>
+                Activity end date:
+            </div>
+            <div class="f-3 fw-600 c-blue ml-2">
+                {{searchOption.activityEnd.year}}-{{searchOption.activityEnd.month}}-{{searchOption.activityEnd.day}}
+            </div>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button type="button" mat-dialog-close class="btn c-blue f-6 font-weight-bold" translate>Cancel</button>
+        <button [attr.data-action]="'contact-filter-save-confirm'" type="submit" class="btn btn-primary f-6 font-weight-bold" [class.loading]="saving" translate>Save</button>
+    </mat-dialog-actions>
+</form>

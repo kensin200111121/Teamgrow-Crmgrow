@@ -1,0 +1,154 @@
+.card-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-column-gap: 30px;
+  grid-row-gap: 16px;
+  max-width: 1140px;
+}
+
+.card {
+  box-shadow: 0px 3px 5px rgb(0 0 0 / 8%), 0px 0px 4px rgb(0 0 0 / 10%);
+  border-color: silver;
+  height: 100%;
+}
+.card-header {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  padding-top: 20px;
+  font-weight: 600;
+
+  .i-reload {
+    &.loading {
+      animation:loadSpinner 2s linear infinite;
+    }
+  }
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.legend-name {
+  font-size: 13px;
+}
+
+.analytics-item .count {
+  font-size: 26px;
+}
+
+.card .card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.chart.with-items {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+
+  .item {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin: 12px 8px;
+
+    .item-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .item-value {
+      font-size: 50px;
+      font-weight: 600;
+    }
+  }
+}
+
+.rate-chart {
+  display: grid;
+  grid-template-columns: 75px 80px 1fr 40px;
+  grid-column-gap: 8px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+  .label {
+    font-size: 13px;
+    text-align: right;
+  }
+
+  .rate-status-info {
+    font-size: 13px;
+  }
+
+  .rate-status-wrapper {
+    flex: 1;
+    background: #dbdeed;
+    height: 22px;
+    position: relative;
+    margin: 0px 8px;
+
+    .rate-status {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      background-color: #9185D2;
+      height: 100%;
+    }
+  }
+
+  .rate-status-info {
+    text-align: right;
+  }
+}
+
+.table {
+  thead th {
+    border-bottom: 1px solid #E6E6E6;
+    font-weight: 400;
+    padding: 10px 0px;
+  }
+  tbody td {
+    margin-top: 16px;
+    padding: 10px 0px;
+  }
+  .activity-col {
+    width: 55%;
+  }
+  .average-col {
+    width: 25%;
+  }
+  .total-col {
+    width: 20%
+  }
+  td.average-col {
+    font-size: 24px;
+    font-weight: 600;
+    color: #989898;
+  }
+  td.total-col {
+    font-size: 24px;
+    font-weight: 600;
+    color: #4D4D4D;
+  }
+}
+
+@keyframes loadSpinner {
+  100% {
+      transform:rotate(-360deg);
+  }
+}
+
+.analytics{
+  max-width: 1040px;
+}
+.automation-bar {
+  height: 25px,
+}
+.automation-label {
+  margin-top: 20px;
+  align-items: center;
+  text-align: center;
+}

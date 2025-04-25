@@ -1,0 +1,85 @@
+<div class="page-content">
+  <div class="my-2">
+    <div class="v-center justify-content-between">
+      <h6 class="f-8 ls-2 font-weight-bold text-uppercase my-2" translate>Themes</h6>
+      <a class="btn btn-primary shadow py-2 v-center border-0" [routerLink]="['/theme/new']">
+        <i class="i-icon i-plus bg-white d-block sm mr-2"></i>
+        <span class="fw-600 f-3" translate>Create New</span>
+      </a>
+    </div>
+  </div>
+  <div class="my-3 position-relative">
+    <ng-container *ngIf="(themeService.themes$ | async).length; else emptyListTheme">
+      <div class="updating-status" *ngIf="(themeService.loading$ | async) === STATUS.REQUEST">
+        {{ 'LOADING' | translate }}
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="theme-thumbnail border-top-0">{{ 'Thumbnail' | translate }}</th>
+            <th class="border-top-0">{{ 'Owner' | translate }}</th>
+            <th class="border-top-0">{{ 'Title' | translate }}</th>
+            <th class="border-top-0">{{ 'Added' | translate }}</th>
+            <th class="border-top-0">{{ 'Default' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let theme of themeService.themes$ | async">
+            <td class="theme-thumbnail">
+              <img class="thumbnail" src="{{theme.thumbnail}}">
+            </td>
+            <td class="theme-type">
+              <div class="role" [class.admin]="theme.role == 'admin'"></div>
+            </td>
+            <td class="theme-title">
+              <span>{{theme.title}}</span>
+            </td>
+            <td class="theme-content">
+              <span>{{theme.created_at | date: 'dd/MM/yyyy'}}</span>
+            </td>
+            <td class="theme-action">
+              <div class="v-center">
+                <label class="custom-toggle mb-0">
+                  <input type="checkbox">
+                  <span class="custom-toggle-slider rounded-circle"></span>
+                </label>
+                <div class="v-center ml-4">
+                  <ng-container *ngIf="theme.role != 'admin'">
+                    <div class="icon-button v-center justify-content-center c-pointer" (click)="editTheme(theme._id)"
+                      [class.disabled]="theme.role == 'admin'">
+                      <i class="i-icon bgc-dark i-edit"></i>
+                    </div>
+                    <div class="icon-button v-center justify-content-center c-pointer" (click)="deleteTheme(theme._id)"
+                      [class.disabled]="theme.role == 'admin'">
+                      <i class="i-icon bgc-dark i-trash mx-2"></i>
+                    </div>
+                  </ng-container>
+                  <div class="icon-button v-center justify-content-center c-pointer"
+                    (click)="duplicateTheme(theme._id)">
+                    <i class="i-icon bgc-dark i-duplicate"></i>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+    <ng-template #emptyListTheme>
+      <ng-container [ngSwitch]="(themeService.loading$ | async)">
+        <div class="empty-list" *ngSwitchCase="STATUS.SUCCESS">
+          <div class="object-icon v-center">
+            <i class="i-icon i-template d-block bgc-dark"></i>
+          </div>
+          <h4 class="font-weight-bold mt-4 mb-3" translate>
+            There is no themes yet
+          </h4>
+        </div>
+        <div class="list-loading text-center" *ngSwitchCase="STATUS.REQUEST">
+          <div class="loader mt-5 lg"></div>
+          <h4 class="fw-600 mt-2" translate>Loading themes for emailing and texting</h4>
+        </div>
+      </ng-container>
+    </ng-template>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+<div class="option-wrapper gap-16">
+  <ng-container *ngFor="let option of onboardingOptions">
+    <app-collapsable-settings
+      *ngIf="option.feature !== feature.NURTURE"
+      [title]="option.title"
+      [status]="onboardingService.onboardingStatus[option.name]"
+      (collapsedChange)="toggleSkipping(option.name)"
+    >
+      <span class="c-secondary f-body-medium mb-0">
+        {{ option.description }}
+      </span>
+      <div class="integration-providers">
+        <ng-container *ngFor="let provider of option.providers">
+          <div class="integration-provider">
+            <img
+              *ngIf="provider?.icon"
+              [src]="sspaService.toAsset(provider.icon)"
+              class="provider-icon"
+              [alt]="provider.alt"
+            />
+            <button
+              class="provider-btn f-body-medium rounded fw-600 px-3 py-1"
+              (click)="handleProvider(option, provider)"
+            >
+              {{ provider.label }}
+              <img
+                *ngIf="provider?.right_icon"
+                class="align-self-center ml-2"
+                [src]="sspaService.toAsset(provider?.right_icon)"
+              />
+            </button>
+          </div>
+        </ng-container>
+      </div>
+    </app-collapsable-settings>
+  </ng-container>
+</div>

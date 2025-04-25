@@ -1,0 +1,22 @@
+<mat-expansion-panel class="mat-elevation-z bgc-trans d-flex flex-column-reverse mt-2" #panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <ng-container *ngIf="panel._getExpandedState() === 'collapsed'; else hideIndicatorTemplate">
+        <ng-container *ngIf="showIndicator" [ngTemplateOutlet]="showIndicator">
+        </ng-container>
+        <ng-template #defaultShowTemplate>
+          <div class="f-3 fw-600 c-blue">Show detail</div>
+        </ng-template>
+      </ng-container>
+      <ng-template #hideIndicatorTemplate>
+        <ng-container *ngIf="hideIndicator" [ngTemplateOutlet]="hideIndicator">
+        </ng-container>
+        <ng-template #defaultHideTemplate>
+          <div class="f-3 fw-600 c-blue">Hide detail</div>
+        </ng-template>
+      </ng-template>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <!-- <ng-container [ngTemplateOutlet]="detailTemplate">
+  </ng-container> -->
+</mat-expansion-panel>

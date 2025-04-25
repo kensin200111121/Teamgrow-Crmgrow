@@ -1,0 +1,228 @@
+.back-icon {
+    background: gainsboro;
+    padding: 4px 16px 4px 8px;
+    width: fit-content;
+    border-radius: 12px;
+    margin-bottom: 8px;
+}
+.upload-step {
+    .small-label {
+        opacity: 0.5;
+    }
+    button, a {
+        &:hover, &:active {
+            box-shadow: 0 5px 16px -5px rgba(16, 19, 54, 0.35);
+        }
+    }
+    .btn-outline-primary {
+        &:hover {
+            background-color: #fff;
+        }
+        &:active {
+            background-color: #fff;
+        }
+    }
+    
+    .step-body-1, .step-body-2, .step-body-3, .step-body-4 {
+        // width: 400px;
+        display: none;
+        &.active {
+            display: block;
+        }
+        .web-video {
+            img {
+                width: 64px;
+                height: 27px;
+            }
+        }
+        .large-text {
+            font-size: 24px;
+        }
+        .local-video {
+            cursor: pointer;
+            border: 1px dashed rgba(16,19,54,0.24);
+            border-radius: 3px;
+            background-color: #F9FAFB;
+            .description {
+                width: 200px;
+                opacity: 0.56;
+            }
+            &.file-over {
+                background-color: #e7e7ff;
+                border: 2px dashed blue;
+            }
+
+            * {
+                pointer-events: none;
+            }
+        }
+        .video-default {
+            .thumbnail {
+                position: relative;
+                width: 300px;
+                min-height: 150px;
+                background: #f8f8f8;
+                img {
+                    width: 300px;
+                    // max-height: 200px;
+                    overflow: hidden;
+                    object-fit: contain;
+                }
+                .edit-thumbnail {
+                    position: absolute;
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    top: 5px;
+                    right: 5px;
+                }
+                @media screen and (max-width: 576px) {
+                    width: 200px;
+                }
+            }
+        }
+        @media screen and (max-width: 576px) {
+            width: 100%;
+        }
+    }
+
+
+  .upload-icon {
+    width: 32px;
+    height: 32px;
+    margin: 0 auto;
+  }
+}
+
+.check-spinner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 12px;
+    right: 6px;
+  }
+
+.progress-wrapper{
+    position: absolute;
+    background: rgba(255, 255, 255, 0.6);
+    width: 100%;
+    top: 25px;
+}
+
+:host ::ng-deep {
+    .ng2-pdf-viewer-container .page {
+        min-height: unset;
+        padding:0px;
+    }
+}
+
+.video-uploading {
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    background-color: rgba(0,0,0,0.6);
+    left: 5px;
+    right: 5px;
+    width: unset;
+    padding: 15px;
+
+    .progress {
+        height: 0.5rem;
+        border-radius: 0px;
+    }
+
+    .status {
+        font-size: 12px;
+    }
+
+    .retrying {
+        font-size: 12px;
+        color: white;
+        margin-top: 8px;
+    }
+
+    .error {
+        font-size: 12px;
+        color: #ffd9d9;
+    }
+
+    .cancel-btn {
+        font-size: 12px;
+        padding: 2px 4px;
+        margin-top: 12px;
+    }
+}
+
+.images{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 6px;
+}
+
+.img-comp {
+    height: 100px;
+    border-radius: 4px;
+    border: 1px dashed gainsboro;
+    padding: 5px;
+    position: relative;
+  
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+  
+    .plus {
+        font-size: 50px;
+        text-align: center;
+        line-height: 90px;
+        cursor: pointer;
+    }
+  
+    .remove-link {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: black;
+        top: -5px;
+        right: -5px;
+        border-radius: 10px;
+        opacity: 0;
+        transition: opacity .2s;
+  
+        &::after {
+            width: 16px;
+            height: 2px;
+            background-color: white;
+            content: "";
+            transform: rotate(45deg);
+            position: absolute;
+            top: 9px;
+            left: 2px;
+        }
+        &::before {
+            width: 16px;
+            height: 2px;
+            background-color: white;
+            content: "";
+            transform: rotate(-45deg);
+            top: 9px;
+            left: 2px;
+            display: block;
+            position: absolute;
+        }
+    }
+  
+    &:hover .remove-link{
+        opacity: 1;
+    }
+  
+    &.brand{
+        width: 120px;
+        height: 60px;
+  
+        .plus {
+            line-height: 50px;
+        }
+    }
+  }

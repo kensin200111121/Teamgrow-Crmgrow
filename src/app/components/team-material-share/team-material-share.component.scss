@@ -1,0 +1,19 @@
+.form-group {
+  .error {
+    display: flex;
+  }
+}
+
+.selected-teams {
+  max-height: 400px;
+  overflow: auto;
+}
+
+.border {
+  display: flex;
+}
+
+.select {
+  font-size: 15px;
+  color: rgb(214, 214, 214);
+}

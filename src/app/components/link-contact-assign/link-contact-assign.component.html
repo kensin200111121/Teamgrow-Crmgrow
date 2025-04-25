@@ -1,0 +1,36 @@
+<h1 mat-dialog-title translate>Assign Contact to Trackable Link</h1>
+<form #actionForm="ngForm" (ngSubmit)="submitted = true; actionForm.form.valid ? assignContact() : false"
+  [class.was-validated]="submitted">
+  <mat-dialog-content>
+    <div class="form-group">
+      <div class="my-3">
+        <app-select-contact (onSelect)="addContacts($event)" #contactSelector>
+        </app-select-contact>
+      </div>
+      <div class="my-3" *ngIf="contacts.length">
+        <label translate>Contacts to Assign</label>
+        <div class="new-contacts-wrapper">
+          <div class="new-member v-center py-2" *ngFor="let contact of contacts">
+            <div class="v-center justify-content-between w-100">
+              <div class="v-center">
+                <img *ngIf="contact.picture_profile; else avatarNameTemplate" [src]="contact.picture_profile"
+                  (error)="sspaService.imgError($event,'img/user_avatar.svg')" class="form-avatar rounded-circle mr-1" />
+                <ng-template #avatarNameTemplate>
+                  <div class="form-avatar rounded-circle bg-dark mr-3">{{contact.avatarName}}</div>
+                </ng-template>
+                <div class="f-5">{{contact.fullName}}</div>
+              </div>
+              <button type="button" class="v-center border-0 bgc-trans ml-1" (click)="removeContact(contact)">
+                <span class="text-danger f-3 fw-600" translate>Remove</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button type="button" class="btn btn-white" type="button" mat-dialog-close translate>Close</button>
+    <button type="submit" class="btn btn-primary ml-2" [class.loading]="loading" translate>Assign</button>
+  </mat-dialog-actions>
+</form>

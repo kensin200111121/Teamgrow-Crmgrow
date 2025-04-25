@@ -1,0 +1,47 @@
+<div class="card p-3">
+  <div
+    class="py-2 v-center justify-content-between gap-16"
+    [ngClass]="{ 'border-0': status !== 'pending' }"
+  >
+    <h6 class="c-primary f-title-large mb-0">{{ title }}</h6>
+    <ng-container *ngIf="status == 'completed'; else incompleteTemplate">
+      <div class="d-flex v-center justify-content-between gap-16">
+        <span class="completed rounded-pill f-body-medium fw-600"
+          >Completed</span
+        >
+        <div class="empty-box"></div>
+      </div>
+    </ng-container>
+    <ng-template #incompleteTemplate>
+      <div
+        *ngIf="status == 'skipped'; else skipTemplate"
+        class="d-flex v-center gap-16"
+      >
+        <span class="skipped d-flex v-center rounded-pill f-body-medium fw-600"
+          >Skipped</span
+        >
+        <button class="btn undo-btn d-flex c-secondary">
+          <i
+            class="i-icon i-undo d-block bgc-secondary"
+            (click)="onChangeStatus()"
+          ></i>
+        </button>
+      </div>
+      <ng-template #skipTemplate>
+        <button
+          class="btn skip-btn c-primary"
+          *ngIf="status === 'pending'"
+          (click)="onChangeStatus()"
+        >
+          Skip
+        </button>
+      </ng-template>
+    </ng-template>
+  </div>
+  <div
+    class="d-flex flex-column border-top gap-16 pt-3"
+    *ngIf="status == 'pending'"
+  >
+    <ng-content></ng-content>
+  </div>
+</div>

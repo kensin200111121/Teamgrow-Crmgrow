@@ -1,0 +1,116 @@
+<h1 mat-dialog-title>
+  {{ selectedOption.value | translate }} {{ 'Contact(s)' | translate }}
+  <i
+    class="i-icon tooltip-icon i-information bgc-dark"
+    placement="bottom"
+    ngbTooltip="{{ selectedOption.comment | translate }}"
+    ngbButtonLabel
+  ></i>
+</h1>
+<ng-container [ngSwitch]="step">
+  <ng-container *ngSwitchCase="1">
+    <mat-dialog-content>
+      <div class="">
+        <div
+          class="py-3"
+          [innerHTML]="
+            'select_share_option_description'
+              | translate: { option: selectedOption.value.toLowerCase() }
+          "
+        ></div>
+        <mat-radio-group
+          class="d-flex justify-content-start px-4 "
+          name="type"
+          [(ngModel)]="selectedOptionId"
+          (ngModelChange)="selectSharingOptions()"
+        >
+          <mat-radio-button
+            *ngFor="let option of sharingOptions"
+            class="f-4 m-2"
+            [color]="'primary'"
+            [value]="option.id"
+          >
+            {{ option.value }}
+          </mat-radio-button>
+        </mat-radio-group>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button
+        type="button"
+        class="btn btn-white"
+        type="button"
+        mat-dialog-close
+      >
+        Close
+      </button>
+      <button type="button" class="btn btn-primary ml-2" (click)="goToStep(2)">
+        Next
+      </button>
+    </mat-dialog-actions>
+  </ng-container>
+  <form 
+    #actionForm="ngForm" 
+    (ngSubmit)="submitted = true; actionForm.form.valid ? shareContacts() : false"
+    [class.was-validated]="submitted"
+    *ngSwitchCase="2"
+  >
+    <mat-dialog-content>
+      <div class="form-group">
+        <div class="my-3">
+          <div class="f-5" [innerHTML]="'share_to' | translate:{name: team.name}">
+          </div>
+        </div>
+        <div class="my-3">
+          <label translate>Select member</label>
+          <app-select-member [members]="members" [role]="role" (onSelect)="selectMember($event)">
+          </app-select-member>
+        </div>
+        <div class="my-3">
+          <label translate>Search contacts</label>
+          <app-select-contact (onSelect)="addContacts($event)" [target]="'share_contacts'" #contactSelector>
+          </app-select-contact>
+        </div>
+        <div class="my-3" *ngIf="contacts.length">
+          <label translate>Contacts to Share</label>
+          <div class="new-contacts-wrapper">
+            <div class="new-member v-center py-2" *ngFor="let contact of contacts">
+              <div class="v-center justify-content-between w-100">
+                <div class="v-center">
+                  <img *ngIf="contact.picture_profile; else avatarNameTemplate" [src]="contact.picture_profile"
+                    (error)="sspaService.imgError($event,'img/user_avatar.svg')" class="form-avatar rounded-circle mr-1" />
+                  <ng-template #avatarNameTemplate>
+                    <div class="form-avatar rounded-circle bg-dark mr-3">{{contact.avatarName}}</div>
+                  </ng-template>
+                  <div class="f-5">{{contact.fullName}}</div>
+                </div>
+                <button type="button" class="v-center border-0 bgc-trans ml-1" (click)="removeContact(contact)">
+                  <i class="i-icon i-close bgc-black"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="invalid-feedback d-block mt-2" *ngIf="contactOverflow" translate>Maximum contacts is 15.</div>
+        </div>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button type="button" class="btn btn-white" type="button" mat-dialog-close translate>Close</button>
+      <button
+        type="button"
+        class="btn btn-white-blue ml-2"
+        (click)="goToStep(1)"
+        translate
+      >
+        Prev
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary ml-2"
+        [class.loading]="loading"
+      >
+        {{ selectedOption.value | translate }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</ng-container>

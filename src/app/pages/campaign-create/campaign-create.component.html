@@ -1,0 +1,539 @@
+<div class="page-content">
+  <ng-container *ngIf="!creatingNewsletter && !creatingTemplate && !editingTemplate">
+    <div class="v-center op-56 c-pointer mb-3 back-menu w-fit" (click)="goToBack()">
+      <i class="d-block i-icon i-triangle-left bgc-dark mr-2 sm"></i>
+      <span class="f-5 font-weight-bold" translate>Back to Bulk Mailing</span>
+    </div>
+
+    <div class="steps">
+      <div class="step" [class.active]="stepIndex > 0" (click)="goToStep(1)">
+        <span class="step-index">1</span>
+        <span class="step-title" translate>Bulk Email Details</span>
+      </div>
+      <div class="step" [class.active]="stepIndex > 1" (click)="goToStep(2)">
+        <span class="step-index">2</span>
+        <span class="step-title" translate>Add Contacts</span>
+      </div>
+      <div class="step" [class.active]="stepIndex > 2" (click)="goToStep(3)">
+        <span class="step-index">3</span>
+        <span class="step-title" translate>Select Date</span>
+      </div>
+      <div class="step" [class.active]="stepIndex > 3" (click)="goToStep(4)">
+        <span class="step-index">4</span>
+        <span class="step-title" translate>Review</span>
+      </div>
+    </div>
+
+    <div class="step-container" [class.loading-contacts]="loadingCampaign || loadingCampaignContacts">
+      <ng-container [ngSwitch]="stepIndex">
+        <ng-container *ngSwitchCase="2">
+          <div class="d-flex justify-content-end first-step-next">
+            <button class="btn btn-white-blue ml-2 c-blue f-6 font-weight-bold mr-1" (click)="goToStep(1)" translate>Back</button>
+            <button [attr.data-action]="'bulk-email-next-btn3'" class="btn btn-primary py-1 font-weight-bold" (click)="goToStep(3)" translate>Next</button>
+          </div>
+          <div class="step-title mt-3" translate>Add Contacts to your Bulk email</div>
+          <div class="contacts-step">
+            <div class="contacts-actions-wrapper">
+              <div class="contacts-actions empty-list">
+                <div *ngIf="(campaignService.bulkLists | async).length" class="mb-3">
+                  <div class="object-icon v-center">
+                    <i class="i-icon i-broadcasts d-block bgc-dark"></i>
+                  </div>
+                  <h5 class="font-weight-bold mt-3 mb-3" translate>
+                    Add contacts from a previous bulk email
+                  </h5>
+                  <div class="custom-mat-field mat-select-wrapper flex-grow-1" style="width: 300px;">
+                    <mat-form-field style="display: block;" appearance="outline">
+                      <mat-select [formControl]="campaignForm" [placeholder]="'Select Bulk Email' | translate" #selector [disableOptionCentering]="true">
+                        <mat-select-trigger>
+                          <ng-container *ngIf="campaignForm.value">
+                            <div class="chip d-flex justify-content-between align-items-center pt-1">
+                              <div class="mr-1">{{campaignForm.value.title || 'Unnamed Filter'}}</div>
+                              <div (click)="cancelSelect()">
+                                <i class="d-block i-icon i-close bgc-dark"></i>
+                              </div>
+                            </div>
+                          </ng-container>
+                        </mat-select-trigger>
+                        <mat-option>
+                          <ngx-mat-select-search [formControl]="inputControl" [searching]="searchingCampaign"
+                            [placeholderLabel]="'Search the campaign'" noEntriesFoundLabel="There is no searched results."
+                            preventHomeEndKeyPropagation="true">
+                          </ngx-mat-select-search>
+                        </mat-option>
+                        <ng-container *ngFor="let item of filteredCampaigns | async">
+                          <mat-option [value]="item" style="height: unset; line-height: unset;" *ngIf="item._id !== campaign_id">
+                            <div class="d-flex chip py-3">
+                              <div class="info">
+                                <div class="f-5 fw-600">{{item.title || 'Unnamed Filter'}}</div>
+                              </div>
+                            </div>
+                          </mat-option>
+                        </ng-container>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div>
+                  <div class="object-icon v-center">
+                    <i class="i-icon i-lunch d-block bgc-dark"></i>
+                  </div>
+                  <h5 class="font-weight-bold mt-3 mb-3">
+                    Create or Select Contacts
+                  </h5>
+                  <div>
+                    <button [attr.data-action]="'bulk-email-new-contact'" class="btn border border-primary ml-auto f-3 font-weight-bold mr-1" (click)="createContact()" translate>New Contact</button>
+                    <button [attr.data-action]="'bulk-email-select-contact'" class="btn btn-primary f-3 font-weight-bold ml-1" (click)="selectFromContacts()" translate>Select Contacts</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="contacts-list">
+              <!-- <ng-container *ngIf="selection.length"> -->
+              <div class="">
+                <div class="f-6 font-weight-bold mb-2 contact-count desktop mt-2 pt-2 v-center">
+                  <span class="op-64">{{selection.length}} {{'contacts selected' | translate}}</span>
+                </div>
+                <table class="w-100 page-table" mat-table
+                  [dataSource]="selection | paginate: {id: 'campaignSelectedPage', itemsPerPage: 50, currentPage: selectionPage, totalItems: selection.length}">
+                  <ng-container matColumnDef="loader-cell">
+                    <th mat-header-cell *matHeaderCellDef colspan="12" class="loader-cell">
+                      <div class="updating-status" *ngIf="loadingCampaignContacts === STATUS.REQUEST" translate>
+                        LOADING
+                      </div>
+                    </th>
+                  </ng-container>
+
+                  <ng-container matColumnDef="select">
+                    <th mat-header-cell *matHeaderCellDef class="pl-2 selection-select-cell">
+                      <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="selectAllSelectedContacts"
+                          (change)="$event ? masterSelectionToggle() : null"
+                          [checked]="pageSelectionContacts.length && isAllSelectionSelected()" />
+                        <label class="custom-control-label" for="selectAllSelectedContacts"></label>
+                      </div>
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="pl-2 selection-select-cell">
+                      <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="selection-dialog-{{element._id}}"
+                          (change)="toggleSelection(element)" [checked]="isSelectionSelected(element)" />
+                        <label class="custom-control-label" for="selection-dialog-{{element._id}}"></label>
+                      </div>
+                    </td>
+                  </ng-container>
+
+                  <!-- Name Column -->
+                  <ng-container matColumnDef="contact_name">
+                    <ng-container *matHeaderCellDef>
+                      <th mat-header-cell *ngIf="!selectedSelection.length; else actionHeader" translate> contact name </th>
+                      <ng-template #actionHeader>
+                        <th mat-header-cell [colSpan]="9">
+                          <div class="v-center">
+                            <span class="c-dark f-3 text-lowercase font-weight-bold">{{selectedSelection.length}} {{'selected' | translate}}</span>
+                            <app-actions-header [actions]="SELECTED_ACTIONS" (doCommand)="doSelectedAction($event)"></app-actions-header>
+                          </div>
+                        </th>
+                      </ng-template>
+                    </ng-container>
+                    <td mat-cell *matCellDef="let element">
+                      <div class="v-center c-pointer">
+                        <div class="contact-avatar f-3 mr-2">
+                          {{element.avatarName}}
+                        </div>
+                        <span class="fw-600">{{element.fullName}}</span>
+                      </div>
+                    </td>
+                  </ng-container>
+
+                  <!-- Email Column -->
+                  <ng-container matColumnDef="contact_email">
+                    <ng-container *matHeaderCellDef>
+                      <th mat-header-cell class="email-col" *ngIf="!selectedSelection.length" translate>Email</th>
+                    </ng-container>
+                    <td mat-cell *matCellDef="let element" class="email-col">
+                      <span class="c-dark">{{element.email}}</span>
+                    </td>
+                  </ng-container>
+
+                  <!-- Cell phone Column -->
+                  <ng-container matColumnDef="contact_phone">
+                    <ng-container *matHeaderCellDef>
+                      <th mat-header-cell class="phone-col" *ngIf="!selectedSelection.length" translate>Cell Phone</th>
+                    </ng-container>
+                    <td mat-cell *matCellDef="let element" class="phone-col">
+                      <span class="c-dark">{{element.cell_phone}}</span>
+                    </td>
+                  </ng-container>
+
+                  <!-- Activity Column -->
+                  <ng-container matColumnDef="actions">
+                    <ng-container *matHeaderCellDef>
+                      <th mat-header-cell *ngIf="!selectedSelection.length"></th>
+                    </ng-container>
+                    <td mat-cell *matCellDef="let element">
+                      <div class="v-center">
+                        <i class="i-icon i-trash bgc-dark d-block c-pointer" (click)="removeSelected(element)"></i>
+                      </div>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="selection_info">
+                    <th mat-header-cell *matHeaderCellDef colspan="9" class="text-center">
+                      <span *ngIf="selectedSelection.length !== selection.length else deselectTemplate">
+                        {{selectedSelection.length}} {{'contacts are selected.' | translate}}
+                        <span class="c-blue font-weight-bold" *ngIf="selecting && selectSource === 'page'">
+                          <i class="small-spinner"></i>
+                          <span class="ml-1" translate>Selecting all. . .</span>
+                        </span>
+                        <span class="c-blue font-weight-bold c-pointer" *ngIf="!selecting" (click)="selectAll()">
+                          {{'Select all' | translate}} {{selection.length}} {{'contacts' | translate}}
+                        </span>
+                      </span>
+                      <ng-template #deselectTemplate>
+                        {{'All' | translate}} {{selection.length}} {{'contacts are selected.' | translate}} <span class="c-blue c-pointer font-weight-bold"
+                          (click)="deselectAll()" translate>Clear selection</span>
+                      </ng-template>
+                    </th>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="['loader-cell']" class="loader-row"></tr>
+                  <tr mat-header-row *matHeaderRowDef="SELECTION_DISPLAY_COLUMNS" [class.selected]="selectedSelection.length" class="table-header"></tr>
+                  <tr mat-header-row *matHeaderRowDef="['selection_info']" [class.d-none]="!selectedSelection.length" class='selection-info'></tr>
+                  <tr mat-row *matRowDef="let row; columns: SELECTION_DISPLAY_COLUMNS;"></tr>
+
+                </table>
+                <div *ngIf="selection.length;else emptyListTemplate" class="py-2 table-control mode-1">
+                  <div class="pagination-wrapper m-auto">
+                    <pagination-controls (pageChange)="changeSelectedPage($event)" (pageBoundsCorrection)="changeSelectedPage($event)"
+                      id="campaignSelectedPage" maxSize="5" previousLabel="" nextLabel="">
+                    </pagination-controls>
+                  </div>
+                </div>
+
+                <ng-template #emptyListTemplate>
+                  <ng-container [ngSwitch]="loadingCampaignContacts">
+                    <div class="empty-list mt-5 pt-5" *ngSwitchCase="false">
+                      <div class="object-icon v-center">
+                        <i class="i-icon i-lunch d-block bgc-dark"></i>
+                      </div>
+                      <h4 class="font-weight-bold mt-3 mb-3" translate>
+                        There is no contact.
+                      </h4>
+                    </div>
+                    <div class="list-loading text-center mt-5 pt-5" *ngSwitchCase="true">
+                      <div class="loader mt-5 lg"></div>
+                      <h4 class="fw-600 mt-2" translate>Loading contacts...</h4>
+                    </div>
+                  </ng-container>
+                </ng-template>
+              </div>
+              <!-- </ng-container> -->
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="1">
+          <div class="d-flex justify-content-end first-step-next mb-3">
+            <button [attr.data-action]="'bulk-email-next1'" class="btn btn-primary py-1 font-weight-bold" (click)="goToStep(2)" translate>Next</button>
+          </div>
+          <div class="step-title" translate>Add details for your Bulk Email</div>
+          <div class="sections-container">
+            <div class="add-option">
+              <div class="section-container">
+                <div class="section-header">
+                  <div class="section-circle-number">1</div>
+                  <div class="section-title" translate>Enter a name for your Bulk Email</div>
+                </div>
+                <div class="section-body">
+                  <div class="form-group mb-0">
+                    <label translate>Bulk Email Title</label>
+                    <input class="form-control" name="campaign_name" #campaign_name="ngModel" [(ngModel)]="title" type="text" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-container *ngIf="selectedTemplate; else emptyTemplate">
+              <div>
+                <div class="section-container">
+                  <div class="section-header">
+                    <div class="section-circle-number">2</div>
+                    <div class="section-title" translate>Select a Template for your Bulk Email</div>
+                  </div>
+                  <div class="section-body">
+                    <div class="template-browser-result p-3" [class.visible-hidden]="!selectedTemplate">
+                      <div class="template-header mb-3">{{selectedTemplate?.title}}</div>
+                      <div class="template-edit">
+                        <span class="mr-2 c-pointer" *ngIf="selectedTemplate?.type === 'email'" (click)="editTemplate()">
+                          <i class="i-icon i-edit d-block bgc-blue" placement="left" [ngbTooltip]="tipContent">
+                            <ng-template #tipContent>
+                              <div class="tooltip-content" translate>When you change the template, this change doesn't effect the original email template.</div>
+                            </ng-template>
+                          </i>
+                        </span>
+                      </div>
+                      <div class="template-actions">
+                        <div ngbDropdown placement="bottom-right" class="ml-auto template-action">
+                          <a ngbDropdownToggle class="v-center btn bgc-white c-dark f-3 no-carot px-0">
+                            <i class="d-block i-icon i-menu-more bgc-dark"></i>
+                          </a>
+                          <div ngbDropdownMenu class="light">
+                            <button class="v-center border-0 py-2 c-dark dropdown-item" (click)="createTemplate()">
+                              <!-- <i class="i-icon i-template bgc-dark ml-1" aria-hidden="true"></i> -->
+                              <span class="ml-3 f-3 font-weight-bold" translate>New Template</span>
+                            </button>
+                            <button class="v-center border-0 py-2 c-dark dropdown-item" (click)="createNewsletter()">
+                              <!-- <i class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i> -->
+                              <span class="ml-3 f-3 font-weight-bold" translate>New Newsletter</span>
+                            </button>
+                            <button class="v-center border-0 py-2 c-dark dropdown-item" (click)="browseTemplate()">
+                              <!-- <i class="i-icon bgc-dark d-block mr-1 i-edit ng-star-inserted" aria-hidden="true"></i> -->
+                              <span class="ml-3 f-3 font-weight-bold" translate>Change Template</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="subject mt-3 v-center">
+                        <span class="info-title d-block f-4 font-weight-bold mb-0" translate>Subject: </span>
+                        <span class="info-content op-75 ml-3">{{selectedTemplate?.subject}}</span>
+                      </div>
+                      <div class="content-wrapper mt-3">
+                        <label class="f-4 font-weight-bold d-block mb-2" translate>Content: </label>
+                        <ng-container *ngIf="selectedTemplate?.type === 'email'; else newsletterContent">
+                          <div class="content f-3 op-75" [innerHTML]="selectedTemplate?.content | removeEntity | safeHtml"></div>
+                        </ng-container>
+                        <ng-template #newsletterContent>
+                          <div class="newsletter-thumbnail">
+                            <img [src]="selectedTemplate?.thumbnail" />
+                          </div>
+                        </ng-template>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-template #emptyTemplate>
+              <div>
+                <div class="section-container">
+                  <div class="section-header">
+                    <div class="section-circle-number">2</div>
+                    <div class="section-title" translate>Select a Template for your Bulk Email</div>
+                  </div>
+                  <div class="section-body empty-list-wrapper">
+                    <div class="empty-list mt-5">
+                      <div class="object-icon v-center">
+                        <i class="i-icon i-template d-block bgc-dark"></i>
+                      </div>
+                      <span class="font-weight-bold mt-3 mb-3 f-6" translate>
+                        Select a Template
+                      </span>
+                      <div class="d-flex">
+                        <div class="ml-auto border border-primary rounded" ngbDropdown>
+                          <div [attr.data-name]="'bulk-email-new-template'" class="font-weight-bold c-dark c-pointer px-2 button-add py-1" ngbDropdownToggle>
+                            <span class="f-3" translate>New Template</span>
+                          </div>
+                          <div ngbDropdownMenu>
+                            <div [attr.data-name]="'bulk-email-new-email-template'" class="dropdown-item v-center" (click)="createTemplate()">
+                              <span class="f-3" translate>Email Template</span>
+                            </div>
+                            <div [attr.data-name]="'bulk-email-new-template-newsletter'" class="dropdown-item v-center" (click)="createNewsletter()">
+                              <span class="f-3" translate>Newsletter</span>
+                            </div>
+                          </div>
+                        </div>
+                        <button [attr.data-action]="'bulk-email-select-template'" class="btn btn-primary f-3 font-weight-bold ml-3" (click)="browseTemplate()" translate>Select Template</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="3">
+          <div class="d-flex justify-content-end first-step-next mb-3">
+            <button class="btn btn-white-blue ml-2 c-blue f-6 font-weight-bold mr-1" (click)="goToStep(2)" translate>Back</button>
+            <button [attr.data-action]="'bulk-email-next-btn4'" class="btn btn-primary py-1 font-weight-bold" (click)="goToStep(4)" translate>Next</button>
+          </div>
+          <div class="step-title mb-3" translate>Select a Date & Time</div>
+          <app-business-date-time-picker
+            [selectedDay]="getSelectedDate()"
+            [selectedTime]="selectedTime"
+            [time_zone]="time_zone"
+            [type]="'smtp'"
+            (onSelectDateTime)="onSelectDateTime($event)"
+            [isCreateMode] = "true"
+          >
+          </app-business-date-time-picker>
+<!--          <div class="sections-container">-->
+<!--            <div class="add-option">-->
+<!--              <div class="section-container">-->
+<!--                <div class="section-header">-->
+<!--                  <div class="section-circle-number">1</div>-->
+<!--                  <div class="section-title" translate>Select Date</div>-->
+<!--                </div>-->
+<!--                <div class="section-body ml-0 calendar-wrapper">-->
+<!--                  <app-date-custom-input [(value)]="selectedDate" [minDate]="MIN_DATE" [dayStatus]="dayStatus"-->
+<!--                    (valueChange)='onChangeDate($event)' (setValue)='onSetDate($event)'></app-date-custom-input>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--            <div>-->
+<!--              <div class="section-container">-->
+<!--                <div class="section-header">-->
+<!--                  <div class="section-circle-number">2</div>-->
+<!--                  <div class="section-title" translate>Select Time</div>-->
+<!--                </div>-->
+<!--                <div class="section-body">-->
+<!--                  <div class="d-flex v-center mb-4" *ngIf="selectedDate">-->
+<!--                    <span translate>Select time: </span>-->
+<!--                    <div class="form-group has-feedback ml-2 mb-0">-->
+<!--                      <select class="form-control" [(ngModel)]="selectedTime" name="time" #time="ngModel" style="height: 36px;">-->
+<!--                        <option *ngFor="let time of TIMES" value="{{time.id}}">{{time.text}}</option>-->
+<!--                      </select>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                  <div>-->
+<!--                    <h5 class="font-weight-bold mt-2">{{selectedDate | date:'EEEE, d MMMM'}}</h5>-->
+<!--                  </div>-->
+<!--                  <div class="mt-4" *ngIf="currentDateStatus">-->
+<!--                    <div class="mb-1" translate>Following campaigns are scheduled on this day.</div>-->
+<!--                    <div class="d-flex align-items-center" *ngFor="let i_campaign of currentDateStatus.campaigns; let i = index">-->
+<!--                      <div class="red-status mr-3"></div>-->
+<!--                      <div class="d-flex">-->
+<!--                        <div class="mr-2 d-flex">-->
+<!--                          <div class="mr-2">-->
+<!--                            <span> {{i_campaign.title}}</span>-->
+<!--                            <span *ngIf="i_campaign.subject">, {{i_campaign.subject}} </span>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                        <div class="d-flex align-items-center">-->
+<!--                          <i class="i-icon i-group bgc-blue d-block"></i>-->
+<!--                          <span class="ml-2"> {{i_campaign.count ? i_campaign.count : 0}} </span>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                  <div class="mt-4 align-items-center" *ngIf="newCampaignStatus.length">-->
+<!--                    <div class="mb-1" translate>Your new campaigns would be executed with following schedule.</div>-->
+<!--                    <div *ngFor="let i_campaign of newCampaignStatus">-->
+<!--                      <div class="mb-2 d-flex">-->
+<!--                        <span class="mr-2"> {{i_campaign.curDate | date: 'yyyy-MM-dd'}}: </span>-->
+<!--                        <span class="font-weight-bold v-center"> {{title}}-->
+<!--                          <i class="i-icon i-group bgc-blue d-block ml-3 mr-2"></i> {{i_campaign.count}} </span>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+        </ng-container>
+
+        <ng-container *ngSwitchCase="4">
+          <div class="d-flex justify-content-end first-step-next">
+            <button class="btn btn-white-blue ml-2 c-blue f-6 font-weight-bold mr-1" (click)="goToStep(3)" translate>Back</button>
+            <button [attr.data-action]="'bulk-email-submit-btn'" class="btn btn-primary py-1 font-weight-bold" (click)="create()" [class.disabled]="saving"
+              [class.loading]="submitAction === 'publish' && saving"
+              *ngIf="selection && selection.length && selectedTemplate && selectedDate" translate>Submit</button>
+          </div>
+          <div class="step-title mt-3" translate>Review your Bulk Email</div>
+          <div class="review-step-container">
+            <div class="add-option">
+              <div class="section-container">
+                <div class="section-header">
+                  <div class="section-circle-number">1</div>
+                  <div class="section-title" translate>Details</div>
+                </div>
+                <div class="section-body">
+                  <div class="form-group mb-3">
+                    <label class="op-75" translate>Bulk Email Title</label>
+                    <div>{{title}}</div>
+                  </div>
+                  <div class="form-group mb-1">
+                    <label class="op-75" translate>Bulk Email Template</label>
+                  </div>
+                  <div class="template-browser-result p-3" [class.visible-hidden]="!selectedTemplate">
+                    <div class="subject mt-3 v-center">
+                      <span class="info-title d-block f-4 font-weight-bold mb-0" translate>Subject: </span>
+                      <span class="info-content op-75 ml-3">{{selectedTemplate?.subject}}</span>
+                    </div>
+                    <div class="content-wrapper mt-3">
+                      <label class="f-4 font-weight-bold d-block mb-2">Content: </label>
+                      <ng-container *ngIf="selectedTemplate?.type === 'email'; else newsletterContent">
+                        <div class="content f-3 op-75" [innerHTML]="selectedTemplate?.content"></div>
+                      </ng-container>
+                      <ng-template #newsletterContent>
+                        <div class="newsletter-thumbnail">
+                          <img [src]="selectedTemplate?.thumbnail" />
+                        </div>
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="add-option">
+              <div class="section-container">
+                <div class="section-header">
+                  <div class="section-circle-number">2</div>
+                  <div class="section-title" translate>Contacts</div>
+                </div>
+                <div class="section-body">
+                  {{selection.length}} {{'contacts selected' | translate}}
+                </div>
+              </div>
+              <div class="section-container mt-3">
+                <div class="section-header">
+                  <div class="section-circle-number">3</div>
+                  <div class="section-title" translate>Date</div>
+                </div>
+                <div class="section-body">
+                  <div>
+                    {{getDueTime() | date: 'yyyy-MM-dd hh:mm:a'}}
+                  </div>
+
+                  <div class="mt-4 align-items-center" *ngIf="newCampaignStatus.length">
+                    <div *ngFor="let i_campaign of newCampaignStatus">
+                      <div class="mb-2 d-flex">
+                        <span class="mr-2"> {{i_campaign.curDate | date: 'yyyy-MM-dd'}}: </span>
+                        <span class="font-weight-bold v-center"> {{title}}
+                          <i class="i-icon i-group bgc-blue d-block ml-3 mr-2"></i> {{i_campaign.count}} </span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div class="d-flex mt-4 align-items-center"> -->
+                  <!-- <div class="red-status mr-3"></div> -->
+                  <!-- <div class="d-flex"> -->
+                  <!-- <div class="mr-2">
+                        <span> {{title}} </span>
+                      </div>
+                      <div class="d-flex align-items-center">
+                        <i class="i-icon i-group bgc-blue d-block"></i>
+                        <span class="ml-2"> {{currentDateStatus ? currentDateStatus.count : 0}} </span>
+                      </div> -->
+                  <!-- </div> -->
+                  <!-- </div> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </ng-container>
+  <mat-drawer-container [hasBackdrop]="true" (backdropClick)="closeAddAction($event)">
+    <mat-drawer #addDrawer position="end" style="width:600px;">
+      <app-templates-browser [hidden]="panelType" (onOpen)='openAction()' (onClose)="closeAddAction($event)" #addPanel>
+      </app-templates-browser>
+    </mat-drawer>
+  </mat-drawer-container>
+  <div class="over-page" *ngIf="creatingTemplate || editingTemplate || creatingNewsletter">
+    <app-template *ngIf="editingTemplate" [inline]="true" [initMode]="'inline-edit'" [initTemplate]="selectedTemplate"
+      (onClosePage)="onEditTemplate($event)"></app-template>
+    <app-template *ngIf="creatingTemplate" [inline]="true" (onClosePage)="onCreateTemplate($event)"></app-template>
+    <app-newsletter-editor *ngIf="creatingNewsletter" [inline]="true" [hasMode]="'create'" [hasId]="selectedTemplate?._id"
+      (onClosePage)="onCreateNewsletter($event)"></app-newsletter-editor>
+  </div>
+</div>

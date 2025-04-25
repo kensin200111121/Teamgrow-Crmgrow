@@ -1,0 +1,26 @@
+<div class="white-form-block p-2 m-2">
+  <div class="mt-2 mb-3 d-flex justify-content-between">
+    <span class="f-1 font-weight-bold">{{personTitle ? personTitle : 'None'}}</span>
+    <i class="mr-2 i-icon i-close c-pointer bgc-dark v-center" (click)="closeMe()"></i>
+  </div>
+  <div class="f-2 p-2 content-box">
+    {{resultContent}}
+  </div>
+  <div class="mt-2 mb-3 d-flex justify-content-end">
+    <button 
+      *ngIf="false"
+      type="button" 
+      class="btn btn-white text-blue br-default py-1 f-6 font-weight-bold shadow ml-auto mr-3 d-flex justify-content-between"
+      [class.loading]="isSending"
+      (click)="sendQuestion()">
+      <span translate>Adjust</span>
+    </button>          
+    <button 
+        type="button" 
+        class="btn btn-blue text-white br-default py-1 f-6 font-weight-bold shadow d-flex justify-content-between"
+        (click)="sendAnswer()">
+      <i class="i-icon i-check d-block bgc-white mr-1"></i>
+      <span translate>Insert</span>
+    </button>
+  </div>
+</div>

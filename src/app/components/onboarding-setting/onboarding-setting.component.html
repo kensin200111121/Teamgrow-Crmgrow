@@ -1,0 +1,39 @@
+<h6 class="c-primary f-title-large">Get Started in Vortex</h6>
+<mat-dialog-content cdkScrollable>
+  <div class="onboarding-content-container">
+    <div>
+      <p class="c-primary f-body-medium mb-0">
+        Get the most out of Vortex by setting up these essential features. You
+        can return to the dashboard anytime to finish setting up and uncompleted
+        steps.
+      </p>
+      <app-user-onboarding></app-user-onboarding>
+    </div>
+    <div>
+      <app-register-webiner></app-register-webiner>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button
+    *ngIf="onboardingService.pendingStepCount; else completeTemplate"
+    type="button"
+    class="btn btn-white px-3"
+    type="button"
+    mat-dialog-close
+    translate
+  >
+    Set Up Later
+  </button>
+  <ng-template #completeTemplate>
+    <button
+      type="button"
+      class="btn btn-primary px-3"
+      type="button"
+      mat-dialog-close
+      translate
+    >
+      Complete
+    </button>
+  </ng-template>
+</mat-dialog-actions>

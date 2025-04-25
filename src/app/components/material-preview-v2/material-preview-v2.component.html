@@ -1,0 +1,283 @@
+<ng-template #materialActions let-materialPreview>
+  <ng-container  *ngIf="isMyList; else downloadButtonTemplate">
+    <button class="material-send" (click)="sendMaterial('email')">
+      <img [src]="sspaService.toAsset('img/send-material-preview.svg')" alt="send">
+      <span class="f-4" translate>Send</span>
+    </button>
+  </ng-container>
+  <ng-template #downloadButtonTemplate>
+    <button class="material-send" (click)="downloadMaterial()">
+      <img [src]="sspaService.toAsset('img/download-material-preview.png')" alt="download">
+      <span class="f-4" translate>Download</span>
+    </button>
+  </ng-template>
+  <button class="material-download"
+  [class.page-view]="contentType === 'page'"
+    *ngIf="
+      materialPreview.material_type === 'video' &&
+      checkType(materialPreview.url) &&
+      materialPreview.user === userId &&
+      !materialPreview.default_edited
+    " (click)="download()"
+    [ngbTooltip]="'Download to your pc' | translate">
+    <img [src]="sspaService.toAsset('img/download-material-preview.svg')" alt="download">
+    <span class="f-4" *ngIf="contentType === 'page'" translate>Download</span>
+  </button>
+  <div class="more-action" *ngIf="isMyList">
+    <div class="v-center material-actions mr-3">
+      <div ngbDropdown #mainDrop="ngbDropdown" placement="bottom-right" class="ml-auto">
+        <a ngbDropdownToggle class="v-center btn bgc-white c-dark f-3 no-carot px-0">
+          <img  [src]="sspaService.toAsset('img/more_horiz.svg')" alt="more">
+        </a>
+        <div ngbDropdownMenu class="light">
+          <ng-container *ngIf="materialPreview.user; else materialActionsTemplate">
+            <button class="v-center border-0 py-2 c-dark" ngbDropdownItem (click)="copyLink()">
+              <i class="i-icon i-copy bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-3 font-weight-bold" translate>Copy Link</span>
+            </button>
+            <button class="v-center border-0 py-2 c-dark" ngbDropdownItem (click)="getEmbededCode()"
+             *ngIf="materialPreview.material_type == 'video'">
+              <i class="i-icon i-code bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-3 font-weight-bold" translate>Get Embed Code</span>
+            </button>
+            <ng-container *ngIf="!isSspa">
+              <button class="v-center border-0 py-2 c-dark dropdown-item" (click)="generateTrackableLink()">
+                <i class="i-icon i-link-track bgc-dark ml-1" aria-hidden="true"></i>
+                <span class="ml-3 f-3 font-weight-bold" translate>Trackable Link</span>
+              </button>
+             </ng-container>
+            <hr class="hr-action-dropdow">
+
+            <button class="v-center border-0 py-2 c-dark dropdown-item" (click)="editDetail()" >
+              <i class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-3 font-weight-bold" translate>Rename</span>
+            </button>
+
+            <ng-container *ngIf="!isSspa">
+              <button class="v-center border-0 py-2 c-dark dropdown-item" (click)="editTemplate()">
+                <i class="i-icon i-template bgc-dark ml-1" aria-hidden="true"></i>
+                <span class="ml-3 f-3 font-weight-bold" translate>Edit Theme</span>
+              </button>
+              <button class="v-center border-0 py-2 c-dark dropdown-item" (click)="leadCapture()">
+                <i class="i-icon i-lead-capture bgc-dark ml-1" aria-hidden="true"></i>
+                <span class="ml-3 f-3 font-weight-bold" translate>Lead Form</span>
+              </button>
+
+             </ng-container>
+            <button class="v-center border-0 py-2 c-dark dropdown-item" (click)="moveToFolder()">
+              <i class="i-icon i-move-to bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-3 font-weight-bold" translate>Move To</span>
+            </button>
+            <button class="v-center border-0 py-2 c-dark" ngbDropdownItem *ngIf="materialPreview.is_download"
+              (click)="downloadSource()">
+              <i class="i-icon i-download bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-3 font-weight-bold" translate>Download</span>
+            </button>
+            <div *ngIf="!isSspa">
+              <hr class="hr-action-dropdow">
+              <div class="fw-600 c-grey px-3 py-2">
+                <span>Share</span>
+              </div>
+              <button class="v-center border-0 py-2 c-dark dropdown-item"
+                *ngIf="materialPreview.is_sharable" (click)="shareMaterial()">
+                <i class="i-icon i-shared-by bgc-dark ml-1" aria-hidden="true"></i>
+                <span class="ml-3 f-3 font-weight-bold" translate>Social</span>
+              </button>
+              <button class="v-center border-0 py-2 c-dark dropdown-item" (click)="shareTeam()">
+                <i class="i-icon i-webpage bgc-dark ml-1" aria-hidden="true"></i>
+                <span class="ml-3 f-3 font-weight-bold" translate>Community</span>
+              </button>
+            </div>
+            <hr class="hr-action-dropdow">
+            <button class="v-center border-0 py-2 c-dark dropdown-item" (click)="deleteMaterial()">
+              <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-3 font-weight-bold" translate>Delete</span>
+            </button>
+          </ng-container>
+          <ng-template #materialActionsTemplate>
+            <button class="v-center border-0 py-2 c-dark dropdown-item" (click)="moveToFolder()">
+              <i class="i-icon i-move-to bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-3 font-weight-bold" translate>Move To</span>
+            </button>
+            <button class="v-center border-0 py-2 c-dark dropdown-item"
+              *ngIf="materialPreview.is_sharable" (click)="shareMaterial()">
+              <i class="i-icon i-shared-by bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-3 font-weight-bold" translate>Social</span>
+            </button>
+            <hr class="hr-action-dropdow">
+            <button class="v-center border-0 py-2 c-dark dropdown-item" (click)="deleteMaterial()">
+              <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-3 font-weight-bold" translate>Delete</span>
+            </button>
+
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<div class="material-preview-component" [class.sticky]="contentType !== 'page'">
+  <ng-container *ngIf="contentType === 'page'">
+    <app-back-button [defaultTitle]="'Materials'" [defaultRoute]="'/materials'"></app-back-button>
+   </ng-container>
+   <div class="top-app-bar" [class.page]="contentType === 'page'">
+    <h3 class="fw-600" *ngIf="contentType === 'page'; else closeBtn;">Material Detail</h3>
+    <ng-template #closeBtn>
+      <button class="close-btn" (click)="closePreview($event)">
+        <img [src]="sspaService.toAsset('img/close.svg')" alt="close">
+      </button>
+    </ng-template>
+    <div class="d-flex align-items-end justify-content-between ">
+      <ng-container *ngIf="contentType === 'page'">
+        <ng-container *ngIf="!isLoading && materialPreview">
+          <div class="material-action">
+            <ng-container
+              *ngTemplateOutlet="materialActions; context: { $implicit: materialPreview, userId }"></ng-container>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+
+  </div>
+  <div class="material-preview" [class.material-preview-on-page]="contentType === 'page'">
+    <ng-container *ngIf="isLoading && isLoading !== 'reloading'; else materialPreviewContent">
+      <div class="list-loading text-center mx-auto">
+        <div class="loader mt-5 lg"></div>
+        <h4 class="fw-600 mt-2" translate>Loading analytics...</h4>
+      </div>
+    </ng-container>
+    <ng-template #materialPreviewContent>
+      <div class="updating-status" *ngIf="isLoading === 'reloading'">Reloading...</div>
+      <ng-container *ngIf="materialPreview">
+        <div class="material-overview">
+          <div class="ad-image">
+            <div class="material-wrapper">
+              <a (click)="openMaterial($event)" target="_blank">
+                <div class="thumb-prev-wrapper">
+                  <img [src]="materialPreview.thumbnail || materialPreview.preview" class="thumbnail"
+                    (error)="sspaService.imgError($event, 'img/video_thumb.jpg')" />
+                  <img [src]="materialPreview.preview" class="preview"
+                    (error)="sspaService.imgError($event, 'img/video_thumb.jpg')" />
+                </div>
+              </a>
+            </div>
+
+          </div>
+          <div class="about-material">
+            <div class="file-name f-6 mr-2">{{ materialPreview.title }}</div>
+            <a class="ml-auto d-none" *ngIf="contentType !== 'page'"
+              [routerLink]="['/materials/analytics/', materialPreview.material_type, materialPreview._id]">
+              <i class="i-icon i-expand bgc-dark d-block" [ngbTooltip]="'Go to detail' | translate" placement="left right"></i>
+            </a>
+          </div>
+          <div class="file-type">
+            <div class="v-center f-3 font-weight-bold">
+              <i class="i-icon d-block bgc-black" [class]="'i-' + materialType.toLowerCase()"></i>
+              <span class="f-3 font-weight-bold ml-3">{{ materialType }}</span>
+            </div>
+          </div>
+          <ng-container *ngIf="contentType !== 'page'">
+            <div class="material-action">
+              <ng-container
+                *ngTemplateOutlet="materialActions; context: { $implicit: materialPreview, userId }"></ng-container>
+            </div>
+          </ng-container>
+        </div>
+        <ng-container *ngIf="isMyList">
+            <div class="social">
+              <div class="social-icons" *ngIf="!loadingCountInfo; else loadingCountStatus">
+                <div class="c-pointer"   [ngbTooltip]="'Count of sent' | translate">
+                  <img [src]="sspaService.toAsset('img/send.svg')" alt="send">
+                  <span class="f-4">{{ sentCount }}</span>
+                </div>
+                <div class="c-pointer"  [ngbTooltip]="'Count of watched' | translate">
+                  <img [src]="sspaService.toAsset('img/visibility.svg')" alt="visibility">
+                  <span class="f-4"> {{ viewCount }}</span>
+                </div>
+                <div class="c-pointer"  [placement]="'left'" [ngbTooltip]="'Count of contacts' | translate">
+                  <img [src]="sspaService.toAsset('img/person_pin_circle.svg')" alt="person pin">
+                  <span class="f-4"> {{ contactCount }}</span>
+                </div>
+              </div>
+              <ng-template #loadingCountStatus>
+                <div class="loader sm"></div>
+              </ng-template>
+              <div class="v-center w-100 justify-content-between mt-2">
+                <i class="i-icon i-notification bgc-dark d-block"></i>
+                <span class="f-4">View Notification</span>
+                <label class="custom-toggle mb-0 ml-auto">
+                  <input
+                    type="checkbox"
+                    name="public"
+                    [checked]="enabledNotification"
+                    (change)="toggleEnableNotification()"
+                  />
+                  <span class="custom-toggle-slider rounded-circle"></span>
+                </label>
+            </div>
+            </div>
+       </ng-container>
+        <div class="material-details ">
+          <app-slide-tab [tabs]="tabs" [selected]="tab" (onChange)="changeTab($event)" type="plain" *ngIf="isMyList"
+            class="border-bottom pl-0 rounded-0 w-100">
+          </app-slide-tab>
+
+          <ng-container [ngSwitch]="tab.id">
+            <!--File Detail Tab Content  -->
+            <ng-container *ngSwitchCase="'fileDetail'">
+              <div class="file-input">
+                <h4 class="f-4">File Info</h4>
+
+                <div *ngIf="materialPreview.material_type === 'video'">
+                  <span class="info-title f-2">File Type</span>
+                  <span class="info-description f-2">{{ materialMimeType }}</span>
+                </div>
+                <div *ngIf="materialPreview.material_type === 'video'">
+                  <span class="info-title f-2">Video Length</span>
+                  <span class="info-description f-2">{{  materialPreview?.duration  | timeDuration }}</span>
+                </div>
+                <div>
+                  <span class="info-title f-2">Date Added</span>
+                  <span class="info-description f-2">{{materialPreview.created_at|datetimeFormat}}</span>
+                </div>
+              </div>
+              <div class="file-input" *ngIf="!isSspa && isMyList">
+                <div class="d-flex align-items-centern">
+                  <h4 class="f-4 mb-0">Shared With</h4>
+                  <div class="f-4 py-1 px-2 c-pointer  v-center "  (click)="shareTeam()" >
+                    <i class="d-block sm i-icon i-plus bgc-blue"></i>
+                    <span class="ml-1 c-blue">{{ 'Add' | translate }}</span>
+                  </div>
+                </div>
+                <div class="f-3 d-flex justify-content-start align-items-center tags-section">
+                  <div *ngFor="let team of sharedTeamList" class="tag-el v-center">
+                    <span>{{ team.name }}</span>
+                    <span class="tag-plus c-pointer " (click)="stopShare(team)" >
+                      <i class="i-icon i-close bgc-dark"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <!--Landing Pages Tab Content  -->
+            <ng-container *ngSwitchCase="'landingPage'">
+              <app-material-landing-page-list  class="w-100" [setMaterialIdType]="materialIdType"></app-material-landing-page-list>
+            </ng-container>
+             <!--File View History Tab Content  -->
+            <ng-container *ngSwitchCase="'viewerHistory'">
+             <app-material-viewer-history
+               class="w-100"
+               [setMaterialPreview]="materialPreview"
+               [setSentCount]="sentCount"
+               [setViewCount]="viewCount"
+               [setContactCount]="contactCount"
+               [setMaterialIdType]="materialIdType"></app-material-viewer-history>
+            </ng-container>
+
+          </ng-container>
+        </div>
+      </ng-container>
+    </ng-template>
+  </div>
+</div>

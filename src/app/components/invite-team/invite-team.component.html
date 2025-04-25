@@ -1,0 +1,87 @@
+<h1 mat-dialog-title translate>Invite member to community</h1>
+<mat-dialog-content>
+  <div class="form-group">
+    <label translate>Input emails</label>
+    <app-input-email-chip
+      placeholder="{{
+        'Enter the crmgrow users email you wish to invite to your community.'
+          | translate
+      }}"
+      [selectedContacts]="selectedEmails"
+      [searchable]="false"
+      class="w-100 ml-2"
+    ></app-input-email-chip>
+    <!--    <app-search-user-->
+    <!--      [placeholder]="'Start typing user name or email'"-->
+    <!--      [isNewAvailable]="true"-->
+    <!--      [primaryField]="'email'"-->
+    <!--      (onSelect)="addMember($event)">-->
+    <!--    </app-search-user>-->
+  </div>
+  <div class="old-list" *ngIf="oldMembers.length">
+    <label class="f-1" translate>INVITATION IN PROGRESS</label>
+    <hr class="my-0" />
+    <div class="list-content py-1">
+      <div
+        class="status-description text-center f-2 mx-auto mt-sm-3"
+        *ngIf="!oldMembers.length; else oldMemberList"
+        translate
+      >
+        There are no invitations in progress.
+      </div>
+      <ng-template #oldMemberList>
+        <div class="old-member v-center py-1" *ngFor="let member of oldMembers">
+          <img
+            *ngIf="member.picture_profile; else avatarNameTemplate"
+            [src]="member.picture_profile"
+            (error)="sspaService.imgError($event,'img/user_avatar.svg')"
+            class="form-avatar rounded-circle mr-sm-3 mr-1"
+          />
+          <ng-template #avatarNameTemplate>
+            <div class="form-avatar rounded-circle bgc-avatar mr-sm-3 mr-1">
+              {{ member.avatarName }}
+            </div>
+          </ng-template>
+          <div
+            class="info v-center flex-grow-1"
+            [ngClass]="{
+              resending: isResending(member),
+              canceling: isCanceling(member)
+            }"
+          >
+            <div class="f-5">{{ member.user_name }}</div>
+            <button
+              class="btn btn-sm f-1 c-blue font-weight-bold ml-auto rounded border border-primary"
+              (click)="resendInvitation(member)"
+              [class.loading]="resending && resendEmail === member.email"
+              translate
+            >
+              Resend Invitation
+            </button>
+            <button
+              class="btn btn-sm f-1 btn-decline ml-2"
+              (click)="cancelInvitation(member)"
+              [class.loading]="canceling && cancelEmail == member.email"
+              translate
+            >
+              Cancel Invitation
+            </button>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button class="btn" mat-dialog-close>
+    {{ 'Cancel' | translate }}
+  </button>
+  <button
+    class="btn btn-primary"
+    [class.loading]="inviting"
+    (click)="sendInvitation()"
+    translate
+  >
+    Send
+  </button>
+</mat-dialog-actions>

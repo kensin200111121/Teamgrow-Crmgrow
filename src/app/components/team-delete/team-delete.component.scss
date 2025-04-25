@@ -1,0 +1,18 @@
+.team-delete-form {
+  padding: 1rem 0.5rem;
+
+  .dropdown-item {
+    width: auto;
+    padding: 0;
+
+    &:focus, &:hover {
+      color: #000000;
+      background-color: transparent;
+    }
+
+    .i-icon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}

@@ -1,0 +1,22 @@
+@import 'variables';
+
+.searched-results {
+  max-height: calc(65vh - 75px);
+  overflow: auto;
+}
+.team.selected {
+  background-color: $color-trans10;
+}
+.team {
+  background-color: $color-trans04;
+}
+.team:not(.selected) .deselect {
+  display: none;
+}
+.more-button-container {
+  border-top: 1px solid $color-trans08;
+}
+
+.btn-decline.loading {
+  background-color: #E02020;
+}

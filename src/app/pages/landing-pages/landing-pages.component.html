@@ -1,0 +1,293 @@
+<div class="page-content">
+  <div class="v-center justify-content-between mb-2">
+    <h1 class="page-title" translate>Landing Pages</h1>
+    <a
+      class="btn btn-primary f-6 font-weight-bold"
+      [routerLink]="'/lead-hub/landing-pages/create'"
+      translate
+    >
+      New Page
+    </a>
+  </div>
+  <app-slide-tab
+    [tabs]="tabs"
+    [selected]="selectedTab"
+    (onChange)="changeTab($event)"
+    type="plain"
+  ></app-slide-tab>
+  <div class="mt-3 position-relative">
+    <div class="list-loading text-center" *ngIf="isLoading">
+      <div class="loader mt-5 lg"></div>
+      <h4 class="fw-600 mt-2">{{ 'Loading landing pages' | translate }}...</h4>
+    </div>
+    <div *ngIf="!isLoading">
+      <div class="empty-list w-100 mt-10" *ngIf="!pages.length; else pageList">
+        <h4 class="font-weight-bold mt-4 mb-3" translate>
+          {{
+            isPublish
+              ? 'There are no published page yet.'
+              : 'There are no unpublished page'
+          }}
+        </h4>
+      </div>
+      <ng-template #pageList>
+        <div class="card-container" *ngIf="!isLoading">
+          <div class="page-card" *ngFor="let page of pages">
+            <div class="thumbnail">
+              <a [routerLink]="'/lead-hub/landing-pages/' + page._id" class="c-dark td-none">
+                <img
+                  [ngClass]="{
+                    'card-img-not-supported': !page.material?.thumbnail && !page.material?.preview
+                  }"
+                  [src]="page.material?.thumbnail || page.material?.preview || sspaService.toAsset('img/image_not_supported.svg')"
+                  alt="" class="card-img"
+                />
+              </a>
+              <div class="thumbnail-button-group">
+                <a class="c-pointer" (click)="openSend(page)" *ngIf="isPublish">
+                  <i class="i-icon size-16 i-send bgc-white d-block"></i>
+                </a>
+                <a class="c-pointer" [routerLink]="'/lead-hub/landing-pages/edit/' + page._id">
+                  <i class="i-icon size-16 i-edit bgc-white d-block"></i>
+                </a>
+                <a class="c-pointer" [href]="MaterialBaseDomain + '/page/preview/' + page._id" target="_blank">
+                  <i class="i-icon size-16 i-preview bgc-white d-block"></i>
+                </a>
+              </div>
+            </div>
+            <div class="p-3">
+              <div class="d-flex items-center justify-content-between">
+                <div class="title">
+                  <a
+                    [routerLink]="'/lead-hub/landing-pages/' + page._id"
+                    class="c-dark td-none"
+                    >{{ page.name }}</a
+                  >
+                </div>
+                <div class="d-flex justify-content-between">
+                  <div class="p-2 c-pointer" (click)="openSend(page)" *ngIf="isPublish">
+                    <i class="i-icon size-15 i-send bgc-dark d-block" aria-hidden="true"></i>
+                  </div>
+                  <div
+                    ngbDropdown
+                    #actionDropdown="ngbDropdown"
+                    placement="bottom-right"
+                  >
+                    <a
+                      class="d-flex c-pointer no-carot action-icon"
+                      [ngClass]="{ 'bg-ccc': actionDropdown.isOpen() }"
+                      ngbDropdownToggle
+                    >
+                      <i
+                        class="i-icon i-menu-more bg-dark"
+                        aria-hidden="true"
+                      ></i>
+                    </a>
+                    <div ngbDropdownMenu class="light py-1">
+                      <div *ngIf="isPublish">
+                        <button
+                          (click)="openSend(page)"
+                          class="v-center border-0 py-1 c-dark dropdown-item"
+                        >
+                          <i
+                            class="i-icon size-14 i-send bgc-dark mr-2 d-block"
+                            aria-hidden="true"
+                          ></i>
+                          <span class="num" translate>Send</span>
+                        </button>
+                        <button
+                          class="v-center border-0 py-1 c-dark dropdown-item"
+                          (click)="copyLink(page._id)"
+                        >
+                          <i
+                            class="i-icon size-14 i-copy bgc-dark mr-2 d-block"
+                            aria-hidden="true"
+                          ></i>
+                          <span class="num" translate>Copy Link</span>
+                        </button>
+                      </div>
+                      <hr *ngIf="isPublish" class="divider mt-2 mb-2" />
+                      <a
+                        class="decoration-none v-center border-0 py-1 c-dark dropdown-item"
+                        [routerLink]="
+                          '/lead-hub/landing-pages/edit/' + page._id
+                        "
+                      >
+                        <i
+                          class="i-icon size-14 i-edit bgc-dark mr-2 d-block"
+                          aria-hidden="true"
+                        ></i>
+                        <span class="num" translate>Edit</span>
+                      </a>
+                      <a
+                        class="decoration-none v-center border-0 py-1 c-dark dropdown-item"
+                        [href]="
+                          MaterialBaseDomain + '/page/preview/' + page._id
+                        "
+                        target="_blank"
+                      >
+                        <i
+                          class="i-icon size-14 i-preview bgc-dark mr-2"
+                          aria-hidden="true"
+                        ></i>
+                        <span class="num" translate>Preview</span>
+                      </a>
+                      <a
+                        class="decoration-none v-center border-0 py-1 c-dark dropdown-item"
+                        [routerLink]="'/lead-hub/landing-pages/' + page._id"
+                      >
+                        <i
+                          class="i-icon size-14 i-detail bgc-dark mr-2"
+                          aria-hidden="true"
+                        ></i>
+                        <span class="num" translate>Page Details</span>
+                      </a>
+                      <button
+                        *ngIf="!page.is_published"
+                        class="v-center border-0 py-1 c-dark dropdown-item"
+                        (click)="publish(page)"
+                      >
+                        <i
+                          class="i-icon size-14 i-upload bgc-dark mr-2"
+                          aria-hidden="true"
+                        ></i>
+                        <span class="num" translate>Publish</span>
+                      </button>
+                      <button
+                        *ngIf="page.is_published"
+                        class="v-center border-0 py-1 c-dark dropdown-item"
+                        (click)="unpublish(page)"
+                      >
+                        <i
+                          class="i-icon size-14 i-download bgc-dark mr-2"
+                          aria-hidden="true"
+                        ></i>
+                        <span class="num" translate>Unpublish</span>
+                      </button>
+                      <button
+                        class="v-center border-0 py-1 c-dark dropdown-item"
+                        (click)="handleDelete(page)"
+                      >
+                        <i
+                          class="i-icon size-14 i-trash bgc-dark mr-2"
+                          aria-hidden="true"
+                        ></i>
+                        <span class="num" translate>Delete</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="desc mt-2"
+                placement="top"
+                [ngbTooltip]="
+                  page?.description?.length > 110 ? descTipContent : ''
+                "
+              >
+                {{ page.description | shorten : 110 : '...' }}
+                <ng-template #descTipContent>
+                  {{ page.description }}
+                </ng-template>
+              </div>
+              <div
+                class="d-flex w-100 justify-content-between items-center mt-2"
+              >
+                <div class="title w-half">Form</div>
+                <ng-container
+                  *ngTemplateOutlet="
+                    formAndAutomation;
+                    context: { $implicit: page.forms, field: 'name' }
+                  "
+                >
+                </ng-container>
+              </div>
+              <div
+                class="d-flex w-100 justify-content-between items-center mt-2"
+              >
+                <div class="title w-half">
+                  <div>Automation</div>
+                </div>
+                <ng-container
+                  *ngTemplateOutlet="
+                    formAndAutomation;
+                    context: { $implicit: page.automations, field: 'title' }
+                  "
+                >
+                </ng-container>
+              </div>
+              <div class="divider mt-2"></div>
+              <div class="d-flex justify-content-between items-center mt-2">
+                <div class="d-flex items-center" ngbTooltip="View Count" placement="top-left">
+                  <i
+                    class="i-icon i-material-eye bgc-dark mr-1"
+                    aria-hidden="true"
+                  ></i>
+                  <span class="num">{{ viewCounts[page._id] ?? 0 }}</span>
+                </div>
+                <div class="d-flex items-center" ngbTooltip="Contact Views">
+                  <i
+                    class="i-icon i-person-pin-circle bgc-dark mr-1"
+                    aria-hidden="true"
+                  ></i>
+                  <span class="num">{{ contactCounts[page._id] ?? 0 }}</span>
+                </div>
+                <div class="d-flex items-center" ngbTooltip="Form Submissions" placement="top-right">
+                  <i
+                    class="i-icon i-note-check bgc-dark mr-1"
+                    aria-hidden="true"
+                  ></i>
+                  <span class="num">{{ responseCounts[page._id] ?? 0 }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+<ng-template #formAndAutomation let-items let-field="field">
+  <div
+    class="w-half d-flex items-center"
+    *ngIf="items.length > 0; else emptyForm"
+  >
+    <div
+      class="label nowrap"
+      placement="top"
+      [ngbTooltip]="items[0][field].length > 10 ? formNameTip : ''"
+      *ngIf="items.length > 1; else oneForm"
+    >
+      {{ items[0][field] | shorten : 10 : '...' }}
+      <ng-template #formNameTip>
+        {{ items[0][field] }}
+      </ng-template>
+    </div>
+    <ng-template #oneForm>
+      <div
+        class="label nowrap"
+        placement="top"
+        [ngbTooltip]="items[0][field].length > 15 ? oneFormNameTip : ''"
+      >
+        {{ items[0][field] | shorten : 15 : '...' }}
+        <ng-template #oneFormNameTip>
+          {{ items[0][field] }}
+        </ng-template>
+      </div>
+    </ng-template>
+    <div
+      class="one-more ml-1"
+      *ngIf="items.length > 1"
+      placement="left"
+      [ngbTooltip]="formTipContent"
+    >
+      +{{ items.length - 1 }}
+      <ng-template #formTipContent>
+        <span *ngFor="let subItem of items.slice(1)" class="mr-1"
+          >{{ subItem[field] }};</span
+        >
+      </ng-template>
+    </div>
+  </div>
+  <ng-template #emptyForm><div class="w-half label">None</div></ng-template>
+</ng-template>

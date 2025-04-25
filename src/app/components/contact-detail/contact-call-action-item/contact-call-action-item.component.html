@@ -1,0 +1,112 @@
+<div class="calls-detail">
+  <div class="v-center justify-content-between mb-3">
+    <div class="v-center">
+      <div class="history-icon mr-1">
+        <i class="act-icon act-dialer"></i>
+      </div>
+      <div class="d-flex v-center">
+        <span class="text-capitalize">{{ activity.activityOverView.type === 'rvm' ? 'ringless vm' : 'call' }}</span>
+        <ng-container *ngIf="activity?.activityOverView?.user">
+          <app-contact-action-user [user]="activity.activityOverView.user"></app-contact-action-user>
+        </ng-container>
+      </div>
+      <span class="mx-2 center-dot"></span>
+      <ng-container *ngIf="activity.activityOverView.type === 'rvm'; else callDetail">
+        <span class="op-75" translate>connected</span>
+        <i class="i-icon i-call-connected d-block sm mx-2"></i>
+      </ng-container>
+      <ng-template #callDetail>
+        <ng-container *ngIf="
+                      activity.action.answered;
+                      else disconnectedStatus
+                    ">
+          <span *ngIf="activity.action.duration" class="op-75 fw-600 mr-1">{{
+            activity.action.duration * 1000 | timeDuration
+            }}</span>
+
+          <i class="i-icon i-call-connected d-block sm mx-2"></i>
+        </ng-container>
+        <ng-template #disconnectedStatus>
+          <i class="i-icon i-call-disconnected d-block sm mx-2"></i>
+        </ng-template>
+        <span class="op-75 fw-600 f-0" translate>{{
+          activity.action.status
+          }}</span>
+        <span class="f-2 ml-2 badge badge-primary px-1 call-label" *ngIf="activity.action.label">
+          {{ activity.action.label }}
+        </span>
+      </ng-template>
+    </div>
+    <div class="v-center ml-auto">
+      <span class="f-3 op-56">
+        {{ activity.activityOverView.created_at | datetimeFormat }}
+      </span>
+      <div *ngIf="!isPending" ngbDropdown class="button-more p-1 rounded contact-action-btn" placement="bottom-end"
+        [class.d-none]="activity.activityOverView.type === 'rvm'">
+        <a class="d-flex c-pointer no-carot" ngbDropdownToggle>
+          <i class="i-icon i-menu-more bg-dark" aria-hidden="true"></i>
+        </a>
+        <div ngbDropdownMenu class="light py-1">
+          <button class="v-center border-0 py-1 c-dark dropdown-item" (click)="editCallComment(activity.action)">
+            <span class="ml-3 f-2 font-weight-bold" translate>Edit</span>
+          </button>
+          <button class="v-center border-0 py-1 c-dark dropdown-item" (click)="openCall()">
+            <span class="ml-3 f-2 font-weight-bold" translate>Redial</span>
+          </button>
+          <button class="v-center border-0 py-1 c-dark dropdown-item" *ngIf="!isSspa" (click)="openSendText()">
+            <span class="ml-3 f-2 font-weight-bold" translate>Send Text</span>
+          </button>
+          <button class="v-center border-0 py-1 c-dark dropdown-item download-btn" *ngIf="activity.action.recording"
+            (click)="downloadRecord(activity.action.recording, $event)">
+            <i class="i-icon i-spinner bgc-blue mr-1"></i>
+            <span class="ml-3 f-2 font-weight-bold" translate>Download Recording</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="collapsed" *ngIf="!isExpanded">
+    <a class="more f-3 mt-3 c-pointer fw-600 d-block w-fit" (click)="expandMoreDetail(); playRecording(activity.action.recording)" translate>Expand</a>
+  </div>
+  <div class="expanded" *ngIf="isExpanded">
+    <ng-container *ngIf="!!actionDetail">
+      <div class="main-history-item">
+        <div class="recording-data mt-3" *ngIf="activity.action.recording">
+          <ng-container>
+            <audio #audioRef controls class="flex-grow-1 w-100" preload="auto">
+            </audio>
+          </ng-container>
+        </div>
+        <div class="content mt-3" *ngIf="activity.action.content">
+          <div class="f-4 fw-600 op-40">Call note</div>
+          <div class="f-3 mt-1 call-note-content">
+            <span class="call-summary">{{
+              activity.action.content | shorten: 100:'...'
+              }}</span>
+            <ng-container *ngIf="activity.action.content.length > 100">
+              <span class="call-full-desc">{{
+                activity.action.content
+                }}</span>
+              <a class="c-blue ml-2 fw-600 c-pointer expand-action" (click)="expandCallNote($event)" translate>View
+                more</a>
+              <a class="c-blue ml-2 fw-600 c-pointer collapse-action" (click)="collapseCallNote($event)"
+                translate>Close</a>
+            </ng-container>
+          </div>
+        </div>
+        <div class="content mt-3"
+          *ngIf="activity.activityOverView.type === 'rvm' && activity.activityOverView.rvm_id">
+          <div class="f-4 fw-600 op-40" translate>
+            Ringless voice mail
+          </div>
+          <div class="f-3 mt-1 call-note-content">
+            <span class="call-summary">{{
+              rvmDics[activity.action.rvm_id]?.name
+              }}</span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <a class="more f-3 mt-2 c-pointer fw-600 d-block w-fit" (click)="hideMoreDetail()" translate>Collapse</a>
+  </div>
+</div>

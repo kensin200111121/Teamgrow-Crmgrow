@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icons / Follow</title>
+    <g id="Icons-/-Follow" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
+        <g id="Contact-added-1" transform="translate(1.000000, 1.000000)" stroke="#FFFFFF" stroke-width="2">
+            <path d="M2.31958,16.6809 C0.78038,15.1419 0,13.2586 0,11.0831 C0,8.9081 0.78038,7.02484 2.31933,5.48584 C3.85828,3.94684 5.74128,3.16669 7.91667,3.16669 C9.7075,3.16669 11.3006,3.69563 12.6667,4.74148" id="Path"></path>
+            <line x1="13.7498" y1="4.75" x2="12.1665" y2="0" id="Path"></line>
+            <line x1="9" y1="7.91667" x2="13.75" y2="4.75" id="Path"></line>
+            <line x1="15" y1="11" x2="15" y2="17" id="Path"></line>
+            <line x1="12" y1="14" x2="18" y2="14" id="Path"></line>
+        </g>
+    </g>
+</svg>

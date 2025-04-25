@@ -1,0 +1,265 @@
+<div class="profile-creation-dialog">
+  <div class="v-center justify-content-between">
+    <h1 mat-dialog-title *ngIf="step === 1" translate>
+      Create account
+    </h1>
+    <h1 mat-dialog-title *ngIf="step === 2" translate>
+      Profile Permission
+    </h1>
+    <h1 mat-dialog-title *ngIf="step !== 1 && step !== 2" translate>
+      Confirmation
+    </h1>
+    <button class="v-center border-0 bgc-trans" mat-dialog-close>
+      <i class="d-block i-icon i-close bgc-dark"></i>
+    </button>
+  </div>
+  <!-- BEGIN PROFILE CREATION FORM -->
+  <ng-container *ngIf="step === 1">
+    <form #profileForm="ngForm"
+      (ngSubmit)="profileForm.form.valid ? updateProfile(profileForm.value) : false;">
+      <mat-dialog-content>
+        <div class="avatar-wrapper mb-4 mx-auto">
+          <img
+            [src]="sspaService.toAsset(user.picture_profile || 'img/user_avatar.svg')"
+            class="avatar" />
+          <button type="button" class="bgc-blue btn rounded-circle btn-icon"
+            (click)="openProfilePhoto()">
+            <i class="i-icon i-plus bg-white d-block"></i>
+          </button>
+        </div>
+        <div class="row">
+          <div class="col-sm-6 col-12">
+            <div class="form-group"
+              [ngClass]="{invalid: profileForm.submitted && user_name.invalid && (user_name.dirty || user_name.touched || profileForm.submitted)}">
+              <div class="d-flex">
+                <label for="user_name" class="mr-auto" translate>full name</label>
+                <span class="error" *ngIf="user_name.errors">
+                  <ng-container *ngIf="user_name.errors.required" translate>Required!
+                  </ng-container>
+                </span>
+              </div>
+              <input type="text" class="form-control" [(ngModel)]="name" data-name="add-user-username"
+                id="user_name" name="user_name" #user_name="ngModel" required>
+            </div>
+          </div>
+          <div class="col-sm-6 col-12">
+            <div class="form-group"
+              [ngClass]="{invalid: profileForm.submitted && email.invalid && (email.dirty || email.touched || profileForm.submitted)}">
+              <div class="d-flex">
+                <label for="email" class="mr-auto" translate>email</label>
+                <span class="error" *ngIf="email.errors">
+                  <ng-container *ngIf="email.errors.required" translate>Required!
+                  </ng-container>
+                  <ng-container *ngIf="email.errors.pattern" translate>Wrong email format!
+                  </ng-container>
+                </span>
+                <span class="error d-inline-block" *ngIf="!checkingUser && existingUser" translate>Email is already taken</span>
+              </div>
+              <input type="text" class="form-control" [(ngModel)]="userEmail" data-name="add-user-email"
+                id="email" name="email" #email="ngModel" required
+                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$"
+                (ngModelChange)="this.confirmEmail.next($event)">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6 col-12">
+            <div class="form-group phone-form">
+              <div class="d-flex">
+                <label for="phone" class="mr-auto" translate>phone</label>
+                <span class="error" [class.d-block]="profileForm.submitted">
+                  <ng-container *ngIf="!phoneNumber; else wrongTemplate;" translate>
+                    Required!
+                  </ng-container>
+                  <ng-template #wrongTemplate>
+                    <ng-container
+                      *ngIf="phoneControl && phoneNumber && !phoneControl.valid" translate>
+                      Wrong cell-phone!
+                    </ng-container>
+                  </ng-template>
+                </span>
+              </div>
+              <app-phone-input [cssClass]="'form-control phone-form'"
+                [onlyCountries]="countries"
+                [selectedCountryISO]="CountryISO.UnitedStates"
+                [(ngModel)]="phoneNumber" name="phone" #phoneControl>
+              </app-phone-input>
+            </div>
+          </div>
+          <div class="col-sm-6 col-12">
+            <div class="form-group"
+              [ngClass]="{invalid: profileForm.submitted && company.invalid && (company.dirty || company.touched || profileForm.submitted)}">
+              <div class="d-flex">
+                <label for="company_info" class="mr-auto" translate>your company</label>
+                <span class="error" *ngIf="company.errors">
+                  <ng-container *ngIf="company.errors.required" translate>Required!
+                  </ng-container>
+                </span>
+              </div>
+              <select class="form-control c-blue f-5" [(ngModel)]="userCompany"
+                name="company" id="company" required #company="ngModel"
+                (ngModelChange)="confirmCompany()">
+                <option *ngFor="let company_info of companies"
+                  value="{{company_info}}">
+                  {{company_info}}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6 col-12">
+            <div class="form-group">
+              <div class="d-flex">
+                <label for="learn_more" class="mr-auto" translate>landing page learn more redirect link</label>
+              </div>
+              <input type="text" class="form-control" [(ngModel)]="website"
+                id="learn_more" name="learn_more" #learn_more="ngModel">
+            </div>
+          </div>
+          <div class="col-sm-6 col-12">
+            <div class="form-group"
+              [ngClass]="{invalid: profileForm.submitted && timezone == ''}">
+              <div class="d-flex">
+                <label for="timezone" class="mr-auto" translate>time zone</label>
+                <span class="error" *ngIf="timezone == ''" translate>
+                  Required!
+                </span>
+              </div>
+              <app-select-timezone
+                [(timezone)]="timezone"
+                [uiType]="'selector'"
+              ></app-select-timezone>
+            </div>
+          </div>
+          <div class="col-sm-6 col-12">
+            <div class="form-group"
+              [ngClass]="{invalid: profileForm.submitted && location.invalid && (location.dirty || location.touched || profileForm.submitted)}">
+              <div class="d-flex">
+                <label for="location" class="mr-auto" translate>location</label>
+                <span class="error" *ngIf="location.errors">
+                  <ng-container *ngIf="location.errors.required" translate>Required!
+                  </ng-container>
+                </span>
+              </div>
+              <input class="form-control" [placeholder]="'Add location' | translate"
+                [(ngModel)]="address" name="location" #location="ngModel"
+                ngx-google-places-autocomplete #addressplacesRef="ngx-places"
+                [options]="{
+                          types: []
+                        }" (onAddressChange)="handleAddressChange($event)" />
+            </div>
+          </div>
+        </div>
+      </mat-dialog-content>
+      <mat-dialog-actions>
+        <div class="v-center justify-content-between w-100">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="auto-fill"
+              (change)="autofill($event)">
+            <label class="custom-control-label" for="auto-fill" translate>Fill information from primary account.</label>
+          </div>
+          <button type="submit" class="btn btn-primary font-weight-bold ml-auto" data-action="add-user-save-continue"
+            [class.loading]="saving" translate>
+            Save & Continue
+          </button>
+        </div>
+      </mat-dialog-actions>
+    </form>
+
+  </ng-container>
+  <!-- END PROFILE CREATION FORM -->
+
+  <!-- BEGIN PROFILE SETTING -->
+  <ng-container *ngIf="step === 2">
+    <mat-dialog-content>
+      <div class="v-center mt-5 mb-1">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" id="login_setting"
+            name="loginSetting" [(ngModel)]="loginEnabled" />
+          <label class="custom-control-label f-6 field-name"
+            for="login_setting" translate>Do you want have sub-profile account login into crmgrow by own email?</label>
+        </div>
+      </div>
+      <ng-container *ngIf="loginEnabled">
+        <!-- added by sylla -->
+        <form class="mx-5">
+          <div class="v-center mt-2">
+            <div class="v-center">
+              <div class="custom-radio-container" (click)="onSwitchPasswordMode(false)">
+                <input class="custom-radio" type="radio" id="manual_password"
+                  name="manualPassword" [checked]="!autoPassword" />
+                <label class="f-3"></label>
+              </div>
+              <div class="f-3 ml-1" translate>Manual</div>
+            </div>
+            <div class="v-center ml-5">
+              <div class="custom-radio-container" (click)="onSwitchPasswordMode(true)">
+                <input class="custom-radio" type="radio" id="autPassword"
+                  name="autPassword" [checked]="autoPassword" />
+                <label class="f-3"></label>
+              </div>
+              <div class="f-3 ml-1" translate>Auto</div>
+            </div>
+          </div>
+          <div class="position-relative form-group mt-2">
+            <div class="d-flex justify-content-between">
+              <label for="password" translate>Password</label>
+              <ng-container *ngIf="autoPassword">
+                <button type="button" class="btn btn-link btn-sm"
+                  (click)="regeneratePassword()" translate>
+                  Regenerate
+                </button>
+              </ng-container>
+            </div>
+            <input [type]="passwordType" class="form-control"
+              [(ngModel)]="accountPassword" name="password" id="password" required
+              minlength="6" #password="ngModel" />
+            <span class="f-3 c-black password-type c-pointer"
+              *ngIf="passwordType === 'password'"
+              (click)="passwordType = 'text'" translate>Show</span>
+            <span class="f-3 c-black password-type c-pointer"
+              *ngIf="passwordType === 'text'"
+              (click)="passwordType = 'password'" translate>Hide</span>
+            <span class="error" *ngIf="submitted">
+              <ng-container *ngIf="!password" translate>Password is required!
+              </ng-container>
+              <ng-container *ngIf="6 > password.length" translate>Password must be at least 6 characters long!</ng-container>
+            </span>
+          </div>
+          <div class="v-center">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="welcome_email"
+                name="welcomeEmail" [(ngModel)]="welcomeEmailEnabled">
+              <label for="welcome_email"
+                class="custom-control-label f-3 font-weight-bold c-black field-name" translate>
+                By checking this, we will send the welcome email to your sub profile.
+              </label>
+            </div>
+          </div>
+        </form>
+        <!-- end by sylla -->
+      </ng-container>
+      <div class="v-center mt-3 mb-5">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" id="account_setting"
+            name="accountSetting" [(ngModel)]="masterDisabled" />
+          <label class="custom-control-label f-6 field-name"
+            for="account_setting" translate>Enable go to Master/Root account</label>
+        </div>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <div class="v-center justify-content-between w-100">
+        <div class="v-center"></div>
+        <div class="v-center">
+          <button type="button" class="btn c-blue"
+            (click)="onBack()" translate>Back</button>
+          <button type="button" class="btn btn-primary" data-action="add-user-save" (click)="saveProfile()"
+            [class.loading]="saving" translate>Save</button>
+        </div>
+      </div>
+    </mat-dialog-actions>
+  </ng-container>
+  <!-- END PROFILE SETTING -->
+</div>

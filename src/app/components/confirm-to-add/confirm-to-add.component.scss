@@ -1,0 +1,25 @@
+.avatar {
+  line-height: 28px;
+}
+
+.custom-radio-container {
+  width: 20px;
+  height: 20px;
+
+  label {
+    height: 20px;
+    opacity: 1;
+
+    &::before {
+      right: -20px;
+    }
+    &::after {
+      right: -16px;
+    }
+  }
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}

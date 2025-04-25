@@ -1,0 +1,85 @@
+.automation-name {
+  flex-grow: 1;
+  max-width: calc(100% - 90px);
+  width: calc(100% - 90px);
+  height: 30px;
+  overflow: hidden;
+  position: relative;
+  line-height: 30px;
+}
+
+.item-title {
+  width: 100%;
+  position: absolute;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
+  line-height: 30px;
+}
+
+.automation-name:hover .item-title {
+  width: fit-content;
+  animation-play-state: running;
+  animation: marquee_title 3s linear infinite;
+  animation-fill-mode: both;
+}
+
+@keyframes marquee_title {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.selected-value {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  @media screen and (max-width: 576px) {
+    width: 90%;
+  }
+  width: 100%;
+}
+.icon-close {
+  min-width: 16px;
+}
+
+:host ::ng-deep {
+  .mat-form-field {
+    display: block;
+    line-height: 1.125;
+    font-size: inherit;
+    font-weight: 400;
+  }
+
+  .mat-form-field-wrapper {
+    margin: 0px;
+    padding-bottom: 0px;
+  }
+
+  .mat-form-field-flex {
+    margin-top: 0px;
+    outline: none !important;
+    box-sizing: border-box;
+    padding: 0.2rem 0.75em 0 0.75em;
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+  }
+
+  .mat-form-field-infix {
+    height: 30px;
+    border-top: none;
+    padding: 0.5rem 0.1rem 0.2rem 0.3rem;
+  }
+}
+
+::ng-deep .cdk-overlay-container {
+  .mat-select-panel {
+    max-height: 268px!important;
+  }
+}

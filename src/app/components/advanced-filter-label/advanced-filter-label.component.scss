@@ -1,0 +1,28 @@
+.label-item {
+  position: relative;
+  padding-left: 1.75rem;
+  margin-bottom: 10px;
+}
+.label-items-list {
+  height: 320px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.align-items-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.include-label {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.label-name { 
+  padding: 2px 7px;
+  color: #ffffff;
+  border-radius: 7px;
+}

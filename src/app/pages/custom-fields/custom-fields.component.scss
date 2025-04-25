@@ -1,0 +1,178 @@
+@import "variables";
+
+.form-group label {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.page-content {
+    padding: 0;
+}
+
+.custom-field-title {
+    line-height: 22px;
+}
+
+.custom-field-panel {
+    width: 100%;
+    max-width: 500px;
+
+    .form-control {
+        width: 150px;
+
+        @media screen and (max-width: 576px) {
+            width: 100%;
+        }
+    }
+
+    .form-group {
+        .add-button {
+            i {
+                width: 12px;
+                height: 12px;
+                min-width: 12px;
+            }
+        }
+
+        label {
+            text-transform: unset;
+        }
+
+        .custom-control-label {
+            opacity: 1;
+        }
+
+        .required-field {
+            // width: max-content;
+            width: 100%;
+
+            .field-name {
+                width: 180px;
+                overflow-wrap: anywhere;
+                margin-right: 10px;
+            }
+
+            .field-type {
+                width: 120px;
+                text-transform: capitalize;
+            }
+
+            .field-info {
+                width: 100px;
+            }
+
+            .field-action {
+                width: 60px;
+            }
+
+            &.fields-header {
+                height: 47px;
+                background-color: white;
+                width: 100%;
+                position: sticky;
+                top: $table-header-top;
+                z-index: 2;
+                border-bottom: 1px solid gainsboro;
+
+                &.selected {
+                    background-color: #f5f6fd;
+                }
+            }
+        }
+    }
+
+    .btn-blue {
+        &:hover {
+            color: white;
+        }
+    }
+}
+
+.action-panel {
+    flex: 1;
+    padding-left: 24px;
+
+    .action-panel-header {
+        margin-bottom: 15px;
+    }
+}
+
+.mat-table-body-wrapper {
+    min-height: 80px;
+}
+
+.address-col a {
+    max-width: 75px;
+    width: 75px;
+    font-size: 12px;
+}
+
+.contact-avatar {
+    position: relative;
+}
+
+.custom-mat-table {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.shared-by,
+.shared-with {
+    position: absolute;
+    display: block;
+    width: 22px;
+    height: 22px;
+    background: transparent;
+    border-radius: 10px;
+    bottom: -6px;
+    right: -6px;
+
+    .i-icon {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+:host ::ng-deep {
+
+    th.mat-header-cell:first-of-type,
+    td.mat-cell:first-of-type,
+    td.mat-footer-cell:first-of-type {
+        padding-left: 8px;
+    }
+
+    app-label-select {
+        .label-select-wrapper {
+            width: 120px !important;
+        }
+    }
+
+    .last-activity {
+        width: 100px !important;
+    }
+}
+
+.contacts-list-panel {
+    width: 100vw;
+    max-width: 380px;
+}
+
+:host ::ng-deep {
+    .page-table thead tr:first-child th {
+        top: 0
+    }
+}
+
+.pagination-wrapper {
+    position: sticky;
+    bottom: 0px;
+    background: white;
+    padding: 8px 0px;
+    z-index: 2;
+}
+
+.custom-contact-icon {
+    width: 30px;
+    height: 30px;
+}

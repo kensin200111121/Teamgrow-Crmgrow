@@ -1,0 +1,233 @@
+<div class="campaign-bulk-mailing-page">
+  <a [attr.data-action]="'bulk-email-create-new-newsletter'" class="v-center f-6 font-weight-bold btn btn-primary d-block position-relative ml-auto create-button" style="z-index: 2;" [routerLink]="['/newsletter']" translate>
+    New newsletter
+  </a>
+  <div class="d-flex table-control-header v-center align">
+    <div class="form-group mb-0 search-form">
+      <div class="input-group-prepend">
+        <i class="i-icon i-search d-block bgc-dark"></i>
+      </div>
+      <input type="text" class="form-control" [placeholder]="'Search' | translate" aria-label="search" aria-describedby="search-addon" [(ngModel)]="searchStr" (ngModelChange)="changeSearchStr()"
+      [class.disabled]="(themeService.loadStatus | async) === STATUS.REQUEST">
+      <ng-container *ngIf="searchStr">
+        <div class="cancel-action c-pointer" (click)="clearSearchStr()">
+          <i class="i-icon i-close d-block bgc-dark"></i>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div class="custom-mat-table list-table-container position-relative mt-3">
+    <div class="mat-table-wrapper mode-2" [class.empty]="!filteredResult.length">
+      <table class="w-100 page-table" mat-table [dataSource]="filteredResult | paginate: {itemsPerPage: pageSize.id, currentPage: page, id: 'templateTable', total: filteredResult.length}">
+        <ng-container matColumnDef="loader-cell">
+            <th mat-header-cell
+              *matHeaderCellDef colspan="12" class="loader-cell">
+              <div class="updating-status"
+              *ngIf="filteredResult.length && (themeService.loading$ | async) === STATUS.REQUEST" translate>
+                LOADING
+              </div>
+            </th>
+          </ng-container>
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef class="pl-2 checkbox-col">
+            <div class="custom-control custom-checkbox"
+                 [class.indeterminate]="selectedLists.selected.length && !isAllSelected()">
+              <input type="checkbox"
+                     class="custom-control-input"
+                     id="selectAllTemplate"
+                     (change)="$event ? selectAllPage() : null"
+                     [checked]="isSelectedPage()" />
+              <label class="custom-control-label"
+                     for="selectAllTemplate"></label>
+            </div>
+          </th>
+          <td mat-cell
+              *matCellDef="let element"
+              class="pl-2 checkbox-col">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox"
+                     class="custom-control-input"
+                     id="campaign-template-{{element._id}}"
+                     (change)="selectedLists.toggle(element._id)"
+                     [checked]="selectedLists.isSelected(element._id)" />
+              <label class="custom-control-label"
+                     for="campaign-template-{{element._id}}"></label>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Thumbnail Column -->
+        <ng-container matColumnDef="thumbnail">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell
+                *ngIf="!selectedLists.selected.length; else toolHeader" class="thumb-col ml-1">
+              <span translate>Title & Subject</span>
+            </th>
+            <ng-template #toolHeader>
+              <th mat-header-cell colspan="10">
+                <div class="v-center">
+                  <span class="c-dark f-3 text-lowercase font-weight-bold">{{selectedLists.selected.length}} {{'selected' | translate}}</span>
+                  <app-actions-header [actions]="ACTIONS" (doCommand)="doAction($event)"></app-actions-header>
+                </div>
+              </th>
+            </ng-template>
+          </ng-container>
+          <td mat-cell
+              *matCellDef="let element" class="thumb-col ml-1">
+            <img [src]="element.thumbnail" />
+          </td>
+        </ng-container>
+
+        <!-- Title Column -->
+        <ng-container matColumnDef="title">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell
+                *ngIf="!selectedLists.selected.length;" class="title-col ml-1">
+              <span></span>
+            </th>
+          </ng-container>
+          <td mat-cell
+              *matCellDef="let element" class="title-col ml-1">
+            <a [routerLink]="['/newsletter/edit/' + element._id]"
+               class="hover-bottom font-weight-bold f-4 c-dark">
+              {{element.title}}
+            </a>
+            <div class="f-3 op-75">
+              {{element.subject}}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Subject Column -->
+        <ng-container matColumnDef="subject">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell
+                *ngIf="!selectedLists.selected.length" class="subject-col">
+              <span translate>Subject</span>
+            </th>
+          </ng-container>
+          <td mat-cell
+              *matCellDef="let element" class="subject-col">
+            {{element.subject}}
+          </td>
+        </ng-container>
+
+        <!-- Videos Column -->
+        <ng-container matColumnDef="videos">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell
+                *ngIf="!selectedLists.selected.length" class="material-col">
+              <span translate>Videos</span>
+            </th>
+          </ng-container>
+          <td mat-cell
+              *matCellDef="let element" class="material-col">
+            {{element.videos.length}}
+          </td>
+        </ng-container>
+
+        <!-- PDFS Column -->
+        <ng-container matColumnDef="pdfs">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell
+                *ngIf="!selectedLists.selected.length" class="material-col">
+              <span translate>PDFs</span>
+            </th>
+          </ng-container>
+          <td mat-cell
+              *matCellDef="let element" class="material-col">
+            {{element.pdfs.length}}
+          </td>
+        </ng-container>
+
+        <!-- Images Column -->
+        <ng-container matColumnDef="images">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell
+                *ngIf="!selectedLists.selected.length" class="material-col">
+              <span translate>Images</span>
+            </th>
+          </ng-container>
+          <td mat-cell
+              *matCellDef="let element" class="material-col">
+            {{element.images.length}}
+          </td>
+        </ng-container>
+
+        <!-- Time Column -->
+        <ng-container matColumnDef="time">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell class="time-col"
+                *ngIf="!selectedLists.selected.length">
+              <span translate>Updated</span>
+            </th>
+          </ng-container>
+          <td mat-cell
+              *matCellDef="let element" class="time-col">
+            {{ element.updated_at | datetimeFormat : 'MM/DD/yyyy hh:mm a' }}
+          </td>
+        </ng-container>
+
+        <!-- Action Column -->
+        <ng-container matColumnDef="actions">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell class="action-col text-right pr-0 pl-3"
+                *ngIf="!selectedLists.selected.length">
+              <span></span>
+            </th>
+          </ng-container>
+          <td mat-cell
+              *matCellDef="let element" class="action-col pr-0 pl-3">
+            <div class="v-center w-100 justify-content-around actions-collection">
+              <div class="icon-button v-center justify-content-center" (click)="openTemplate(element)" placement="bottom" [ngbTooltip]="'Edit' | translate">
+                <i class="i-icon bgc-dark i-edit"></i>
+              </div>
+              <div class="icon-button v-center justify-content-center" (click)="duplicateTemplate(element)" placement="bottom" [ngbTooltip]="'Duplicate' | translate">
+                <i class="i-icon bgc-dark i-duplicate"></i>
+              </div>
+              <div class="icon-button v-center justify-content-center" (click)="deleteTemplate(element)" placement="bottom" [ngbTooltip]="'Delete' | translate">
+                <i class="i-icon bgc-dark i-trash"></i>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="selection_info">
+          <th mat-header-cell *matHeaderCellDef colspan="10" class="text-center">
+          <span *ngIf="selectedLists.selected.length !== newsletters.length; else deselectTemplate">
+            {{selectedLists.selected.length}} {{'newsletters are selected.' | translate}}
+            <span class="c-blue font-weight-bold c-pointer" (click)="selectAll()">
+              {{'Select all' | translate}} {{newsletters.length}} {{'newsletters' | translate}}
+            </span>
+          </span>
+            <ng-template #deselectTemplate>
+              {{'All' | translate}} {{newsletters.length}} {{'newsletters are selected.' | translate}} <span class="c-blue c-pointer font-weight-bold" (click)="deselectAll()">{{'Clear selection' | translate}}</span>
+            </ng-template>
+          </th>
+        </ng-container>
+        <tr mat-header-row
+            *matHeaderRowDef="DISPLAY_COLUMNS" [class.selected]="selectedLists.selected.length" class="table-header"></tr>
+        <tr mat-header-row *matHeaderRowDef="['selection_info']" [class.d-none]="!selectedLists.selected.length" class='selection-info'></tr>
+        <tr mat-row
+            *matRowDef="let row; columns: DISPLAY_COLUMNS;"></tr>
+      </table>
+
+      <ng-container *ngIf="!newsletters.length">
+        <ng-container [ngSwitch]="(themeService.newslettersLoading$ | async)">
+          <div class="empty-list py-5" *ngSwitchCase="STATUS.SUCCESS">
+            <div class="object-icon v-center">
+              <i class="i-icon i-delivered-mail d-block bgc-dark"></i>
+            </div>
+            <h4 class="font-weight-bold mt-4 mb-3">
+              {{"There is no Newsletter event activity." | translate}}
+            </h4>
+          </div>
+          <div class="list-loading text-center" *ngSwitchCase="STATUS.REQUEST">
+            <div class="loader mt-5 lg"></div>
+            <h4 class="fw-600 mt-2">{{'Loading newletters...' | translate}}</h4>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+</div>

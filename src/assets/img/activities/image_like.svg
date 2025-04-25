@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <g id="Main" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="matrix(24.2003, 0, 0, 24.2003, 7.067089, 6.690112)" style="">
+    <g id="Timeline-Actions-Icons" transform="translate(-38.000000, -110.000000)">
+      <g id="Icons-/-Video-Thumbs-Up" transform="translate(38.000000, 110.000000)">
+        <g id="Group-3" transform="translate(1.000000, 1.000000)"/>
+      </g>
+    </g>
+  </g>
+  <g id="g-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="matrix(24.196083, 0, 0, 24.196083, 3.938592, 10.083067)" style="">
+    <g id="g-2" transform="translate(-38.000000, -110.000000)">
+      <g id="g-3" transform="translate(38.000000, 110.000000)">
+        <g id="g-4" transform="translate(1.000000, 1.000000)">
+          <title>5FD23A49-135E-4103-85C3-99059F9261A8</title>
+          <g id="g-5" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="matrix(0.99013, 0, 0, 0.99013, -0.84065, -1.070777)" style="">
+            <g id="g-6" transform="translate(-238.000000, -113.000000)">
+              <g id="Icons-/-Image-Thumbed-up" transform="translate(238.000000, 113.000000)">
+                <g id="image-thumbs-up" transform="translate(1.000000, 1.000000)">
+                  <path d="M18,9 C18,7.247457 17.87715,5.740623 17.71758,4.522563 C17.42319,2.275515 15.72444,0.576855 13.47741,0.282447 C12.25935,0.122859 10.75257,0 9,0 C7.340148,0 5.900715,0.110205 4.718259,0.257445 C2.359845,0.551115 0.593397,2.369493 0.284841,4.726008 C0.124092,5.953734 0,7.414821 0,9 C0,10.58517 0.124092,12.04623 0.284841,13.27401 C0.593397,15.63048 2.359845,17.44893 4.718259,17.7426 C5.900715,17.88984 7.340148,18 9,18" id="Path" stroke="#9000FB" stroke-width="2" stroke-linecap="round"/>
+                  <polyline id="Path" stroke="#9000FB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="1 8.83333333 6.63905692 4.5 12 9.5"/>
+                  <polyline id="Path" stroke="#9000FB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="11 7.75 13.8823529 5.5 18 8.5"/>
+                  <path d="M18.3654,11.6965 C17.9512,11.2474 17.383,11 16.7652,11 C16.3034,11 15.8805,11.146 15.5082,11.4339 C15.3203,11.5792 15.1501,11.757 15,11.9645 C14.85,11.7571 14.6797,11.5792 14.4918,11.4339 C14.1195,11.146 13.6966,11 13.2348,11 C12.617,11 12.0487,11.2474 11.6346,11.6965 C11.2254,12.1404 11,12.7469 11,13.4042 C11,14.0808 11.2521,14.7001 11.7935,15.3533 C12.2777,15.9376 12.9737,16.5308 13.7797,17.2176 C14.0549,17.4521 14.3668,17.718 14.6907,18.0012 C14.7763,18.0762 14.8861,18.1174 15,18.1174 C15.1138,18.1174 15.2237,18.0762 15.3091,18.0013 C15.6331,17.7181 15.9452,17.4521 16.2205,17.2174 C17.0264,16.5307 17.7224,15.9376 18.2066,15.3533 C18.7479,14.7001 19,14.0808 19,13.4042 C19,12.7469 18.7746,12.1404 18.3654,11.6965 Z" id="Path" fill="#9000FB" fill-rule="nonzero"/>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

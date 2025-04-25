@@ -1,0 +1,243 @@
+<div>
+  <div class="position-relative list-container">
+    <ng-container *ngIf="!landingPages.length; else listView">
+      <ng-container *ngIf="isLoading; else emptyView">
+        <div class="list-loading text-center">
+          <div class="loader mt-1 sm"></div>
+          <h4 class="fw-600 f-3 mt-1" translate>Loading landing pages...</h4>
+        </div>
+      </ng-container>
+      <ng-template #emptyView>
+        <div class="empty-view">
+          <div class="d-flex justify-content-center mb-2">
+            <i class="bgc-dark d-block i-icon mr-2 gray i-visibility"></i>
+          </div>
+          <div class="font-weight-bold mb-3 f-4 text-muted text-center">
+            There are no landing pages that include this material.
+          </div>
+        </div>
+      </ng-template>
+    </ng-container>
+    <ng-template #listView>
+      <div class="updating-status" *ngIf="isLoading">LOADING</div>
+      <div class="card-container">
+        <div class="page-card" *ngFor="let page of landingPages">
+          <div class="p-3">
+            <div class="d-flex items-center justify-content-between">
+              <div class="title">{{ page.name }}</div>
+              <div
+                class="badge badge-warning f-2 ml-auto"
+                *ngIf="!page.is_published"
+              >
+                Draft
+              </div>
+              <div>
+                <div
+                  ngbDropdown
+                  container="body"
+                  #actionDropdown="ngbDropdown"
+                  placement="bottom-right"
+                >
+                  <a
+                    class="d-flex c-pointer no-carot action-icon"
+                    [ngClass]="{ 'bg-ccc': actionDropdown.isOpen() }"
+                    ngbDropdownToggle
+                  >
+                    <i
+                      class="i-icon i-menu-more bg-dark"
+                      aria-hidden="true"
+                    ></i>
+                  </a>
+                  <div ngbDropdownMenu class="light py-1">
+                    <ng-container *ngIf="page.is_published">
+                      <button
+                        class="v-center border-0 py-1 c-dark dropdown-item"
+                        (click)="send(page)"
+                      >
+                        <i
+                          class="i-icon size-14 i-send bgc-dark mr-2 d-block"
+                          aria-hidden="true"
+                        ></i>
+                        <span class="num" translate>Send</span>
+                      </button>
+                      <button
+                        class="v-center border-0 py-1 c-dark dropdown-item"
+                        (click)="copyLink(page)"
+                      >
+                        <i
+                          class="i-icon size-14 i-copy bgc-dark mr-2 d-block"
+                          aria-hidden="true"
+                        ></i>
+                        <span class="num" translate>Copy Link</span>
+                      </button>
+
+                      <div class="devider mt-2"></div>
+                    </ng-container>
+
+                    <a
+                      class="v-center border-0 py-1 c-dark dropdown-item"
+                      [routerLink]="'/lead-hub/landing-pages/edit/' + page._id"
+                    >
+                      <i
+                        class="i-icon size-14 i-edit bgc-dark mr-2 d-block"
+                        aria-hidden="true"
+                      ></i>
+                      <span class="num" translate>Edit</span>
+                    </a>
+                    <a
+                      class="v-center border-0 py-1 c-dark dropdown-item"
+                      [href]="MaterialBaseDomain + '/page/preview/' + page._id"
+                      target="_blank"
+                    >
+                      <i
+                        class="i-icon size-14 i-preview bgc-dark mr-2"
+                        aria-hidden="true"
+                      ></i>
+                      <span class="num" translate>Preview</span>
+                    </a>
+                    <a
+                      class="v-center border-0 py-1 c-dark dropdown-item"
+                      [routerLink]="'/lead-hub/landing-pages/' + page._id"
+                      target="_blank"
+                    >
+                      <i
+                        class="i-icon size-14 i-page-detail bgc-dark mr-2"
+                        aria-hidden="true"
+                      ></i>
+                      <span class="num" translate>Page Details</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="desc mt-2"
+              placement="bottom"
+              [ngbTooltip]="page.description.length > 110 ? descTipContent : ''"
+            >
+              {{ page.description | shorten : 110 : '...' }}
+              <ng-template #descTipContent>
+                {{ page.description }}
+              </ng-template>
+            </div>
+            <ng-container>
+              <div class="d-flex justify-content-between items-center mt-2">
+                <div class="title half">Form</div>
+                <ng-container
+                  *ngTemplateOutlet="
+                    formAndAutomation;
+                    context: { $implicit: page.forms }
+                  "
+                >
+                </ng-container>
+              </div>
+            </ng-container>
+
+            <ng-container>
+              <div class="d-flex justify-content-between items-center mt-2">
+                <div class="title w-half">
+                  <div>Automation</div>
+                </div>
+                <ng-container
+                  *ngTemplateOutlet="
+                    formAndAutomation;
+                    context: { $implicit: page.automations }
+                  "
+                >
+                </ng-container>
+              </div>
+            </ng-container>
+            <div class="devider mt-2"></div>
+            <div class="d-flex justify-content-between items-center mt-2">
+              <div class="d-flex items-center" ngbTooltip="View Count" placement="top-left">
+                <i
+                  class="i-icon i-material-eye bgc-dark mr-1"
+                  aria-hidden="true"
+                ></i>
+                <span
+                  class="num"
+                  >{{ trackCount.viewCounts?.[page._id] ?? 0 }}</span
+                >
+              </div>
+              <div class="d-flex items-center" ngbTooltip="Contact Views">
+                <i
+                  class="i-icon i-person-pin-circle bgc-dark mr-1"
+                  aria-hidden="true"
+                ></i>
+                <span
+                  class="num"
+                  >{{ trackCount.responseCounts?.[page._id] ?? 0 }}</span
+                >
+              </div>
+              <div class="d-flex items-center" ngbTooltip="Form Submissions" placement="top-right">
+                <i
+                  class="i-icon i-note-check bgc-dark mr-1"
+                  aria-hidden="true"
+                ></i>
+                <span
+                  class="num"
+                  >{{ trackCount.contactCounts?.[page._id] ?? 0}}</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+  <div class="v-center justify-content-between mt-2">
+    <a
+      class="f-4 c-blue font-weight-bold c-pointer ml-2"
+      translate
+      [routerLink]="linkForCreateMaterialPath"
+      [queryParams]="linkForCreateMaterialQueryParams"
+      target="_blank"
+    >
+      Create a New Page
+    </a>
+  </div>
+</div>
+<ng-template #formAndAutomation let-items>
+  <div
+    class="desc w-half d-flex items-center"
+    *ngIf="items.length > 0; else emptyForm"
+  >
+    <div
+      class="nowrap"
+      placement="top"
+      [ngbTooltip]="items[0].title.length > 10 ? formNameTip : ''"
+      *ngIf="items.length > 1; else oneForm"
+    >
+      {{ items[0].title | shorten : 10 : '...' }}
+      <ng-template #formNameTip>
+        {{ items[0].title }}
+      </ng-template>
+    </div>
+    <ng-template #oneForm>
+      <div
+        class="nowrap"
+        placement="top"
+        [ngbTooltip]="items[0].title.length > 15 ? oneFormNameTip : ''"
+      >
+        {{ items[0].title | shorten : 15 : '...' }}
+        <ng-template #oneFormNameTip>
+          {{ items[0].title }}
+        </ng-template>
+      </div>
+    </ng-template>
+    <div
+      class="one-more ml-2"
+      *ngIf="items.length > 1"
+      placement="left"
+      [ngbTooltip]="formTipContent"
+    >
+      +{{ items.length - 1 }}
+      <ng-template #formTipContent>
+        <span *ngFor="let subItem of items.slice(1)" class="mr-1"
+          >{{ subItem.title }};</span
+        >
+      </ng-template>
+    </div>
+  </div>
+  <ng-template #emptyForm><div class="w-half desc">None</div></ng-template>
+</ng-template>

@@ -1,0 +1,42 @@
+@import "variables";
+
+.themes {
+    .theme {
+        position: relative;
+        border-radius: 8px;
+        img {
+          height: 100px;
+        }
+        .theme-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        &.selected {
+            background: $color-blue;
+            border-radius: 8px;
+            box-shadow: 3px 3px 10px #888;
+            .theme-name {
+                color: white;
+            }
+        }
+        .preview-icon {
+          width: 36px;
+          height: 36px;
+          position: absolute;
+          top: 40px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: none;
+          background-color: $color-border;
+
+          &:hover {
+            background-color: $color-blue;
+          }
+        }
+        &:hover {
+          .preview-icon {
+            display: block;
+          }
+        }
+    }
+}

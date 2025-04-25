@@ -1,0 +1,19 @@
+<div class="page-content">
+  <div class="page-title font-weight-bold mb-3" translate>Bulk Email</div>
+  <div>
+    <ng-container *ngIf="!loading; else loadingTemplate">
+        <ng-container *ngIf="connected">
+          <app-slide-tab [tabs]="tabs" [selected]="selectedTab" (onChange)="changeTab($event)" type="plain" class="border-bottom pl-0 rounded-0">
+          </app-slide-tab>
+        </ng-container>
+        <app-campaign-bulk-mailing [class.d-none]="selectedTab.id !== 'bulk'"></app-campaign-bulk-mailing>
+        <app-campaign-smtp [class.d-none]="selectedTab.id !== 'smtp'" (onConnect)="onConnect()" (onNewConnect)="onNewConnect()"></app-campaign-smtp>
+        <app-campaign-templates [class.d-none]="!connected || selectedTab.id !== 'templates'" ></app-campaign-templates>
+    </ng-container>
+    <ng-template #loadingTemplate>
+      <div class="pt-5">
+        <div class="loader mt-5 lg"></div>
+      </div>
+    </ng-template>
+  </div>
+</div>

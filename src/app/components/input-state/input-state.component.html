@@ -1,0 +1,66 @@
+<div class="custom-mat-field">
+    <mat-form-field appearance="outline" floatLabel="never" class="d-block">
+        <mat-chip-list aria-label="Contact Selection" #countryList>
+            <mat-basic-chip
+                *ngFor="let region of selectedRegions"
+                [removable]="true"
+                (removed)="remove(region)"
+            >
+                <div class="v-center chip p-1 rounded-pill mr-1">
+                    <div class="info text-dark ml-1">
+                        {{region}}
+                    </div>
+                    <div class="close-icon-wrapper rounded-circle bg-white ml-1 c-pointer">
+                        <div class="i-icon i-close bgc-dark" matChipRemove></div>
+                    </div>
+                </div>
+            </mat-basic-chip>
+            <input
+                data-name="input-state"
+                #inputField
+                [formControl]="formControl"
+                [matChipInputFor]="countryList"
+                [matAutocomplete]="auto"
+                autocomplete="off"
+                (keydown.enter)="clickEnterKey($event)"
+                [(ngModel)]="inputVal"
+            >
+        </mat-chip-list>
+        <mat-autocomplete
+            #auto="matAutocomplete"
+            (optionSelected)="onSelectOption($event)"
+        >
+          <ng-container *ngIf="!selectedCountries || !selectedCountries.length; else selectedCountriesStates;">
+            <mat-option disabled>
+              <div class="py-2" translate>
+                Select the country at first
+              </div>
+            </mat-option>
+          </ng-container>
+          <ng-template #selectedCountriesStates>
+            <ng-container *ngIf="selectedCountries.length > 1; else countrySelected">
+              <ng-container *ngFor="let country of selectedCountries">
+                <mat-optgroup label="{{country}}">
+                  <mat-option *ngFor="let region of COUNTRY_REGIONS[country]" value="{{region}}">
+                    <div class="d-flex chip py-2">
+                      <div class="info">
+                        <div class="f-4 fw-600">{{region}}</div>
+                      </div>
+                    </div>
+                  </mat-option>
+                </mat-optgroup>
+              </ng-container>
+            </ng-container>
+            <ng-template #countrySelected>
+              <mat-option *ngFor="let region of COUNTRY_REGIONS[selectedCountries[0]]" value="{{region}}">
+                <div class="d-flex chip py-2">
+                  <div class="info">
+                    <div class="f-4 fw-600">{{region}}</div>
+                  </div>
+                </div>
+              </mat-option>
+            </ng-template>
+          </ng-template>
+        </mat-autocomplete>
+    </mat-form-field>
+</div>

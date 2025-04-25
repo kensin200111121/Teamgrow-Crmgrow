@@ -1,0 +1,54 @@
+.dlg-actions {
+  justify-content: space-between;
+  .text-setting {
+    display: flex;
+    align-items: center;
+    .material-button {
+        border-radius: 24px;
+        border-width: 2px;
+        .i-material {
+            width: 16px;
+            height: 16px;
+            min-width: 16px;
+        }
+        .i-plus {
+            width: 12px;
+            height: 12px;
+            min-width: 12px;
+        }
+    }
+
+  }
+}
+
+.tip {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  color: #989898;
+}
+
+.seperate-line {
+  color: #989898;
+}
+
+.description {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  color: #989898;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: right;
+  width: 100%;
+}
+
+.emoji-icon {
+  width: 24px;
+}
+
+.segment-width {
+  width: 105px;
+}

@@ -1,0 +1,308 @@
+<div class="page-content p-0">
+  <form
+    #actionForm="ngForm"
+    (ngSubmit)="actionForm.form.valid ? onCreateNewLabel(actionForm) : false"
+    [class.was-validated]="actionForm.submitted"
+  >
+    <div class="form-group mt-4">
+      <div class="d-flex align-items-end justify-content-start w-100">
+        <div>
+          <input
+            type="text"
+            class="form-control label-name-input text-capitalize"
+            [(ngModel)]="newLabel.name"
+            (ngModelChange)="onChangeNewLabelName()"
+            name="edit_label_name"
+            #edit_label_name="ngModel"
+            required
+          />
+        </div>
+        <div class="v-center">
+          <button
+            data-action="contact-label-save"
+            type="submit"
+            class="v-center btn btn-primary ml-2 px-3 save-btn"
+            [class.isSavingNewLabel]="isSavingNewLabel"
+          >
+          <span class="f-3 font-weight-bold" translate>New Status</span>
+          </button>
+        </div>
+        <span
+          class="error ml-2 pt-1"
+          *ngIf="edit_label_name.errors"
+          style="height: 0px"
+          translate
+        >
+          Status name is required
+        </span>
+        <span
+          class="error ml-2 pt-1"
+          *ngIf="existingName"
+          style="height: 0px"
+          translate
+        >
+          Status name is already taken
+        </span>
+      </div>
+    </div>
+  </form>
+  <ng-container>
+    <div class="table">
+      <div
+        class="v-center pt-3 pb-2 table-header"
+        [class.selected]="isPartialSelected()"
+      >
+        <div class="f-1 checkbox-col">
+          <div class="v-center">
+            <div class="custom-control custom-checkbox">
+              <input
+                type="checkbox"
+                class="custom-control-input"
+                id="selectAllLabels"
+                (change)="$event ? onSelectAll() : null"
+                [checked]="!isAllAdminLabels() && isAllSelected()"
+              />
+              <label class="custom-control-label" for="selectAllLabels"></label>
+            </div>
+            <ng-container *ngIf="isPartialSelected()">
+              <span
+                class="c-black f-3 text-lowercase font-weight"
+                [translateParams]="{ count: selectedLabels.length }"
+                translate
+              >
+                items are selected
+              </span>
+            </ng-container>
+          </div>
+        </div>
+        <ng-container *ngIf="isPartialSelected(); else tableHeader">
+          <app-actions-header
+            [actions]="actions"
+            [disableActions]="disabledActions"
+            (doCommand)="onAction($event)"
+          >
+          </app-actions-header>
+        </ng-container>
+        <ng-template #tableHeader>
+          <div class="f-1 v-center label-col">
+            {{ 'Name' | translate }}
+          </div>
+          <div class="f-1 v-center contact-col mr-4">
+            {{ 'Contacts' | translate }}
+          </div>
+          <div class="f-1 action-col text-right px-1"></div>
+        </ng-template>
+      </div>
+      <div class="load-status" *ngIf="isLoadingLabels">
+        {{ 'Loading' | translate }}
+      </div>
+      <div class="table-body" cdkDropList (cdkDropListDropped)="drop($event)">
+        <ng-container
+          *ngFor="
+            let item of pageLabels
+              | paginate
+                : {
+                    id: 'labelPage',
+                    itemsPerPage: pageSize.id,
+                    currentPage: page,
+                    totalItems: labels.length
+                  }
+          "
+        >
+          <div
+            class="label-item v-center justify-content-between px-2 py-2 bg-white"
+            cdkDrag
+            *ngIf="item.label.role !== 'admin'"
+          >
+            <div class="v-center ml-2">
+              <div class="custom-control custom-checkbox">
+                <input
+                  type="checkbox"
+                  class="custom-control-input"
+                  id="label-{{ item.label._id }}"
+                  (change)="$event ? onSelect(item) : null"
+                  [checked]="isSelected(item)"
+                />
+                <label
+                  class="custom-control-label"
+                  for="label-{{ item.label._id }}"
+                ></label>
+              </div>
+            </div>
+            <div
+              class="v-center c-pointer label-col"
+              (click)="onShowLabelContacts(item)"
+            >
+              <i
+                class="i-icon i-label d-block mr-2"
+                [style.backgroundColor]="
+                  item.label.color === '#FFF' ? '#000' : item.label.color
+                "
+              ></i>
+              <span class="f-3 fw-600 label-name text-capitalize">{{ item.label.name }}</span>
+            </div>
+            <div class="v-center contact-col">
+              <span
+                class="f-3 ml-2 c-blue fw-600 contact-count c-pointer"
+                (click)="onShowLabelContacts(item)"
+              >
+                {{ item.label.count || 0 }}
+              </span>
+            </div>
+            <div class="v-center action-col">
+              <div
+                ngbDropdown
+                placement="bottom-right"
+                class="ml-auto additional-action"
+              >
+                <a
+                  ngbDropdownToggle
+                  class="v-center justify-content-end btn c-dark f-3 no-carot py-0 pl-0 pr-2"
+                >
+                  <i class="d-block i-icon i-menu-more bgc-dark"></i>
+                </a>
+                <div ngbDropdownMenu class="light">
+                  <button
+                    [attr.data-action]="'contact-label-edit-btn'"
+                    class="v-center border-0 py-2 c-dark dropdown-item"
+                    (click)="onEditLabel(item)"
+                  >
+                    <i
+                      class="d-block i-icon i-edit bgc-dark mr-2"
+                      aria-hidden="true"
+                    ></i>
+                    <span class="f-3 font-weight-bold" translate>Edit</span>
+                  </button>
+                  <button
+                    [attr.data-action]="'contact-label-merge-btn'"
+                    class="v-center border-0 py-2 c-dark dropdown-item"
+                    (click)="onMergeLabel(item)"
+                  >
+                    <i
+                      class="d-block i-icon i-merge bgc-dark mr-2"
+                      aria-hidden="true"
+                    ></i>
+                    <span class="f-3 font-weight-bold" translate>Merge</span>
+                  </button>
+                  <button
+                    [attr.data-action]="'contact-label-delete-btn'"
+                    class="v-center border-0 py-2 c-dark dropdown-item"
+                    (click)="onDeleteLabel(item)"
+                  >
+                    <i
+                      class="d-block i-icon i-trash bgc-red mr-2"
+                      aria-hidden="true"
+                    ></i>
+                    <span class="f-3 font-weight-bold" translate>Delete</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <div class="table-body" cdkDropList (cdkDropListDropped)="drop($event)">
+        <ng-container *ngFor="let item of pageLabels">
+          <div
+            class="label-item v-center justify-content-between px-2 py-2 bg-white"
+            cdkDrag
+            *ngIf="item.label.role === 'admin'"
+          >
+            <div class="v-center checkbox-col"></div>
+            <div
+              class="v-center c-pointer label-col"
+              (click)="onShowLabelContacts(item)"
+            >
+              <i
+                class="i-icon i-label d-block mr-2"
+                [style.backgroundColor]="
+                  item.label.color === '#FFF' ? '#000' : item.label.color
+                "
+              ></i>
+              <span class="f-3 fw-600 text-capitalize">{{ item.label.name }}</span>
+            </div>
+            <div class="v-center contact-col">
+              <span
+                class="f-3 ml-2 c-blue fw-600 contact-count c-pointer"
+                (click)="onShowLabelContacts(item)"
+              >
+                {{ item.label.count || 0 }}
+              </span>
+            </div>
+            <div class="v-center action-col"></div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <div
+      class="pagination-wrapper m-auto d-flex justify-content-center w-100"
+      *ngIf="pageLabels.length"
+      style="padding-left: 5px"
+    >
+      <pagination-controls
+        (pageChange)="onChangePage($event)"
+        (pageBoundsCorrection)="onChangePage($event)"
+        id="labelPage"
+        maxSize="5"
+        previousLabel=""
+        nextLabel=""
+      >
+      </pagination-controls>
+      <div
+        class="shadow-dropdown ml-auto page-size-control"
+        ngbDropdown
+        placement="top-right"
+      >
+        <div
+          class="v-center c-pointer f-3 p-1 font-weight-bold"
+          ngbDropdownToggle
+        >
+          <span
+            class="pr-2 c-blue"
+            [translateParams]="{ count: pageSize.id }"
+            translate
+            [attr.data-name]="'contact-label-manager-page-size'"
+            >pagination</span
+          >
+        </div>
+        <div ngbDropdownMenu aria-labelledby="labelPageSize">
+          <div
+            class="py-2"
+            ngbDropdownItem
+            *ngFor="let type of PAGE_COUNTS"
+            (click)="onChangePageSize(type)"
+            [attr.data-name]="'contact-label-manager-page-size-' + type.id"
+          >
+            <span
+              class="f-3 v-center"
+              [class.font-weight-bold]="type.id === pageSize.id"
+            >
+              <span [translateParams]="{ count: type.id }" translate
+                >pagination</span
+              >
+              <i
+                class="i-icon i-check d-block bgc-dark sm ml-1 mb-1"
+                *ngIf="type.id === pageSize.id"
+              ></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <mat-drawer-container [hasBackdrop]="true">
+    <mat-drawer
+      #ldrawer
+      position="end"
+      (openedStart)="toggleBody(true)"
+      (closedStart)="toggleBody(false)"
+    >
+      <app-label-contacts-list
+        *ngIf="selectedLabel !== undefined"
+        [label]="selectedLabel.label"
+      >
+      </app-label-contacts-list>
+    </mat-drawer>
+  </mat-drawer-container>
+</div>

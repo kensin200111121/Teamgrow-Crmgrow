@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icons / Setting / Lead Capture</title>
+    <g id="Icons-/-Setting-/-Lead-Capture" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" stroke="#797B8F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" x="1" y="1" width="14" height="14" rx="2"></rect>
+        <rect id="Rectangle" fill="#797B8F" fill-rule="nonzero" x="4" y="5" width="8" height="2" rx="1"></rect>
+        <rect id="Rectangle" fill="#797B8F" fill-rule="nonzero" x="4" y="10" width="8" height="2" rx="1"></rect>
+        <circle id="Oval" fill="#797B8F" fill-rule="nonzero" cx="9.5" cy="5.5" r="1.5"></circle>
+        <circle id="Oval" fill="#797B8F" fill-rule="nonzero" cx="6.5" cy="10.5" r="1.5"></circle>
+    </g>
+</svg>

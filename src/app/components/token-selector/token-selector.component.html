@@ -1,0 +1,30 @@
+
+<div ngbDropdown class="px-1 py-2 sms-token token" (openChange)="toggleSearchFocus($event)">
+  <div class="v-center no-carot c-pointer" ngbDropdownToggle>
+      <span class="f-1 font-weight-bold mr-1">Merge field</span>
+      <i class="d-block i-icon i-triangle-down bgc-dark"></i>
+      <i class="d-block i-icon i-triangle-up bgc-dark"></i>
+  </div>
+  <div ngbDropdownMenu>
+    <div *enableByFeatures="USER_FEATURES.BETA" class="f-2 py-1 px-2 c-pointer menu-item dropdown-item" (click)="createNewToken()">
+      <a class="f-3 font-weight-bold">{{ 'Create New Merge field' | translate }}</a>
+    </div>
+    <div class="form-group search-form mb-2">
+      <div class="input-group-prepend">
+        <i class="i-icon i-search d-block bgc-dark"></i>
+      </div>
+      <input type="text" class="form-control" [placeholder]="'Search' | translate" aria-label="search" name="search"
+        #search="ngModel" aria-describedby="search-addon" [(ngModel)]="tokenSearchStr"
+        (ngModelChange)="changeTokenSearchStr()">
+      <ng-container *ngIf="tokenSearchStr">
+        <div class="cancel-action c-pointer" (click)="clearTokenSearchStr()">
+          <i class="i-icon i-close d-block bgc-dark"></i>
+        </div>
+      </ng-container>
+    </div>
+    <ng-container *ngFor="let token of searchResult">
+        <div class="f-2 py-1 px-2 c-pointer menu-item dropdown-item" (click)="insertTextContentValue(token.name, true)" translate>{{token.name}}</div>
+    </ng-container>
+  </div>
+</div>
+

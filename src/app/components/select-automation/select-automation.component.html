@@ -1,0 +1,15 @@
+<h1 mat-dialog-title translate>Select Automation</h1>
+<mat-dialog-content>
+  <div class="form-group">
+    <label translate>Automation</label>
+    <app-input-automation (automationChange)="selectAutomation($event)"></app-input-automation>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button type="button" class="btn btn-white" type="button" mat-dialog-close>
+    {{ 'Close' | translate }}
+  </button>
+  <button type="submit" class="btn btn-primary ml-2" [class.loading]="saving" (click)="assign()">
+    {{ 'Assign' | translate }}
+  </button>
+</mat-dialog-actions>

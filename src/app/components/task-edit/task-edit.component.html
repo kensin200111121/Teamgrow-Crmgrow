@@ -1,0 +1,99 @@
+<form #form="ngForm" (ngSubmit)="form.form.valid ? submit() : false">
+  <h1 mat-dialog-title translate>Edit task</h1>
+  <mat-dialog-content>
+    <div class="form-group">
+      <label translate>Task Type</label>
+      <div>
+        <app-task-type [(value)]="task.type"></app-task-type>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="content_tc" translate>Task Subject</label>
+      <input type="text" class="form-control" id="content_tc" name="content" #content="ngModel"
+        [(ngModel)]="task.content" required>
+      <span class="error" *ngIf="content.errors">
+        <ng-container *ngIf="content.errors.required">
+          {{ 'Required!' | translate }}
+        </ng-container>
+      </span>
+    </div>
+
+    <div class="form-group">
+      <div class="v-center">
+        <label for="description_tc" class="mb-0" translate>Task Description</label>
+      </div>
+      <textarea name="description" id="description_tc" class="form-control" rows="3" #description="ngModel" [(ngModel)]="task.description"></textarea>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <app-business-date-time-picker
+          [selectedDay]="getSelectedDate()"
+          [selectedTime]="time"
+          [time_zone]="time_zone"
+          [mode]="'popup'"
+          [hideTime]="task.is_full"
+          (onSelectDateTime)="onSelectDateTime($event)"
+          [isCreateMode] = "false"
+        >
+        </app-business-date-time-picker>
+      </div>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between">
+      <div class="custom-control custom-checkbox v-center">
+        <input type="checkbox" class="custom-control-input" id="all_day_tc" [checked]="task.is_full"
+          (change)="toggleTimeSelector($event)" />
+        <label class="custom-control-label f-3 fw-600 pt-1" for="all_day_tc" translate>All Day Task</label>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-12 v-center">
+        <div class="custom-control custom-checkbox mr-3 v-center">
+          <input type="checkbox" class="custom-control-input" id="repeat_tc" [checked]="task.set_recurrence"
+            (change)="toggleRepeatSetting()" />
+          <label class="custom-control-label f-3 fw-600 pt-1" for="repeat_tc" translate>Set as recurring event</label>
+        </div>
+        <div class="form-group ml-auto mb-0">
+          <select *ngIf="task.set_recurrence" class="form-control c-blue font-weight-bold"
+            [(ngModel)]="task.recurrence_mode" name="duration" #duration="ngModel" [disabled]="!task.set_recurrence">
+            <option *ngFor="let type of REPEAT_DURATIONS" [value]="type.value">
+              {{ type.label | translate }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="row mt-2 mb-3">
+      <div class="col-12 v-center">
+        <div class="custom-control custom-checkbox mr-3 v-center">
+          <input type="checkbox" class="custom-control-input" id="auto_complete" [checked]="task.set_auto_complete" (change)="toggleAutoComplete()" />
+          <label class="custom-control-label f-3 fw-600 pt-1" for="auto_complete" translate>Auto Complete</label>
+        </div>
+      </div>
+    </div>  -->
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <div class="v-center justify-content-between w-100">
+      <div class="v-center">
+        <i *ngIf="!deleting" class="i-icon i-trash bgc-red" aria-hidden="true"></i>
+        <button type="button" class="btn ml-1 p-1 c-red" (click)="deleteTask()"
+          [ngClass]="{'btn-danger loading':deleting}" [disabled]="updating">
+          {{ 'Delete task' | translate }}
+        </button>
+      </div>
+      <div>
+        <button type="button" data-action="task-update-cancel-btn" class="btn c-blue btn-font-bold" mat-dialog-close>
+          {{ 'Cancel' | translate }}
+        </button>
+        <button type="submit" data-action="task-update-btn" class="btn btn-primary btn-font-bold" [class.loading]="updating"
+          [disabled]="isSame() || deleting">
+          {{ 'Update' | translate }}
+        </button>
+      </div>
+    </div>
+
+  </mat-dialog-actions>
+</form>

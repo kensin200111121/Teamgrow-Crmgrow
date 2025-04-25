@@ -1,0 +1,99 @@
+<div class="page-content p-2">
+  <div class="f-4 font-weight-bold" translate>
+    Current SMS limit details
+  </div>
+  <div class="f-4 font-weight-bold c-light-dark mt-2" [innerHTML]="'You have count SMS messages remaining' | translate:{count: leftSms || 0}">
+  </div>
+  <div>
+    <button data-action="purchase-messages" class="btn btn-primary f-4 mt-3" (click)="purchase()" translate>Purchase messages</button>
+  </div>
+  <hr class="my-4"/>
+  <div class="f-4 font-weight-bold" translate>
+    Phone number
+  </div>
+  <ng-container *ngIf="user.twilio_number; else noNumber">
+    <div class="f-4 c-light-dark mt-2">
+      {{user.twilio_number}}
+    </div>
+    <div class="v-center mt-2">
+      <button data-action="settings-change-phone-number" class="v-center btn btn-white-blue py-1 mr-2" (click)="changePhone()">
+        <span class="f-4 c-blue font-weight-bold" translate>Change</span>
+      </button>
+    </div>
+
+    <!-- Brand Information -->
+    <div *ngIf="!isLoading">
+      <hr class="my-4"/>
+      <ng-container *ngIf="garbage.twilio_brand_info?.brand; else nobrand;">
+        <div class="font-weight-bold f-3" translate>brand_{{garbage.twilio_brand_info?.brandType}}</div>
+        <ng-container *ngIf="garbage.twilio_brand_info?.service; else registerService;">
+          <div class="f-3 mt-2" translate>brand_description_{{garbage.twilio_brand_info?.brandType}}</div>
+          <div class="">
+            <div class="mt-2">
+              <ng-container *ngIf="garbage.twilio_brand_info?.campaign; else createCampaign;">
+                <ng-container *ngIf="isNotVerifiedCampaign; else attachPhone">
+                  <div class="f-3 mt-2 mb-3" translate>brand_campaign_status_{{twilioBrandStatus.campaignStatus}}</div>
+                  <a class="btn border-primary f-3 font-weight-bold" [routerLink]="['/settings/twilio-setting']">Change Campaign</a>
+                </ng-container>
+                <ng-template #attachPhone>
+                  <ng-container *ngIf="twilioBrandStatus.campaignStatus === 'VERIFIED' && !garbage.twilio_brand_info?.attachedService; else brandSuccess">
+                    <div class="f-3 mt-2 mb-3" translate>brand_campaign_status_{{twilioBrandStatus.campaignStatus}}_without_phone</div>
+                    <a class="btn border-primary f-3 font-weight-bold" [class.loading]="isAttachingPhone" (click)="attachPhoneNumber()">Attach Phone Number</a>
+                  </ng-container>
+                  <ng-template #brandSuccess>
+                    <ng-container *ngIf="twilioBrandStatus.campaignStatus === 'VERIFIED' && !garbage.twilio_brand_info?.attachedService;">
+                      <div class="f-3 mt-2 mb-3" translate>brand_campaign_status_{{twilioBrandStatus.campaignStatus}}_with_phone</div>
+                    </ng-container>
+                  </ng-template>
+                </ng-template>
+              </ng-container>
+              <ng-template #createCampaign>                
+                <a class="btn border-primary f-3 font-weight-bold" [routerLink]="['/settings/twilio-setting']">Create Campaign</a>
+              </ng-template>              
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #registerService>
+          <ng-container *ngIf="isVerifiedBrand; else verifyBrand">
+            <div class="f-3" translate>brand_verified_description</div>
+            <button class="btn border-primary mt-3" (click)="createStarterBrandMessaging()" [class.loading]="isCreatingMessagingService" translate>create_brand_messaging</button>
+          </ng-container>
+          <ng-template #verifyBrand>
+            <ng-container *ngIf="isApprovedBrand; else brandStatus">
+              <div class="f-3" translate>brand_approved_description</div>
+              <button class="btn btn-primary mt-3" (click)="sendStarterBrandOtp()" [class.loading]="isSending" translate>send_verification_code</button>
+            </ng-container>
+            <ng-template #brandStatus>
+              <ng-container *ngIf="twilioBrandStatus?.status === 'PENDING'; else failedBrandStatus">
+                <div class="f-3" translate>brand_pending_description</div>
+              </ng-container>
+              <ng-template #failedBrandStatus>
+                <div class="f-3" translate>brand_failed_description</div>
+                <ng-container *ngIf="twilioBrandStatus?.failureReason">
+                  <i>{{twilioBrandStatus?.failureReason}}</i>
+                </ng-container>
+                <div class="mt-2">
+                  <a class="btn border-primary f-3 font-weight-bold" [routerLink]="['/settings/brand-register']">Setup Again</a>
+                </div>
+              </ng-template>
+            </ng-template>
+          </ng-template>
+        </ng-template>
+      </ng-container>
+      <ng-template #nobrand>
+        <div>
+          <div class="f-3 font-weight-bold" translate>brand</div>
+          <div class="f-3 mt-2" translate>brand_description</div>
+          <div class="mt-2">
+            <a class="btn border-primary f-3 font-weight-bold" [routerLink]="['/settings/brand-register']">Setup Twilio</a>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </ng-container>
+  <ng-template #noNumber>
+    <button class="btn btn-white-blue v-center mt-2" (click)="addPhone()">
+      <span class="f-4 c-blue font-weight-bold" translate>Create Smart Number</span>
+    </button>
+  </ng-template>
+</div>

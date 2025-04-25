@@ -1,0 +1,16 @@
+.detail-main-info {
+  padding: 32px 0px;
+  border-bottom: 1px solid #B8B8B8 ;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  & .price-wrapper {
+    display: flex;
+    gap: 16px;
+  }
+}
+
+.custom-fields-container {
+  overflow: hidden;
+}

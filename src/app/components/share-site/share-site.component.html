@@ -1,0 +1,60 @@
+<div mat-dialog-title class="title v-center d-flex">
+  <h4 class="mb-0 font-weight-bold f-24" translate>Share crmgrow</h4>
+  <i class="d-block i-icon i-close bgc-dark ml-auto" mat-dialog-close></i>
+</div>
+
+<mat-dialog-content>
+
+  <div class="form-group contacts-form">
+    <div class="v-center mb-1">
+      <label class="mb-0" translate>Referrals to share</label>
+    </div>
+    <div class="d-flex w-100">
+      <app-input-contacts
+        [selectedContacts]="selectedContacts"
+        [onlyFromSearch]="false"
+        [onlySubscriber]="true"
+        class="w-100"
+        [chipType]="'inline'"
+        [placeholder]="'Add Referrals' | translate"
+      >
+      </app-input-contacts>
+    </div>
+    <span class="invalid-feedback d-block f-2 mt-0" *ngIf="submitted && !selectedContacts.length" translate>
+      Please add referrals to share
+    </span>
+  </div>
+
+  <div class="form-group mt-3">
+    <label class="theme-label" translate>Subject</label>
+    <input class="form-control" placeholder="{{ 'Email Subject' | translate }}" [(ngModel)]="email.subject"/>
+    <span class="invalid-feedback d-block f-2 mt-0" *ngIf="submitted && !email.subject" translate>
+      Please input the subject
+    </span>
+  </div>
+  <div class="form-group">
+    <div class="v-center label-group mt-4">
+      <label class="theme-label" translate>CONTENT</label>
+    </div>
+    <app-html-editor
+        [(value)]="email.content"
+        [placeholder]="'Enter Text' | translate"
+        required="true"
+        hasToken="true"
+        hasTemplates="true"
+        (onChangeTemplate)="selectTemplate($event)"
+        [style]="{height: '200px'}"
+        [subject]="email.subject"
+        #emailEditor
+        >
+    </app-html-editor>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button class="btn btn-white" mat-dialog-close>
+    {{ 'Close' | translate }}
+  </button>
+  <button class="btn btn-primary" (click)="share()" [class.loading]="sharing">
+    {{ 'Share' | translate }}
+  </button>
+</mat-dialog-actions>

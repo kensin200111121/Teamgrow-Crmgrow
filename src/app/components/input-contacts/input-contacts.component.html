@@ -1,0 +1,172 @@
+<div class="custom-mat-field">
+  <mat-form-field appearance="outline" floatLabel="never" class="d-block">
+    <mat-chip-list aria-label="Contact Selection" #contactList>
+      <mat-basic-chip
+        *ngFor="let contact of selectedContacts"
+        [selectable]="selectable"
+        [removable]="true"
+        (removed)="remove(contact)"
+      >
+        <ng-container *ngIf="chipType === 'block'; else inlineTemplate">
+          <div class="d-flex chip p-1">
+            <div class="form-avatar rounded-circle bg-dark mr-1">
+              {{ contact.avatarName }}
+              <div
+                class="response {{ contact.response }}"
+                *ngIf="contact.response"
+              ></div>
+            </div>
+            <div class="info">
+              <div class="f-2 font-weight-bold">{{ contact.fullName }}</div>
+              <div class="f-1">{{ contact[display] }}</div>
+            </div>
+            <div class="icon-close" matChipRemove></div>
+          </div>
+        </ng-container>
+        <ng-template #inlineTemplate>
+          <div class="d-flex chip p-1">
+            <div class="info v-center">
+              <div class="f-2 font-weight-bold">{{ contact.fullName }}</div>
+              <div class="f-2">
+                {{ contact[display] ? '(' + contact[display] + ')' : '' }}
+              </div>
+            </div>
+            <div class="icon-close" matChipRemove></div>
+          </div>
+        </ng-template>
+      </mat-basic-chip>
+      <i class="d-block i-icon i-search bgc-dark"></i>
+      <input
+        #inputField
+        [formControl]="formControl"
+        [matChipInputFor]="contactList"
+        [matAutocomplete]="auto"
+        [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
+        [matChipInputAddOnBlur]="false"
+        (matChipInputTokenEnd)="onAdd($event)"
+        [class.d-none]="maxLimit && selectedContacts.length >= maxLimit"
+        data-name="task-contact-to-assign"
+      />
+      <div
+        class="error c-red f-3 px-1"
+        *ngIf="maxLimit && selectedContacts.length > maxLimit"
+      >
+        {{ 'You can not input more than' | translate }} {{ maxLimit }}
+        {{ 'contacts.' | translate }}
+      </div>
+    </mat-chip-list>
+    <mat-autocomplete
+      #auto="matAutocomplete"
+      (optionSelected)="onSelectOption($event)"
+      (optionActivated)="onActiveOption($event)"
+      [autoActiveFirstOption]="onlyFromSearch"
+    >
+      <mat-option *ngIf="searching" [disabled]="true">
+        <div class="searching-status">
+          {{ 'Searching for' | translate }}
+          <span class="keyword">&nbsp;"{{ keyword }}"</span>
+          <div class="loader"></div>
+        </div>
+      </mat-option>
+      <mat-option
+        *ngFor="let item of filteredResults | async"
+        [value]="item"
+        class="{{ optionClass }}"
+      >
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex chip py-2" data-name="task-contact-assign">
+            <div class="form-avatar rounded-circle bg-dark mr-3 mt-1">
+              {{ item.avatarName }}
+              <ng-container
+                *ngIf="
+                  ( item.shared_members &&
+                  item.shared_members.length) || item.shared_all_member
+                "
+              >
+                <ng-container
+                  *ngIf="
+                  userId &&
+                    userId !== item.user &&
+                    userId !== item.user?.[0];
+                  else sharedBy
+                "
+                >
+                  <span class="shared-with">
+                    <i
+                      class="i-icon i-shared-with d-block bgc-green "
+                      tooltipClass="custom-tooltip"
+                      container="body"
+                      ngbTooltip="shared with me"
+                    ></i>
+                  </span>
+                </ng-container>
+                <ng-template #sharedBy>
+                  <span class="shared-by">
+                    <i
+                      class="i-icon i-shared-by d-block bgc-red "
+                      ngbTooltip="You are owner"
+                      tooltipClass="custom-tooltip"
+                      container="body"
+                    ></i>
+                  </span>
+                </ng-template>
+              </ng-container>
+            </div>
+            <div class="info">
+              <div class="f-5 font-weight-bold">{{ item.fullName }}</div>
+              <div class="f-2" translate>
+                {{ item['email'] || 'Undefined' }}
+              </div>
+              <div class="f-2" translate>
+                {{ item['cell_phone'] || 'Undefined' }}
+              </div>
+            </div>
+          </div>
+          <div
+            class="shared-mark bgc-blue c-white f-2"
+            *ngIf="
+              ( item.shared_members &&
+              item.shared_members.length) || item.shared_all_member
+            "
+          >
+            <ng-container
+              *ngIf="
+              userId &&
+                userId !== item.user &&
+                userId !== item.user?.[0];
+              else sharedBy
+            "
+            >
+              Share with
+            </ng-container>
+            <ng-template #sharedBy>
+              Share By
+            </ng-template>
+          </div>
+        </div>
+      </mat-option>
+      <mat-option
+        *ngIf="(filteredResults | async)?.length && hasMore"
+        [disabled]="true"
+      >
+        <div
+          class="v-center justify-content-center more-button-container p-2"
+          (click)="loadMore()"
+          [class.c-pointer]="!loadingMore"
+        >
+          <div class="v-center">
+            <i class="small-spinner" *ngIf="loadingMore"></i>
+            <i
+              class="d-block i-icon sm i-plus bgc-blue"
+              *ngIf="!loadingMore"
+            ></i>
+            <span class="f-2 font-weight-bold c-blue">&nbsp;</span>
+            <span class="f-2 font-weight-bold c-blue ml-2" translate
+              >Load more</span
+            >
+          </div>
+        </div>
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+</div>

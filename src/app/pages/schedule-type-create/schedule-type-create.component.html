@@ -1,0 +1,406 @@
+<div class="page-content position-relative container">
+  <div class="v-center op-56 mb-4 mt-3 back-menu">
+    <div class="v-center c-pointer" (click)="goToBack()">
+      <i class="d-block i-icon i-triangle-left bgc-dark mr-2 back-menu "></i>
+      <span class="f-5 font-weight-bold" translate>Back to Event Types</span>
+    </div>
+  </div>
+
+  <div class="step-container" [class.loading-event-type]="loadingEventType">
+    <div class="updating-status" *ngIf="loadingEventType" translate>LOADING</div>
+    <ng-container [ngSwitch]="stepIndex" *ngIf="!loadingEventType">
+      <ng-container *ngSwitchCase="1">
+        <form #form="ngForm">
+          <div class="d-flex justify-content-end step-next">
+            <button data-action="leadHub-event-type-next" class="btn btn-primary py-1  step-btn" type="submit"
+              (click)="form.submitted=true;form.form.valid ? goToStep(2) : false" translate>
+              Next
+            </button>
+          </div>
+          <div class="mt-4">
+            <!-- Main information -->
+            <div class="row">
+              <div class="col-12 mb-3">
+                <div class="form-group mb-0">
+                  <label for="title_cc" class="mb-1 " translate>Type</label>
+                </div>
+                <div>
+                  <mat-radio-group name="type" [(ngModel)]="eventType.type">
+                    <mat-radio-button [attr.data-name]="'event-type-one-on-one'" class=" f-4" [color]="'primary'" [value]="1" translate>
+                      One-on-One
+                    </mat-radio-button>
+                    <mat-radio-button [attr.data-name]="'event-type-group'" class="ml-5 f-4" [color]="'primary'" [value]="2" translate>
+                      Group
+                    </mat-radio-button>
+                  </mat-radio-group>
+                </div>
+              </div>
+              <div class="col-12 form-group"
+                [class.invalid]="form.submitted && title.invalid && (title.dirty || title.touched || form.submitted)">
+                <div class="v-center justify-content-between">
+                  <label for="title_cc" class=" mb-1" translate>Title</label>
+                  <span class="error" *ngIf="title.errors">
+                    <ng-container *ngIf="title.errors.required" translate>Required!</ng-container>
+                  </span>
+                </div>
+                <input type="text" id="title_cc" class="form-control" required name="title" #title="ngModel" [(ngModel)]="eventType.title"
+                  (ngModelChange)="onTitleChanged()" />
+              </div>
+              <div class="col-12 ">
+                <div class="row">
+                  <div class="col-6 form-group">
+                    <div class="v-center">
+                      <label for="location_cc" class="mb-1" translate>Meeting type</label>
+                    </div>
+                    <mat-select
+                      id="location_cc"
+                      class="form-control d-flex align-items-center"
+                      [(ngModel)]="locationType"
+                      (ngModelChange)="onChangeLocationType()"
+                      name="location"
+                      #location="ngModel"
+                      [disableOptionCentering]="true"
+                    >
+                      <mat-option *ngFor="let location of Locations" [value]="location.value" [attr.data-name]="'meeting-type-' + location.name">{{location.name}}</mat-option>
+                    </mat-select>
+                  </div>
+
+                  <ng-container *ngIf="locationType == 'in_person'">
+                    <div class="col-6 form-group"
+                      [class.invalid]="form.submitted && address.invalid && (address.dirty || address.touched || form.submitted)">
+                      <div class="v-center justify-content-between">
+                        <label for="address_cc" class=" mb-1" translate>Meeting address</label>
+                        <span class="error" *ngIf="address.errors">
+                          <ng-container *ngIf="address.errors.required" translate>Required!</ng-container>
+                        </span>
+                      </div>
+                      <input id="address_cc" name="address" class="form-control" type="text" placeholder="{{'Enter a Location' | translate}}"
+                        [(ngModel)]="meetingAddress" #address="ngModel" ngx-google-places-autocomplete required
+                        (onAddressChange)="handleAddressChange($event)" />
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="locationType == 'custom'">
+                    <div class="col-6 form-group"
+                      [class.invalid]="form.submitted && address.invalid && (address.dirty || address.touched || form.submitted)">
+                      <div class="v-center justify-content-between">
+                        <label for="address_cc" class=" mb-1" translate>Meeting link</label>
+                        <span class="error" *ngIf="address.errors">
+                          <ng-container *ngIf="address.errors.required" translate>Required!</ng-container>
+                        </span>
+                      </div>
+                      <input id="address_cc" name="address" class="form-control" type="text" placeholder="{{'Enter a Link' | translate}}"
+                        [(ngModel)]="meetingAddress" #address="ngModel" required />
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="locationType == 'phone'">
+                    <div class="col-6 form-group"
+                      [class.invalid]="form.submitted && phone.invalid && (phone.dirty || phone.touched || form.submitted)">
+                      <div class="v-center justify-content-between">
+                        <label for="phone_cc" class=" mb-1" translate>Phone Number</label>
+                        <span class="error" [class.d-block]="form.submitted">
+                          <ng-container *ngIf="!meetingPhone; else wrongTemplate;" translate>Required!</ng-container>
+                          <ng-template #wrongTemplate>
+                            <ng-container *ngIf="phone && meetingPhone && !phone.valid" translate>
+                              Wrong Phone Number!
+                            </ng-container>
+                          </ng-template>
+                        </span>
+                      </div>
+
+                      <app-phone-input [cssClass]="'form-control phone-form'" [onlyCountries]="countries"
+                        [selectedCountryISO]="CountryISO.UnitedStates" [(ngModel)]="meetingPhone" name="phonename" #phone>
+                      </app-phone-input>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+              <div class="col-12 form-group">
+                <label for="description_cc" class=" mb-1" translate>Description</label>
+                <app-html-editor id="description_cc" [(value)]="eventType.description"
+                  [placeholder]="'Write a summary and any details your invitee should know about the event.' | translate" [style]="{ height: '200px' }"
+                  [submitted]="form.submitted" [noImage]="true" [noFont]="true" [noSize]="true" [hasScheduler]="false">
+                </app-html-editor>
+              </div>
+              <div class="col-12 form-group" [ngClass]="{
+                  invalid: existingLink
+                }">
+                <label for="link_cc" class=" mb-1" translate>Link</label>
+                <div class="d-flex justify-content-between">
+                  <div class="f-3">{{ newFullRouteURL }}</div>
+                  <button class="btn btn-primary mr-3 py-1 px-3" *ngIf="!isNew && !linkEditable" (click)="setEditMode()" translate>Edit</button>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <input type="text" id="link_cc" class="form-control mr-3 mt-1" *ngIf="isNew || linkEditable" name="link" #link="ngModel" [(ngModel)]="newLastLink"
+                    (ngModelChange)="onLinkChanged()" />
+                    <button *ngIf="!isNew && linkEditable && isUniqueLink" class="btn btn-primary mr-1 py-1" (click)="saveRouteLink()" translate>Save</button>
+                    <button *ngIf="!isNew && linkEditable" class="btn btn-secondary py-1" (click)="cancelChangeRouteLInk()" translate>Cancel</button>
+                </div>
+                <div class="text-danger ml-1" *ngIf="existingLink" translate>
+                  Has already been taken
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </ng-container>
+      <ng-container *ngSwitchCase="2">
+        <form #form="ngForm">
+          <div class="d-flex justify-content-end step-next">
+            <button data-action="leadHub-event-type-prev1" class="btn btn-primary step-btn mr-3 py-1" (click)="goToStep(1)" translate>
+              Prev
+            </button>
+            <button data-action="leadHub-event-type-next1" class="btn btn-primary step-btn mr-3 py-1" (click)="form.form.valid && validateDateRange()?goToStep(3):false" translate>
+              Next
+            </button>
+          </div>
+          <div class="mt-4">
+            <!-- Date Range -->
+            <div class="date-range">
+              <label for="date-range_cc" class="font-weight-bold mb-1" translate>Date range</label>
+              <div class="ml-3">
+                <mat-radio-group name="daterange" [(ngModel)]="dateRange.type">
+                  <div class="v-center">
+                    <mat-radio-button [color]="'primary'" class="" [value]="'days'">{{' '}} </mat-radio-button>
+                    <input id="days-value" type="text" class="form-control days-value mr-1" name="days"
+                      [(ngModel)]="dateRange.data.days.value" [disabled]="dateRange.type != 'days'" required />
+
+                    <div class="col-auto days-type pl-0">
+                      <mat-select id="days-type" class="form-control d-flex align-items-center" [(value)]="dateRange.data.days.type"
+                        name="days-type" [disabled]="dateRange.type != 'days'" disableOptionCentering>
+                        <mat-option *ngFor="let daysType of DaysTypes" [value]="daysType.value">{{ daysType.name }}</mat-option>
+                      </mat-select>
+                    </div>
+                    <div class="col-auto f-4" translate>
+                      into the future
+                    </div>
+                  </div>
+                  <div class="v-center mt-2 days-selection">
+                    <mat-radio-button class="mr-2 f-4" [color]="'primary'" [value]="'range'" translate>
+                      Within a date range
+                    </mat-radio-button>
+                    <div class="v-center mb-0" [ngClass]="{
+                      'invalid':
+                        form.submitted && !validateDateRange()
+                    }" *ngIf="dateRange.type === 'range'">
+                      <app-date-input type="prepend" [clearable]="true" [(value)]="dateRange.data.range.start" [markToday]="true">
+                      </app-date-input>
+                      <div class="mx-2 date-range-dash"></div>
+                      <app-date-input type="prepend" [clearable]="true" [(value)]="dateRange.data.range.end" [markToday]="true">
+                      </app-date-input>
+                    </div>
+                    <div class="text-danger ml-2" *ngIf="
+                      form.submitted &&
+                      !validateDateRange() &&
+                      dateRange.type === 'range'
+                    " translate>
+                      Invalid date range
+                    </div>
+                  </div>
+                  <mat-radio-button class=" mt-2 f-4" [color]="'primary'" [value]="'infinite'" translate>
+                    Indefinitely into the future
+                  </mat-radio-button>
+                </mat-radio-group>
+              </div>
+            </div>
+
+            <!-- Duration -->
+            <div class="v-center mt-3">
+              <div class="duration">
+                <label for="duration_cc" class="font-weight-bold mb-1" translate>Duration</label>
+                <div class="v-center date-range ml-3 ">
+                  <mat-select *ngIf="!customDuration" id="duration_cc" class="form-control select-duration d-flex align-items-center"
+                    [(ngModel)]="eventType.duration" name="duration" #duration="ngModel" required disableOptionCentering required>
+                    <mat-option *ngFor="let duration of Durations" [value]="duration.value">{{ duration.name }}</mat-option>
+                  </mat-select>
+                  <div *ngIf="customDuration" class="input-group select-duration ">
+                    <input id="duration_cc" type="number" class="form-control " name="custom-duration-input" [(ngModel)]="eventType.duration"
+                      required min="1" />
+                    <div class="input-group-append">
+                      <span class="input-group-text" translate>mins</span>
+                    </div>
+                  </div>
+
+                  <mat-checkbox class="f-4 ml-3" [color]="'primary'" name="custom-duration-checkbox" [(ngModel)]="customDuration"
+                    (change)="setCustomDuration($event)" translate>
+                    Custom duration
+                  </mat-checkbox>
+                </div>
+              </div>
+              <div class="col-4 timezone ml-4">
+                <label for="timezone_cc" class="font-weight-bold mb-1" translate>Timezone</label>
+                <div class="form-group ml-3 mb-0">
+                  <app-select-timezone [(timezone)]="eventType.timezone" [uiType]="'selector'"></app-select-timezone>
+                </div>
+              </div>
+              <div class="increment">
+                <label for="increment_cc" class="font-weight-bold mb-1" translate>Start time increments</label>
+                <div class="v-center date-range ml-3 ">
+                  <mat-select id="increment_cc" class="form-control select-duration d-flex align-items-center"
+                    [(ngModel)]="eventType.start_time_increment" name="start_time_increment" #duration="ngModel" required disableOptionCentering required>
+                    <mat-option *ngFor="let duration of Increments" [value]="duration.value">{{ duration.name }}</mat-option>
+                  </mat-select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Weekly Hours -->
+            <div class="mt-4">
+              <label class="font-weight-bold mb-1" translate>Please choose your availability for this event.</label>
+              <div class="ml-3 ">
+                <ng-container *ngFor="let weekday of WeekDays; let i = index">
+                  <div class="weekday row mt-2">
+                    <div class="col-3">
+                      <div class="v-center row-h-min">
+                        <mat-checkbox class="example-margin" [checked]="weeklyHours[weekday].available" [color]="'primary'"
+                          name="weekday-availability-{{ weekday }}" [(ngModel)]="weeklyHours[weekday].available"
+                          (change)="onWeekdayAvailabilityChange(weekday)">
+                          {{ WeekDaysObj[weekday] }}
+                        </mat-checkbox>
+                      </div>
+                    </div>
+                    <div class="col-7 weekly-hours" *ngIf="weeklyHours[weekday].available">
+                      <div class="v-center weekly-hour mb-2" *ngFor="
+                          let hour of weeklyHours[weekday].hours;
+                          let index = index
+                        ">
+                        <div class="mb-0">
+                          <select class="form-control theme-control" name="{{ weekday }}-hors-start-{{ index }}" [(ngModel)]="hour.start">
+                            <ng-container *ngFor="let time of TIMES">
+                              <option value="{{ time.id }}" *ngIf="time.id < weeklyHours[weekday]['hours'][index]['end']">
+                                {{ time.text }}
+                              </option>
+                            </ng-container>
+                          </select>
+                        </div>
+                        <div class="mx-2 date-range-dash"></div>
+                        <div class="mb-0">
+                          <select class="form-control theme-control" name="{{ weekday }}-hors-end-{{ index }}" [(ngModel)]="hour.end">
+                            <ng-container *ngFor="let time of TIMES">
+                              <option value="{{ time.id }}" *ngIf="time.id > weeklyHours[weekday]['hours'][index]['start']">
+                                {{ time.text }}
+                              </option>
+                            </ng-container>
+                          </select>
+                        </div>
+                        <div class="p-1 v-center ml-2 c-pointer" (click)="removeWeeklyHour(weekday, index)">
+                          <i class="d-block i-icon i-trash bgc-red"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-7 weekly-hours" *ngIf="!weeklyHours[weekday].available">
+                      <div class="no-hours v-center f-4 row-h-min" translate>Unavailable </div>
+                    </div>
+                    <div class="col-2">
+                      <div class="v-center c-pointer row-h-min" (click)="addNewHour(weekday)">
+                        <i class="d-block i-icon i-plus bgc-blue"></i>
+                      </div>
+                      <!-- <div class="row weekday-actions v-center ml-2">
+                      </div> -->
+                    </div>
+                  </div>
+                  <hr class="my-1" *ngIf="i !== WeekDays.length" />
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </form>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="3">
+        <form #form="ngForm">
+          <div class="d-flex justify-content-end step-next">
+            <button data-action="leadHub-event-type-prev2" class="btn btn-primary step-btn mr-3 py-1" (click)="goToStep(2)" translate>
+              Prev
+            </button>
+            <button data-action="leadHub-event-type-add-save" class="btn btn-primary step-btn py-1" type="submit" [class.disabled]="saving" [class.loading]="saving"
+              (click)="form.submitted=true;form.form.valid ? save() : false">
+              <div *ngIf="isNew" translate>Add</div>
+              <div *ngIf="!isNew" translate>Save</div>
+            </button>
+          </div>
+          <div class="mt-4">
+            <div class="form-group mt-2">
+              <div class="v-center">
+                <label class="theme-label" translate>Tags</label>
+                <!-- <span class="invalid-error f-3 c-red ml-auto" *ngIf="tags.length == 0 && submitted">
+                  Required!
+                </span> -->
+              </div>
+              <app-input-tag [selectedTags]="eventType.tags"></app-input-tag>
+            </div>
+
+            <div class="mt-3">
+              <mat-checkbox class="f-2 text-uppercase font-weight-bold" [color]="'primary'" name="automation-checkbox"
+                [(ngModel)]="requiredAutomation" translate>Add automation</mat-checkbox>
+            </div>
+            <div *ngIf="requiredAutomation" class="form-group mt-2">
+
+              <div class="v-center">
+                <label class="theme-label">Automation happens</label>
+                <span class="invalid-error f-3 c-red ml-auto" *ngIf="!eventType.auto_trigger_type && form.submitted" translate>
+                  Required!
+                </span>
+              </div>
+              <mat-select class="form-control d-flex align-items-center" [(value)]="eventType.auto_trigger_type" name="remind-event"
+                disableOptionCentering (selectionChange)="changeAutoTriggerType($event)">
+                <mat-option *ngFor="let trigger of autoTriggers" [value]="trigger.value">{{ trigger.name }}</mat-option>
+              </mat-select>
+
+              <div *ngIf="eventType.auto_trigger_type > 0" class="mt-3 form-group ">
+                <label class="theme-label ml-5" [translateParams]="{triggerName: selectedAutoTrigger.name | lowercase}" translate>trigger.selected_name</label>
+                <mat-radio-group name="trigger-type" class="d-flex flex-column" [(ngModel)]="selectedTriggerTime">
+                  <mat-radio-button *ngIf="eventType.auto_trigger_type!=2" class=" f-4 ml-5 mb-2" [color]="'primary'" [value]="'immediate'"
+                    (change)="changeAutoTriggerTime($event)" translate>
+                    Immediately
+                  </mat-radio-button>
+
+                  <div class="v-center col-sm-6 px-0">
+                    <mat-radio-button class=" ml-5 my-1 f-4" [color]="'primary'" [value]="'custom'"
+                      (change)="changeAutoTriggerTime($event)">
+                    </mat-radio-button>
+                    <input type="number" class="form-control mr-2" name="custom-duration-input"
+                      [(ngModel)]="eventType.auto_trigger_duration" required min="1" [disabled]="selectedTriggerTime!=='custom'" />
+                    <mat-select class="form-control d-flex align-items-center" [(value)]="eventType.auto_trigger_time" name="remind-time"
+                      disableOptionCentering [disabled]="selectedTriggerTime!=='custom'">
+                      <mat-option *ngFor="let time of autoTriggerTimes" [value]="time.value">{{ time.name }}</mat-option>
+                    </mat-select>
+                  </div>
+                </mat-radio-group>
+              </div>
+              <div class="mt-3">
+                <div class="v-center">
+                  <label class="theme-label" translate>Automation</label>
+                  <span class="invalid-error f-3 c-red ml-auto" *ngIf="!selectedAutomation && form.submitted" translate>
+                    Required!
+                  </span>
+                </div>
+                <app-input-automation [automation]="selectedAutomation" (automationChange)="selectAutomation($event)" [type]="'contact'"
+                  required>
+                </app-input-automation>
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <mat-checkbox class="f-2 text-uppercase font-weight-bold" [color]="'primary'" name="script-checkbox"
+                [(ngModel)]="requiredScript" translate>{{eventType.custom_script ? 'Edit Custom Script' : 'Add Custom Script'}}</mat-checkbox>
+            </div>
+            <div class="mt-1 form-group c-pointer" *ngIf="!requiredScript && eventType.custom_script" (click)="requiredScript = !requiredScript">
+              <code>{{ eventType.custom_script }}</code>
+            </div>
+            <div class="mt-1 form-group" *ngIf="requiredScript">
+              <div class="custom-script">
+                <ngx-codemirror
+                  id="custom_script_cc"
+                  name="customScript"
+                  #customScript="ngModel"
+                  [(ngModel)]="eventType.custom_script"
+                  [options]="{ lineNumbers: true, theme: 'material', mode: 'htmlmixed' }"
+                ></ngx-codemirror>
+              </div>
+            </div>
+          </div>
+        </form>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>

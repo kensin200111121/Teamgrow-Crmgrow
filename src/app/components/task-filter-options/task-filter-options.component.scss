@@ -1,0 +1,32 @@
+.chip {
+  border: 1px solid gainsboro;
+  padding: 6px 12px;
+  border-radius: 24px;
+  margin: 4px;
+  cursor: pointer;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.label-container {
+  padding: 16px;
+  width: 260px;
+}
+
+.label-container2 {
+  padding: 16px;
+  width: 420px;
+}
+
+.activity-container {
+  padding: 16px;
+  width: 420px;
+  margin-bottom: 25px;
+}
+
+::ng-deep .filter-mat-menu {
+  max-width: none !important;
+}

@@ -1,0 +1,52 @@
+<div class="v-center c-pointer ng-star-inserted">
+  <ng-container *ngIf="rootFolder; else emptyTemplate">
+    <div [routerLink]="[getPrevRoute()]">
+      <i class="d-block i-icon i-back bgc-blue"></i>
+    </div>
+    <div class="v-center ng-star-inserted ml-3" [routerLink]="[baseRoute.toLowerCase() + '/root']">
+      <span class="c-pointer custom-folder mr-2 text-gray"> Home </span>
+      <i class="d-block i-icon i-right bgc-dark icon-right"></i>
+    </div>
+    <ng-container *ngIf="!shouldShowDropdown; else dropDownTemplate">
+      <ng-container *ngFor="let folder of folderTree">
+        <div class="v-center ng-star-inserted ml-3" [routerLink]="[getBaseRoute() + folder.folderId]">
+            <span class="c-pointer custom-folder mr-2 text-gray"> {{folder.folderName ?? 'Community Root'}}</span>
+            <i class="d-block i-icon i-right bgc-dark icon-right"></i>
+        </div>
+      </ng-container>
+    </ng-container>
+    <ng-template #dropDownTemplate>
+      
+      <div class="ml-auto" ngbDropdown placement="bottom-right">
+        <div class="v-center c-pointer f-4 p-3 mr-2" ngbDropdownToggle>
+          <span class="pr-2 pl-2 ml-2 mr-2 text-gray">   ...   </span>
+        </div>
+        <div ngbDropdownMenu>
+          <div class="py-2" ngbDropdownItem *ngFor="let item of folderTree">
+            <span 
+              class="f-4 v-center text-gray" 
+              [routerLink]="[getBaseRoute() + item.folderId]" 
+              [ngbTooltip]="item.folderName"
+              placement="bottom"
+            >
+              {{ item.folderName | shorten: 12:'...' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    <div class="v-center ng-star-inserted ml-3 text-black">
+        <span [ngbTooltip]="curFolderName" placement="bottom"> 
+          {{curFolderName | shorten: 12:'...' }}
+        </span>
+    </div>
+  </ng-container>
+  <ng-template #emptyTemplate>
+    <div >
+      <i class="d-block i-icon i-back bgc-light-dark"></i>
+    </div>
+    <div class="v-center ng-star-inserted ml-3">
+      <span class="c-pointer custom-folder mr-2 text-gray"> Home </span>
+    </div>
+  </ng-template>
+</div>

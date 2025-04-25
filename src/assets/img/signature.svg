@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icons / Profile / Signature</title>
+    <g id="Icons-/-Profile-/-Signature" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(1.000000, 1.000000)" id="Group">
+            <path d="M13.4456,0.40023 L12.4659,0.200115 C11.9247,0.0895944 11.3933,0.438002 11.2789,0.978306 L9.6375,8.72962 C9.6036,8.88943 9.6095,9.05481 9.6546,9.21131 L10.2094,11.1369 C10.3201,11.5212 10.8175,11.6227 11.075,11.3137 L12.3655,9.76501 C12.4704,9.63914 12.543,9.48978 12.5768,9.32997 L14.2182,1.57865 C14.3326,1.03835 13.9867,0.51075 13.4456,0.40023 Z" id="Path" fill="#797B8F" fill-rule="nonzero"></path>
+            <path d="M8.5,13 L6.41421,13 C6.149,13 5.89464,12.8946 5.70711,12.7071 L4.35355,11.3536 C4.15829,11.1583 3.84171,11.1583 3.64645,11.3536 L2.29289,12.7071 C2.10536,12.8946 1.851,13 1.58579,13 L0,13" id="Path" stroke="#797B8F" stroke-width="2" stroke-linecap="round"></path>
+            <path d="M0,7 L1.44394,7 C1.62099,7 1.79487,6.95299 1.94781,6.86378 L3.17664,6.14696 C3.33232,6.05615 3.52483,6.05615 3.68051,6.14696 L4.90934,6.86378 C5.06227,6.95299 5.23615,7 5.41321,7 L6,7" id="Path" stroke="#797B8F" stroke-width="2" stroke-linecap="round"></path>
+            <polyline id="Path" stroke="#797B8F" stroke-width="2" stroke-linecap="round" points="0 2 1.75 2 3.5 2 5.25 2 7 2"></polyline>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,45 @@
+<div class="custom-mat-field mat-select-wrapper">
+  <mat-form-field style="display: block;" appearance="outline">
+    <mat-select [formControl]="formControl" placeholder="{{ placeholder | translate }}" #selector [disableOptionCentering]="true">
+      <mat-select-trigger>
+        <ng-container *ngIf="formControl.value">
+          <ng-container *ngIf="resultItemTemplate; else defaultResult" [ngTemplateOutlet]="resultItemTemplate"
+            [ngTemplateOutletContext]="{ $implicit: formControl.value }">
+          </ng-container>
+          <ng-template #defaultResult>
+            <div class="chip d-flex justify-content-between align-items-center">
+              <div class="v-center">
+                <img class="team-avatar sm rounded mr-2" [src]="formControl.value.picture"
+                  (error)="sspaService.imgError($event,'img/team_placeholder.png')" />
+                <div class="f-4 font-weight-bold">
+                  {{ formControl.value.name }}
+                  <span *ngIf="formControl.value.is_internal"> Internal Team</span>
+                </div>
+              </div>
+              <div (click)="cancelSelect()">
+                <i class="d-block i-icon i-close bgc-dark"></i>
+              </div>
+            </div>
+          </ng-template>
+        </ng-container>
+      </mat-select-trigger>
+      <mat-option>
+        <ngx-mat-select-search [formControl]="inputControl" [searching]="searching" [placeholderLabel]="formPlaceholder | translate"
+          noEntriesFoundLabel="{{ 'There is no searched results' | translate }}" preventHomeEndKeyPropagation="true">
+        </ngx-mat-select-search>
+      </mat-option>
+      <mat-option *ngFor="let item of filteredResults | async" [value]="item"
+        style="height: unset; line-height: unset;">
+        <div class="v-center chip py-2">
+          <img class="team-avatar md rounded mr-2" [src]="item.picture"
+            (error)="sspaService.imgError($event,'img/team_placeholder.png')" />
+          <div class="f-4 font-weight-bold">
+            {{ item.name }}
+            <span *ngIf="item.is_internal"> Internal Team</span>
+          </div>
+          <div class="bgc-azure c-badge rect f-1 ml-auto "  [class]="item.is_internal ? 'team' : ''">{{!item.is_internal ? 'Community': 'Team' | translate }}</div>
+        </div> 
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

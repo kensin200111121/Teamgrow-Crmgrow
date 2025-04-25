@@ -1,0 +1,15 @@
+.contact-list {
+  max-height: calc(65vh - 160px);
+  overflow: auto;
+}
+
+.form-avatar {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  line-height: 32px;
+}
+
+.contact-item, .automation-item {
+  width: 50%;
+}

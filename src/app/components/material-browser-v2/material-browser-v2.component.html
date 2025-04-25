@@ -1,0 +1,175 @@
+<h1 mat-dialog-title class="v-center d-flex">
+  <span>{{data.title || 'Select Material'}}</span>
+  <button class="v-center border-0 bgc-trans ml-auto" mat-dialog-close data-action="close-insert-material-dialog">
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</h1>
+<mat-dialog-content>
+  <ng-container *ngIf="!!enableSelectLandingPage">
+    <app-slide-tab
+      [tabs]="tabs"
+      [selected]="tab"
+      (onChange)="changeTab($event)"
+      type="plain"
+      class="pl-0 rounded-0"
+    >
+    </app-slide-tab>
+  </ng-container>
+
+
+  <!-- Material List -->
+  <div class="browser-container" [ngStyle]="{'display': !enableSelectLandingPage || enableSelectLandingPage && tab.id ==='material' ? 'block' : 'none'}">
+    <div class="contact-list-controls pt-0 pb-1">
+      <div class="v-center justify-content-between">
+        <div class="v-center">
+          <div class="v-center op-56 c-pointer back-menu mr-3" [class.is_root]="!currentFolder"
+            [class.is_disabled]="!parentFolder" (click)="goToFolder(parentFolder)">
+            <i class="d-block i-icon i-triangle-left bgc-dark sm"></i>
+          </div>
+          <div *ngIf="selection.length > 0" class="v-center title-file-selected">
+            <div class="custom-control custom-checkbox" [class.indeterminate]="selection.length > 0 && !isAllSelected()">
+              <ng-container *ngIf="multiple">
+                <input type="checkbox" class="custom-control-input form-control" id="selectAllMaterialsB"
+                  (change)="$event ? masterToggle() : null" [checked]="isAllSelected()" data-name="toggle-all-select" />
+                <label class="custom-control-label" for="selectAllMaterialsB"></label>
+              </ng-container>
+            </div>
+            <div class="v-center">
+              <span class="c-dark f-3 text-lowercase font-weight-bold">{{selection.length}} {{'selected' |
+                translate}}</span>
+              <div class="px-3 border-left ml-3">
+                <a class="c-blue c-pointer" data-action="clear-all-selection" (click)="clearSelection()" translate>Clear
+                  selection</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="v-center justify-content-between">
+          <div class="form-group mb-0 search-form">
+            <div class="input-group-prepend">
+              <i class="i-icon i-search d-block bgc-dark"></i>
+            </div>
+            <input type="text" class="form-control" [placeholder]="'Search' | translate" aria-label="search"
+              aria-describedby="search-addon" [(ngModel)]="filterParam.search" data-name="search-material"
+              (ngModelChange)="this.onChangeKeyword.next($event)" cdkFocusInitial>
+            <ng-container *ngIf="filterParam.search">
+              <div class="cancel-action c-pointer" (click)="this.onChangeKeyword.next('')">
+                <i class="i-icon i-close d-block bgc-dark"></i>
+              </div>
+            </ng-container>
+          </div>
+          <div class="ml-3 material-options" ngbDropdown placement="bottom-right" *ngIf="!material_type">
+            <div class="v-center c-pointer f-3 p-2 hover mr-2 font-weight-bold" ngbDropdownToggle>
+              <span class="pr-2">
+                <img class="mr-2" [src]="sspaService.toAsset('img/filter.svg')" alt="filter-icon" style="width: 16px; height: 16px;" />
+                <span class="font-weight-bold" translate>Filter</span>
+                <span *ngIf="selectedTypes.length > 0">({{ selectedTypes.length }})</span>
+              </span>
+            </div>
+            <div ngbDropdownMenu aria-labelledby="taskSortTypes">
+              <div class="label py-2 ml-3" *ngFor="let type of SORT_TYPES">
+                  <input type="checkbox" [checked]="isSelected(type)" (change)="onToggleType(type)" id="material-browser-type-filter-{{type.id}}" />
+                  <label class="ml-2 f-3 v-center mb-0" for="material-browser-type-filter-{{type.id}}">{{ type.label | translate }}</label>
+              </div>
+              <hr class="my-2" />
+              <div class="clear-all-filters py-0" (click)="clearFilters()">
+                <span class="ml-3 f-4">Clear All Filters</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- selection section -->
+
+    <div class="row filtered-list">
+      <!-- Materials -->
+      <div [class.col-md-12]="!previewMaterialId" [class.col-md-7]="previewMaterialId">
+        <div class="custom-mat-table position-relative">
+          <div class="mt-2" *ngIf="filteredItems.length; else emptyFolders">
+            <div [class.half-material-list]="previewMaterialId" [class.material-list]="!previewMaterialId">
+              <div *ngFor="let element of filteredItems">
+                <ng-container *ngIf="element.material_type === 'folder'; else fileInfoTemplate">
+                  <div class="title-folder-thumb c-pointer" data-action="go-to-parent"
+                    (click)="goToFolder(element._id)"></div>
+                  <div class="title-folder">
+                    <div>
+                      <span class="file-title-label c-pointer" [ngbTooltip]="element.title || ''"
+                        (click)="goToFolder(element._id)" data-action="go-to-parent">
+                        {{(element.title || '') | shorten: 14: '...'}}
+                      </span>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-template #fileInfoTemplate>
+                  <div class="file-item" (click)="selectMaterial(element)" [class.selected]="!multiple && isSelectedMaterial(element)">
+                    <div class="file-thumbnail c-pointer" data-action="view-preview">
+                      <ng-container [ngSwitch]="element.material_type">
+                        <div class="v-center link-wrapper thumb-prev-wrapper"
+                          [class.preview-active]="element._id === previewMaterialId">
+                          <img [src]="element.thumbnail || element.preview" class="title-thumbnail"
+                            (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+                          <img [src]="element.preview" class="preview"
+                            (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+                        </div>
+                      </ng-container>
+                    </div>
+                    <div class="mt-1 title-info" data-action="toggle-selected-material">
+                      <div class="custom-control custom-checkbox">
+                        <ng-container *ngIf="multiple">
+                          <input type="checkbox" class="custom-control-input c-pointer" id="i-material-{{element._id}}"
+                            [checked]="isSelected(element)"
+                            (change)="$event ? toggleElement(element) : null" />
+                          <label class="custom-control-label" for="i-material-{{element._id}}"></label>
+                        </ng-container>
+                        <span class="file-title-label " [ngbTooltip]="element.title || ''">
+                          {{(element.title || '') | shorten: 10: '...'}}
+                        </span>
+                      </div>
+                      <div class="mt-1 file-info-title">
+                        {{ element.item_type }} .
+                        {{ element.created_at | datetimeFormat : 'mediumDate' }}
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+
+              </div>
+            </div>
+          </div>
+          <ng-template #emptyFolders>
+            <div class="empty-list py-5" *ngIf="!isLoading else loadingTemplate">
+              <div class="object-icon v-center">
+                <i class="i-icon i-material d-block bgc-dark"></i>
+              </div>
+              <h4 class="font-weight-bold mt-4 mb-3" translate>
+                no_materials_in_account
+              </h4>
+            </div>
+            <ng-template #loadingTemplate>
+              <div class="list-loading text-center">
+                <div class="loader mt-5 lg"></div>
+                <h4 class="fw-600 mt-2" translate>Loading materials...</h4>
+              </div>
+            </ng-template>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Landing Page List -->
+  <app-landing-page-browser
+    [ngStyle]="{'display': enableSelectLandingPage && tab.id ==='landing_page' ? 'block' : 'none'}"
+    [multiple]="multiple"
+    [hideLandingPageItems]="hideLandingPageItems"
+    [setSelection]="selectionLandingPages"
+    (onChangeSelect)="onChangeLandingPageSelect($event)">
+  </app-landing-page-browser>
+
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button class="btn c-blue" mat-dialog-close translate>Cancel</button>
+  <button class="btn btn-primary" [class.loading]="sharing" (click)="selectData()" translate>{{data.buttonLabel || 'Insert'}}</button>
+</mat-dialog-actions>

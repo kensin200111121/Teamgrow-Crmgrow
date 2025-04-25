@@ -1,0 +1,86 @@
+<div class="summary" [class.isShown]="!isFocused" (click)="focus()">
+  {{ (emailSubject || 'Write your email') | shorten: 30:'...' }}
+</div>
+
+<div class="d-flex">
+  <div class="email-panel">
+    <form #emailForm="ngForm" (ngSubmit)="emailSubmitted = true; emailForm.form.valid ? sendEmail() : false">
+      <div class="email-box">
+        <app-email-sender (onChange)="onSelectSender($event)"></app-email-sender>
+        <div class="receiver pl-3 pr-2 py-1 contacts-wrapper address-wrapper">
+          <div class="overflow-visible">
+            <div class="d-flex w-100" (click)="setFocus()">
+              <label class="f-6 op-56 m-0">To:</label>
+              <app-input-contact-email-phone-chip class="w-100 ml-2" [infoList]="contact?.emails ?? []"
+                [selectedTags]="contactEmails" [shouldFromSearch]="false" (onSelect)="setEmailList($event)">
+              </app-input-contact-email-phone-chip>
+              <span class="invalid-error f-3 c-red inline-error" *ngIf="!contactEmails.length && emailSubmitted">
+                {{ 'Required!' | translate }}
+              </span>
+            </div>
+
+
+          </div>
+        </div>
+
+        <div class="email-title px-3 py-1 position-relative" (click)="blueAll()">
+          <input data-name="send-email-subject" class="w-100" type="text" placeholder="{{ 'Subject' | translate }}"
+            name="emailTitle" #emailTitle="ngModel" [(ngModel)]="emailSubject" (focus)="subjectFoucs()"
+            [mention]="tokens" (itemSelected)="onSubjectTokenSelected($event)" [mentionConfig]="mentionConfig"
+            [required]="!scheduleCheck" #subjectField>
+          <span class="invalid-error f-3 c-red inline-error"
+            *ngIf="emailTitle.invalid && (emailTitle.touched || emailTitle.dirty || emailSubmitted) && emailSubmitted">
+            {{ 'Required!' | translate }}
+          </span>
+        </div>
+        <div class="email-body" (click)="blueAll()">
+          <app-html-editor [(value)]="emailContent" [(attach)]="attachments"
+            placeholder="{{ 'Start typing here' | translate }}" required="true" (onFocus)="contentFoucs()"
+            [hasAttachment]="true" [hasTemplates]="false" [mentionEnabled]="true" [hasCalendly]="hasCalendly"
+            [hasScheduler]="hasSchedule" [hasRecord]="hasMaterial" [subject]="emailSubject" [submitted]="emailSubmitted"
+            (attachmentChange)="onAttachmentChange($event)" (onRecordCompleted)="onRecordCompleted($event)"
+            [mention]="tokens" [style]="{height: '120px'}" #editor>
+          </app-html-editor>
+        </div>
+        <div class="email-setting" (click)="blueAll()">
+          <div class="v-center">
+            <button type="button"
+              class="v-center btn border-primary f-3 font-weight-bold c-blue pr-2 pl-2 mr-2 material-button"
+              (click)="openMaterialsDlg()" *enableByFeatures="USER_FEATURES.MATERIAL">
+              <i class="d-block i-icon i-attachment bgc-blue"></i>
+              <span class="f-3 font-weight-bold c-blue mx-2" translate>Material</span>
+            </button>
+          </div>
+          <app-template-selector *enableByFeatures="USER_FEATURES.BETA" [type]="'email'" (selectTemplate)="selectTemplate($event)"></app-template-selector>
+          <app-token-selector (selectToken)="insertTextContentToken($event)"></app-token-selector>
+          <!--  <app-chatgpt-button [enabled]="!aiDialogExtendable" (setAiMode)="setAiMode($event)"></app-chatgpt-button> -->
+          <div class="v-center justify-content-between mt-2 mt-sm-0 w-100">
+            <button type="submit"
+              class="btn btn-purple text-white br-default py-1 f-6 font-weight-bold shadow ml-auto" [class]="hasSchedule? 'send-btn':''"
+              [class.loading]="emailSending" data-action="email-send">
+              {{ 'Send Email' | translate }}
+            </button>
+            <div ngbDropdown class=" button-more p-0" placement="bottom-end"  *enableByFeatures="USER_FEATURES.SCHEDULER">
+              <div class="v-center btn btn-purple dropdown-btn" ngbDropdownToggle data-name="switch-send-mode">
+                <i class="d-block i-icon i-triangle-down more-icon bgc-white "></i>
+              </div>
+              <div ngbDropdownMenu class="light action-menu">
+                <button data-action="email-schedule-send" class="v-center border-0 c-dark dropdown-item m-1"
+                  (click)="showSchedule($event)">
+                  <i class="i-icon i-appointments bgc-dark"></i>
+                  <span class="ml-3 f-3 font-weight-bold" translate>{{'Schedule' | translate }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <!--  <app-chatgpt-extend
+    *ngIf="aiDialogExtendable && !aiTabMinimized"
+    [creatorResultContent]="presetText"
+    (getGptResponse)="writeGptResponseContent($event)"
+    (setVisible)="setDialogExtend(false)">
+  </app-chatgpt-extend> -->
+</div>

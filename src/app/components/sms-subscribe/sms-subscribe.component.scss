@@ -1,0 +1,49 @@
+@import "variables";
+
+textarea {
+    background-color: $color-wheat;
+    resize: none;
+    &.form-control {
+        &:focus {
+            background-color: $color-wheat;
+            color: $color-dark;
+        }
+    }
+}
+
+img {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li:before {
+    content: '✓';
+    color: #00cc7e;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.full_width {
+    width: 100%;
+}
+
+.errorContent {
+    text-align: center;
+    img {
+        width: 60px;
+        height: 60px;
+        margin: auto;
+        display: block;
+    }
+}
+
+.banner-image {
+    height: 200px;
+    object-fit: cover;
+    object-position: center;
+}

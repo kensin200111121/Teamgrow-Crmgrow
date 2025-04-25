@@ -1,0 +1,75 @@
+<div style="padding: 20px">
+  <h1 mat-dialog-title class="v-center d-flex">
+    <span translate>Move to...</span>
+    <button class="border-0 bgc-trans ml-auto" mat-dialog-close>
+      <i class="d-block i-icon i-close bgc-dark"></i>
+    </button>
+  </h1>
+  <mat-dialog-content>
+    <div class="form-group">
+      <div class="border rounded mt-1">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          "
+        >
+          <div style="display: flex; margin-bottom: 15px;">
+            <i class="i-icon bgc-dark i-folder mr-1 bg-orange"></i>
+            <b>{{currentFolderName}}</b>
+          </div>
+          <i class="i-icon s-8 i-triangle-down bgc-dark ng-star-inserted"></i>
+        </div>
+        <ng-container *ngIf="currentFolder">
+          <a
+            class="v-center c-pointer material-main-info td-none"
+            (click)="goToFolder()"
+            style="padding-left: 15px"
+          >
+            <i class="i-icon bgc-dark i-folder mr-1 bg-orange"></i>
+            <span class="ci-dark">.. to root</span>
+          </a>
+          <a
+            class="v-center c-pointer material-main-info td-none"
+            (click)="goToFolder(parentFolder)"
+            style="padding-left: 15px"
+          >
+            <i class="i-icon bgc-dark i-folder mr-1 bg-orange"></i>
+            <span class="font-weight-bold ci-dark">.. to prev</span>
+          </a>
+        </ng-container>
+        <ng-container *ngFor="let folder of folders">
+          <a
+            class="v-center c-pointer material-main-info td-none"
+            (click)="goToFolder(folder)"
+            style="padding-left: 15px"
+          >
+            <i class="i-icon bgc-dark i-folder mr-1 bg-orange"></i>
+            <span class="ci-dark">{{
+              folder.title || '' | shorten : 15 : '...'
+            }}</span>
+          </a>
+        </ng-container>
+        <ng-container *ngIf="!isLoading && !folders.length && !currentFolder">
+          <div class="p-2 text-center d-block" translate>empty_folder_list</div>
+        </ng-container>
+        <ng-container *ngIf="isLoading && !folders.length">
+          <div class="loader"></div>
+        </ng-container>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button class="btn c-blue" mat-dialog-close translate>Cancel</button>
+    <button
+      class="btn btn-primary"
+      [class.disable]="!isLoading && !folders.length && !currentFolder"
+      [class.loading]="moving"
+      (click)="move()"
+      translate
+    >
+      Move
+    </button>
+  </mat-dialog-actions>
+</div>

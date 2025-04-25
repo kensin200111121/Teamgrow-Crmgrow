@@ -1,0 +1,173 @@
+<div class="page-content">
+
+    <div class="status-header v-center mt-3">
+        <h1 class="page-title" [translateParams]="{length: dealGroups.length}" translate>
+            We've found some conflicts in length deals
+        </h1>
+        <div class="f-6 font-weight-bold op-64 contact-count mobile" [translateParams]="{length: dealGroups.length}"
+            translate>
+            We've found some conflicts in length deals
+        </div>
+        <div class="ml-auto v-center create-actions">
+            <button class="v-center btn btn-white border border-primary f-6 font-weight-bold rounded mr-2 px-3"
+                (click)="close()">
+                <span class="normal" translate>Close</span>
+                <span class="mobile" translate>Close</span>
+            </button>
+            <button class="btn btn-primary f-6 font-weight-bold rounded ml-2 px-3 text-white shadow"
+                [class.loading]="false" (click)="create()">
+                {{ 'Ignore & Create' | translate }}
+            </button>
+        </div>
+    </div>
+
+    <div class="f-6 font-weight-bold op-64 mb-2 contact-count desktop" translate>
+        See below and update the deals
+    </div>
+
+    <div class="deal-group-wrapper pr-2 mt-3">
+        <div class="deal-group-container" *ngIf="dealGroups.length">
+            <ng-container
+                *ngFor="let group of dealGroups | paginate: {id: 'dealGroupPage', itemsPerPage: pageSize.id, currentPage: page, totalItems: dealGroups.length}; let dgIndex = index;">
+                <ng-container *ngIf="group.selection.length > 1">
+                    <div class="justify-content-end v-center w-100 my-1">
+                        <button class="btn btn-sm btn-primary f-6 font-weight-bold rounded px-3 text-white shadow"
+                            (click)="mergeDeals(group, dgIndex)" translate>
+                            Merge
+                        </button>
+                        <ng-container *ngIf="showBulkRemove(group)">
+                            <button class="btn btn-sm btn-primary f-6 font-weight-bold rounded ml-2 px-3 text-white shadow"
+                                (click)="bulkRemoveDeals(group, dgIndex)" translate>
+                                Delete
+                            </button>
+                        </ng-container>
+                    </div>
+                </ng-container>
+                <div id="deal-group-{{getGroupId(dgIndex)}}" class="merge-group-wrapper mb-3">
+                    <div class="table-wrapper">
+                        <table class="table deal-group-check-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="check-col check-cell sticky-check-col">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input"
+                                                [id]="'deal-group-item-' + getGroupId(dgIndex)"
+                                                (change)="$event ? selectGroup(group) : null"
+                                                [checked]="selectedGroup(group)" />
+                                            <label class="custom-control-label"
+                                                [for]="'deal-group-item-' + getGroupId(dgIndex)"></label>
+                                        </div>
+                                    </th>
+                                    <th class="type-col" translate>Type</th>
+                                    <th class="title-col" translate>Title</th>
+                                    <th class="stage-col" translate>Stage</th>
+                                    <th class="name-col" translate>Contact Name</th>
+                                    <th class="email-col" translate>Email</th>
+                                    <th class="primary-col check-cell sticky-radio-col" translate>Primary</th>
+                                    <th class="action-col sticky-action-col"></th>
+                                    <th class="status-col sticky-status-col" translate>Completed</th>
+                                </tr>
+                            </thead>
+                            <div class="load-status" *ngIf="group.saving">
+                                {{'SAVING' | translate}}
+                            </div>
+                            <tbody>
+                                <ng-container *ngFor="let deal of group.deals; let dIndex = index;">
+                                    <tr *ngFor="let contact of deal.contacts; let cIndex = index;"
+                                        [id]="'deal-' + deal.id">
+                                        <ng-container *ngIf="cIndex == 0">
+                                            <td [attr.rowspan]="deal.contacts.length" class="check-col sticky-check-col"
+                                                [class.top-border]="dIndex > 0 && cIndex == 0">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input"
+                                                        [id]="'deal-group-item-deal-' + deal.id"
+                                                        (change)="$event ? selectDeal(group, deal) : null"
+                                                        [checked]="selectedDeal(group, deal)" />
+                                                    <label class="custom-control-label"
+                                                        [for]="'deal-group-item-deal-' + deal.id"></label>
+                                                </div>
+                                            </td>
+                                            <td [attr.rowspan]="deal.contacts.length" class="type-col"
+                                                [class.top-border]="dIndex > 0 && cIndex == 0">
+                                                <div class="f-3 c-blue">{{deal._id ? 'Deal' : 'CSV'}}</div>
+                                            </td>
+                                            <td [attr.rowspan]="deal.contacts.length" class="title-col" [class.top-border]="dIndex > 0 && cIndex == 0">
+                                                <div class="f-3 c-blue">
+                                                    {{deal.title || '' | stripTags | shorten: 70: '...'}}
+                                                </div>
+                                            </td>
+                                            <td [attr.rowspan]="deal.contacts.length" class="stage-col"
+                                                [class.top-border]="dIndex > 0 && cIndex == 0">
+                                                {{ getDealStageLabel(deal.deal_stage) }}
+                                            </td>
+                                        </ng-container>
+                                        <td class="name-col f-3 fw-600" [class.top-border]="dIndex > 0 && cIndex == 0">
+                                            {{ contact.first_name || '' }} {{ contact.last_name || '' }}
+                                        </td>
+                                        <td class="email-col f-3 fw-600"
+                                            [class.top-border]="dIndex > 0 && cIndex == 0">{{ contact.email }}</td>
+                                        <td class="radio-col sticky-radio-col"
+                                            [class.top-border]="dIndex > 0 && cIndex == 0">
+                                            <div class="custom-radio-container" (click)="setPrimary(deal, contact)">
+                                                <input class="custom-radio" type="radio"
+                                                    [id]="'deal-group-item-' + deal.id + contact._id"
+                                                    [name]="'deal-group-item-' + deal.id + contact._id"
+                                                    [checked]="deal.primary_contact._id == contact._id">
+                                                <label class="f-6 font-weight-bold"></label>
+                                            </div>
+                                        </td>
+                                        <ng-container *ngIf="cIndex == 0">
+                                            <td [attr.rowspan]="deal.contacts.length" class="action-col sticky-action-col" [class.top-border]="dIndex > 0 && cIndex == 0">
+                                                <div class="v-center justify-content-between">
+                                                    <a class="v-center border-0 bgc-trans c-pointer ml-2 p-0" (click)="editDeal(deal, group, dIndex, dgIndex)">
+                                                        <i class="i-icon i-edit bgc-black" aria-hidden="true"></i>
+                                                    </a>
+                                                    <ng-container *ngIf="deal._id">
+                                                        <a class="v-center border-0 bgc-trans c-pointer ml-2 p-0" (click)="removeDeal(deal, group, dgIndex)">
+                                                            <i class="i-icon i-trash bgc-black" aria-hidden="true"></i>
+                                                        </a>
+                                                    </ng-container>
+                                                </div>
+                                            </td>
+                                            <ng-container *ngIf="dIndex == 0">
+                                                <td [attr.rowspan]="groupContactsLength(group)" class="status-col sticky-status-col">
+                                                    <ng-container *ngIf="group.completed">
+                                                        <div class="v-center justify-content-center ml-1">
+                                                            <i class="i-icon i-round-check mr-2 round-check"></i>
+                                                        </div>
+                                                    </ng-container>
+                                                </td>
+                                            </ng-container>
+                                        </ng-container>
+                                    </tr>
+                                </ng-container>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+    
+    <div class="table-control model-1 my-2">
+        <div class="pagination-wrapper m-auto">
+            <pagination-controls (pageChange)="onChangePage($event)" (pageBoundsCorrection)="onChangePage($event)"
+                id="dealGroupPage" maxSize="5" previousLabel="" nextLabel="" autoHide="true">
+            </pagination-controls>
+        </div>
+        <div *ngIf="dealGroups.length > PAGE_COUNTS[0].id" class="shadow-dropdown ml-auto page-size-control" ngbDropdown
+            placement="top-right">
+            <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+                <span class="pr-2 c-blue" [translateParams]="{count: pageSize.id}" translate>pagination</span>
+            </div>
+            <div ngbDropdownMenu aria-labelledby="dealGroupPageSize">
+                <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS" (click)="onChangePageSize(type)">
+                    <span class="f-3 v-center" [class.font-weight-bold]="type.id === pageSize.id">
+                        <span [translateParams]="{count: type.id}" translate>pagination</span>
+                        <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1" *ngIf="type.id == pageSize.id"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

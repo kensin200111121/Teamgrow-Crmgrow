@@ -1,0 +1,25 @@
+<div class="decline-container">
+    <div class="f-3 font-weight-bold mb-3">
+      <span translate>You are</span> <span class="c-red" translate>DECLINING</span> <span translate>an invitation!</span>
+    </div>
+    <div class="f-2 mb-4" translate>
+        Let know guests and organizer whe are you declining invitation for this meeting
+    </div>
+    <div class="form-group">
+        <label class="mb-0" translate>message</label>
+        <textarea
+            class="f-3 p-2 form-control"
+            name="message"
+            #message="ngModel"
+            [(ngModel)]="decline_message"
+            cols="30"
+            rows="5"
+            placeholder="{{'Write reason for declining' | translate}}"
+        >
+        </textarea>
+    </div>
+    <div class="v-center justify-content-end">
+        <button class="btn btn-white f-1 font-weight-bold" (click)="skipMessage()" translate>Skip</button>
+        <button class="btn btn-blue f-1 font-weight-bold" (click)="submitMessage()" translate>Send</button>
+    </div>
+</div>

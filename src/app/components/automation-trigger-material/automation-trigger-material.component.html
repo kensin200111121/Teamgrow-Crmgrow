@@ -1,0 +1,50 @@
+<div class="m-2">
+  <div class="v-center justify-content-between">
+    <span class="fw-600 f-4" translate>media</span>
+    <div class="v-center c-pointer f-4" (click)="upload()">
+      <i class="sm i-icon i-plus bgc-blue font-weight-normal mr-2">
+      </i>
+      <span class="c-blue c-pointer fw-600" translate>Upload</span>
+    </div>
+  </div>
+  <div>
+    <ng-container *ngIf="!material; else hasMaterial">
+      <div class="w-100 mt-2 p-2 content">
+        <div class="mt-3 mb-3">
+          <span class="align-items-center" translate>no_selected_media</span>
+        </div>
+        <div class="mb-3">
+          <div class="btn btn-white border border-primary f-4 font-weight-bold btn-font-bold c-blue c-pointer px-3">
+            <div class="d-flex pointer-events-auto" (click)="selectMedia()">
+              <i class="sm i-icon i-plus bgc-blue font-weight-normal mr-2 mt-1"></i>
+              <span translate>select_media_label</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #hasMaterial>
+      <div class="w-100 mt-2 content material-view">
+        <img class="thumbnail" [src]="material.preview">
+        <a class="v-center justify-content-center bgc-blue c-pointer edit-thumbnail" (click)="selectMedia()">
+          <i class="d-block i-icon i-edit bgc-white"></i></a>
+      </div>
+      <div class="mt-2 mb-1">
+        <span class="f-4 fw-600" translate>file_name</span>
+      </div>
+      <div class="mb-3">
+        <span class="c-secondary f-4">{{getMaterialType(material.type)}} · {{material.title}}</span>
+      </div>
+      <ng-container *ngIf="material.material_type === 'video'">
+        <div class="mt-2 mb-1">
+          <span class="f-4 fw-600" translate>percentage_of_view</span>
+        </div>
+        <div class="mb-3 w-50 form-group">
+          <select class="form-control" [(ngModel)]="percentage" (ngModelChange)="changePercentage($event)">
+            <option *ngFor="let percent of PERCENTAGES" value="{{percent.value}}">{{percent.name}}</option>
+          </select>
+        </div>
+      </ng-container>
+    </ng-template>
+  </div>
+</div>

@@ -1,0 +1,305 @@
+<div class="navbar-container" [class.sspa-wrapper]="isSspa">
+  <ng-container *ngIf="!isSspa">
+    <div class="navbar px-2 px-sm-3">
+      <!-- LOGO -->
+        <a class="navbar-brand m-0 p-0" routerLinkActive="active" [routerLink]="['/home']">
+          <img [src]="sspaService.toAsset('img/crmgrow-logo.svg')" class="navbar-brand-img" alt="CRMGROW">
+        </a>
+        <!-- Add Buttons Dropdown wrapper -->
+        <div class="new-actions-wrapper"
+           [class.suspended]="isSuspended"
+           ngbDropdown
+        >
+          <div class="btn bgc-blue d-flex align-items-center shadow-1 rounded-circle no-carot" ngbDropdownToggle>
+            <i class="i-icon i-plus bg-white d-block m-auto"></i>
+          </div>
+          <div ngbDropdownMenu aria-labelledby="actionsDropdown" class="bgc-dark py-1">
+            <ng-container *ngFor="let action of actions">
+              <div ngbDropdownItem *enableByFeatures="action.feature"
+                  (click)="runAction(action.id)"
+                  class="d-flex text-white py-2 pl-3 align-items-center {{action.id}}"
+              >
+                  <i class="i-icon {{action.icon}} mr-3"></i>
+                  <span class="font-weight-bold">{{action.label | translate}}</span>                
+              </div>
+            </ng-container>
+          </div>
+        </div>
+        <!-- Search Form Wrapper -->
+    
+        <!-- Navbar Main Wrapper -->
+        <div class="navbar-nav v-center ml-sm-3">
+    
+          <!-- Notification Wrapper -->
+          <div class="search-box input-group bgc-dark-trans08 rounded mr-2"
+               [class.opened]="(handlerService.openSearch$ | async)"
+               [class.suspended]="isSuspended"
+          >
+            <div data-name="search-provider" class="input-group-prepend" (click)="toggleSearchBar()">
+              <span class="input-group-text border-0 py-2 px-2 c-pointer" id="search-addon">
+                <i class="i-icon i-search d-block bgc-blue"></i>
+              </span>
+            </div>
+            <input type="text" class="form-control fc-control bgc-trans border-0" [placeholder]="'Search' | translate" aria-label="search" aria-describedby="search-addon" (ngModelChange)="filterStringUpdate.next($event)" [(ngModel)]="keyword" #searchInput>
+            <i class="i-icon i-close bgc-dark c-pointer" (click)="clearSearch()"></i>
+          </div>
+          <!-- Support Wrapper -->
+          <div class="nav-item">
+            <div class="support-wrapper"
+                 ngbDropdown
+                 display="dynamic"
+                 [class.suspended]="isSuspended"
+            >
+              <div data-name="question-mark" class="no-carot c-pointer" ngbDropdownToggle>
+                <i class="i-icon i-support bgc-blue d-block"></i>
+              </div>
+              <div class="light" ngbDropdownMenu>
+                <a data-name="knowledge-base-link" class="dropdown-item" href="https://kb1.crmgrow.com/kb/en/crmgrow-knowledge-base" target="_blank">
+                  <span class="f-3 fw-600">Knowledge Base</span>
+                </a>
+                <a data-name="ask-question-link" class="dropdown-item" href="https://crmgrow.stonly.com/kb/guide/en/support-how-to-contact-us-for-customer-support-EIZ3LL7ZkZ/Steps/1271164,1271178,1227137" target="_blank">
+                  <span class="f-3 fw-600" translate>Ask a Question</span>
+                </a>
+                <a data-name="report-bug-link" class="dropdown-item" href="https://stonly.com/guide/en/contact-crmgrow-7avienyj9s/Steps/1227137,1227822" target="_blank">
+                  <span class="f-3 fw-600" translate>Report a Bug</span>
+                </a>
+                <a data-name="feature-request-link" class="dropdown-item" href="https://stonly.com/guide/en/contact-crmgrow-7avienyj9s/Steps/1227137,1227825" target="_blnak" *ngIf="user?.support_info?.feature_request">
+                  <span class="f-3 fw-600" translate>Feature Request</span>
+                </a>
+                <a data-name="live-training-link" class="dropdown-item" href="https://scheduler.crmgrow.com/crmgrowsuccessteam/crmgrow-support-30-minute-online-zoom-meeting" target="_blank" (click)="liveTraining()">
+                  <span class="f-3 fw-600" translate>Live Training</span>
+                </a>
+                <a data-name="facebook-group-link" class="dropdown-item" href="https://www.facebook.com/groups/crmgrowgroup/" target="_blank">
+                  <span class="f-3 fw-600" translate>Facebook Group</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="nav-item dialer-discover" *ngIf="!isPurchasedDialer">
+            <div class="position-relative" ngbDropdown display="dynamic" placement="bottom-center">
+              <a class="no-carot d-block position-relative c-pointer" ngbDropdownToggle>
+                <i class="i-icon i-phone_logs bgc-blue d-block"></i>
+              </a>
+              <div ngbDropdownMenu>
+                <a class="v-center dropdown-item py-2" (click)="purchaseDialer()">
+                  <div class="mr-4">
+                    <i class="i-icon i-phone_logs bgc-blue d-block" style="width: 36px; height: 36px;"></i>
+                  </div>
+                  <div class="">
+                    <div class="c-blue f-3 font-weight-bold" translate>NEW</div>
+                    <div class="f-4 font-weight-bold" translate>Power Dialer</div>
+                    <span class="f-2 d-block" translate>Connect with more people in less time</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <!-- Incoming Chat Message Wrapper -->
+          <div class="nav-item" [class.suspended]="isSuspended" [class.disable]="!isPackageText">
+            <div class="chat-messages-wrapper detail-wrapper position-relative" ngbDropdown display="dynamic" placement="bottom-right">
+              <a [routerLink]="['/messages']" class="no-carot d-block position-relative c-pointer" *ngIf="!unreadMessageCount; else hasUnreadMessage">
+                <i class="i-icon i-sms-sent bgc-blue d-block"></i>
+              </a>
+              <ng-template #hasUnreadMessage>
+                <a class="no-carot d-block position-relative c-pointer" ngbDropdownToggle>
+                  <i class="i-icon i-sms-sent bgc-blue d-block"></i>
+                  <span class="badge texting-badge">{{unreadMessageCount > 5 ? '5+' : unreadMessageCount}}</span>
+                </a>
+    
+                <div ngbDropdownMenu class="px-0 pb-0" style="height: fit-content;">
+                  <a class="message-item d-flex mt-2 px-3 dropdown-item" *ngFor="let message of unreadMessages" (click)="goToMessage({contact: message.contact?._id})">
+                    <div class="avatar contact-avatar mr-2">
+                      {{message.contact?.avatarName || 'UN'}}
+                    </div>
+                    <div class="content flex-grow-1">
+                      <div class="message-info d-flex">
+                        <div class="contact font-weight-bold f-4">
+                          {{(message.contact?.fullName || 'Unknown Contact') | shorten: 18: '...'}}
+                        </div>
+                        <div class="message-time ml-auto f-2 op-75">
+                          <ng-container *ngIf="calcDate(message.created_at) == 0">
+                            <span class="f-2 op-75">
+                              {{(message.created_at || 0) | date:'h:mm a'}}
+                            </span>
+                          </ng-container>
+                          <ng-container *ngIf="calcDate(message.created_at) > 0 && calcDate(message.created_at) < 8">
+                              <span class="f-2 op-75">
+                                  {{message.created_at | date:'EEE'}}
+                              </span>
+                          </ng-container>
+                          <ng-container *ngIf="calcDate(message.created_at) >= 8">
+                              <span class="f-2 op-75">
+                                  {{message.created_at | date:'EEE dd, MM, yyyy'}}
+                              </span>
+                          </ng-container>
+                          
+                        </div>
+                      </div>
+                      <div class="message-text f-3 mt-1 d-flex align-items-start">
+                        <span class="message-content">{{message.content}}</span>
+                        <span class="badge badge-primary ml-auto" *ngIf="message.count > 1">{{message.count - 1}}+</span>
+                      </div>
+                    </div>
+                  </a>
+                  <li class="notification-expand rounded-bottom border-top overflow-hidden mt-3">
+                    <a [routerLink]="['/messages']" class="dropdown-item f-4 text-center text-primary font-weight-bold see-all" translate>See all</a>
+                  </li>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+    
+          <!-- Task Progressing Status -->
+    
+          <div class="nav-item" *ngIf="hasTasks">
+            <a data-name="hour-glass" class="c-pointer" [routerLink]="['/scheduled-items']">
+              <i class="i-icon s-14 i-hour-glass bgc-blue d-block"></i>
+            </a>
+          </div>
+    
+    
+          <!-- Notification -->
+          
+          <div class="nav-item" [class.suspended]="isSuspended">
+            <div class="notifications-wrapper detail-wrapper c-pointer" display="dynamic">
+              <div class="no-carot position-relative" >
+                <a [routerLink]="['/notifications']" >
+                  <i class="i-icon i-notification bgc-blue d-block"></i>
+                  <span class="badge email-badge" *ngIf="unreadNotificationExist">i</span>
+                </a>
+              </div>            
+            </div>
+          </div>
+    
+          <!-- Country Wrapper -->
+          <div class="nav-item">
+            <div ngbDropdown display="dynamic">
+              <div class="c-pointer no-carot" ngbDropdownToggle>
+                <i class="i-flag {{selectedLanguage?.icon}}" [attr.data-name]="'flag-icon-select'"></i>
+              </div>
+              <div ngbDropdownMenu>
+                <div class="dropdown-item" *ngFor="let option of languages" (click)="changeLang(option)">
+                  <i class="i-flag {{option.icon}}" [attr.data-name]="'flag-icon-select-' + option.country"></i>
+                  <span class="ml-2 f-3 op-75">{{option.country}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+    
+          <!-- Profile Wrapper -->
+          <div class="nav-item">
+            <div class="profile-wrapper" ngbDropdown display="dynamic" placement="bottom-end">
+              <div data-name="profile-entrance" class="v-center c-pointer" ngbDropdownToggle>
+                <img [src]="(userService.profile$ | async).picture_profile" (error)="sspaService.imgError($event,'img/user_avatar.svg')"/>
+                <span class="f-3 fw-600 ml-2 d-sm-block d-none">{{(userService.profile$ | async).user_name}}</span>
+              </div>
+              <div ngbDropdownMenu>
+                <div class=" dropdown-header noti-title">
+                  <h6 class="text-overflow m-0 c-default f-0" translate>Welcome!</h6>
+                </div>
+                <a data-name="my-profile-link" [routerLink]="['/profile/general']" class="dropdown-item" *ngIf="!isGuest">
+                  <span class="f-4 fw-600" translate>My profile</span>
+                </a>
+                <ng-container *ngIf="goMaster || accountRef == 'true'">
+                  <ng-container *ngIf="user_id && userList.length; else loadingAccountTemplate">
+                    <div class="dropdown-divider"></div>
+                    <div class="accounts px-3 c-pointer" ngbDropdown data-name="create-switch-business-div">
+                      <div class="v-center justify-content-between" ngbDropdownToggle>
+                        <div>
+                          <ng-container *ngIf="selectedUser.primary_account && selectedUser.primary_account._id==selectedUser._id;else selectedUserName">
+                            <div>{{selectedUser.company}}</div>
+                            <div class="f-3 op-56" translate>Create or switch business</div>
+                          </ng-container>
+                          <ng-template #selectedUserName>
+                            <div>{{selectedUser.user_name}}</div>
+                            <div class="f-3 op-56" translate>Create or switch business</div>
+                          </ng-template>
+                        </div>
+                        <i class="d-block i-icon i-chev-right bgc-dark"></i>
+                      </div>
+                      <div ngbDropdownMenu>
+                        <ng-container *ngFor="let user of userList">
+                          <div class="v-center dropdown-item" (click)="selectUser(user)">
+                              <div class="v-center justify-content-center status-icon">
+                                <i class="d-block i-icon i-check mr-2" [class.bgc-blue]="selectedUser._id == user._id"></i>
+                              </div>
+                              <ng-container *ngIf="user.primary_account && user.primary_account._id == user._id;else userName">
+                                  <div class="f-6 company-name" [class.c-blue]="selectedUser._id == user._id">{{user.company}}</div>
+                              </ng-container>
+                              <ng-template #userName>
+                                <div class="f-6 company-name" [class.c-blue]="selectedUser._id == user._id">{{user.user_name}}</div>
+                              </ng-template>
+                          </div>
+                        </ng-container>                      
+                        <ng-container *ngIf="selectedUser.is_primary && hasMoreSeat">
+                          <div class="dropdown-divider" ></div>
+                          <ng-container *ngIf="internalTeam">
+                            <a class="v-center dropdown-item"  [routerLink]="['/community/' + internalTeam._id+ '/members/root']"  data-name="add-new-team">
+                              <div class="f-6 c-dark company-name" translate>View your team</div>
+                            </a>
+                          </ng-container>
+                          <a class="v-center dropdown-item" [routerLink]="['/profile/account']" [queryParams]="{new: true}" data-name="add-new-team">
+                            <div class="v-center justify-content-center status-icon">
+                              <i class="d-block i-icon i-plus sm bgc-dark mr-2"></i>
+                            </div>
+                            <div class="f-6 c-dark company-name" translate>Add new member</div>
+                          </a>
+                        </ng-container>
+                      </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                  </ng-container>
+                  <ng-template #loadingAccountTemplate>
+                    <ng-container *ngIf="loadingAccount && (userService.profile$ | async).organization_info?.is_owner">
+                      <div class="dropdown-divider"></div>
+                      <div class="d-flex loading-account">
+                        <button class="btn loading c-blue mr-1 ml-2"></button>
+                        <span translate>Loading sub accounts</span>
+                      </div>
+                      <div class="dropdown-divider"></div>
+                    </ng-container>
+                  </ng-template>
+                </ng-container>
+                <a data-name="logout-link" class="dropdown-item" (click)="logout($event)">
+                  <span class="f-4 fw-600" translate>Logout</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <ng-container *ngIf="systemNotifications.length">
+        <ng-container *ngIf="!showAllSystemNotifications || systemNotifications.length === 1; else allSystemNotifications">
+          <div class="notification-row" [class]="systemNotifications[0]?.banner_style">
+            <div [innerHTML]="systemNotifications[0]?.content"></div>          
+            <div style="display: flex">
+              <div *ngIf="systemNotifications.length > 1" class="c-pointer mr-2" (click)="showAllSystemNotifications = true">
+                <i class="i-icon i-expand-more d-block"></i>
+              </div>
+              <div class="c-pointer mr-2" (click)="closeNotificationItem(systemNotifications[0])">
+                <i class="i-icon i-close d-block bgc-dark"></i>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #allSystemNotifications>
+          <ng-container *ngFor="let notification of systemNotifications">
+            <div class="notification-row" [class]="notification.banner_style">
+              <div [innerHTML]="notification.content"></div>
+              <div style="display: flex">
+                <div class="c-pointer mr-2" (click)="showAllSystemNotifications = false">
+                  <i class="i-icon i-expand-less d-block"></i>
+                </div>
+                <div class="c-pointer mr-2" (click)="closeNotificationItem(notification)">
+                  <i class="i-icon i-close d-block bgc-dark"></i>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </ng-template>    
+      </ng-container>
+  </ng-container>
+
+  
+</div>

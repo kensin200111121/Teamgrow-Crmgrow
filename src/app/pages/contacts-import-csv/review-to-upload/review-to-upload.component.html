@@ -1,0 +1,310 @@
+<!-- Added by Sylla -->
+<div class="page-content">
+  <div class="status-header v-center mt-3">
+    <h1 class="page-title">
+      {{ 'Your contacts are ready to import' | translate }}
+      <img [src]="sspaService.toAsset('img/check-mark.svg')" alt="" />
+    </h1>
+    <div class="f-6 font-weight-bold op-64 contact-count mobile">
+      {{ 'Your contacts are ready to import' | translate }}
+      <img [src]="sspaService.toAsset('img/check-mark.svg')" alt="" />
+    </div>
+    <div class="ml-auto v-center create-actions">
+      <button
+        class="v-center btn btn-white border border-primary f-6 font-weight-bold rounded mr-2 px-3"
+        (click)="onBack()"
+      >
+        <span class="normal" translate>Back</span>
+        <span class="mobile" translate>Back</span>
+      </button>
+      <button
+        [attr.data-action]="'import-contact-upload'"
+        class="btn btn-primary f-6 font-weight-bold rounded px-3 text-white shadow"
+        [class.disabled]="selectedContactsToUpload.length === 0"
+        (click)="selectedContactsToUpload.length === 0 ? null : onUpload()"
+      >
+        {{ 'Upload' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="f-6 font-weight-bold op-64 mb-2 contact-count desktop"
+    [translateParams]="{ count: contactsToUpload.length }"
+    translate
+  >
+    Showing count contacts. All columns have been matched
+  </div>
+
+  <mat-divider class="mt-20 pt-10"></mat-divider>
+
+  <div class="v-center contact-list-controls">
+    <div class="form-group mb-0 search-form">
+      <div class="input-group-prepend">
+        <i class="i-icon i-search d-block bgc-dark"></i>
+      </div>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="{{ 'Search' | translate }}"
+        aria-label="search"
+        aria-describedby="search-addon"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onChangeQuery($event)"
+      />
+      <ng-container *ngIf="searchQuery">
+        <div class="cancel-action c-pointer" (click)="onClearQuery()">
+          <i class="i-icon i-close d-block bgc-dark"></i>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="v-center table-status-bar pt-10">
+    <div class="v-center justify-content-start">
+      <span
+        class="f-4 c-black fw-600"
+        [translateParams]="{ count: selectedContactsToUpload.length }"
+        translate
+      >
+        items are selected
+      </span>
+      <ng-container *ngIf="!isAllChecked()">
+        <a
+          (click)="onCheckAll()"
+          class="ml-2 f-3 c-pointer user-action header-action"
+          translate
+        >
+          Select All
+        </a>
+      </ng-container>
+      <ng-container *ngIf="selectedContactsToUpload.length > 0">
+        <a
+          (click)="onDeselect()"
+          class="ml-2 f-3 c-pointer user-action header-action"
+          translate
+        >
+          Deselect
+        </a>
+      </ng-container>
+    </div>
+  </div>
+
+  <mat-divider class="mt-20 pt-10"></mat-divider>
+
+  <div class="review-wrapper pr-2">
+    <div class="review-table-wrapper">
+      <div class="table-wrapper">
+        <table class="table page-table mb-0 review-table">
+          <thead>
+            <tr class="column-row">
+              <th class="col-checkbox column-field sticky-col-checkbox">
+                <div class="custom-control custom-checkbox">
+                  <input
+                    type="checkbox"
+                    class="custom-control-input"
+                    id="selectAllContacts"
+                    (change)="$event ? onCheckAllPage() : null"
+                    [checked]="isAllCheckedPage()"
+                  />
+                  <label
+                    class="custom-control-label"
+                    for="selectAllContacts"
+                  ></label>
+                </div>
+              </th>
+              <th
+                *ngFor="let item of pcMatching | keyvalue : contactHeaderOrder"
+                class="column-field"
+              >
+                <div class="min-w-200 text-black f-4 min-h-30 v-center">
+                  {{ properties[item.value] }}
+                </div>
+              </th>
+              <th
+                *enableByFeatures="USER_FEATURES.PIPELINE"
+                class="col-pipeline column-field"
+                #target
+              >
+                <div class="min-w-200">
+                  <app-select-stage
+                    [pipeline]="defaultPipeline"
+                    [stage]="all_dealStage"
+                    (onChange)="onChangeDealStageHeader($event)"
+                    [viewMode]="'col'"
+                    [isHideLabel]="true"
+                    [isHidePipelineSelector]="false"
+                    [isSetDefault]="false"
+                    [showReset]="true"
+                    (onPipelineChange)="onChangePipelineHeader($event)"
+                  ></app-select-stage>
+                </div>
+              </th>
+              <th
+                *enableByFeatures="USER_FEATURES.AUTOMATION"
+                class="col-automation column-field"
+                #target
+              >
+                <div class="form-group">
+                  <app-input-automation
+                    (automationChange)="onChangeAutomationOnHeader($event)"
+                    [placeholder]="'Select Automation'"
+                    [nullable]="true"
+                  >
+                  </app-input-automation>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container
+              *ngFor="
+                let contact of searchedContacts
+                  | paginate
+                    : {
+                        id: 'contactPages',
+                        itemsPerPage: pageSize.id,
+                        currentPage: page,
+                        totalItems: searchedContacts.length
+                      }
+              "
+            >
+              <!-- <tr class="blank-row">
+                <td class="sticky-col-checkbox"></td>
+                <td *ngFor="let item of pcMatching | keyvalue"></td>
+                <td *enableByFeatures="USER_FEATURES.AUTOMATION"></td>
+              </tr> -->
+              <tr>
+                <td
+                  class="checkbox sticky-col-checkbox"
+                  [class.selected]="isChecked(contact)"
+                >
+                  <div class="custom-control custom-checkbox data-field">
+                    <input
+                      type="checkbox"
+                      class="custom-control-input"
+                      id="contact-{{ contact.id }}"
+                      (change)="onCheck(contact)"
+                      [checked]="isChecked(contact)"
+                    />
+                    <label
+                      class="custom-control-label"
+                      for="contact-{{ contact.id }}"
+                    ></label>
+                  </div>
+                </td>
+                <td
+                  *ngFor="
+                    let item of pcMatching | keyvalue : contactHeaderOrder
+                  "
+                  class="f-4 last-row"
+                  [class.selected]="isChecked(contact)"
+                >
+                  <div class="v-center data-field" [ngSwitch]="item.value">
+                    <span *ngSwitchCase="'secondary_phone'">{{
+                      formatValue(contact['phones']) || ''
+                    }}</span>
+                    <span *ngSwitchCase="'secondary_email'">{{
+                      formatValue(contact['emails']) || ''
+                    }}</span>
+                    <span *ngSwitchDefault>{{
+                      formatValue(contact[item.value]) || ''
+                    }}</span>
+                  </div>
+                  <ng-container></ng-container>
+                </td>
+                <td
+                  *enableByFeatures="USER_FEATURES.PIPELINE"
+                  class="pipeline-field"
+                  [class.selected]="isChecked(contact)"
+                >
+                  <div class="data-field">
+                    <app-select-stage
+                      [pipeline]="defaultPipelines[contact.id]"
+                      [stage]="dealStages[contact.id]"
+                      (onChange)="onChangeDealStage($event, contact)"
+                      [viewMode]="'col'"
+                      [isHideLabel]="true"
+                      [isHidePipelineSelector]="false"
+                      [isSetDefault]="false"
+                      [showReset]="true"
+                    ></app-select-stage>
+                  </div>
+                </td>
+                <td
+                  *enableByFeatures="USER_FEATURES.AUTOMATION"
+                  class="automation-field"
+                  [class.selected]="isChecked(contact)"
+                >
+                  <div class="form-group data-field">
+                    <app-input-automation
+                      [automation]="automations[contact.id]"
+                      [placeholder]="'Select Automation'"
+                      [nullable]="true"
+                      (automationChange)="onChangeAutomation($event, contact)"
+                    >
+                    </app-input-automation>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="my-2 table-control mode-1">
+    <div class="pagination-wrapper m-auto">
+      <pagination-controls
+        (pageChange)="changePage($event)"
+        (pageBoundsCorrection)="changePage($event)"
+        id="contactPages"
+        maxSize="5"
+        previousLabel=""
+        nextLabel=""
+        autoHide="true"
+      >
+      </pagination-controls>
+    </div>
+    <div
+      *ngIf="searchedContacts.length > PAGE_COUNTS[0].id"
+      class="shadow-dropdown ml-auto page-size-control"
+      ngbDropdown
+      placement="top-right"
+    >
+      <div
+        class="v-center c-pointer f-3 p-3 font-weight-bold"
+        ngbDropdownToggle
+      >
+        <span
+          class="pr-2 c-blue"
+          [translateParams]="{ count: pageSize.id }"
+          translate
+          >pagination</span
+        >
+      </div>
+      <div ngbDropdownMenu aria-labelledby="contactPageSize">
+        <div
+          class="py-2"
+          ngbDropdownItem
+          *ngFor="let type of PAGE_COUNTS"
+          (click)="changePageSize(type)"
+        >
+          <span
+            class="f-3 v-center"
+            [class.font-weight-bold]="type.id === pageSize.id"
+          >
+            <span [translateParams]="{ count: type.id }" translate
+              >pagination</span
+            >
+            <i
+              class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+              *ngIf="type.id === pageSize.id"
+            ></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End by Sylla -->

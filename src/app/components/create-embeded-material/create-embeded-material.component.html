@@ -1,0 +1,23 @@
+<mat-dialog-content>
+  <ng-container *ngIf="!isLoading; else loading">
+    <p>
+      Please follow these steps to embed our video in your web page.
+    </p>
+    <ul>
+      <li>
+        Please copy <a class="copy-icon" (click)="copyHTMLCode()"><i class="d-block i-icon i-copy bgc-dark"></i></a> this html code  to the place that you want in your html body part.
+        <code (click)="copyHTMLCode()">{{htmlCode}}</code>
+      </li>
+      <li>
+        Or copy <a class="copy-icon" (click)="copySrcCode()"><i class="d-block i-icon i-copy bgc-dark"></i></a> this video link address to your iframe src.
+        <code (click)="copySrcCode()">{{srcCode}}</code>
+      </li>
+    </ul>
+  </ng-container>
+  <ng-template #loading>
+    Getting embed code...
+  </ng-template>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button class="btn btn-secondary font-weight-bold ml-auto" mat-dialog-close>Close</button>
+</mat-dialog-actions>

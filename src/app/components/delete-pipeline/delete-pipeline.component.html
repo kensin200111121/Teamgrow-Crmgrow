@@ -1,0 +1,87 @@
+<div class="v-center justify-content-between">
+  <h1 class="m-0" mat-dialog-title translate>
+    Delete pipeline
+  </h1>
+  <i class="d-block i-icon i-close bgc-dark" (click)="cancel()"></i>
+</div>
+<mat-dialog-content>
+  <div class="f-3 font-weight-bold mt-4" translate>
+    Please select options you want.
+  </div>
+  <div class="mb-3">
+    <div class="v-center c-pointer" (click)="selectOption('remove-all')">
+      <div class="custom-radio-container mr-3">
+        <input class="custom-radio" type="radio" [checked]="isSelectedOption('remove-all')">
+        <label class="f-3 font-weight-bold"></label>
+      </div>
+      <div [attr.data-name]="'pipeline-remove-with'" class="f-3 ml-4 mt-3" translate>
+        Remove pipeline with sub deals
+      </div>
+    </div>
+    <div class="v-center c-pointer" (click)="selectOption('move-other')">
+      <div class="custom-radio-container mr-3">
+        <input class="custom-radio" type="radio" [checked]="isSelectedOption('move-other')">
+        <label class="f-3 font-weight-bold"></label>
+      </div>
+      <div [attr.data-name]="'pipeline-remove-nowith'" class="f-3 ml-4 mt-3" translate>
+        Remove pipeline and move sub deals to other
+      </div>
+    </div>
+    <ng-container *ngIf="currentOption == 'move-other'">
+      <div class="mx-5 mt-3">
+        <label class="f-2 c-dark mt-1" translate>
+          Pipeline (select the new target pipeline)
+        </label>
+        <div class="border rounded py-2 px-2">
+          <mat-select [(ngModel)]="selectedPipeline" (ngModelChange)="changePipeline()" id="target_pipeline" name="pipeline" #folder="ngModel" required placecholder="Select Pipeline">
+            <mat-option disabled translate>
+              Please select pipeline
+            </mat-option>
+            <mat-option *ngFor="let pipeline of pipelines" [value]="pipeline">
+              <div class="v-center">
+                <i class="i-icon i-deals d-block bgc-dark" aria-hidden="true"></i>
+                <div class="f-3 c-black ml-2">
+                  {{pipeline.title}}
+                </div>
+              </div>
+            </mat-option>
+          </mat-select>
+        </div>
+        <div class="error f-1 c-red mt-1"
+          *ngIf="!selectedPipeline._id && isValid" translate>
+          Target pipeline is required.
+        </div>
+      </div>
+      <div class="mx-5 mt-3" *ngIf="selectedPipeline._id">
+        <label class="f-2 c-dark mt-1" translate>
+          Stage (select the deal stage of above target pipeline)
+        </label>
+        <div class="border rounded py-2 px-2">
+          <mat-select [(ngModel)]="selectedStage" id="target_stage" name="stage" #folder="ngModel" required placecholder="Select Stage">
+            <mat-option disabled translate>
+              Please select stage
+            </mat-option>
+            <mat-option *ngFor="let stage of dealStages" [value]="stage">
+              <div class="v-center">
+                <i class="i-icon i-deals d-block bgc-dark" aria-hidden="true"></i>
+                <div class="f-3 c-black ml-2" translate>
+                  {{stage.title}}
+                </div>
+              </div>
+            </mat-option>
+          </mat-select>
+        </div>
+        <div class="error f-1 c-red mt-1"
+             *ngIf="!selectedStage._id && isValid" translate>Target stage is required.</div>
+        <div class="error f-1 c-red mt-1"
+          *ngIf="!changePipelineStatus && dealStages.length == 0" translate>
+          Please try again after creating a new stage.    
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button class="btn btn-white f-6 font-weight-bold c-blue mr-2" (click)="cancel()" translate>Cancel</button>
+  <button [attr.data-action]="'pipeline-delete-confirm'" class="btn btn-primary f-6 font-weight-bold btn-font-bold" [class.loading]="submitted" (click)="delete()" translate>Confirm</button>
+</mat-dialog-actions>

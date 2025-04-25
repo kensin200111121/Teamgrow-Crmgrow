@@ -1,0 +1,19 @@
+<div mat-dialog-title class="title mx-0 mt-4 px-4">
+  <div class="v-center justify-content-between">
+    <h1 mat-dialog-title class="font-weight-bold m-0">
+      Remove action
+    </h1>
+    <button class="v-center border-0 bgc-trans p-0" (click)="closeDrawer()">
+      <i class="d-block i-icon i-close bgc-dark"></i>
+    </button>
+  </div>
+</div>
+<form #actionForm="ngForm" class="px-4" (ngSubmit)="submitted = true; actionForm.form.valid ? confirmAction() : false"
+  [class.was-validated]="submitted">
+  <mat-dialog-actions class="mt-2" align="end">
+    <div class="v-center justify-content-end my-3 px-4">
+      <button class="btn c-blue ml-1 mr-0" type="button" (click)="closeDrawer()" translate>Close</button>
+      <button class="btn btn-primary ml-1 mr-0" type="submit" translate>Remove</button>
+    </div>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,63 @@
+@import 'variables';
+
+.table-control-header {
+  z-index: 4;
+  position: relative;
+}
+
+@media screen and (min-width: 484px) {
+  .custom-mat-table {
+    margin-top: -50px;
+  }
+  .table-control-header {
+    width: fit-content;
+    margin-left: auto;
+    margin-bottom: 16px;
+  }
+}
+
+td {
+  word-break: break-word;
+}
+
+td .c-dark {
+  color: $color-dark !important;
+}
+
+td .c-blue {
+  color: $color-blue !important;
+}
+
+.pagination-wrapper.disabled {
+  pointer-events: none;
+  .i-icon {
+    background-color: #cacaca;
+  }
+}
+
+.pagination-wrapper .i-icon {
+  background-color: black;
+  width: 20px;
+  height: 20px;
+}
+
+.pagination-wrapper a {
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+.pagination-wrapper .disabled {
+  pointer-events: none;
+}
+.pagination-wrapper .disabled .i-icon {
+  background-color: #cacaca;
+}
+
+.address-col a {
+  max-width: 75px;
+  width: 75px;
+  font-size: 12px;
+}
+.mat-table-wrapper {
+  min-height: 200px;
+}

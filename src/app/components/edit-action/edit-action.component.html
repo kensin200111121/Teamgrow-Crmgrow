@@ -1,0 +1,1688 @@
+<div mat-dialog-title class="title mx-0 mt-4 px-4">
+  <div class="v-center justify-content-between">
+    <h1 mat-dialog-title class="font-weight-bold m-0">
+      {{getTitle(ActionName[type])}}
+    </h1>
+    <button class="v-center border-0 bgc-trans p-0" (click)="closeDrawer()">
+      <i class="d-block i-icon i-close bgc-dark"></i>
+    </button>
+  </div>
+</div>
+<ng-container *ngIf="tabs.length > 1">
+  <div class="mt-2">
+    <app-slide-tab [tabs]="tabs" [selected]="selectedTab" type="plain" (onChange)="changeTab($event)" class="border-bottom pl-0 rounded-0">
+    </app-slide-tab>
+  </div>
+</ng-container>
+<form #actionForm="ngForm" (ngSubmit)="submitted = true; actionForm.form.valid ? updateAction() : false"
+  [class.was-validated]="submitted">
+  <mat-dialog-content class="content-section overflow mt-2" [class]="type">
+    <div class="action-setting mt-3">
+      <div class="contents-container w-100">
+        <div class="px-3" [class.d-none]="selectedTab.id !== 'action'">
+          <ng-container *ngIf="isAvailableAssignAt">
+            <div class="row mb-3">
+              <div class="col-12 form-group mb-0">
+                <label translate>Assign at:</label>
+              </div>
+              <div class="col-12">
+                <select class="form-control theme-control"
+                        [(ngModel)]="action['group']"
+                        name="assign_at"
+                        #assign_at="ngModel"
+                        [disabled]="type == 'move_deal'"
+                >
+                  <option value="" translate *ngIf="type !== 'contact_condition'">Everyone</option>
+                  <option value="primary" translate>Primary Contact</option>
+                </select>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="action && !action['condition']">
+            <div class="row">
+              <div class="col-12">
+                <div class="form-group mb-0 has-feedback">
+                  <ng-container *ngIf="data && !data['conditionHandler']; else conditionLimitTemplate">
+                    <ng-container *ngIf="NoLimitActions.indexOf(type) === -1">
+                      <label class="theme-label">
+                        <span translate>TIME DELAY</span>
+                        <span class="description" translate>(DURATION SINCE PREVIOUS ACTION)</span>
+                      </label>
+                      <select class="form-control theme-control mb-3" [(ngModel)]="action['period']" name="period" #period="ngModel" [required]="type && type.indexOf('watched') === -1">
+                        <option value="0" translate>Immediately</option>
+                        <option value="0.17" translate>10 mins</option>
+                        <option value="0.5" translate>30 mins</option>
+                        <option value="1" translate>1 hour</option>
+                        <option value="6" translate>6 hours</option>
+                        <option value="12" translate>12 hours</option>
+                        <option value="24" translate>1 day</option>
+                        <option value="48" translate>2 days</option>
+                        <option value="72" translate>3 days</option>
+                        <option value="168" translate>1 week</option>
+                        <option value="336" translate>2 weeks</option>
+                        <option value="custom_date" translate>Custom Time Delay</option>
+                      </select>
+                      <span class="invalid-feedback"
+                            *ngIf="period.errors && (period.touched || period.dirty || submitted) && submitted"
+                            translate
+                      >
+                      Period is required
+                      </span>
+                    </ng-container>
+                  </ng-container>
+                  <ng-template #conditionLimitTemplate>
+                    <ng-container *ngIf="NoLimitActions.indexOf(type) === -1">
+                      <label class="theme-label">
+                        <span translate>TIME DELAY</span>
+                        <span class="description" translate>(DURATION SINCE PREVIOUS ACTION)</span>
+                      </label>
+                      <select class="form-control theme-control mb-3" [(ngModel)]="action['period']" name="period" #period="ngModel" [required]="type && type.indexOf('watched') === -1">
+                        <option *ngIf="data && data['conditionHandler'] !== 'falseCase'" value="0" translate>Immediately</option>
+                        <option value="0.17" translate>10 mins</option>
+                        <option value="0.5" translate>30 mins</option>
+                        <option value="1" translate>1 hour</option>
+                        <option value="6" translate>6 hours</option>
+                        <option value="12" translate>12 hours</option>
+                        <option value="24" translate>1 day</option>
+                        <option value="48" translate>2 days</option>
+                        <option value="72" translate>3 days</option>
+                        <option value="168" translate>1 week</option>
+                        <option value="336" translate>2 weeks</option>
+                        <option value="custom_date" translate>Custom Time Delay</option>
+                      </select>
+                      <span class="invalid-feedback"
+                            *ngIf="period.errors && (period.touched || period.dirty || submitted) && submitted"
+                            translate
+                        >
+                        Period is required
+                      </span>
+                    </ng-container>
+                  </ng-template>
+                </div>
+              </div>
+              <div class="col-12" *ngIf="action['period'] == 'custom_date'">
+                <div class="m-0">
+                  <div class="form-group mb-3">
+                    <div class="v-center justify-content-between">
+                      <label class="theme-label" translate>CUSTOM TIME DELAY</label>
+                      <div class="v-center mb-2">
+                        <div class="v-center">
+                          <div class="custom-radio-container" (click)="changeTimeDelayType('hour')">
+                            <input class="custom-radio" type="radio" id="hour-time-delay" name="at-least-hour-delay" [checked]="timeDelayType == 'hour'">
+                            <label class="f-5 font-weight-bold"></label>
+                          </div>
+                          <div class="f-3 ml-2" translate>Hour</div>
+                        </div>
+                        <div class="v-center ml-3">
+                          <div class="custom-radio-container" (click)="changeTimeDelayType('day')">
+                            <input class="custom-radio" type="radio" id="day-time-delay" name="at-least-day-delay" [checked]="timeDelayType == 'day'">
+                            <label class="f-5 font-weight-bold"></label>
+                          </div>
+                          <div class="f-3 ml-2" translate>Day</div>
+                        </div>
+                      </div>
+                    </div>
+                    <input type="number" step="1" class="form-control" [min]="1" name="planTimeDay" [required]="action['period'] == 'custom_date'" [(ngModel)]="plan_time_delay" />
+                  </div>
+                </div>
+                <span class="error text-danger"
+                      *ngIf="action['period']=='custom_date' && !plan_time_delay && submitted"
+                      translate
+                >
+                Plan time is required.
+              </span>
+              </div>
+              <ng-container *ngIf="type==='follow_up'">
+                <div class="col-12 form-group">
+                  <label translate>task type</label>
+                  <div>
+                    <app-task-type [(value)]="task.type"></app-task-type>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="type==='follow_up'">
+            <div class="action-form">
+              <div class="form-group has-feedback"
+                   [class.has-error]="followUpContent.errors && (followUpContent.touched || followUpContent.dirty|| submitted) && submitted">
+                <label class="theme-label">
+                  <span translate>TASK SUBJECT</span>
+                  <span class="description" translate>(REMINDER TO YOURSELF)</span>
+                </label>
+                <input type="text" class="form-control" placeholder="Type of task note" [(ngModel)]="action['content']"
+                       name="followUpContent" #followUpContent="ngModel" autocomplete="off" required />
+                <span class="invalid-feedback"
+                      *ngIf="followUpContent.errors && (followUpContent.dirty || followUpContent.touched || submitted) && submitted"
+                      translate
+                >
+                Follow up content is required.
+              </span>
+              </div>
+              <div
+                class="form-group has-feedback"
+              >
+                <label class="theme-label"
+                       translate
+                >TASK DESCRIPTION
+                </label>
+                <textarea
+                  [(ngModel)]="action.description"
+                  class="form-control"
+                  [placeholder]="'Type of task description' | translate"
+                  name="followUpDescription"
+                  #followUpDescription="ngModel"
+                  rows="6"
+                ></textarea>
+              </div>
+              <label class="theme-label" translate>TASK TIME</label>
+              <div class="row">
+                <div class="col-12">
+                  <div class="theme-radios">
+                    <div class="theme-radio">
+                      <input type="radio" class="custom-control-input" id="due_date_option" name="follow_due_option"
+                             [(ngModel)]="followDueOption" #follow_due_option="ngModel" value="date">
+                      <label class="custom-theme-label" for="due_date_option" translate>Set Date</label>
+                    </div>
+                    <div class="theme-radio">
+                      <input type="radio" class="custom-control-input" id="due_delay_option" name="follow_due_option"
+                             [(ngModel)]="followDueOption" #follow_due_option="ngModel" value="delay">
+                      <label class="custom-theme-label" for="due_delay_option" translate>Set Duration</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 mt-3" *ngIf="followDueOption === 'date'; else followTimeDelay">
+                  <app-business-date-time-picker
+                    [selectedDay]="getSelectedDate()"
+                    [selectedTime]="due_time"
+                    [time_zone]="selectedTimezone"
+                    [mode]="'popup'"
+                    (onSelectDateTime)="onSelectDateTime($event)"
+                    [isCreateMode] = "false"
+                  >
+                  </app-business-date-time-picker>
+                </div>
+                <ng-template #followTimeDelay>
+                  <div class="col-12 mt-3">
+                    <div class="form-group has-feedback">
+                      <div>
+                        <label class="theme-label" translate>TIME UNTIL TASK IS DUE</label>
+                        <div class="my-2">
+                          <div class="v-center">
+                            <div class="custom-radio-container" (click)="changeTimeUntilType('hour')">
+                              <input class="custom-radio" type="radio" id="hour-time-until" name="at-least-hour-until" [checked]="timeUntilType == 'hour'">
+                              <label class="f-5 font-weight-bold"></label>
+                            </div>
+                            <div class="f-3 ml-2" translate>Hour</div>
+                          </div>
+                          <div class="v-center mt-2">
+                            <div class="custom-radio-container" (click)="changeTimeUntilType('day')">
+                              <input class="custom-radio" type="radio" id="day-time-until" name="at-least-day-until" [checked]="timeUntilType == 'day'">
+                              <label class="f-5 font-weight-bold"></label>
+                            </div>
+                            <div class="f-3 ml-2" translate>Day</div>
+                          </div>
+                        </div>
+                      </div>
+                      <input type="number" class="form-control theme-control" [(ngModel)]="due_duration" name="duration" #duration="ngModel"
+                             [required]="followDueOption === 'delay'" [disabled]="followDueOption !== 'delay'" />
+                      <span class="invalid-feedback"
+                            *ngIf="duration.errors && (duration.touched||duration.dirty||submitted)&&submitted"
+                            translate
+                      >
+                      Due time is required.
+                    </span>
+                    </div>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="type=='note'">
+            <div class="action-form">
+              <div class="form-group has-feedback mt-2">
+                <div class="v-center justify-content-between">
+                  <label class="theme-label" translate>NOTE CONTENT</label>
+                  <span class="error f-3 font-weight-bold d-block"
+                        *ngIf="!action.content && submitted" translate>Required</span>
+                </div>
+
+                <app-html-editor
+                  [(value)]="action.content"
+                  placeholder="Please type content for note."
+                  [noImage]="true"
+                  [style]="{height: '200px'}"
+                  [storeAudio]="true"
+                  #editor
+                >
+                </app-html-editor>
+
+                <div class="mt-3">
+                  <app-audio-note
+                    [url]="action.audio"
+                    (onRecorded)="insertAudioNote($event)"
+                    (onRemoved)="removeAudioNote()"
+                    (onRecordStart)="startRecordingAudioNote()"
+                    (onRecordStop)="stopRecordingAudioNote()"
+                    #recorder>
+                  </app-audio-note>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="type==='send_text_video' ||
+          type === 'send_text_pdf' ||
+          type === 'send_text_image' ||
+          type === 'send_text_material' ||
+          type === 'text'"
+          >
+            <div class="action-form">
+              <div class="form-group has-feedback"
+                   [class.has-error]="content.errors && (content.touched || content.dirty|| submitted) && submitted">
+                <label class="theme-label mt-3" translate>CONTENT</label>
+                <textarea
+                  [(ngModel)]="action.content"
+                  class="form-control content-textarea"
+                  placeholder="Please type in sms content."
+                  name="content"
+                  #content="ngModel"
+                  rows="10"
+                  required
+                  #smsContentField
+                  (click)="getSmsContentCursor(smsContentField)"
+                  (keyup)="getSmsContentCursor(smsContentField)"
+                  [mention]="templateTokens"
+                  (itemSelected)="onTextContentTokenSelected($event)"
+                  [mentionConfig]="mentionConfig"
+                >
+                </textarea>
+                <span class="error text-danger"
+                      *ngIf="content.errors && (content.dirty || content.touched || submitted) && submitted"
+                      translate
+                >
+                Content is required.
+              </span>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container
+            *ngIf="type === 'email' ||
+          type === 'send_email_video' ||
+          type === 'send_email_pdf' ||
+          type === 'send_email_image' ||
+          type === 'send_email_material'"
+          >
+            <div class="action-form">
+              <div class="form-group has-feedback"
+                   [class.has-error]="subject.errors && (subject.touched || subject.dirty || submitted) && submitted">
+                <div class="v-center justify-content-between">
+                  <label class="theme-label" translate>SUBJECT</label>
+                </div>
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="action.subject"
+                  placeholder="Email Subject"
+                  name="subject"
+                  #subject="ngModel"
+                  required
+                  #subjectField
+                  (click)="getSubjectCursorPost(subjectField)"
+                  (keyup)="getSubjectCursorPost(subjectField)"
+                  [mention]="templateTokens"
+                  (itemSelected)="onEmailSubjectTokenSelected($event)"
+                  [mentionConfig]="mentionConfig"
+                />
+                <span class="invalid-feedback"
+                      *ngIf="subject.errors && (subject.dirty || subject.touched || submitted) && submitted"
+                      translate
+                >
+                Subject is required.
+              </span>
+              </div>
+              <div class="form-group has-feedback" [class.has-error]="!action.content && submitted">
+                <ng-container *ngIf="type == 'send_email_video' || type == 'send_text_video'
+                                 || type == 'send_email_pdf' || type == 'send_text_pdf'
+                                 || type == 'send_email_image' || type == 'send_text_image'; else noContentMaterial">
+                  <div class="v-center label-group">
+                    <label class="theme-label" translate>CONTENT</label>
+                  </div>
+                </ng-container>
+                <ng-template #noContentMaterial>
+                  <label class="theme-label" translate>CONTENT</label>
+                </ng-template>
+                <app-html-editor
+                  [(value)]="action.content"
+                  [(attach)]="attachments"
+                  placeholder="Enter email content..."
+                  [hasAttachment]="true"
+                  [hasTemplates]="false"
+                  [hasCalendly]="isCalendly"
+                  [hasRecord]="true"
+                  [limit]="attachmentLimit"
+                  (onFocus)="setContentFocus()"
+                  [style]="{height: '230px'}"
+                  (attachmentChange)="onAttachmentChange($event)"
+                  (onRecordCompleted)="onRecordCompleted($event)"
+                  [mention]="tokens"
+                  [mentionEnabled]="true"
+                  [storeAudio]="true"
+                  #editor
+                >
+                </app-html-editor>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="type === 'deal'">
+            <div class="form-group">
+              <div class="action-form">
+                <div class="form-group has-feedback mt-2"
+                     [class.has-error]="dealName.errors && (dealName.touched || dealName.dirty|| submitted) && submitted">
+                  <div class="v-center justify-content-between">
+                    <label class="theme-label" translate>Deal Name</label>
+                    <div ngbDropdown class="insert-token bottom-right mr-1">
+                      <div class="v-center no-carot" ngbDropdownToggle>
+                        <span class="f-1 font-weight-bold mr-1" translate>Merge field</span>
+                        <i class="d-block i-icon i-triangle-down bgc-dark"></i>
+                        <i class="d-block i-icon i-triangle-up bgc-dark"></i>
+                      </div>
+                      <div ngbDropdownMenu class="light py-1">
+                        <ng-container *ngFor="let token of templateTokens">
+                          <div class="f-2 py-1 px-2 c-pointer menu-item dropdown-item" (click)="insertDealNameValue(token.name, dealName)" translate>
+                            {{ token.name }}
+                          </div>
+                        </ng-container>
+                      </div>
+                    </div>
+                  </div>
+                  <input
+                    type="text"
+                    class="form-control theme-control"
+                    [(ngModel)]="action['deal_name']"
+                    name="dealName"
+                    #dealName="ngModel"
+                    autocomplete="off"
+                    #dealNameField
+                    (click)="getDealNameCursorPost(dealNameField)"
+                    (keyup)="getDealNameCursorPost(dealNameField)"
+                    required
+                  />
+                  <span class="invalid-feedback"
+                        *ngIf="dealName.errors && (dealName.dirty || dealName.touched || submitted) && submitted">Deal Name is required.</span>
+                </div>
+                <div class="form-group mt-4">
+                  <app-select-stage
+                    [stage]="action['deal_stage']"
+                    (onChange)="onChangeStage($event)"
+                    [viewMode]="'row'" ></app-select-stage>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="type === 'move_deal'">
+            <div class="theme-radios mt-3">
+              <div class="theme-radio">
+                <input type="radio" class="custom-control-input" id="deal_stage_next_option" name="deal_stage_option"
+                       [(ngModel)]="moveDealOption" #deal_stage_option="ngModel" value="next">
+                <label class="custom-theme-label" for="deal_stage_next_option" translate>Next Stage</label>
+              </div>
+              <div class="theme-radio">
+                <input type="radio" class="custom-control-input" id="deal_stage_other_option" name="deal_stage_option"
+                       [(ngModel)]="moveDealOption" #deal_stage_option="ngModel" value="other">
+                <label class="custom-theme-label" for="deal_stage_other_option" translate>Other Stage</label>
+              </div>
+            </div>
+            <div class="form-group mt-4">
+              <div class="action-form">
+                <div class="form-group" *ngIf="moveDealOption == 'other'">
+                  <app-select-stage
+                    [stage]="action['deal_stage']"
+                    (onChange)="onChangeStage($event)"
+                    [viewMode]="'row'" ></app-select-stage>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="type === 'automation'">
+            <div class="form-group">
+              <label translate>Select Automation</label>
+              <app-input-automation
+                (automationChange)="selectAutomation($event)"
+                [type]="automation_type"
+                [automation]="selectedAutomation"
+                [excludeId]="automationId"
+              ></app-input-automation>
+              <span class="invalid-feedback d-block"
+                    *ngIf="!selectedAutomation" translate>Automation is required.</span>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="type === 'contact_condition'">
+            <div class="form-group mt-2">
+              <label>Select Condition Field</label>
+              <div class="form-group mb-0">
+                <select class="form-control theme-control"
+                        [(ngModel)]="action['condition_field']"
+                        name="contactCondition"
+                        #contactCondition="ngModel"
+                        (ngModelChange)="setContactConditionType($event)"
+                >
+                  <option *ngFor="let field of contactProperties" value="{{field.id}}">
+                    <div class="f-3 c-black" [class.selected-option-text]="field.id == action['contact_condition']">{{field.value}}</div>
+                  </option>
+                  <option *ngFor="let field of lead_fields" value="{{field.name}}">
+                    <div class="f-3 c-black" [class.selected-option-text]="field.name == action['contact_condition']">{{field.name}}</div>
+                  </option>
+                </select>
+                <span class="error" *ngIf="!action['condition_field'] && submitted" translate>
+                  Required!
+              </span>
+              </div>
+              <div class="condition-values mt-3" *ngIf="contactConditions.length > 0">
+                <label>Conditions</label>
+                <div *ngFor="let condition of counter(contactConditions.length); let i = index">
+                  <div class="d-flex align-items-start mb-3" *ngIf="mapConditions[i] !== 'remove'">
+                    <div class="input-wrapper flex-grow-1">
+                      <ng-container *ngIf="action['condition_field'] == 'first_name'">
+                        <input type="text" class="form-control"
+                              id="first_name_{{i}}"
+                              required
+                              name="first_name_{{i}}"
+                              #first_name="ngModel"
+                              [(ngModel)]="contactConditions[i].answer"
+                              (input)="checkDuplicateValues(i)"
+                        />
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'last_name'">
+                        <input type="text" class="form-control"
+                              required
+                              name="last_name_{{i}}"
+                              #last_name="ngModel"
+                              [(ngModel)]="contactConditions[i].answer"
+                              (input)="checkDuplicateValues(i)"
+                        />
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'brokerage'">
+                        <input type="text" class="form-control"
+                              required
+                              name="brokerage_{{i}}"
+                              #last_name="ngModel"
+                              [(ngModel)]="contactConditions[i].answer"
+                              (input)="checkDuplicateValues(i)"
+                        />
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'website'">
+                        <input type="text" class="form-control" required name="website-{{i}}"
+                              [(ngModel)]="contactConditions[i].answer"
+                              (input)="checkDuplicateValues(i)"
+                        />
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'zip'">
+                        <input type="text" class="form-control" required name="zipcode-{{i}}"
+                              [(ngModel)]="contactConditions[i].answer"
+                              (input)="checkDuplicateValues(i)"
+                        />
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'source'">
+                        <input type="text" class="form-control" required name="source-{{i}}"
+                              [(ngModel)]="contactConditions[i].answer"
+                              (input)="checkDuplicateValues(i)"
+                        />
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'label'">
+                        <app-label-select
+                          type="form"
+                          defaultLabel="None"
+                          [value]="contactConditions[i].answer"
+                          (valueChange)="changeLabelSelect($event, i)"
+                        ></app-label-select>
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'email'">
+                        <input type="email" class="form-control" name="email-{{i}}"
+                              [(ngModel)]="contactConditions[i].answer"
+                              pattern="^[a-zA-Z0-9'._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,4}$"
+                              autocomplete="off"
+                              required
+                              (input)="checkDuplicateValues(i)"
+                        />
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'primary_email'">
+                        <input type="email" class="form-control" name="primary_email-{{i}}"
+                              [(ngModel)]="contactConditions[i].answer"
+                              pattern="^[a-zA-Z0-9'._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,4}$"
+                              autocomplete="off"
+                              required
+                              (input)="checkDuplicateValues(i)"
+                        />
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'secondary_email'">
+                        <input type="email" class="form-control" name="secondary_email-{{i}}"
+                              [(ngModel)]="contactConditions[i].answer"
+                              pattern="^[a-zA-Z0-9'._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,4}$"
+                              autocomplete="off"
+                              required
+                              (input)="checkDuplicateValues(i)"
+                        />
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'cell_phone'">
+                        <app-phone-input
+                          [cssClass]="phoneControl && condition && !phoneControl.valid ? 'form-control phone-form c-red font-weight-bold' : 'form-control phone-form'"
+                          [onlyCountries]="countries" [selectedCountryISO]="CountryISO.UnitedStates" [(ngModel)]="contactConditions[i].answer"
+                          name="cell_phone-{{i}}" #phoneControl>
+                        </app-phone-input>
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'secondary_phone'">
+                        <app-phone-input
+                          [cssClass]="phoneControl && condition && !phoneControl.valid ? 'form-control phone-form c-red font-weight-bold' : 'form-control phone-form'"
+                          [onlyCountries]="countries" [selectedCountryISO]="CountryISO.UnitedStates" [(ngModel)]="contactConditions[i].answer"
+                          name="secondary_phone-{{i}}" #phoneControl>
+                        </app-phone-input>
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'country'">
+                        <select class="form-control" [(ngModel)]="contactConditions[i].answer" required name="country-{{i}}" (change)="checkDuplicateValues(i)">
+                          <option value="" translate>None</option>
+                          <option *ngFor="let country of COUNTRIES" value="{{country.code}}">{{country.name}}</option>
+                        </select>
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'state'">
+                        <select id="state-cc" class="form-control" [(ngModel)]="contactConditions[i].answer" (change)="checkDuplicateValues(i)"
+                                name="state-{{i}}" required
+                        >
+                          <optgroup *ngFor="let country of COUNTRY_REGIONS | keyvalue : orderOriginal" label="{{country.key}}">
+                            <option *ngFor="let region of country.value" value="{{region}}">{{region}}</option>
+                          </optgroup>
+                        </select>
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'city'">
+                        <input type="text" placeholder="" id="city_cc" class="form-control" [(ngModel)]="contactConditions[i].answer"
+                              name="city-{{i}}"
+                              required
+                              (input)="checkDuplicateValues(i)"
+                              ngx-google-places-autocomplete #cityplacesRef="ngx-places"
+                              [options]="{types: ['(cities)'], componentRestrictions: { country: LOCATION_COUNTRIES }}"
+                              (onAddressChange)="conditionHandleCityChange($event, i)"
+                        />
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'tags'">
+                        <select class="form-control" [(ngModel)]="contactConditions[i].answer" required name="tag-{{i}}" (change)="checkDuplicateValues(i)">
+                          <option *ngFor="let tag of filteredTags" value="{{tag._id}}">{{tag._id}}</option>
+                        </select>
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'note'">
+                        <app-html-editor
+                          [(value)]="contactConditions[i].answer"
+                          required
+                          [hasToken]="false"
+                          [hasTemplates]="false"
+                          [noImage]="true"
+                          [style]="{height: '120px'}"
+                          [storeAudio]="true"
+                          #editor
+                        >
+                        </app-html-editor>
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'automation'">
+                        <app-input-automation (automationChange)="selectContactConditionAutomation($event, i)" required></app-input-automation>
+                      </ng-container>
+                      <ng-container *ngIf="isCustomContactField(action['condition_field'])">
+                        <ng-container *ngIf="getCustomContactField(action['condition_field']).type == 'text'">
+                          <input type="text" class="form-control"
+                                required name="condition-field-text-{{i}}"
+                                [(ngModel)]="contactConditions[i].answer"
+                                (input)="checkDuplicateValues(i)"
+                          />
+                        </ng-container>
+                        <ng-container *ngIf="getCustomContactField(action['condition_field']).type == 'email'">
+                          <input type="email" class="form-control" name="condition-field-email-{{i}}"
+                                [(ngModel)]="contactConditions[i].answer"
+                                pattern="^[a-zA-Z0-9'._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,4}$"
+                                autocomplete="off"
+                                required
+                                (input)="checkDuplicateValues(i)"
+                          />
+                        </ng-container>
+                        <ng-container *ngIf="getCustomContactField(action['condition_field']).type == 'phone'">
+                          <app-phone-input
+                            class="w-100"
+                            [cssClass]="phoneControl && condition && !phoneControl.valid ? 'form-control phone-form c-red font-weight-bold' : 'form-control phone-form'"
+                            [onlyCountries]="countries" [selectedCountryISO]="CountryISO.UnitedStates" [(ngModel)]="contactConditions[i].answer"
+                            name="condition-field-phone-{{i}}" #phoneControl required>
+                          </app-phone-input>
+                        </ng-container>
+                        <ng-container *ngIf="getCustomContactField(action['condition_field']).type == 'date'">
+                          <app-date-input class="w-100" type="prepend" [(value)]="contactConditions[i].answer" [placeholder]="" [required]="true"></app-date-input>
+                        </ng-container>
+                        <ng-container *ngIf="getCustomContactField(action['condition_field']).type == 'dropdown'">
+                          <select class="form-control" [(ngModel)]="contactConditions[i]" name="{{'condition-field-dropdown-' + i}}" #option="ngModel" required>
+                            <option value="" translate>None</option>
+                            <option *ngFor="let option of getCustomContactField(action['condition_field']).options" value="{{option.value}}">{{option.value}}</option>
+                          </select>
+                        </ng-container>
+                        <ng-container *ngIf="getCustomContactField(action['condition_field']).type == 'link'">
+                          <input type="text" class="form-control"
+                                required name="condition-field-link-{{i}}"
+                                [(ngModel)]="contactConditions[i].answer"
+                                (input)="checkDuplicateValues(i)"
+                          />
+                        </ng-container>
+                      </ng-container>
+                      <ng-container *ngIf="action['condition_field'] == 'email' || action['condition_field'] == 'secondary_email'; else otherConditionField">
+                        <span class="error" *ngIf="isEmailError(contactConditions[i].answer)" translate>
+                          {{emailError(contactConditions[i])}}
+                        </span>
+                        </ng-container>
+                        <ng-template #otherConditionField>
+                        <span class="edit-error" *ngIf="duplicateValues[i]" translate>
+                            condition values cannot be the same.
+                        </span>
+                        <span class="error" *ngIf="!contactConditions[i].answer && submitted" translate>
+                            Required!
+                        </span>
+                        </ng-template>
+                    </div>
+                    <div class="remove-action p-2 c-pointer" (click)="removeContactCondition(i)" *ngIf="availableActions() > 1 && mapConditions[i] !== 'remove'">
+                      <i class="i-icon i-trash d-block bgc-red mx-auto"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="plus p-2 rounded border-primary border c-pointer mt-2" *ngIf="availableActions() < 10" (click)="addContactCondition()">
+                  <i class="i-icon i-plus d-block bgc-blue mx-auto sm"></i>
+                </div>
+                <div class="edit-error" *ngIf="availableActions() >= 10">
+                  <p translate>Contact conditions cannot exceed 10.</p>
+                </div>
+                <div class="error mt-2" *ngIf="isDuplicateContactCondition()">
+                  Condition is duplicated. Please input a another condition.
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="type === 'update_contact'">
+            <label class="theme-label mt-3" translate>UPDATE TYPE</label>
+            <div class="theme-radios">
+              <div class="theme-radio">
+                <input type="radio" class="custom-control-input" id="contact_label_update_option" name="contact_update_option"
+                       [(ngModel)]="contactUpdateOption" #contact_update_option="ngModel" value="update_label" (ngModelChange)="removeError()">
+                <label class="custom-theme-label" for="contact_label_update_option" translate>Update label</label>
+              </div>
+              <div class="theme-radio">
+                <input type="radio" class="custom-control-input" id="contact_tag_push_option" name="contact_update_option"
+                       [(ngModel)]="contactUpdateOption" #contact_update_option="ngModel" value="push_tag" (ngModelChange)="removeError()">
+                <label class="custom-theme-label" for="contact_tag_push_option" translate>Insert tags</label>
+              </div>
+              <div class="theme-radio">
+                <input
+                  type="radio"
+                  class="custom-control-input"
+                  id="contact_tag_pull_option"
+                  name="contact_update_option"
+                  [(ngModel)]="contactUpdateOption"
+                  #contact_update_option="ngModel" value="pull_tag"
+                  (ngModelChange)="removeError()">
+                <label class="custom-theme-label" for="contact_tag_pull_option" translate>Remove tags</label>
+              </div>
+            </div>
+            <ng-container [ngSwitch]="contactUpdateOption">
+              <div *ngSwitchCase="'update_label'">
+                <label class="theme-label mt-3">
+                  <span translate>UPDATE DETAILS</span>
+                  <span class="description" translate>(NEW STATUS)</span>
+                </label>
+                <app-label-select
+                  type="form"
+                  [value]="commandLabel"
+                  (valueChange)="changeCommandLabel($event)"
+                ></app-label-select>
+              </div>
+              <div *ngSwitchCase="'push_tag'">
+                <label class="theme-label mt-3">
+                  <span translate>UPDATE DETAILS</span>
+                  <span class="description" translate>(TAGS TO INSERT)</span>
+                </label>
+                <div class="tag-input-wrapper br-default">
+                  <app-input-tag
+                    [selectedTags]="pushCommandTags"
+                    [onlyFromSearch]="false"
+                    (onSelect)="changeCommandPushTags($event)"
+                  ></app-input-tag>
+                </div>
+              </div>
+              <div *ngSwitchCase="'pull_tag'">
+                <label class="theme-label mt-3">
+                  <span translate>UPDATE DETAILS</span>
+                  <span class="description" translate>(TAGS TO REMOVE)</span>
+                </label>
+                <div class="tag-input-wrapper br-default">
+                  <app-input-tag
+                    [selectedTags]="commandTags"
+                    [onlyFromSearch]="true"
+                    [onlySelect]="true"
+                    (onSelect)="changeCommandPullTags($event)"
+                  ></app-input-tag>
+                </div>
+              </div>
+            </ng-container>
+            <div class="mt-3">
+              <div *ngIf="commandLabel" class="d-flex mb-3">
+                <div><label class="f-6 font-weight-bold mr-2" translate>Update Status: </label></div>
+                <div class="d-flex chip p-1 rounded-pill mr-1 bgc-pale px-2">
+                  {{commandName}}
+                  <div class="icon-close ml-auto mt-1" (click)="remove()"></div>
+                </div>
+              </div>
+              <div class="mb-3" *ngIf="pushCommandTags && pushCommandTags.length">
+                <div><label class="f-6 font-weight-bold mr-2" translate>Insert Tags: </label></div>
+                <div class='d-flex' style="flex-direction:row;flex-wrap:wrap">
+                  <div class="d-flex chip p-1 rounded-pill mr-1 bgc-pale" *ngFor="let item of pushCommandTags">
+                    <div class="info c-dark font-weight-bold ml-1">{{item}}</div>
+                    <div class="icon-close ml-auto mt-1" (click)="removePushItem(item)"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="mb-3" *ngIf="pullCommandTags && pullCommandTags.length">
+                <div><label class="f-6 font-weight-bold mr-2" translate>Remove Tags: </label></div>
+                <div class='d-flex' style="flex-direction:row;flex-wrap:wrap">
+                  <div class="d-flex chip p-1 rounded-pill mr-1 bgc-pale" *ngFor="let item of pullCommandTags">
+                    <div class="info c-dark font-weight-bold ml-1">{{item}}</div>
+                    <div class="icon-close ml-auto mt-1" (click)="removePullItem(item)"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="text-danger error" *ngIf="error">{{error}}</div>
+          </ng-container>
+          <ng-container *ngIf="type === 'update_follow_up'">
+            <label class="theme-label mt-3">
+              <span translate>SELECT THE TASK</span>
+              <span class="description" translate>(CREATED IN PREVIOUS ACTIONS)</span>
+            </label>
+            <mat-form-field appearance="fill" class="mat-custom-select">
+              <mat-select [(value)]="selectedFollow" (selectionChange)="selectFollow($event)">
+                <mat-select-trigger>
+                  <div class="template-item selected" *ngIf="selectedFollow">
+                    <div class="name">{{selectedFollow.content}}</div>
+                  </div>
+                </mat-select-trigger>
+                <mat-option [value]="follow" *ngFor="let follow of data.follows" class="follow-item">
+                  <div class="content">{{follow.content}}</div>
+                  <div class="time">
+                    <span class="label" translate>{{follow.due_time ? 'REMINDER TIME' : 'DURATION FROM CREATED TO REMINDER' }}</span>
+                    <span class="value" *ngIf="follow.due_time; else durationValueTemplate">{{ follow.due_time | datetimeFormat  }}</span>
+                    <ng-template #durationValueTemplate>
+                  <span class="value">
+                    {{getFollowDuration(follow)}}
+                  </span>
+                    </ng-template>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <div class="c-red f-3 error" *ngIf="!selectedFollow && submitted" translate>Task is required!</div>
+            <ng-container *ngIf="selectedFollow">
+              <ng-container *ngIf="type === 'update_follow_up'">
+                <div class="col-12 form-group">
+                  <label translate>task type</label>
+                  <div>
+                    <app-task-type [(value)]="task.type"></app-task-type>
+                  </div>
+                </div>
+              </ng-container>
+              <div class="theme-radios">
+                <div class="theme-radio">
+                  <input type="radio" class="custom-control-input" id="follow_up_update" name="follow_up_update_option"
+                         [(ngModel)]="followUpdateOption" #follow_up_update_option="ngModel" value="update_follow_up" (ngModelChange)="removeError()">
+                  <label class="custom-theme-label" for="follow_up_update" translate>Edit task</label>
+                </div>
+                <div class="theme-radio">
+                  <input type="radio" class="custom-control-input" id="follow_up_complete" name="follow_up_update_option"
+                         [(ngModel)]="followUpdateOption" #follow_up_update_option="ngModel" value="complete_follow_up" (ngModelChange)="removeError()">
+                  <label class="custom-theme-label" for="follow_up_complete" translate>Complete task</label>
+                </div>
+              </div>
+
+              <ng-container [ngSwitch]="followUpdateOption">
+                <div *ngSwitchCase="'update_follow_up'">
+                  <div class="action-form">
+                    <div class="form-group has-feedback mt-2"
+                         [class.has-error]="followUpdateContent.errors && (followUpdateContent.touched || followUpdateContent.dirty|| submitted) && submitted">
+                      <label class="theme-label">
+                        <span translate>TASK SUBJECT</span>
+                        <span class="description" translate>(REMINDER TO YOURSELF)</span>
+                      </label>
+                      <input type="text" class="form-control theme-control" placeholder="Type new content for this task" [(ngModel)]="action.content"
+                             name="followUpdateContent" #followUpdateContent="ngModel" autocomplete="off" required />
+                      <span class="invalid-feedback"
+                            *ngIf="followUpdateContent.errors && (followUpdateContent.dirty || followUpdateContent.touched || submitted) && submitted"
+                            translate
+                      >
+                      Follow up content is required.
+                    </span>
+                    </div>
+                    <div
+                      class="form-group has-feedback"
+                    >
+                      <label class="theme-label"
+                            translate
+                      >TASK DESCRIPTION
+                      </label>
+                      <textarea
+                        [(ngModel)]="action.description"
+                        class="form-control"
+                        [placeholder]="'Type of task description' | translate"
+                        name="followUpDescription"
+                        #followUpdateDescription="ngModel"
+                        rows="6"
+                      ></textarea>
+                    </div>
+                    <label class="theme-label" translate>TASK TIME</label>
+                    <div class="row">
+                      <div class="col-12">
+                        <select class="form-control theme-control" [(ngModel)]="updateFollowDueOption" name="updateFollowUpDueOption" #updateFollowUpDueOption="ngModel" required>
+                          <option value="no_update" translate>No Update</option>
+                          <option value="update_due_date" translate>Update Due Date</option>
+                          <option value="update_due_duration" translate>Update Due Duration</option>
+                        </select>
+                      </div>
+                      <div class="col-12 mt-3" *ngIf="updateFollowDueOption === 'update_due_date'">
+                        <app-business-date-time-picker
+                          [selectedDay]="getSelectedDate()"
+                          [selectedTime]="due_time"
+                          [time_zone]="selectedTimezone"
+                          [mode]="'popup'"
+                          (onSelectDateTime)="onSelectDateTime($event)"
+                          [isCreateMode] = "false"
+                        >
+                        </app-business-date-time-picker>
+                      </div>
+                      <div class="col-12 mt-3" *ngIf="updateFollowDueOption === 'update_due_duration'">
+                        <div class="form-group has-feedback">
+                          <div>
+                            <label class="theme-label" translate>TIME UNTIL TASK IS DUE</label>
+                            <div class="v-center mb-2">
+                              <div class="v-center">
+                                <div class="custom-radio-container" (click)="changeTimeUntilType('hour')">
+                                  <input class="custom-radio" type="radio" id="hour-update-time-until" name="at-least" [checked]="timeUntilType == 'hour'">
+                                  <label class="f-5 font-weight-bold"></label>
+                                </div>
+                                <div class="f-3 ml-2" translate>Hour</div>
+                              </div>
+                              <div class="v-center mt-2">
+                                <div class="custom-radio-container" (click)="changeTimeUntilType('day')">
+                                  <input class="custom-radio" type="radio" id="day-update-time-until" name="at-least" [checked]="timeUntilType == 'day'">
+                                  <label class="f-5 font-weight-bold"></label>
+                                </div>
+                                <div class="f-3 ml-2" translate>Day</div>
+                              </div>
+                            </div>
+                          </div>
+                          <input type="number" class="form-control theme-control" [(ngModel)]="update_due_duration" name="duration" #duration="ngModel"
+                                 [required]="followDueOption === 'delay'" min="0" />
+                          <span class="invalid-feedback"
+                                *ngIf="duration.errors && (duration.touched||duration.dirty||submitted)&&submitted"
+                                translate
+                          >
+                          Due time is required.
+                        </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div *ngSwitchCase="'complete_follow_up'">
+                  <div class="action-guide" translate>Complete the selected task.</div>
+                </div>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+          <ng-container *ngIf="type == 'appointment'">
+            <div class="form-group mt-2">
+              <label class="calendar-label mb-0" translate>Choose calendar</label>
+              <app-select-calendar
+                [(calendar)]="action.appointment.calendar"
+              ></app-select-calendar>
+              <span
+                class="invalid-error f-3 c-red"
+                *ngIf="submitted && !action.appointment.calendar"
+                translate
+              >
+            Please select calendar
+          </span>
+            </div>
+            <div class="form-group">
+              <label class="calendar-label mb-0" translate>title</label>
+              <input
+                class="form-control"
+                type="text"
+                placeholder="Add appointment title"
+                name="title"
+                #title="ngModel"
+                [(ngModel)]="action.appointment.title"
+                required
+              />
+              <span
+                class="invalid-error f-3 c-red"
+                *ngIf="action.appointment.title == '' && submitted"
+                translate
+              >
+              Please input event title
+            </span>
+            </div>
+            <div class="row mt-4">
+              <div class="col-12">
+                <div class="theme-radios">
+                  <div class="theme-radio">
+                    <input type="radio" class="custom-control-input" id="appointment_due_date_option" name="appointment_due_option"
+                           [(ngModel)]="appointmentDueOption" #appointment_due_option="ngModel" value="date">
+                    <label class="custom-theme-label" for="appointment_due_date_option" translate>Set Date</label>
+                  </div>
+                  <div class="theme-radio">
+                    <input type="radio" class="custom-control-input" id="appointment_due_delay_option" name="appointment_delay_option"
+                           [(ngModel)]="appointmentDueOption" #appointment_delay_option="ngModel" value="delay">
+                    <label class="custom-theme-label" for="appointment_due_delay_option" translate>Set Duration</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 mt-2" *ngIf="appointmentDueOption === 'date'; else appointmentTimeDelay">
+                <app-business-date-time-picker
+                  [selectedDay]="getSelectedDate()"
+                  [selectedTime]="due_time"
+                  [time_zone]="selectedTimezone"
+                  [mode]="'popup'"
+                  (onSelectDateTime)="onSelectDateTime($event)"
+                  [isCreateMode] = "false"
+                >
+                </app-business-date-time-picker>
+              </div>
+              <ng-template #appointmentTimeDelay>
+                <div class="col-12 mt-3">
+                  <div class="form-group has-feedback">
+                    <div>
+                      <label class="theme-label" translate>TIME UNTIL TASK IS DUE</label>
+                      <div class="v-center mb-2">
+                        <div class="v-center">
+                          <div class="custom-radio-container" (click)="changeTimeUntilType('hour')">
+                            <input class="custom-radio" type="radio" id="hour-time-until-appointment" name="at-least" [checked]="timeUntilType == 'hour'">
+                            <label class="f-5 font-weight-bold"></label>
+                          </div>
+                          <div class="f-3 ml-2" translate>Hour</div>
+                        </div>
+                        <div class="v-center mt-2">
+                          <div class="custom-radio-container" (click)="changeTimeUntilType('day')">
+                            <input class="custom-radio" type="radio" id="day-time-until-appointment" name="at-least" [checked]="timeUntilType == 'day'">
+                            <label class="f-5 font-weight-bold"></label>
+                          </div>
+                          <div class="f-3 ml-2" translate>Day</div>
+                        </div>
+                      </div>
+                    </div>
+                    <input type="number" class="form-control theme-control" [(ngModel)]="due_duration" name="duration" #duration="ngModel"
+                           [required]="appointmentDueOption === 'delay'" [disabled]="appointmentDueOption !== 'delay'"
+                           min="1" />
+                    <span class="invalid-feedback"
+                          *ngIf="duration.errors && (duration.touched||duration.dirty||submitted)&&submitted"
+                          translate
+                    >
+                    Due time is required.
+                  </span>
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <div class="form-group">
+                  <label class="calendar-label d-block mb-0" translate>duration</label>
+                  <select
+                    class="form-control"
+                    [(ngModel)]="action.appointment.duration"
+                    name="appointment_duration"
+                    #appointment_duration="ngModel"
+                  >
+                    <option
+                      *ngFor="let calendar_duration of calendar_durations"
+                      value="{{ calendar_duration.value }}"
+                    >
+                      {{ calendar_duration.text }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <div class="form-group">
+                  <div class="v-center">
+                    <label class="calendar-label mb-0" translate>ASSIGN GUESTS</label>
+                  </div>
+                  <app-input-contacts
+                    [selectedContacts]="action.appointment.contacts"
+                    *ngIf="automation_type != 'deal'"
+                  >
+                  </app-input-contacts>
+                  <app-input-contact-deal
+                    [selectedContacts]="action.appointment.contacts"
+                    [onlyFromSearch]="true"
+                    [onlySubscriber]="true"
+                    class="w-100"
+                    *ngIf="automation_type == 'deal'"
+                  ></app-input-contact-deal>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 col-sm-12 form-group">
+                <label class="calendar-label d-block mb-0" translate>location</label>
+                <div class="form-group mb-0">
+                  <input
+                    class="form-control"
+                    placeholder="Add location"
+                    [(ngModel)]="action.appointment.location"
+                    name="address"
+                    #address="ngModel"
+                    ngx-google-places-autocomplete
+                    #addressplacesRef="ngx-places"
+                    [options]="{
+                    types: []
+                  }"
+                    (onAddressChange)="handleAddressChange($event)"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 form-group mb-3">
+                <label class="calendar-label d-block mb-0" translate>DESCRIPTION</label>
+                <app-html-editor
+                  [(value)]="action.appointment.description"
+                  placeholder="Add description"
+                  [noImage]="true"
+                  [style]="{height: '90px'}"
+                  [storeAudio]="true"
+                  #emailEditor
+                >
+                </app-html-editor>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="type == 'update_appointment'">
+            <div class="form-group">
+              <label class="calendar-label mb-0" translate>title</label>
+              <input
+                class="form-control"
+                type="text"
+                placeholder="Add appointment title"
+                name="title"
+                #title="ngModel"
+                [(ngModel)]="action.appointment.title"
+                required
+              />
+              <span
+                class="invalid-error f-3 c-red"
+                *ngIf="action.appointment.title == '' && submitted"
+                translate
+              >
+            Please input event title
+          </span>
+            </div>
+            <div class="row mt-4">
+              <div class="col-12">
+                <div class="theme-radios">
+                  <div class="theme-radio">
+                    <input type="radio" class="custom-control-input" id="update_appointment_due_date_option" name="update_appointment_due_option"
+                           [(ngModel)]="appointmentDueOption" #update_appointment_due_option="ngModel" value="date">
+                    <label class="custom-theme-label" for="update_appointment_due_date_option" translate>Set Date</label>
+                  </div>
+                  <div class="theme-radio">
+                    <input type="radio" class="custom-control-input" id="update_appointment_due_delay_option" name="update_appointment_delay_option"
+                           [(ngModel)]="appointmentDueOption" #update_appointment_delay_option="ngModel" value="delay">
+                    <label class="custom-theme-label" for="update_appointment_due_delay_option" translate>Set Duration</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 mt-2" *ngIf="appointmentDueOption === 'date'; else appointmentTimeDelay">
+                <app-business-date-time-picker
+                  [selectedDay]="getSelectedDate()"
+                  [selectedTime]="due_time"
+                  [time_zone]="selectedTimezone"
+                  [mode]="'popup'"
+                  (onSelectDateTime)="onSelectDateTime($event)"
+                  [isCreateMode] = "false"
+                >
+                </app-business-date-time-picker>
+              </div>
+              <ng-template #appointmentTimeDelay>
+                <div class="col-12 mt-3">
+                  <div class="form-group has-feedback">
+                    <div>
+                      <label class="theme-label" translate>TIME UNTIL TASK IS DUE</label>
+                      <div class="v-center mb-2">
+                        <div class="v-center">
+                          <div class="custom-radio-container" (click)="changeTimeUntilType('hour')">
+                            <input class="custom-radio" type="radio" id="hour-update-time-until-appointment" name="at-least" [checked]="timeUntilType == 'hour'">
+                            <label class="f-5 font-weight-bold"></label>
+                          </div>
+                          <div class="f-3 ml-2" translate>Hour</div>
+                        </div>
+                        <div class="v-center mt-2">
+                          <div class="custom-radio-container" (click)="changeTimeUntilType('day')">
+                            <input class="custom-radio" type="radio" id="day-update-time-until-appointment" name="at-least" [checked]="timeUntilType == 'day'">
+                            <label class="f-5 font-weight-bold"></label>
+                          </div>
+                          <div class="f-3 ml-2" translate>Day</div>
+                        </div>
+                      </div>
+                    </div>
+                    <input type="number" class="form-control theme-control" [(ngModel)]="due_duration" name="duration" #duration="ngModel"
+                           [required]="appointmentDueOption === 'delay'" [disabled]="appointmentDueOption !== 'delay'"
+                           min="1" />
+                    <span class="invalid-feedback"
+                          *ngIf="duration.errors && (duration.touched||duration.dirty||submitted)&&submitted"
+                          translate>
+                    Due time is required.
+                  </span>
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <div class="form-group">
+                  <label class="calendar-label d-block mb-0" translate>duration</label>
+                  <select
+                    class="form-control"
+                    [(ngModel)]="action.appointment.duration"
+                    name="appointment_duration"
+                    #appointment_duration="ngModel"
+                  >
+                    <option
+                      *ngFor="let calendar_duration of calendar_durations"
+                      value="{{ calendar_duration.value }}"
+                    >
+                      {{ calendar_duration.text }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <div class="form-group">
+                  <div class="v-center">
+                    <label class="calendar-label mb-0" translate>ASSIGN GUESTS</label>
+                  </div>
+                  <app-input-contacts
+                    [selectedContacts]="action.appointment.contacts"
+                    *ngIf="automation_type != 'deal'"
+                  >
+                  </app-input-contacts>
+                  <app-input-contact-deal
+                    [selectedContacts]="action.appointment.contacts"
+                    [onlyFromSearch]="true"
+                    [onlySubscriber]="true"
+                    class="w-100"
+                    *ngIf="automation_type == 'deal'"
+                  ></app-input-contact-deal>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 col-sm-12 form-group">
+                <label class="calendar-label d-block mb-0" translate>location</label>
+                <div class="form-group mb-0">
+                  <input
+                    class="form-control"
+                    placeholder="Add location"
+                    [(ngModel)]="action.appointment.location"
+                    name="address"
+                    #address="ngModel"
+                    ngx-google-places-autocomplete
+                    #addressplacesRef="ngx-places"
+                    [options]="{
+                    types: []
+                  }"
+                    (onAddressChange)="handleAddressChange($event)"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 form-group mb-3">
+                <label class="calendar-label d-block mb-0" translate>DESCRIPTION</label>
+                <app-html-editor
+                  [(value)]="action.appointment.description"
+                  placeholder="Add description"
+                  [noImage]="true"
+                  [style]="{height: '90px'}"
+                  [storeAudio]="true"
+                  #emailEditor
+                >
+                </app-html-editor>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="type === 'move_contact'">
+            <div class="">
+              <div
+                class="pb-3"
+                [innerHTML]="
+                  'select_share_option_description'
+                  | translate: { option: selectedMoveOption.value.toLowerCase() }
+                "
+              ></div>
+              <mat-radio-group
+                class="d-flex justify-content-between px-4"
+                name="type"
+                [(ngModel)]="selectedMoveOptionId"
+                (ngModelChange)="selectMoveOptions()"
+              >
+                <mat-radio-button
+                  *ngFor="let option of moveOptions"
+                  class="f-4"
+                  [color]="'primary'"
+                  [value]="option.id"
+                >
+                  {{ option.value }}
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+            <div class="form-group">
+              <div class="mt-3">
+                <label *ngIf="internalTeamCount === 0 && communityCount > 0" translate>Select Community</label>
+                <label *ngIf="internalTeamCount > 0 && communityCount === 0" translate>Select Team</label>
+                <label *ngIf="internalTeamCount > 0 && communityCount > 0" translate>select Community / Team</label>
+                <app-select-team
+                  [selectedTeam]="selectedTeam"
+                  (onSelect)="selectTeam($event)"
+                  [internalOnly]='internalOnly'
+                  [target]="'shareContact'"
+                  #teamSelector
+                ></app-select-team>
+                <span
+                  class="error mt-1"
+                  *ngIf="actionForm.submitted && !selectedTeam"
+                  translate
+                >
+                  Please select a community.
+                </span>
+              </div>
+              <ng-container *ngIf="selectedTeam">
+                <div class="mt-3">
+                  <label translate>Select Member</label>
+                  <app-select-member
+                    [members]="members"
+                    (onSelect)="selectMember($event)"
+                    [role]="this.role"
+                    #memberSelector
+                  >
+                  </app-select-member>
+                  <span
+                    class="error mt-1"
+                    *ngIf="actionForm.submitted && !selectedMember"
+                    translate
+                  >
+                  Please select a member.
+                </span>
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="type === 'share_contact'">
+            <div class="form-group">
+              <div class="mt-3">
+                <label *ngIf="internalTeamCount === 0 && communityCount > 0" translate>Select Community</label>
+                <label *ngIf="internalTeamCount > 0 && communityCount === 0" translate>Select Team</label>
+                <label *ngIf="internalTeamCount > 0 && communityCount > 0" translate>select Community / Team</label>
+                <app-select-team
+                  [selectedTeam]="selectedTeam"
+                  (onSelect)="selectTeam($event)"
+                  [internalOnly]='internalOnly'
+                  [target]="'shareContact'"
+                  #teamSelector
+                ></app-select-team>
+                <span
+                  class="error mt-1"
+                  *ngIf="actionForm.submitted && !selectedTeam"
+                  translate
+                >
+                  Please select a community.
+                </span>
+              </div>
+              <ng-container *ngIf="selectedTeam">
+                <div class="mt-3">
+                  <label translate>Select Member</label>
+                  <app-select-member
+                    [members]="members"
+                    (onSelect)="selectMember($event)"
+                    [role]="this.role"
+                    #memberSelector
+                  >
+                  </app-select-member>
+                  <span
+                    class="error mt-1"
+                    *ngIf="actionForm.submitted && !selectedMember"
+                    translate
+                  >
+                  Please select a member.
+                </span>
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+          <ng-template #createNewSMSContent>
+            <app-template-create class="w-100" [value]="templateValue" [subject]="templateSubject" [type]="'text'" (onClose)="closeOverlay($event)">
+            </app-template-create>
+          </ng-template>
+          <ng-template #createNewEmailContent>
+            <app-template-create class="w-100" [value]="templateValue" [subject]="templateSubject" [type]="'email'" (onClose)="closeOverlay($event)">
+            </app-template-create>
+          </ng-template>
+        </div>
+        <div class="list-container px-3" [class.d-none]="selectedTab.id === 'action'">
+          <div class="v-center">
+            <div class="form-group search-form flex-grow-1 mr-2">
+              <div class="input-group-prepend">
+                <i class="i-icon i-search d-block bgc-dark"></i>
+              </div>
+              <input type="text" class="form-control" [placeholder]="'Search' | translate" name="assigned_search" #assigned_search="ngModel" [(ngModel)]="searchAssignedListStr" (ngModelChange)="changeAssignedListSearchStr()">
+              <ng-container *ngIf="searchAssignedListStr">
+                <div class="cancel-action c-pointer" (click)="clearAssignedListSearchStr()">
+                  <i class="i-icon i-close d-block bgc-dark"></i>
+                </div>
+              </ng-container>
+            </div>
+            <div class="ml-auto" ngbDropdown placement="bottom-right">
+              <div class="v-center c-pointer f-3 p-1 mr-2 font-weight-bold" ngbDropdownToggle>
+              <span class="pr-2 ml-auto">
+                <ng-container *ngIf="!sortType || sortType.label === 'All status'; else otherSortTemplate">
+                  <span class="font-weight-bold" translate>Sort by</span>
+                </ng-container>
+                <ng-template #otherSortTemplate>
+                  <span class="font-weight-bold">{{sortType.label | translate}}</span>
+                </ng-template>
+              </span>
+              </div>
+              <div ngbDropdownMenu aria-labelledby="taskSortTypes">
+                <div class="py-2" ngbDropdownItem *ngFor="let type of SORT_TYPES" (click)="changeSort(type)">
+                <span class="f-3 v-center" [class.font-weight-bold]="type.id === sortType.id">
+                  {{type.label | translate}}
+                  <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1" *ngIf="type.id === sortType.id"></i>
+                </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <table mat-table class="table automation-table page-table" multiTemplateDataRows
+                   [dataSource]="filteredResult | paginate: {itemsPerPage: pageSize.id, currentPage: page, id: 'editActionTable', total: filteredResult.length}">
+              <ng-container matColumnDef="select">
+                <th mat-header-cell *matHeaderCellDef class="pl-0 checkbox-col">
+                  <div class="custom-control custom-checkbox"
+                       [class.indeterminate]="selectedFiles.length && !isAllSelected()">
+                    <input type="checkbox" class="custom-control-input" id="selectAllMaterials"
+                           (change)="$event ? pageMasterToggle() : null" [checked]="isPageSelected()" />
+                    <label class="custom-control-label" for="selectAllMaterials"></label>
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let contact" class="pl-0 checkbox-col">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="contact-{{contact._id}}"
+                           (change)="toggleElement(contact)" [checked]="isSelected(contact)" />
+                    <label class="custom-control-label" for="contact-{{contact._id}}"></label>
+                  </div>
+                </td>
+              </ng-container>
+              <!-- Contact Column -->
+              <ng-container matColumnDef="contact">
+                <ng-container *matHeaderCellDef>
+                  <th mat-header-cell *ngIf="!selectedFiles.length; else toolHeader" class="contact-col">
+                    <div class="v-center c-pointer head-sort">
+                      <ng-container *ngIf="selectedTab.id === 'contacts'; else dealsTab">
+                        <span translate>Contact</span>
+                      </ng-container>
+                      <ng-template #dealsTab>
+                        <span translate>Deal</span>
+                      </ng-template>
+                    </div>
+                  </th>
+                  <ng-template #toolHeader>
+                    <th mat-header-cell colspan="5">
+                      <div class="v-center">
+                        <ng-container *ngIf="selectedFiles.length">
+                          <span class="c-dark f-3 text-lowercase font-weight-bold" [translateParams]="{length: selectedFiles.length}" translate>
+                            autoflow.selectedCount
+                          </span>
+                          <app-actions-header [actions]="ACTIONS" [iconSize]="'sm'" (doCommand)="doAction($event)"></app-actions-header>
+                        </ng-container>
+                      </div>
+                    </th>
+                  </ng-template>
+                </ng-container>
+                <td mat-cell *matCellDef="let element" class="title-col">
+                  <ng-container *ngIf="selectedTab.id === 'contacts'; else dealsTab">
+                    <a
+                      class="v-center c-dark c-pointer td-none my-2"
+                      [routerLink]="['/contacts/' + element._id]"
+                    >
+                      <div class="form-avatar rounded-circle bg-dark mr-3">{{getAvatarName(element)}}</div>
+                      <div class="f-3">{{element.first_name + ' ' + element.last_name}}</div>
+                    </a>
+                  </ng-container>
+                  <ng-template #dealsTab>
+                    <a
+                      class="v-center c-dark td-none c-pointer my-2"
+                      [routerLink]="['/pipeline']"
+                      [queryParams]="{ deals: element._id }"
+                    >
+                      <i class="i-icon i-deals d-block bgc-dark" aria-hidden="true"></i>
+                      <div class="f-3 ml-3">{{element.title}}</div>
+                    </a>
+                  </ng-template>
+                </td>
+              </ng-container>
+              <!-- Status Column -->
+              <ng-container matColumnDef="status">
+                <ng-container *matHeaderCellDef>
+                  <th mat-header-cell *ngIf="!selectedFiles.length" class="status-col" translate>Status</th>
+                </ng-container>
+                <td mat-cell *matCellDef="let timeline" class="status-col">
+                  <div class="f-3 text-uppercase">{{timeline.status}}</div>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="selection_info">
+                <th mat-header-cell *matHeaderCellDef colspan="5" class="text-center">
+                  <span *ngIf="!isAllSelected(); else deselectTemplate" [translateParams]="{length: selectedFiles.length}" translate>
+                    automation_trans.automation_selected
+                    <span class="c-blue font-weight-bold c-pointer ml-2" (click)="masterToggle()"
+                          [translateParams]="{length: filteredFiles.length}" translate>
+                      automation_trans.select_automation
+                    </span>
+                  </span>
+                  <ng-template #deselectTemplate>
+                    <span [translateParams]="{length: filteredFiles.length}" translate>automation_trans.selected_all</span>
+                    <span class="c-blue c-pointer font-weight-bold ml-2"
+                          (click)="masterToggle()" translate>Clear selection</span>
+                  </ng-template>
+                </th>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="DISPLAY_COLUMNS"
+                  [class.selected]="selectedFiles.length" class="table-header"></tr>
+              <tr mat-header-row *matHeaderRowDef="['selection_info']" [class.d-none]="!(selectedFiles.length)"
+                  class='selection-info'></tr>
+              <tr mat-row
+                  *matRowDef="let row; columns: DISPLAY_COLUMNS;"></tr>
+            </table>
+            <ng-container *ngIf="filteredResult.length > minRowCount">
+              <div class="my-2 table-control mode-1">
+                <div class="pagination-wrapper m-auto">
+                  <pagination-controls (pageChange)="changePage($event)" (pageBoundsCorrection)="changePage($event)"
+                                       id="editActionTable" maxSize="5" previousLabel="" nextLabel="">
+                  </pagination-controls>
+                </div>
+                <div class="shadow-dropdown ml-auto page-size-control" ngbDropdown placement="top-right">
+                  <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+                    <span class="pr-2 c-blue" [translateParams]="{pageSize: pageSize.id}" translate>autoflow.perPage</span>
+                  </div>
+                  <div ngbDropdownMenu aria-labelledby="contactPageSize">
+                    <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS" (click)="changePageSize(type)">
+                      <span class="f-3 v-center" [class.font-weight-bold]="type.id === pageSize.id" [translateParams]="{pageSize: type.label}" translate>
+                        autoflow.perPage
+                        <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1" *ngIf="type.id === pageSize.id"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="!filteredResult?.length">
+              <div class="empty-list py-5">
+                <div class="object-icon v-center">
+                  <i class="i-icon i-contact d-block bgc-dark" *ngIf="automation_type === 'contact'"></i>
+                  <i class="i-icon i-deals d-block bgc-dark" *ngIf="automation_type === 'deal'"></i>
+                </div>
+                <h4 class="font-weight-bold text-center mt-4 mb-3"
+                    translate
+                    *ngIf="automation_type === 'contact'"
+                >
+                  There are no contacts.
+                </h4>
+                <h4 class="font-weight-bold text-center mt-4 mb-3"
+                    translate
+                    *ngIf="automation_type === 'deal'"
+                >
+                  There is no deals.
+                </h4>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions class="mt-2" align="end" *ngIf="selectedTab.id === 'action'">
+    <div class="v-center justify-content-between w-100 px-3">
+      <ng-container
+        *ngIf="type==='email' ||
+            type==='send_email_video' ||
+            type === 'send_email_pdf' ||
+            type === 'send_email_image' ||
+            type === 'send_email_material'"
+      >
+        <div class="email-setting">
+          <div class="v-center">
+            <button type="button" class="v-center btn border-primary f-3 font-weight-bold c-blue px-3 py-2 mr-2 material-button"
+              (click)="openEmailMaterialsDlg()"
+              [class.disable-action]="isDisableEmailMaterial()"
+            >
+              <i class="d-block i-icon i-material bgc-blue"></i>
+              <span class="f-3 font-weight-bold c-blue mx-2" translate>Material</span>
+              <i class="d-block i-icon i-plus bgc-blue"></i>
+            </button>
+          </div>
+          <app-template-selector [type]="'email'" (selectTemplate)="selectEmailTemplate($event)"></app-template-selector>
+          <div ngbDropdown class="insert-token ml-2">
+            <div class="v-center no-carot c-pointer" ngbDropdownToggle>
+              <span class="f-1 font-weight-bold mr-1" translate>Merge field</span>
+              <i class="d-block i-icon i-triangle-down bgc-dark"></i>
+              <i class="d-block i-icon i-triangle-up bgc-dark"></i>
+            </div>
+            <div ngbDropdownMenu class="light py-1">
+              <ng-container *ngFor="let token of templateTokens">
+                <div class="f-2 py-1 px-2 c-pointer menu-item dropdown-item" (click)="insertTextContentToken({value: token.name})"
+                  translate>
+                  {{ token.name }}
+                </div>
+              </ng-container>
+              <div class="f-2 py-1 px-2 c-pointer menu-item v-center dropdown-item" (click)="onCreateToken()">
+                <i class="d-block sm i-icon i-plus bgc-blue"></i>
+                <span class="ml-1 c-blue">{{ 'Create Merge field' | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="type==='send_text_video' ||
+            type === 'send_text_pdf' ||
+            type === 'send_text_image' ||
+            type === 'send_text_material' ||
+            type === 'text'"
+      >
+        <div class="pt-0 pb-3 text-setting">
+          <div class="v-center">
+            <button type="button" class="v-center btn border-primary f-3 font-weight-bold c-blue px-3 py-2 mr-2 material-button"
+                    (click)="openSMSMaterialsDlg()"
+                    [class.disable-action]="isDisableSMSMaterial()"
+            >
+              <i class="d-block i-icon i-material bgc-blue"></i>
+              <span class="f-3 font-weight-bold c-blue mx-2" translate>Material</span>
+              <i class="d-block i-icon i-plus bgc-blue"></i>
+            </button>
+          </div>
+          <app-template-selector [type]="'text'" (selectTemplate)="selectSMSTemplate($event)"></app-template-selector>
+          <div ngbDropdown class="insert-token ml-2">
+            <div class="v-center no-carot c-pointer" ngbDropdownToggle placement="bottom" ngbTooltip="Emoji" style="width: fit-content;">
+              <i class="d-block i-icon i-emoji bgc-dark"></i>
+            </div>
+            <div ngbDropdownMenu class="light templates emoji-panel">
+              <emoji-mart class="emoji-mart" [set]="set" [darkMode]="false" (emojiSelect)="insertSmsContentValue($event.emoji.native, smsContentField)" title="Pick your emoji…">
+              </emoji-mart>
+            </div>
+          </div>
+          <div ngbDropdown class="insert-token ml-2" *ngIf="(connectService.calendlyAll$ | async).length">
+            <div class="v-center no-carot c-pointer" ngbDropdownToggle placement="bottom" ngbTooltip="Calendly">
+              <i class="d-block i-icon i-calendly bgc-dark"></i>
+            </div>
+            <div ngbDropdownMenu class="light template-container">
+              <ng-container *ngFor="let calendly of (connectService.calendlyAll$ | async)">
+                <div class="template dropdown-item border-top px-2" (click)="selectCalendly(calendly.scheduling_url)">
+                  <div class="v-center h-100">
+                    <div class="f-3 font-weight-bold flex-grow-1 mr-1 h-100 v-center">{{(calendly.name || '') | shorten: 35: '...'}}</div>
+                    <a class="ml-auto" [href]="calendly.scheduling_url" target="blank">
+                      <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                    </a>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+          <div ngbDropdown class="insert-token ml-2">
+            <div class="v-center no-carot c-pointer" ngbDropdownToggle placement="bottom" ngbTooltip="{{ 'Record' | translate }}">
+              <i class="d-block i-icon i-record-toolbar" (click)="record()"></i>
+            </div>
+          </div>
+          <div ngbDropdown class="insert-token ml-2">
+            <div class="v-center no-carot c-pointer" ngbDropdownToggle>
+              <span class="f-1 font-weight-bold mr-1" translate>Merge field</span>
+              <i class="d-block i-icon i-triangle-down bgc-dark"></i>
+              <i class="d-block i-icon i-triangle-up bgc-dark"></i>
+            </div>
+            <div ngbDropdownMenu class="light py-1">
+              <ng-container *ngFor="let token of templateTokens">
+                <div class="f-2 py-1 px-2 c-pointer menu-item dropdown-item" (click)="insertSmsContentValue(token.name, smsContentField, true)"
+                  translate>
+                  {{ token.name }}
+                </div>
+              </ng-container>
+              <div class="f-2 py-1 px-2 c-pointer menu-item v-center dropdown-item" (click)="onCreateToken()">
+                <i class="d-block sm i-icon i-plus bgc-blue"></i>
+                <span class="ml-1 c-blue">{{ 'Create Merge field' | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    <div class="v-center justify-content-end px-3 my-3">
+      <button
+        class="btn ml-1 mr-0"
+        type="button"
+        [class.disabled]="recordingAudio"
+        (click)="closeDrawer()" translate
+      >Close</button>
+      <button
+        class="btn btn-primary ml-1 mr-0"
+        type="submit"
+        [class.disabled]="recordingAudio"
+        [class.loading]="uploadingAudio" translate
+      >Update</button>
+    </div>
+  </mat-dialog-actions>
+</form>

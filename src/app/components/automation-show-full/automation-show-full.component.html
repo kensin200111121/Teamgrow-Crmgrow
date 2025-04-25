@@ -1,0 +1,242 @@
+<div class="v-center justify-content-between">
+    <h1 mat-dialog-title class="m-0 title" *ngIf="automationSummary">
+      {{ automationSummary ? automationSummary.title : 'Full Automation' }}
+      <span class="f-8 c-dark ml-2" *ngIf="isBusinessTime">(Business hours applied)</span>
+    </h1>
+    <h1 mat-dialog-title class="m-0 title" *ngIf="!automationSummary" translate>
+      Full Automation
+      <span class="f-8 c-dark ml-2" *ngIf="isBusinessTime">(Business hours applied)</span>
+    </h1>
+    <button type="button" class="v-center border-0 bgc-trans close-button" mat-dialog-close>
+        <i class="i-icon i-close bgc-black ml-1" aria-hidden="true"></i>
+    </button>
+</div>
+<mat-dialog-content class="mt-1 p-0">
+    <div class="card-body">
+        <div class="flows-container" #wrapper>
+          <div class="zoom-button-wrapper">
+            <button class="v-center justify-content-center btn btn-white font-weight-bold"
+                    [class.disabled]="zoomLevel <= 0.4 || !nodes.length"
+                    (click)="zoomOut()"
+            >
+              <i class="i-icon i-zoom-out"
+                 [class.bgc-blue]="zoomLevel >= 0.4 && nodes.length"
+                 [class.bgc-grey]="zoomLevel < 0.4 || !nodes.length"
+              ></i>
+            </button>
+            <button class="v-center justify-content-center btn btn-white font-weight-bold"
+                    [class.disabled]="zoomLevel > 1.5 || !nodes.length"
+                    (click)="zoomIn()"
+            >
+              <i class="i-icon i-zoom-in"
+                 [class.bgc-blue]="zoomLevel <= 1.5 && nodes.length"
+                 [class.bgc-grey]="zoomLevel > 1.5 || !nodes.length"
+              ></i>
+            </button>
+          </div>
+          <div class="count-container">
+            <div class="actions-count">
+              <label class="f-1 text-uppercase" translate>Actions</label>
+              <div class="content actions">
+                <p class="count font-weight-bold">{{(actions || []).length}}</p>
+              </div>
+            </div>
+          </div>
+          <ng-container *ngIf="!nodes.length; else flowTemplate">
+            <div class="init-graph-container">
+              <ngx-graph class="chart-container init-container" [links]="initEdges" [nodes]="initNodes"
+                       [layoutSettings]="layoutSettings" [layout]="layout" [curve]="curve" [draggingEnabled]="false"
+                       [panningEnabled]="false" [view]="[300, 200]">
+                <ng-template #nodeTemplate let-node>
+                  <svg:g class="node">
+                    <svg:rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height"
+                              fill="transparent" />
+                  </svg:g>
+                </ng-template>
+              </ngx-graph>
+            </div>
+          </ng-container>
+
+          <ng-template #flowTemplate>
+            <ngx-graph class="chart-container" [links]="edges" [nodes]="nodes" [layoutSettings]="layoutSettings"
+                      [autoCenter]="autoCenter" [panToNode$]="panToNode$" [layout]="layout" [curve]="curve" [center$]="center$" [draggingEnabled]="false"
+                      [autoZoom]="autoZoom" [minZoomLevel]="0.4" [maxZoomLevel]="1.5" [zoomSpeed]="0.1" [zoomLevel]="zoomLevel" [animate]="true" [enableZoom]="true" #graphWrapper>
+              <ng-template #defsTemplate>
+                <svg:marker id="arrow" viewBox="0 0 20 20" refX="20" refY="10" markerWidth="8" markerHeight="8"
+                            orient="auto">
+                  <circle cx="10" cy="10" r="10" stroke="green" stroke-width="0" fill="gray" />
+                </svg:marker>
+                <svg:pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+                  <svg:path d="M-1,1 l2,-2
+                         M0,4 l4,-4
+                         M3,5 l2,-2" style="stroke:#eee; stroke-width:1" />
+                </svg:pattern>
+              </ng-template>
+
+              <ng-template #nodeTemplate let-node>
+                <svg:g class="node" *ngIf="node.category === 'NORMAL'">
+                  <svg:rect [attr.width]="node.dimension.width" [attr.height]="node.leaf ? 200 : 110"
+                            fill="transparent" />
+                  <svg:foreignObject width="300" [attr.height]="node.leaf ? 200 : 110">
+                    <xhtml:div class="cardContainer c-pointer"
+                               #treeNode
+                               (click)="easyView(node, treeNode, treeOverlay)"
+                               style="text-align: center; position: relative; padding: 3px;"
+                               xmlns="http://www.w3.org/1999/xhtml">
+                      <img [attr.src]="ICONS[node.type]" x="75" y="0" height="50px" width="50px" />
+                    </xhtml:div>
+                    <ng-container *ngIf="node.leaf; else leafNode">
+                      <xhtml:div class="cardContainer"
+                                 style="background-color: transparent; padding: 5px 8px 20px 8px; margin-bottom: 15px; text-align: center;"
+                                 xmlns="http://www.w3.org/1999/xhtml">
+                        <div
+                          style="display: inline-block;"
+                          placement="top"
+                          ngbTooltip="{{node.error_message}}"
+                        >
+                          <label class="name" style="margin: 0; font-size: 14px; font-weight: bold;">{{node.label}}</label>
+                          <ng-container *ngIf="node.type === 'contact_condition'">
+                            <label class="name" style="margin: 0; margin-left: 3px; font-size: 11px;">({{node.condition_field}})</label>
+                          </ng-container>
+                          <label class="name {{node.status}} text-uppercase"
+                                 style="margin: 0; font-size: 11px; display: block;"
+                                 *ngIf="showStatus(node)"
+                          >
+                            {{node.status}}
+                          </label>
+                        </div>
+                      </xhtml:div>
+                    </ng-container>
+                    <ng-template #leafNode>
+                      <xhtml:div class="cardContainer"
+                                style="background-color: transparent; text-align: center;"
+                                xmlns="http://www.w3.org/1999/xhtml">
+                        <div
+                          style="display: inline-block;"
+                          placement="top"
+                          ngbTooltip="{{node.error_message}}"
+                        >
+                          <label class="name" style="margin: 0; font-size: 14px; font-weight: bold;">{{node.label}}</label>
+                          <ng-container *ngIf="node.type === 'contact_condition'">
+                            <label class="name" style="margin: 0; margin-left: 3px; font-size: 11px;">({{node.condition_field}})</label>
+                          </ng-container>
+                          <label class="name {{node.status}} text-uppercase"
+                                 style="margin: 0; font-size: 11px; display: block;"
+                                 *ngIf="showStatus(node)"
+                          >
+                            {{node.status}}
+                          </label>
+                        </div>
+                      </xhtml:div>
+                    </ng-template>
+                    <ng-container *ngIf="node.leaf">
+                      <xhtml:div
+                        style="background-color: transparent; border-left: 2px dashed #aaa; width: 2px; height: 30px; margin-top: -15px; margin-left: auto; margin-right: auto;"
+                        xmlns="http://www.w3.org/1999/xhtml">
+                      </xhtml:div>
+                      <xhtml:div class="cardContainer"
+                                 style="margin-bottom: 5px; margin-top: 5px; text-align: center;"
+                                 xmlns="http://www.w3.org/1999/xhtml">
+                        <img [src]="sspaService.toAsset('img/automations/automation_start.svg')" x="75" y="0" height="42px"
+                             width="42px" />
+                      </xhtml:div>
+                    </ng-container>
+                  </svg:foreignObject>
+                </svg:g>
+                <svg:g class="node" *ngIf="node.category === 'CONDITION'">
+                  <ng-container *ngIf="node.type === 'contact_condition'; else normalCondition">
+                    <svg:rect [attr.width]="node.dimension.width" [attr.height]="40"
+                              fill="transparent" />
+                    <svg:foreignObject width="140" [attr.height]="40" style="overflow: visible">
+                      <xhtml:div class="contact-condition-case"
+                                 xmlns="http://www.w3.org/1999/xhtml"
+                                 *ngIf="node.condition && node.condition.case !== 'else'"
+                      >
+                        <label class="name" style="margin: 0; font-size: 12px; font-weight: bold;">{{getContactConditionLabel(node)}}</label>
+                      </xhtml:div>
+                      <xhtml:div class="contact-condition-case else"
+                                 xmlns="http://www.w3.org/1999/xhtml"
+                                 *ngIf="node.condition && node.condition.case === 'else'"
+                      >
+                        <label class="name" style="margin: 0; font-size: 12px; font-weight: bold;">ELSE</label>
+                      </xhtml:div>
+                      <ng-container *ngIf="node.leaf">
+                        <xhtml:div
+                          style="background-color: transparent; border-left: 2px dashed #aaa; width: 2px; height: 30px; margin-top: -15px; margin-left: auto; margin-right: auto;"
+                          xmlns="http://www.w3.org/1999/xhtml">
+                        </xhtml:div>
+                        <xhtml:div class="cardContainer c-pointer"
+                                   style="margin-bottom: 5px; margin-top: 5px; text-align: center;"
+                                   xmlns="http://www.w3.org/1999/xhtml">
+                          <img [src]="sspaService.toAsset('img/automations/automation_start.svg')" x="75" y="0" height="42px"
+                               width="42px" />
+                        </xhtml:div>
+                      </ng-container>
+                    </svg:foreignObject>
+                  </ng-container>
+                  <ng-template #normalCondition>
+                    <svg:rect [attr.width]="node.dimension.width" [attr.height]="40"
+                              fill="transparent" />
+                    <svg:foreignObject width="140" [attr.height]="40" style="overflow: visible">
+                      <xhtml:div [class.trueCase]="node.condition.answer" [class.falseCase]="!node.condition.answer"
+                                 xmlns="http://www.w3.org/1999/xhtml">
+                        <ng-container *ngIf="node.label == 'YES'; else falseCase">
+                          <label class="name" style="margin: 0; font-size: 12px; font-weight: bold;">{{'YES' | translate}}</label>
+                        </ng-container>
+                        <ng-template #falseCase>
+                          <label class="name" style="margin: 0; font-size: 12px; font-weight: bold;">{{'NO' | translate}}</label>
+                        </ng-template>
+                      </xhtml:div>
+                      <ng-container *ngIf="node.leaf">
+                        <xhtml:div
+                          style="background-color: transparent; border-left: 2px dashed #aaa; width: 2px; height: 30px; margin-top: -15px; margin-left: auto; margin-right: auto;"
+                          xmlns="http://www.w3.org/1999/xhtml">
+                        </xhtml:div>
+                        <xhtml:div class="cardContainer"
+                                   style="margin-bottom: 5px; margin-top: 5px; text-align: center;"
+                                   xmlns="http://www.w3.org/1999/xhtml">
+                          <img [src]="sspaService.toAsset('img/automations/automation_start.svg')" x="75" y="0" height="42px"
+                            width="42px" />
+                        </xhtml:div>
+                      </ng-container>
+                    </svg:foreignObject>
+                  </ng-template>
+                </svg:g>
+              </ng-template>
+              <ng-template #linkTemplate let-link>
+                <svg:g class="edge">
+                  <svg:path class="line {{link.status}}" stroke="#aaa" stroke-width="2" marker-start="url(#arrow)">
+                  </svg:path>
+                </svg:g>
+                <svg:g class="label" *ngIf="link.hasLabel && link.points && link.points[0]" [attr.transform]="'translate(' + (link.points[0].x - 40) + ',' + (link.points[0].y + 40) + ')'">
+                  <svg:rect [attr.width]="90" [attr.height]="60"
+                            fill="transparent" />
+                  <svg:foreignObject width="90" [attr.height]="120">
+                    <xhtml:div class="caseLabel"
+                               style="background-color: transparent; text-align: center;"
+                               xmlns="http://www.w3.org/1999/xhtml">
+                      <div class='link'>
+                        <label class="name" style="margin-top: 20px; margin-bottom: 0px; font-size: 14px;">{{CASE_ACTIONS[link.type]}}</label>
+                        <label class="name percent"
+                               *ngIf="link.data?.percent && (link.data?.type=='watched_material' || link.type == 'watched_material')">
+                          {{link.data?.percent}}%
+                        </label>
+                      </div>
+                    </xhtml:div>
+                  </svg:foreignObject>
+                </svg:g>
+              </ng-template>
+            </ngx-graph>
+          </ng-template>
+          <ng-template #treeOverlay let-close="close" let-data>
+            <app-automation-detail-overlay
+                [fullDataSource]="data.data"
+                [type]="'view'"
+                [automationType]="automation_type"
+            >
+            </app-automation-detail-overlay>
+          </ng-template>
+          <!--  -->
+        </div>
+      </div>
+</mat-dialog-content>

@@ -1,0 +1,33 @@
+<div class="toast-icon">
+    <i class="d-block i-icon i-toast success bgc-light-green s-14"></i>
+    <i class="d-block i-icon i-toast warning bgc-light-yellow s-14"></i>
+    <i class="d-block i-icon i-toast error bgc-red s-14"></i>
+</div>
+<div class="toast-details ml-2">
+    <div
+        *ngIf="title"
+        [class]="options.titleClass"
+        [attr.aria-label]="title"
+        class="custom-title"
+    >
+        {{ title | translate }}
+    </div>
+    <div
+        *ngIf="message && options.enableHtml"
+        role="alert"
+        aria-live="polite"
+        class="custom-message"
+        [class]="options.messageClass"
+        [innerHTML]="message | translate"
+    ></div>
+    <div
+        *ngIf="message && !options.enableHtml"
+        role="alert"
+        aria-live="polite"
+        class="custom-message"
+        [class]="options.messageClass"
+        [attr.aria-label]="message"
+    >
+        {{ message | translate }}
+    </div>
+</div>

@@ -1,0 +1,88 @@
+<!-- added by sylla -->
+<div class="d-flex justify-content-between">
+  <h1 mat-dialog-title translate>Profile permission</h1>
+  <div *ngIf="!is_team" ngbDropdown class="shadow-dropdown ml-auto">
+    <div class="v-center c-pointer f-2 p-2 font-weight-bold c-blue" ngbDropdownToggle>
+        <span class="f-2 font-weight-bold" translate>Options</span>
+    </div>
+    <div class="light" ngbDropdownMenu>
+      <ng-container *ngFor="let team of teamSettings">
+        <div ngbDropdownItem translate (click)="clickDrowdownMemberOption(team.id)" translate>{{team.id}}</div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="is_team" class="page-header">
+  <app-slide-tab [tabs]="teamSettings" [selected]="currentPageItem" (onChange)="changeTab($event)" type="plain" class="border-bottom pl-0 rounded-0">
+  </app-slide-tab>
+  <mat-dialog-content *ngIf="is_team" class="mt-3">
+    <ng-container *ngFor="let option of currentPageItem?.options">
+      <div class="v-center mt-3">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" [id]="option.id"
+            [name]="option.id" [(ngModel)]="option.value"/>
+          <label class="custom-control-label f-6 field-name" [for]="option.id" translate>account-setting.{{getOptionTranslation(option.id)}}</label>
+        </div>
+      </div>
+      <div *ngIf="option.value && option.options" class="d-block v-center mt-3 ml-3">
+        <ng-container *ngFor="let suboption of option.options">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" [id]="suboption.id"
+              [name]="suboption.id" [(ngModel)]="suboption.value"/>
+            <label class="custom-control-label f-6 field-name" [for]="suboption.id" translate>account-setting.{{getOptionTranslation(suboption.id)}}</label>
+          </div>
+        </ng-container>
+      </div>      
+    </ng-container>
+  </mat-dialog-content>
+</div>
+<mat-dialog-content *ngIf="!is_team" class="mt-3">
+  <div class="v-center">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" class="custom-control-input" id="login_enabled"
+        name="loginSetting" [(ngModel)]="login_enabled" />
+      <label class="custom-control-label f-6 field-name" for="login_enabled" translate>account-setting.login_enabled</label>
+    </div>
+  </div> 
+  
+  <div class="v-center mt-3">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" class="custom-control-input" id="master_enabled"
+        name="master_enabled" [(ngModel)]="master_enabled" />
+      <label class="custom-control-label f-6 field-name" for="master_enabled" translate>account-setting.master_enabled</label>
+    </div>
+  </div>
+  <div class="v-center mt-3">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" class="custom-control-input" id="billing_access_enabled"
+        name="billingSetting" [(ngModel)]="billing_access_enabled" />
+      <label class="custom-control-label f-6 field-name" for="billing_access_enabled" translate>account-setting.billing_access_enabled</label>
+    </div>
+  </div>
+  <div class="v-center mt-3 ml-3" *ngIf="billing_access_enabled">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" class="custom-control-input" id="team_stay_enabled"
+        name="billingSetting" [(ngModel)]="team_stay_enabled" />
+      <label class="custom-control-label f-6 field-name" for="team_stay_enabled" translate>account-setting.team_stay_enabled</label>
+    </div>
+  </div>  
+  <div class="v-center mt-3">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" class="custom-control-input" id="assignee_info_is_editable"
+        name="assigneeSetting" [(ngModel)]="assignee_info_is_editable" />
+      <label class="custom-control-label f-6 field-name" for="assignee_info_is_editable" translate>account-setting.assignee_info.is_editable</label>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions class="mt-3" align="end" *ngIf="!loading">
+  <button type="button" mat-dialog-close class="btn btn-default btn-sm f-3 c-black" (click)="close()" translate>Close</button>
+  <button type="button" mat-dialog-close class="btn btn-primary btn-sm f-3 c-whight ml-2" (click)="save()" [class.loading]="saving" translate>Save</button>
+</mat-dialog-actions>
+<ng-container *ngIf="loading">
+  <div class="text-center">
+      <div class="loader"></div>
+      <p class="text-center font-weight-bold" translate>Loading team setting informations...</p>
+  </div>
+</ng-container>
+<!-- end by sylla -->

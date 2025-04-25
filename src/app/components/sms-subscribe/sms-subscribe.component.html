@@ -1,0 +1,96 @@
+<div class="v-center justify-content-between">
+    <h1 mat-dialog-title class="m-0 fw-600 f-24 c-primary" translate>
+      Setting Up Texting
+    </h1>
+</div>
+<form #form="ngForm" (ngSubmit)="form.form.valid ? submit() : false" [class.was-validated]="form.submitted"
+class="general" >
+    <mat-dialog-content>
+        <ng-container [ngSwitch]="state">
+            <ng-container *ngSwitchCase="'loading'">
+                <div class="list-loading text-center">
+                    <div class="loader mt-5 lg"></div>
+                    <h4 class="fw-400 mt-2" translate>Loading...</h4>
+                </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="'disabled'">
+                <div class="errorContent p-4">
+                    <img class="error-icon" [src]="sspaService.toAsset('img/emoji-funny.svg')" /><br />
+                    <span class="mt-10 font-weight-bold f-24">You are not allowed.</span><br />
+                    <span class="mt-10 f-6 description">You don't have permission to use the texting functionality because you don't have wavv dialer access. You need to upgrade to unlock this feature.</span>
+                </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="'need brand'">
+                <div class="mt-3">
+                    <img class="banner-image" [src]="sspaService.toAsset('img/sms_subscription.png')" />
+                </div>
+                <div class="mt-3 d-flex flex-row align-items-end">
+                    <span class="fw-600 f-20 c-primary">{{ 'Brand State' | translate }}</span>
+                    <span class="rounded py-1 px-2 f-2 badge c-white bg-info ml-2 mb-1"
+                        [class.bg-danger]="brandState == 'FAILED'"
+                        [class.bg-secondary]="brandState == 'NONE'">
+                        {{ brandState }}
+                    </span>
+                </div>
+                <div class="mt-1">
+                    <span class="fw-400 f-4 c-secondary">{{ brandState + ' Brand State Description' | translate }}</span>
+                </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="'add number'">
+                <div class="mt-3">
+                    <img class="banner-image" [src]="sspaService.toAsset('img/sms_subscription.png')" />
+                </div>
+                <div class="mt-3">
+                    <span class="fw-600 f-20 c-primary">{{ 'Add Phone Number' | translate }}</span>
+                </div>
+                <div class="mt-1">
+                    <span class="fw-400 f-4 c-secondary">{{ 'Add Wavv Number Description' | translate }}</span>
+                </div>
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+                <div class="mt-2">
+                    <img class="banner-image" [src]="sspaService.toAsset('img/sms_subscription.png')" />
+                </div>
+                <div class="mt-2">
+                    <span class="fw-600 f-20 c-primary">High deliverability keeping your personal number free of clutter</span>
+                </div>
+                <div class="mt-1">
+                    <span class="fw-400 f-4 c-secondary">Enables users to easily send single and blast text messages directly from your platform. Send messages to your contacts from your CRM or from the WAVV Mobile app with a dedicated phone number to keep your personal cell phone free of clutter.</span>
+                </div>
+                <div class="mt-1">
+                    <ul>
+                        <li class="fw-600 f-4 c-primary">Use templates to save time while messaging</li>
+                        <li class="fw-600 f-4 c-primary">Send a message to multiple people with one click</li>
+                        <li class="fw-600 f-4 c-primary">Schedule your texts to be sent at a late date and time</li>
+                    </ul>
+                </div>
+                <mat-checkbox [color]="'primary'" (change)="toggleAgree($event)" *ngIf="!isVortex" [checked]="shouldMakePayment" #privatUserCheckbox>
+                    <div class="text-wrap">
+                      <span class="f-4 fw-400 c-primary" *ngIf="data.user_version >= 2.3 else oldPackageTemplate" translate>
+                        I agree being charges $20 (one time fee) for new packages (Growth and Growth Plus Text)
+                      </span>
+                      <ng-template #oldPackageTemplate>
+                        <span class="f-4 fw-400 c-primary" translate>
+                          I agree being charged $20.00 (one time fee) for setting my smart number with WAVV <a href="https://www.wavv.com/terms" target="_blank">terms of service</a>.
+                        </span>
+                      </ng-template>
+                    </div>
+                </mat-checkbox>
+                <div class="form-group">
+                    <span class="error" *ngIf="error">
+                        {{ 'Required!' | translate }}
+                    </span>
+                </div>
+            </ng-container>
+        </ng-container>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <ng-container *ngIf="state === 'disabled' else enabledTemplate">
+            <button class="btn btn-white f-6 font-weight-bold mr-2" type="button" mat-dialog-close translate>{{ 'OK' | translate }}</button>
+        </ng-container>
+        <ng-template #enabledTemplate>
+            <button class="btn btn-white f-6 font-weight-bold mr-2" type="button" mat-dialog-close translate>{{ 'Cancel' | translate }}</button>
+            <button class="btn btn-primary f-6 font-weight-bold btn-font-bold" [class.loading]="submitting" [attr.data-action]="'subscribe_wavv'" translate>Continue</button>
+        </ng-template>
+    </mat-dialog-actions>
+</form>

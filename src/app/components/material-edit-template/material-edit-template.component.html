@@ -1,0 +1,36 @@
+<h1 mat-dialog-title class="m-0" translate>
+  Landing Page Theme
+</h1>
+<mat-dialog-content>
+    <div class="row themes mt-3">
+        <div class="col-sm-4 col-6 py-3 theme" *ngFor="let theme of themes" (click)="setMaterialTheme(theme)" [class.selected]="selectedTheme?.id == theme.id">
+            <img src="{{theme.thumbnail}}" class="w-100 theme-thumb" />
+            <div class="f-4 c-dark pt-3 theme-name text-center">{{theme.name}}</div>
+            <i class="i-icon preview-icon i-visible" (click)="previewTheme(theme)" *ngIf="materials.length > 0"></i>
+        </div>
+    </div>
+    <span class="c-red f-4" *ngIf="!this.selectedTheme?.id" translate>
+        Please select material theme
+    </span>
+</mat-dialog-content>
+
+<form
+    #selectThemeForm="ngForm"
+    (ngSubmit)="submitted = true; selectThemeForm.form.valid ? save() : false"
+    [class.was-validated]="submitted"
+>
+    <mat-dialog-actions class="mt-3" align="end">
+        <div *ngIf="isPDF" class="d-flex p-3">
+            <label class="v-center p-2" translate>PDF View Mode</label>
+            <div class="p-2">
+                <select class="form-control theme-control" [(ngModel)]="view_mode" name="changeViewMode" #changeViewMode="ngModel"
+                    required>
+                    <option value="bookfold">{{ 'Bookfold Mode' | translate }}</option>
+                    <option value="scroll">{{ 'Scroll Mode' | translate }}</option>
+                </select>
+            </div>
+        </div>
+        <button class="btn btn-white f-6 font-weight-bold mr-2" mat-dialog-close translate>Cancel</button>
+        <button data-action="material-change-landing-save" class="btn btn-primary f-6 font-weight-bold" type="submit" [disabled]="isPDF && !view_mode" [class.loading]="saving" translate>Save</button>
+    </mat-dialog-actions>
+</form>

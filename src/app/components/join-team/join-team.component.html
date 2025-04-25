@@ -1,0 +1,134 @@
+<h1 mat-dialog-title translate>Request to join the community</h1>
+<mat-dialog-content>
+  <div class="form-group" [ngClass]="{invalid: (error$ | async)}">
+    <label for="search-to-join" translate>Search</label>
+    <div class="custom-mat-field">
+      <mat-form-field appearance="outline" floatLabel="never" class="d-block">
+        <mat-chip-list aria-label="Team Selection" #teamList>
+          <input
+            #inputField
+            [formControl]="inputControl"
+            [matChipInputFor]="teamList"
+            [matAutocomplete]="auto"
+            [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
+            id="search-to-join"
+          >
+        </mat-chip-list>
+        <mat-autocomplete
+          #auto="matAutocomplete"
+          (optionSelected)="onSelectOption($event)"
+          [autoActiveFirstOption]="true"
+        >
+          <ng-container *ngIf="!isToggleTeam; else showContacts">
+            <mat-option *ngIf="teams.length < 1 && users.length > 0" [value]="null"></mat-option>
+            <mat-option *ngFor="let item of filteredTeams | async" [value]="item">
+              <div class="v-center chip py-3">
+                <img class="team-avatar md rounded mr-2" [src]="item.picture" (error)="sspaService.imgError($event,'img/team_placeholder.png')" />
+                <div class="f-4 font-weight-bold c-dark">{{item.name}}</div>
+                <div class="bgc-azure c-badge rect f-3 ml-auto" translate>Community</div>
+              </div>
+            </mat-option>
+          </ng-container>
+          <ng-template #showContacts>
+            <mat-option *ngIf="teams.length > 1 && users.length < 0" [value]="null"></mat-option>
+            <mat-option *ngFor="let item of filteredUsers | async" [value]="item">
+              <div class="d-flex chip py-2">
+                <img *ngIf="item.picture_profile; else avatarNameTemplate" [src]="item.picture_profile" (error)="sspaService.imgError($event,'img/user_avatar.svg')" class="form-avatar rounded-circle mr-1" />
+                <ng-template #avatarNameTemplate>
+                  <div class="form-avatar rounded-circle bgc-avatar mr-1">{{item.avatarName}}</div>
+                </ng-template>
+                <div class="info">
+                  <div class="f-4 font-weight-bold c-dark">{{item.user_name}}</div>
+                  <div class="f-2" translate>{{item['email'] || 'Undefined'}}</div>
+                  <div class="f-2" translate>{{item['cell_phone'] || 'Undefined'}}</div>
+                </div>
+              </div>
+            </mat-option>
+          </ng-template>
+          <div class="v-center justify-content-center more-button-container p-2"
+             (click)="loadMore()"
+             [class.c-pointer]="!loadingMore"
+             *ngIf="showMore()"
+          >
+            <div class="v-center">
+              <i class="small-spinner" *ngIf="loadingMore"></i>
+              <i class="d-block i-icon sm i-plus bgc-blue" *ngIf="!loadingMore"></i>
+              <span class="f-3 font-weight-bold c-blue">&nbsp;</span>
+              <span class="f-3 font-weight-bold c-blue ml-2" translate>Load more</span>
+            </div>
+          </div>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+    <span class="error pl-1" *ngIf="error$ | async" translate>
+      Please select community.
+    </span>
+  </div>
+  <div class="searched-results">
+    <ng-container *ngIf="(selectedUser && selectedUser.length) || selectedTeam">
+      <ng-container *ngIf="teamSearching; else searchedTemplate">
+        <div class="loader"></div>
+        <p class="text-center f-4 status-description mx-auto" translate>Searching community that includs the selected user</p>
+      </ng-container>
+      <ng-template #searchedTemplate>
+        <div *ngIf="!searchedTeams.length; else teamListTemplate" >
+          <p class="text-center f-4 status-description mx-auto" translate>There are no community that includs the following user</p>
+        </div>
+      </ng-template>
+      <ng-template #teamListTemplate>
+        <div class="team v-center justify-content-between position-relative p-2 rounded c-pointer" *ngFor="let team of searchedTeams" [ngClass]="{selected: team._id === selectedTeam?._id}" (click)="selectTeam($event, team)">
+          <div class="v-center w-50">
+            <img class="team-avatar rounded" [src]="team.picture" (error)="sspaService.imgError($event,'img/team_placeholder.png')"/>
+            <div class="team-info ml-2">
+              <div class="f-4 font-weight-bold">{{team.name}}</div>
+              <div class="d-flex">
+                <div class="f-1 mr-2">{{team.memberCount}} {{'Members' | translate}}</div>
+                <div class="f-1">{{team.materialCount}} {{'materials' | translate}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="v-center justify-content-end w-50">
+            <i class="i-icon i-close bg-dark ml-3 deselect" (click)="deselectTeam()"></i>
+          </div>
+        </div>
+      </ng-template>
+    </ng-container>
+  </div>
+  <div class="request-list" *ngIf="requestedTeams.length">
+    <label class="f-4 font-weight-bold" translate>Request In Progress</label>
+    <hr class="my-0">
+    <div class="list-content py-1">
+      <div class="status-description text-center f-2 mx-auto mt-sm-3" *ngIf="!requestedTeams.length; else requestedTeamList" translate>
+        There are no requests in progress.
+      </div>
+      <ng-template #requestedTeamList>
+        <div class="v-center py-1" *ngFor="let team of requestedTeams">
+          <div class="v-center chip py-3">
+            <img class="team-avatar md rounded mr-2" [src]="team.picture" (error)="sspaService.imgError($event,'img/team_placeholder.png')" />
+            <div class="f-4 c-dark font-weight-bold">{{team.name}}</div>
+          </div>
+          <div class="info v-center flex-grow-1">
+            <button class="btn btn-sm f-2 c-blue font-weight-bold ml-auto border border-primary"
+              (click)="resendRequest(team)"
+              [class.loading]="resending && resendTeamId == team._id"
+              translate
+            >
+              Resend Request
+            </button>
+            <button class="btn btn-sm f-2 btn-decline ml-2"
+              (click)="cancelRequest(team)"
+              [class.loading]="canceling && cancelTeamId == team._id"
+              translate
+            >
+              Cancel Request
+            </button>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="mt-2">
+  <button class="btn" mat-dialog-close translate>Cancel</button>
+  <button class="btn btn-primary" [class.loading]="requesting" (click)="requestJoin()" translate>Request</button>
+</mat-dialog-actions>

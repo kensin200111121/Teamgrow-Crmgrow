@@ -1,0 +1,137 @@
+<mat-dialog-content class="description">
+  <div class="f-6 c-dark mt-3" translate>
+    This action has more than 2 materials.
+  </div>
+  <div class="mt-3">
+    <div class="v-center mt-2">
+      <div class="custom-radio-container" (click)="selectOption(1)">
+        <input class="custom-radio" type="radio" id="at-least-material" name="at-least" [checked]="selectedOption == 1">
+        <label class="f-5 font-weight-bold"></label>
+      </div>
+      <div class="f-5 font-weight-bold ml-2" translate>Review check at least one material</div>
+    </div>
+    <div class="v-center mt-2">
+      <div class="custom-radio-container" (click)="selectOption(2)">
+        <input class="custom-radio" type="radio" id="primary-material" name="at-least" [checked]="selectedOption == 2">
+        <label class="f-5 font-weight-bold"></label>
+      </div>
+      <div class="f-5 font-weight-bold ml-2" translate>Review the primary material</div>
+    </div>
+    <ng-container *ngIf="selectedOption == 2 && filteredMaterials.length > 0">
+      <div class="custom-mat-table position-relative mt-3">
+        <div class="mat-table-wrapper" [class.empty]="!filteredMaterials.length">
+          <table class="w-100 page-table"
+                 mat-table
+                 [dataSource]="filteredMaterials">
+            <ng-container matColumnDef="select">
+              <th mat-header-cell
+                  *matHeaderCellDef
+                  class="pl-0 checkbox-col">
+              </th>
+              <td mat-cell
+                  *matCellDef="let element"
+                  class="pl-0 checkbox-col">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox"
+                         class="custom-control-input"
+                         id="b-material-{{element._id}}"
+                         (click)="toggleElement(element)"
+                         [checked]="isSelected(element)" />
+                  <label class="custom-control-label"
+                         for="b-material-{{element._id}}"></label>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="material_name">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell
+                    class="name-col">
+                  <div class="v-center c-pointer head-sort">
+                    <span class="fw-600 c-dark" translate>Name</span>
+                  </div>
+                </th>
+              </ng-container>
+              <td mat-cell
+                  *matCellDef="let element" class="name-col">
+                <div class="v-center c-pointer material-main-info">
+                  <div class="thumbnail" (click)="toggleElement(element)">
+                    <ng-container [ngSwitch]="element.material_type">
+                      <div class="v-center link-wrapper"
+                           *ngSwitchCase="'video'">
+                        <div class="thumb-prev-wrapper">
+                          <img [src]="element.thumbnail" class="thumbnail" (error)="sspaService.imgError($event,'img/video_thumb.jpg')"/>
+                          <img [src]="element.preview" class="preview" (error)="sspaService.imgError($event,'img/video_thumb.jpg')"/>
+                        </div>
+                        <span class="font-weight-bold">{{(element.title || '') | shorten: 40: '...'}}</span>
+                      </div>
+                      <div class="v-center link-wrapper"
+                           *ngSwitchCase="'pdf'">
+                        <img class="thumbnail" src="{{element.preview}}" (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+                        <span class="font-weight-bold">{{(element.title || '') | shorten: 40: '...'}}</span>
+                      </div>
+                      <div class="v-center link-wrapper"
+                           *ngSwitchCase="'image'">
+                        <img class="thumbnail" src="{{element.preview}}" (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+                        <span class="font-weight-bold">{{(element.title || '') | shorten: 40: '...'}}</span>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+                <div class="responsive-data">
+                  <div class="type">
+                    <span class="info-title" translate>type:</span>
+                    <span class="info-value">{{element.material_type}}</span>
+                  </div>
+                  <div class="time">
+                    <span class="info-title" translate>created at:</span>
+                    <span class="info-value">{{element.created_at | datetimeFormat : 'mediumDate'}}</span>
+                  </div>
+                  <div class="analytics v-center">
+                    <span class="info-title" translate>views:</span>
+                    <div class="info-value">
+                      <a [routerLink]="['/materials/analytics/' + element._id]" class="text-decoration-none">
+                        <div class="v-center justify-content-end">
+                          <span class="f-3 c-dark">{{element.views}}</span>
+                          <i class="i-icon i-analytics bgc-blue ml-1 sm" aria-hidden="true"></i>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Type Column -->
+            <ng-container matColumnDef="type">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell
+                    *ngIf="!selection.length" class="type-col">
+                  <div class="v-center c-pointer head-sort">
+                    <span class="fw-600 c-dark" translate>Type</span>
+                  </div>
+                </th>
+              </ng-container>
+              <td mat-cell
+                  *matCellDef="let element" class="type-col {{element.material_type}}">
+                {{element.material_type}}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row
+                *matHeaderRowDef="DISPLAY_COLUMNS" [class.selected]="selection.length" class="table-header"></tr>
+            <tr mat-row
+                *matRowDef="let row; columns: DISPLAY_COLUMNS;" (click)="selectMaterial(row)" [class.selected]="!multiple && selection.indexOf(row._id) !== -1"></tr>
+          </table>
+        </div>
+      </div>
+      <div class="error f-1 c-red mt-1"
+           *ngIf="selectedOption == 2 && selection.length == 0 && submitted" translate>Please select a primary material.</div>
+    </ng-container>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="mx-0">
+  <button type="button" class="btn btn-white c-blue mr-2" (click)="close()" translate>Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="confirm()" translate>OK</button>
+</mat-dialog-actions>

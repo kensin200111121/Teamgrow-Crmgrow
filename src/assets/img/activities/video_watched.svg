@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="22px" height="20px" viewBox="0 0 22 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>28376ACF-C555-4691-A503-9D1966BB8D62</title>
+    <g id="Main" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Timeline-Actions-Icons" transform="translate(-37.000000, -75.000000)">
+            <g id="Icons-/-Videos-Watched" transform="translate(38.000000, 75.000000)">
+                <g transform="translate(1.000000, 1.000000)" id="video-sent-1">
+                    <path d="M0.30803,13.6191 C0.13394,12.2895 0,10.7101 0,9 C0,7.28986 0.13394,5.71048 0.30803,4.38095 C0.59396,2.19718 2.21443,0.54631 4.36608,0.27838 C5.64193,0.11951 7.19996,0 9,0 C10.9006,0 12.5313,0.13324 13.845,0.30535 C15.8925,0.57361 17.4264,2.10749 17.6946,4.15498 C17.8668,5.46866 18,7.09943 18,9 C18,10.9006 17.8668,12.5313 17.6946,13.845 C17.4264,15.8925 15.8925,17.4264 13.845,17.6946 C12.5313,17.8668 10.9006,18 9,18 C7.19996,18 5.64193,17.8805 4.36608,17.7216 C2.21443,17.4537 0.59396,15.8028 0.30803,13.6191 Z" id="Path" stroke="#0000FF" stroke-width="2" fill="#E5E5FF"></path>
+                    <path d="M9,14 C4.99206,14 1.6188,11.905 0.11016,9 C1.6188,6.09495 4.99205,4 9,4 C13.012,4 16.3815,6.09478 17.8899,9 C16.3815,11.9052 13.012,14 9,14 Z" id="Path" stroke="#0000FF" stroke-width="2"></path>
+                    <circle id="Oval" fill="#0000FF" fill-rule="nonzero" cx="9" cy="9" r="3"></circle>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,342 @@
+<ng-container *ngIf="!(handlerService.searchStr$ | async); else searchingTemplate">
+  <div class="empty-page-inner">
+    <div class="empty-result mx-auto">
+      <div class="object-icon">
+        <i class="i-icon i-search d-block mx-auto bgc-blue mb-3"></i>
+      </div>
+      <h6 class="font-weight-bold mb-2" translate>Begin typing to search</h6>
+      <p class="op-75 f-3" translate>search_resource_description</p>
+    </div>
+  </div>
+</ng-container>
+<ng-template #searchingTemplate>
+  <div class="search-page-inner">
+    <ng-container *ngIf="selectedMainResult; else allResult">
+      <div class="v-center op-56 c-pointer mb-4 back-menu" (click)="seeAll('')">
+        <i class="d-block i-icon i-triangle-left bgc-dark mr-2 sm"></i>
+        <span class="f-5 font-weight-bold">{{'Back to results for' | translate}} "{{handlerService.searchStr$ | async}}"</span>
+      </div>
+      <h4 class="data-title text-capitalize">{{selectedMainResult}}</h4>
+      <div class="data-result">
+        <ng-container *ngFor="let item of searchedResults[selectedMainResult]">
+          <ng-container [ngSwitch]="selectedMainResult">
+            <ng-container *ngSwitchCase="'contacts'">
+              <a class="v-center result-item"  [routerLink]="['/contacts/' + item._id]">
+                <div class="avatar bgc-dark text-white text-center sm mr-2">{{item.avatarName}}</div>
+                <div class="f-3" [innerHTML]="item.fullName | highlight: (handlerService.searchStr$ | async)"></div>
+              </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'automations'">
+                <a class="v-center result-item"  [routerLink]="item.isFolder || item.item_type == 'folder' ? ['/automations/own/' + item._id] : ['/autoflow/edit/' + item._id]">
+                  <i class="i-icon i-automation d-block bgc-dark mr-2"></i>
+                  <div class="f-3" [innerHTML]="item.title | highlight: (handlerService.searchStr$ | async)"></div>
+                </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'library_automations'">
+              <a class="v-center result-item"  [routerLink]="item.isFolder || item.item_type == 'folder' ? ['/automations/library/' + item._id] : ['/autoflow/edit/' + item._id]">
+                <i class="i-icon i-automation d-block bgc-dark mr-2"></i>
+                <div class="f-3" [innerHTML]="item.title | highlight: (handlerService.searchStr$ | async)"></div>
+              </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'templates'">
+              <a class="v-center result-item"  [routerLink]="['/templates/edit/' + item._id]">
+                <i class="i-icon i-template d-block bgc-dark mr-2"></i>
+                <div class="f-3" [innerHTML]="item.title | highlight: (handlerService.searchStr$ | async)"></div>
+              </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'library_templates'">
+              <a class="v-center result-item"  [routerLink]="['/templates/edit/' + item._id]">
+                <i class="i-icon i-template d-block bgc-dark mr-2"></i>
+                <div class="f-3" [innerHTML]="item.title | highlight: (handlerService.searchStr$ | async)"></div>
+              </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'teams'">
+              <a class="v-center result-item" [routerLink]="['/community/' + item._id]">
+                <i class="i-icon i-teams d-block bgc-dark mr-2"></i>
+                <div class="f-3" [innerHTML]="item.name | highlight: (handlerService.searchStr$ | async)"></div>
+              </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'deals'">
+              <a class="v-center result-item" [routerLink]="['/pipeline']" [queryParams]="{ deals: item._id }">
+                <i class="i-icon i-deals d-block bgc-red mr-2"></i>
+                <div class="f-3" [innerHTML]="item.title | highlight: (handlerService.searchStr$ | async)"></div>
+              </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'stages'">
+              <a class="v-center result-item" (click)="selectStage(item)">
+                <i class="i-icon i-deals d-block bgc-blue mr-2"></i>
+                <div class="f-3" [innerHTML]="item.title | highlight: (handlerService.searchStr$ | async)"></div>
+              </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'pipelines'">
+              <a class="v-center result-item" [routerLink]="['/pipeline/' + item._id]" (click)="selectPipeline(item)">
+                <i class="i-icon i-deals d-block bgc-dark mr-2"></i>
+                <div class="f-3" [innerHTML]="item.title | highlight: (handlerService.searchStr$ | async)"></div>
+              </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'campaigns'">
+              <a class="v-center result-item" [routerLink]="['/bulk-mail/bulk/'] + item._id">
+                <i class="i-icon i-broadcasts d-block bgc-dark mr-2"></i>
+                <div class="f-3" [innerHTML]="item.title | highlight: (handlerService.searchStr$ | async)"></div>
+              </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'videos'">
+              <a class="v-center result-item" [routerLink]="['/materials/analytics',item.material_type,item._id]">
+                <i class="i-icon i-video d-block bgc-blue mr-2"></i>
+                <div class="f-3" [innerHTML]="item.title | highlight: (handlerService.searchStr$ | async)"></div>
+              </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'library_videos'">
+              <a class="v-center result-item" [routerLink]="['/materials/library',item.material_type,item._id]">
+                <i class="i-icon i-video d-block bgc-blue mr-2"></i>
+                <div class="f-3" [innerHTML]="item.title | highlight: (handlerService.searchStr$ | async)"></div>
+              </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'pdfs'">
+              <a class="v-center result-item" [routerLink]="['/materials/analytics',item.material_type,item._id]">
+                <i class="i-icon i-pdf d-block bgc-red mr-2"></i>
+                <div class="f-3" [innerHTML]="item.title | highlight: (handlerService.searchStr$ | async)"></div>
+              </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'library_pdfs'">
+              <a class="v-center result-item" [routerLink]="['/materials/library',item.material_type,item._id]">
+                <i class="i-icon i-pdf d-block bgc-red mr-2"></i>
+                <div class="f-3" [innerHTML]="item.title | highlight: (handlerService.searchStr$ | async)"></div>
+              </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'images'">
+              <a class="v-center result-item" [routerLink]="['/materials/analytics',item.material_type,item._id]">
+                <i class="i-icon i-image d-block bgc-accept mr-2"></i>
+                <div class="f-3" [innerHTML]="item.title | highlight: (handlerService.searchStr$ | async)"></div>
+              </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'library_images'">
+              <a class="v-center result-item" [routerLink]="['/materials/library',item.material_type,item._id]">
+                <i class="i-icon i-image d-block bgc-accept mr-2"></i>
+                <div class="f-3" [innerHTML]="item.title | highlight: (handlerService.searchStr$ | async)"></div>
+              </a>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </div>
+    </ng-container>
+    <ng-template #allResult>
+      <div class="font-weight-bold">
+        {{'Searching for' | translate}} "{{handlerService.searchStr$ | async}}"
+      </div>
+      <div class="loader mt-3" *ngIf="isLoading() && !getCount(); else resultComplete"></div>
+      <div *ngIf="!isLoading() && !getCount()">
+        <div class="empty-page-inner">
+          <div class="empty-result mx-auto">
+            <div class="object-icon">
+              <i class="i-icon i-search d-block mx-auto bgc-blue mb-3"></i>
+            </div>
+            <h6 class="font-weight-bold mb-2" translate>No results found</h6>
+            <p class="op-75 f-3" translate>Try different keywords</p>
+          </div>
+        </div>
+      </div>
+      <ng-template #resultComplete>
+        <ng-container *ngIf="searchedResults['contacts'].length">
+          <h4 class="data-title" translate>Contacts</h4>
+          <div class="data-result">
+            <a class="v-center result-item" *ngFor="let contact of searchedResults['contacts'] | slice: 0:3" [routerLink]="['/contacts/' + contact._id]">
+              <div class="avatar bgc-dark text-white text-center sm mr-2">{{contact.avatarName}}</div>
+              <div class="f-3" [innerHTML]="contact.fullName | highlight: (handlerService.searchStr$ | async)"></div>
+            </a>
+            <a *ngIf="searchedResults['contacts'].length > 3" class="c-blue td-none c-pointer f-3 font-weight-bold" (click)="seeAll('contacts')" translate>See all</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="searchedResults['automations'].length">
+          <h4 class="data-title" translate>Automations</h4>
+          <div class="data-result">
+            <a
+              class="v-center result-item"
+              *ngFor="let automation of searchedResults['automations'] | slice: 0:3"
+              [routerLink]="automation.isFolder || automation.item_type =='folder' ? ['/automations/own/' + automation._id] : ['/autoflow/edit/' + automation._id]"
+            >
+              <i class="i-icon i-automation d-block bgc-dark mr-2"></i>
+              <div class="f-3" [innerHTML]="automation.title | highlight: (handlerService.searchStr$ | async)"></div>
+            </a>
+            <a *ngIf="searchedResults['automations'].length > 3" class="c-blue td-none c-pointer f-3 font-weight-bold" (click)="seeAll('automations')" translate>See all</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="searchedResults['library_automations'].length">
+          <h4 class="data-title" translate>Library Automations</h4>
+          <div class="data-result">
+            <a
+              class="v-center result-item"
+              *ngFor="let automation of searchedResults['library_automations'] | slice: 0:3"
+              [routerLink]="automation.isFolder || automation.item_type =='folder' ? ['/automations/library/' + automation._id] : ['/autoflow/edit/' + automation._id]"
+            >
+              <i class="i-icon i-automation d-block bgc-dark mr-2"></i>
+              <div class="f-3" [innerHTML]="automation.title | highlight: (handlerService.searchStr$ | async)"></div>
+            </a>
+            <a *ngIf="searchedResults['library_automations'].length > 3" class="c-blue td-none c-pointer f-3 font-weight-bold" (click)="seeAll('library_automations')" translate>See all</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="searchedResults['templates'].length">
+          <h4 class="data-title" translate>Templates</h4>
+          <div class="data-result">
+            <a class="v-center result-item" *ngFor="let template of searchedResults['templates'] | slice: 0:3" [routerLink]="['/templates/edit/' + template._id]">
+              <i class="i-icon i-template d-block bgc-dark mr-2"></i>
+              <div class="f-3" [innerHTML]="template.title | highlight: (handlerService.searchStr$ | async)"></div>
+            </a>
+            <a *ngIf="searchedResults['templates'].length > 3" class="c-blue td-none c-pointer f-3 font-weight-bold" (click)="seeAll('templates')" translate>See all</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="searchedResults['library_templates'].length">
+          <h4 class="data-title" translate>Library Templates</h4>
+          <div class="data-result">
+            <a class="v-center result-item" *ngFor="let template of searchedResults['library_templates'] | slice: 0:3" [routerLink]="['/templates/edit/' + template._id]">
+              <i class="i-icon i-template d-block bgc-dark mr-2"></i>
+              <div class="f-3" [innerHTML]="template.title | highlight: (handlerService.searchStr$ | async)"></div>
+            </a>
+            <a *ngIf="searchedResults['library_templates'].length > 3" class="c-blue td-none c-pointer f-3 font-weight-bold" (click)="seeAll('library_templates')" translate>See all</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="searchedResults['teams'].length">
+          <h4 class="data-title" translate>Community</h4>
+          <div class="data-result">
+            <a class="v-center result-item" *ngFor="let team of searchedResults['teams'] | slice: 0:3" [routerLink]="['/community/' + team._id]">
+              <i class="i-icon i-teams d-block bgc-dark mr-2"></i>
+              <div class="f-3" [innerHTML]="team.name | highlight: (handlerService.searchStr$ | async)"></div>
+            </a>
+            <a *ngIf="searchedResults['teams'].length > 3" class="c-blue td-none c-pointer f-3 font-weight-bold" (click)="seeAll('teams')" translate>See all</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="searchedResults['deals'].length">
+          <h4 class="data-title" translate>Deals</h4>
+          <div class="data-result">
+            <a class="v-center result-item" *ngFor="let deal of searchedResults['deals'] | slice: 0:3" [routerLink]="['/pipeline']" [queryParams]="{ deals: deal._id }">
+              <i class="i-icon i-deals d-block bgc-red mr-2"></i>
+              <div class="f-3" [innerHTML]="deal.title | highlight: (handlerService.searchStr$ | async)"></div>
+            </a>
+            <a *ngIf="searchedResults['deals'].length > 3" class="c-blue td-none c-pointer f-3 font-weight-bold" (click)="seeAll('deals')" translate>See all</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="searchedResults['stages'].length">
+          <h4 class="data-title" translate>Stages</h4>
+          <div class="data-result">
+            <a class="v-center result-item" *ngFor="let stage of searchedResults['stages'] | slice: 0:3" (click)="selectStage(stage)">
+              <i class="i-icon i-deals d-block bgc-blue mr-2"></i>
+              <div class="f-3" [innerHTML]="stage.title | highlight: (handlerService.searchStr$ | async)"></div>
+            </a>
+            <a *ngIf="searchedResults['stages'].length > 3" class="c-blue td-none c-pointer f-3 font-weight-bold" (click)="seeAll('stages')" translate>See all</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="searchedResults['pipelines'].length">
+          <h4 class="data-title" translate>Pipelines</h4>
+          <div class="data-result">
+            <a class="v-center result-item" *ngFor="let pipeline of searchedResults['pipelines'] | slice: 0:3" [routerLink]="['/pipeline/' + pipeline._id]">
+              <i class="i-icon i-deals d-block bgc-dark mr-2"></i>
+              <div class="f-3" [innerHTML]="pipeline.title | highlight: (handlerService.searchStr$ | async)"></div>
+            </a>
+            <a *ngIf="searchedResults['pipelines'].length > 3" class="c-blue td-none c-pointer f-3 font-weight-bold" (click)="seeAll('pipelines')" translate>See all</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="searchedResults['campaigns'].length">
+          <h4 class="data-title" translate>Bulk Email</h4>
+          <div class="data-result">
+            <a class="v-center result-item" *ngFor="let campaign of searchedResults['campaigns'] | slice: 0:3" [routerLink]="['/bulk-mail/bulk/' + campaign._id]">
+              <i class="i-icon i-broadcasts d-block bgc-dark mr-2"></i>
+              <div class="f-3" [innerHTML]="campaign.title | highlight: (handlerService.searchStr$ | async)"></div>
+            </a>
+            <a *ngIf="searchedResults['campaigns'].length > 3" class="c-blue td-none c-pointer f-3 font-weight-bold" (click)="seeAll('campaigns')" translate>See all</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="searchedResults['videos'].length">
+          <h4 class="data-title" translate>Videos</h4>
+          <div class="data-result">
+            <a class="v-center result-item" *ngFor="let material of searchedResults['videos'] | slice: 0:3" [routerLink]="['/materials/analytics',material.material_type,material._id]">
+              <i class="i-icon i-video d-block bgc-blue mr-2"></i>
+              <div class="f-3" [innerHTML]="material.title | highlight: (handlerService.searchStr$ | async)"></div>
+            </a>
+            <a *ngIf="searchedResults['videos'].length > 3" class="c-blue td-none c-pointer f-3 font-weight-bold" (click)="seeAll('videos')" translate>See all</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="searchedResults['library_videos'].length">
+          <h4 class="data-title" translate>Library Videos</h4>
+          <div class="data-result">
+            <a class="v-center result-item" *ngFor="let material of searchedResults['library_videos'] | slice: 0:3" [routerLink]="['/materials/library',material.material_type,material._id]">
+              <i class="i-icon i-video d-block bgc-blue mr-2"></i>
+              <div class="f-3" [innerHTML]="material.title | highlight: (handlerService.searchStr$ | async)"></div>
+            </a>
+            <a *ngIf="searchedResults['library_videos'].length > 3" class="c-blue td-none c-pointer f-3 font-weight-bold" (click)="seeAll('library_videos')" translate>See all</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="searchedResults['pdfs'].length">
+          <h4 class="data-title" translate>PDFs</h4>
+          <div class="data-result">
+            <a class="v-center result-item" *ngFor="let material of searchedResults['pdfs'] | slice: 0:3" [routerLink]="['/materials/analytics',material.material_type,material._id]">
+              <i class="i-icon i-pdf d-block bgc-red mr-2"></i>
+              <div class="f-3" [innerHTML]="material.title | highlight: (handlerService.searchStr$ | async)"></div>
+            </a>
+            <a *ngIf="searchedResults['pdfs'].length > 3" class="c-blue td-none c-pointer f-3 font-weight-bold" (click)="seeAll('pdfs')" translate>See all</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="searchedResults['library_pdfs'].length">
+          <h4 class="data-title" translate>Library PDFs</h4>
+          <div class="data-result">
+            <a class="v-center result-item" *ngFor="let material of searchedResults['library_pdfs'] | slice: 0:3" [routerLink]="['/materials/library',material.material_type,material._id]">
+              <i class="i-icon i-pdf d-block bgc-red mr-2"></i>
+              <div class="f-3" [innerHTML]="material.title | highlight: (handlerService.searchStr$ | async)"></div>
+            </a>
+            <a *ngIf="searchedResults['library_pdfs'].length > 3" class="c-blue td-none c-pointer f-3 font-weight-bold" (click)="seeAll('library_pdfs')" translate>See all</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="searchedResults['images'].length">
+          <h4 class="data-title" translate>Images</h4>
+          <div class="data-result">
+            <a class="v-center result-item" *ngFor="let material of searchedResults['images'] | slice: 0:3" [routerLink]="['/materials/analytics',material.material_type,material._id]">
+              <i class="i-icon i-image d-block bgc-accept mr-2"></i>
+              <div class="f-3" [innerHTML]="material.title | highlight: (handlerService.searchStr$ | async)"></div>
+            </a>
+            <a *ngIf="searchedResults['images'].length > 3" class="c-blue td-none c-pointer f-3 font-weight-bold" (click)="seeAll('images')" translate>See all</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="searchedResults['library_images'].length">
+          <h4 class="data-title" translate>Library Images</h4>
+          <div class="data-result">
+            <a class="v-center result-item" *ngFor="let material of searchedResults['library_images'] | slice: 0:3" [routerLink]="['materials/library',material.material_type,material._id]">
+              <i class="i-icon i-image d-block bgc-accept mr-2"></i>
+              <div class="f-3" [innerHTML]="material.title | highlight: (handlerService.searchStr$ | async)"></div>
+            </a>
+            <a *ngIf="searchedResults['library_images'].length > 3" class="c-blue td-none c-pointer f-3 font-weight-bold" (click)="seeAll('library_images')" translate>See all</a>
+          </div>
+        </ng-container>
+
+      </ng-template>
+    </ng-template>
+  </div>
+</ng-template>

@@ -1,0 +1,26 @@
+.material-items-list {
+  overflow-y: auto;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.material-item {
+  position: relative;
+  padding-left: 1.75rem;
+  margin-bottom: 10px;
+}
+
+.align-items-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.include-label {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.custom-control-label {
+  padding-top: 2px;
+}

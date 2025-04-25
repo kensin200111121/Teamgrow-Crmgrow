@@ -1,0 +1,255 @@
+<!-- Added by Sylla -->
+<div class="page-content">
+  <ng-container *ngIf="contactGroups.length > 0 || contactsToUpload.length > 0 ; else emptyList">
+    <div class="status-header v-center mt-3">
+      <h1 class="page-title v-center justify-content-start contact-count desktop">
+        <span [translateParams]="{count: contactGroups.length}" translate>Contacts are already in your contact list</span>
+        <img class="mx-1" [src]="sspaService.toAsset('img/warning-sm.svg')" alt="">
+      </h1>
+      <div class="f-6 font-weight-bold op-64 contact-count mobile v-center justify-content-start">
+        <span [translateParams]="{count: contactGroups.length}" translate>Contacts are already in your contact list</span>
+        <img class="mx-1" [src]="sspaService.toAsset('img/warning-sm.svg')" alt="">
+      </div>
+      <div class="ml-auto v-center create-actions">
+        <ng-container *ngIf="nextDeal(); else closeButton">
+          <button class="v-center btn btn-white border border-primary f-6 font-weight-bold rounded mr-2 px-3"
+            (click)="onClose()">
+            <span class="normal" translate>Ignore & Next</span>
+            <span class="mobile" translate>Ignore & Next</span>
+          </button>
+        </ng-container>
+        <ng-template #closeButton>
+          <button class="v-center btn btn-white border border-primary f-6 font-weight-bold rounded mr-2 px-3" (click)="onClose()">
+            <span class="normal" translate>Close</span>
+            <span class="mobile" translate>Close</span>
+          </button>
+        </ng-template>
+        <ng-container *ngIf="contactGroups.length > 0 || isAllSelected()">
+          <button class="btn btn-primary f-6 font-weight-bold rounded px-3 text-white shadow" [class.loading]="isSaving"
+            [class.disabled]="contactGroups.length === 0 || selectedLength() === 0"
+            (click)="contactGroups.length === 0 || selectedLength() === 0 ? null : onBulkUpdate()">
+            {{ 'Update' | translate }}
+          </button>
+        </ng-container>
+        <ng-container *ngIf="contactsToUpload.length > 0">
+          <button class="ml-2 btn btn-primary f-6 font-weight-bold rounded px-3 text-white shadow"  [class.loading]="isImporting"
+            [class.disabled]="contactsToUpload.length === 0"
+            (click)="contactsToUpload.length === 0 ? null : onBulkImport()">
+            {{ 'Continue' | translate }}
+          </button>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="f-6 font-weight-bold op-64 mb-2 contact-count desktop">
+      {{ 'See below and select to update contacts' | translate }}
+    </div>
+
+    <ng-container *ngIf="contactsToUpload.length > 0">
+      <div class="v-center justify-content-start my-3">
+        <span class="f-4 c-black fw-600" [translateParams]="{count: contactsToUpload.length}" translate>
+          items are updated
+        </span>      
+      </div>
+      <div class="duplicate-wrapper pr-2">
+        <div class="duplicate-check-wrapper">
+          <div class="table-wrapper">
+            <table class="table page-table mb-3 duplicate-table">
+              <thead>
+                <tr class="column-row">
+                  <th *ngFor="let item of pcMatching | keyvalue : contactHeaderOrder" class="column-field">
+                    <div class="min-w-200 text-black f-4 min-h-40 v-center">
+                      {{properties[item.value]}}</div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let contact of contactsToUpload">             
+                  <tr class="data-row">
+                    <td *ngFor="let item of pcMatching | keyvalue : contactHeaderOrder" class="f-4 updated-contact">
+                      <div class="v-center custom-field data-field">
+                        {{formatValue(contact[item.value]) || ''}}
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    
+    <ng-container *ngIf="contactGroups.length > 0">
+      <div class="v-center justify-content-start my-3">
+        <span class="f-4 c-black fw-600" [translateParams]="{count: selectedLength()}" translate>
+          items are selected
+        </span>
+        <ng-container *ngIf="!isAllSelected()">
+          <a (click)="onSelectAll()" class="ml-2 f-3 c-pointer user-action header-action" translate>
+            Select All
+          </a>
+        </ng-container>
+        <ng-container *ngIf="isPartialSelected()">
+          <a (click)="onDeselect()" class="ml-2 f-3 c-pointer user-action header-action" translate>
+            Deselect
+          </a>
+        </ng-container>
+      </div>  
+      <div class="duplicate-wrapper pr-2">
+        <div class="duplicate-check-wrapper">
+          <div class="table-wrapper">
+            <table class="table page-table mb-3 duplicate-table">
+              <thead>
+                <tr class="column-row">
+                  <th class="sticky-checkbox-col column-field">
+                    <div class="custom-control custom-checkbox">
+                      <input type="checkbox" class="custom-control-input" id="selectPageContacts"
+                        (change)="$event ? onSelectAllPage() : null" [checked]="isAllSelectedPage()" />
+                      <label class="custom-control-label" for="selectPageContacts"></label>
+                    </div>
+                  </th>
+                  <th>Type</th>
+                  <th *ngFor="let item of pcMatching | keyvalue : contactHeaderOrder" class="column-field">
+                    <div class="min-w-200 text-black f-4 min-h-40 v-center">
+                      {{properties[item.value]}}</div>
+                  </th>
+                  <th class="sticky-action-col column-field"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container
+                  *ngFor="let group of contactGroups | paginate: {id: 'duplicateContactPage', itemsPerPage: pageSize.id, currentPage: page, totalItems: contactGroups.length}; let i = index">
+                  <tr class="blank-row" *ngIf="!group.updated">
+                    <td class="sticky-checkbox-col"></td>
+                    <td></td>
+                    <td *ngFor="let item of pcMatching | keyvalue"></td>
+                    <td class="sticky-action-col"></td>
+                  </tr>
+                  <tr>
+                    <td class="checkbox sticky-checkbox-col" [class.selected]="group.checked"
+                      [class.updated]="group.updated">
+                      <ng-container *ngIf="!group.updated">
+                        <div class="custom-control custom-checkbox data-field">
+                          <input type="checkbox" class="custom-control-input" id="contact-{{group.result.id}}"
+                            (change)="onSelect(group, i)" [checked]="group.checked" />
+                          <label class="custom-control-label" for="contact-{{group.result.id}}"></label>
+                        </div>
+                      </ng-container>
+                    </td>
+                    <td>Merged Result</td>
+                    <td *ngFor="let item of pcMatching | keyvalue : contactHeaderOrder" class="f-4 last-row"
+                      [class.selected]="group.checked" [class.updated]="group.updated">
+                      <div class="v-center custom-field data-field">
+                        {{formatValue(group.result[item.value]) || ''}}
+                      </div>
+                    </td>
+                    <td class="sticky-action-col" [class.selected]="group.checked" [class.updated]="group.updated">
+                      <div class="v-center custom-field justify-content-between data-field">
+                        <ng-container *ngIf="!group.updated">
+                          <a (click)="onUpdate(i)" class="ml-2 c-pointer user-action">
+                            <i class="i-icon d-block i-edit bgc-dark"></i>
+                          </a>
+                        </ng-container>
+                        <i class="i-icon mx-2 i-round-check" [class.round-check]="group.updated"></i>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="data-row" *ngFor="let contact of group.contacts; let j = index">
+                    <td class="group-contact"></td>
+                    <td class="group-contact">
+                      <span *ngIf="contact['crm_contact']">CRM</span>
+                      <span *ngIf="!contact['crm_contact']">CSV</span>
+                    </td>
+                    <td *ngFor="let item of pcMatching | keyvalue : contactHeaderOrder" class="f-4 group-contact">
+                      <div class="v-center custom-field data-field">
+                        {{formatValue(contact[item.value]) || ''}}
+                      </div>
+                    </td>
+                    <td class="sticky-action-col group-contact">
+                      <div class="v-center custom-field justify-content-between data-field">
+                        <a (click)="updateContactDlg(contact, $event)" class="ml-2 c-pointer user-action" tooltipClass="action-tooltip  above-sticky" placement="left" ngbTooltip="{{'You can edit this contact email or phone number to avoid the duplication' | translate}}">
+                          <i class="i-icon d-block i-edit bgc-dark"></i>
+                        </a>
+                        <a *ngIf="!contact['crm_contact']" (click)="removeDuplicatedField(i, $event)" tooltipClass="action-tooltip  above-sticky" placement="left" class="ml-2 c-pointer user-action" ngbTooltip="{{'You can remove the duplicated email/phone number to avoid the duplication' | translate}}">
+                          <i class="i-icon d-block i-close bgc-dark"></i>
+                        </a>
+                        <a *ngIf="!contact['crm_contact']" (click)="removeCsvContact(i, $event)" tooltipClass="action-tooltip  above-sticky" placement="left" class="ml-2 c-pointer user-action" ngbTooltip="{{'Ignore/Remove this csv contact' | translate}}">
+                          <i class="i-icon d-block i-trash bgc-dark"></i>
+                        </a>                    
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="my-2 table-control mode-1">
+        <div class="pagination-wrapper m-auto">
+          <pagination-controls (pageChange)="onChangePage($event)" (pageBoundsCorrection)="onChangePage($event)"
+            id="duplicateContactPage" maxSize="5" previousLabel="" nextLabel="">
+          </pagination-controls>
+        </div>
+        <div class="shadow-dropdown ml-auto page-size-control" ngbDropdown placement="top-right">
+          <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+            <span class="pr-2 c-blue" [translateParams]="{count: pageSize.id}" translate>pagination</span>
+          </div>
+          <div ngbDropdownMenu aria-labelledby="duplicateContactPageSize">
+            <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS" (click)="onChangePageSize(type)">
+              <span class="f-3 v-center" [class.font-weight-bold]="type.id === pageSize.id">
+                <span [translateParams]="{count: type.id}" translate>pagination</span>
+                <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1" *ngIf="type.id == pageSize.id"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    
+  </ng-container>
+
+  <ng-template #emptyList>
+    <div class="v-center justify-content-center mt-50">
+      <div class="empty-list">
+        <div class="object-icon v-center">
+          <i class="i-icon i-lunch d-block bgc-dark"></i>
+        </div>
+        <h4 class="font-weight-bold my-3" translate>
+          There is no duplicated contacts in your account
+        </h4>
+        <ng-container *ngIf="nextDeal()">
+          <h6 class="fw-600 my-1" translate>
+            Deal column found in your contact upload file
+          </h6>
+        </ng-container>
+        <div class="v-center my-1">
+          <a class="btn btn-white border border-primary rounded shadow" (click)="onClose()">
+            <span class="font-weight-bold c-blue f-3" translate *ngIf="isSspa">Back to Vortex</span>
+            <span class="font-weight-bold c-blue f-3" translate *ngIf="!isSspa">Back to crmgrow</span>
+          </a>
+          <ng-container *ngIf="nextDeal()">
+            <a class="btn btn-primary rounded shadow ml-2" (click)="onClose()">
+              <span class="font-weight-bold c-white f-3" translate>
+                Create Deals
+              </span>
+            </a>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</div>
+
+<ng-container *ngIf="contactGroups.length > 0">
+  <mat-drawer-container [hasBackdrop]="true">
+    <mat-drawer #drawer position="end" (openedChange)="setPanelType($event)">
+      <app-update-duplicated-contacts-csv [hidden]="panelType" (onClose)="drawer.close()"
+        (onUpdate)="onUpdateContact($event)" [pcMatching]="pcMatching" [properties]="properties"
+        [group]="contactGroups[updatingIndex]" #updateContact>
+      </app-update-duplicated-contacts-csv>
+    </mat-drawer>
+  </mat-drawer-container>
+</ng-container>
+<!-- End by Sylla -->

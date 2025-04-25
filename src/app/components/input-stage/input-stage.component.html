@@ -1,0 +1,85 @@
+<div class="custom-mat-field">
+  <div
+    class="pipeline-dropdown"
+    placement="bottom-right"
+    ngbDropdown
+    placement="bottom-end"
+  >
+    <div
+      data-name="pipeline-name-list"
+      class="btn dropdown-toggle font-weight-bold c-dark c-pointer p-2 rounded justify-content-end"
+      ngbDropdownToggle
+    >
+      <span class="pr-2">
+        <ng-container
+          *ngIf="!pipelines?.length; else pipelineTemplate">
+          <span class="font-weight-bold ml-2">none</span>
+        </ng-container>
+        <ng-template #pipelineTemplate>
+          <span class="font-weight-bold ml-2">{{
+            selectedPipeline?.detail?.title
+          }}</span>
+        </ng-template>
+      </span>
+    </div>
+    <div
+      ngbDropdownMenu
+      aria-labelledby="taskSortTypes"
+    >
+      <div
+        class="py-2"
+        ngbDropdownItem
+        *ngFor="let pipeline of pipelines"
+        (click)="onSelectPipeLine(pipeline)"
+        [attr.data-name]="'pipeline-title-' + pipeline.detail.title"
+      >
+        <span>
+          {{ pipeline.detail.title }}
+        </span>
+      </div>
+    </div>
+  </div>
+    <mat-form-field appearance="outline" floatLabel="never" class="d-block">
+      <mat-chip-list aria-label="Stage selection" #stageList>
+        <mat-basic-chip
+          *ngFor="let stage of selectedStages"
+          [selectable]="selectable"
+          [removable]="true"
+          (removed)="remove(stage)">
+          <div class="v-center chip p-1 rounded-pill mr-1">
+            <div class="info c-dark font-weight-bold ml-1">
+              {{ STAGE_DICTIONARY[stage]?.title }}
+            </div>
+            <div class="close-icon-wrapper rounded-circle bg-white ml-1">
+              <div class="i-icon i-close bgc-dark" matChipRemove></div>
+            </div>
+          </div>
+        </mat-basic-chip>
+        <input
+          [placeholder]="placeholder"
+          #inputField
+          [formControl]="formControl"
+          [matChipInputFor]="stageList"
+          [matAutocomplete]="auto"
+          [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
+          [matChipInputAddOnBlur]="false"
+          (matChipInputTokenEnd)="onAdd($event)"
+        >
+      </mat-chip-list>
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        (optionSelected)="onSelectOption($event)"
+        (optionActivated)="onActiveOption($event)"
+        [autoActiveFirstOption]="true"
+      >
+        <mat-option *ngFor="let item of filteredResults | async" [value]="item">
+          <div class="d-flex chip py-2" *ngIf="item.title">
+            <div class="info">
+              <div class="f-3" *ngIf="item.isNew" translate>Create new stage:</div>
+              <div class="f-4 fw-600">{{item.title}}</div>
+            </div>
+          </div>
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </div>

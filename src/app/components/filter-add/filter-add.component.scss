@@ -1,0 +1,17 @@
+.filter-count {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+}
+
+.label-type {
+  max-width: 150px;
+}
+.label-container {
+  max-width: calc(100% - 150px);
+}
+
+.i-icon.i-label {
+  width: 18px;
+  height: 18px;
+}

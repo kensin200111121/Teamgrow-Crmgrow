@@ -1,0 +1,186 @@
+// Added by Sylla
+@import 'variables.scss';
+
+:host ::ng-deep {
+  table {
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 270px);
+    overflow-x: auto;
+    overflow-y: auto;
+
+    & th,
+    td {
+      display: inline-block !important;
+      width: 270px !important;
+      white-space: nowrap;
+      line-height: 30px !important;
+    }
+  }
+
+  .match-column-wrapper {
+    position: relative;
+    white-space: nowrap;
+
+    .table-wrapper {
+      width: 100%;
+    }
+  }
+}
+
+.table-control {
+  position: sticky;
+  bottom: 0px;
+  background: white;
+  padding: 8px 0px;
+}
+
+.status-header .create-actions .mobile {
+  display: none;
+}
+
+.contact-count.mobile {
+  display: none;
+}
+
+.toolbar-actions {
+  width: 100%;
+}
+
+@media screen and (max-width: 480px) {
+  .status-header {
+    display: block !important;
+
+    .create-actions {
+      margin-top: 6px;
+      margin-bottom: 12px;
+
+      & > * {
+        width: 50%;
+        text-align: center;
+        justify-content: center;
+        font-size: 13px;
+      }
+    }
+  }
+
+  .contact-count.mobile {
+    display: block;
+  }
+
+  .contact-count.desktop {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 384px) {
+  .status-header {
+    .create-actions {
+      .normal {
+        display: none;
+      }
+
+      .mobile {
+        display: block;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 468px) {
+  .contact-list-controls {
+    flex-wrap: wrap;
+
+    .search-form {
+      width: 100%;
+      margin-top: 4px;
+    }
+  }
+}
+
+.address-col a {
+  max-width: 75px;
+  width: 75px;
+  font-size: 12px;
+}
+
+.contact-avatar {
+  position: relative;
+}
+
+.shared-by,
+.shared-with {
+  position: absolute;
+  display: block;
+  width: 22px;
+  height: 22px;
+  background: transparent;
+  border-radius: 10px;
+  bottom: -6px;
+  right: -6px;
+
+  .i-icon {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.dialer-discover {
+  border-radius: 8px;
+}
+
+.shared-member-contact a:hover {
+  color: $color-dark;
+}
+
+.mat-select {
+  border: 1px solid #aaa;
+  padding: 10px 12px;
+  border-radius: 5px;
+  background-color: white;
+}
+
+.mat-select-value-text {
+  color: #000;
+  font-weight: bold;
+}
+
+.round-check {
+  background-color: #00916e;
+}
+
+.flag-container {
+  display: flex;
+
+  .dropdown-toggle {
+    background: #eee;
+    height: 40px;
+    width: 100%;
+    border-radius: 5px;
+    justify-content: center;
+    padding: 0 10px;
+  }
+
+  .dropdown-menu.show {
+    width: 250px;
+  }
+}
+
+.countries-wrapper {
+  background-color: white;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.disclaim {
+  background: #f004;
+  padding: 16px;
+  margin-bottom: 24px;
+  border: 1px solid red;
+  border-radius: 8px;
+}
+// End by Sylla
+
+.upload-ready-btn {
+  position: fixed;
+  right: 0;
+}

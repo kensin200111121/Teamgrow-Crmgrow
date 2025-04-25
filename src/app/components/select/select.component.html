@@ -1,0 +1,3 @@
+<select [formControl]="form" (change)="change($event)" [class]="className" [disabled]="disabled">
+    <option *ngFor="let option of options" value="{{option}}">{{option}}</option>
+</select>

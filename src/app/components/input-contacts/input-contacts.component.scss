@@ -1,0 +1,136 @@
+.mat-basic-chip {
+  outline: none!important;
+  .chip {
+    align-items: center;
+    background: gainsboro;
+    border-radius: 24px;
+    margin-right: 2px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+
+    .icon-close {
+      background-color: white!important;
+      border-radius: 50%;
+      margin-left: 4px;
+    }
+  }
+}
+
+.shared-by,
+.shared-with {
+  position: absolute;
+  display: block;
+  width: 22px;
+  height: 22px;
+  background: transparent;
+  border-radius: 10px;
+  bottom: 25px;
+  left: 25px;
+
+  .i-icon {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.response {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  bottom: 0px;
+  box-shadow: 0px 0px 4px #0008;
+  left: 0px;
+  border-radius: 8px;
+  box-sizing: border-box;
+  background-color: #797b8e;
+
+  &.needsAction {
+    &::before {
+      content: "?";
+      color: white;
+      text-align: center;
+      width: 100%;
+      position: absolute;
+      line-height: 14px;
+      left: 0px;
+      font-size: 12px;
+    }
+  }
+
+  &.tentative {
+    background-color: #f7b500;
+    &::before {
+        position: absolute;
+        left: 2px;
+        width: 10px;
+        height: 2px;
+        background: white;
+        content: "";
+        top: 50%;
+        transform: translateY(-1px);
+    }
+  }
+
+  &.accepted {
+    background-color: #00da42;
+    &::after {
+      content: "";
+      width: 10px;
+      height: 6px;
+      border-left: 2px solid white;
+      position: absolute;
+      border-bottom: 2px solid white;
+      transform: translateY(3px) rotate(-45deg);
+      left: 2px;
+    }
+  }
+
+  &.declined {
+    background-color: #d92022;
+    &::after {
+        position: absolute;
+        left: 2px;
+        width: 10px;
+        height: 2px;
+        background: white;
+        content: "";
+        top: 50%;
+        transform: translateY(-1px) rotate(45deg);
+    }
+    &::before {
+        position: absolute;
+        left: 2px;
+        width: 10px;
+        height: 2px;
+        background: white;
+        content: "";
+        top: 50%;
+        transform: translateY(-1px) rotate(-45deg);
+    }
+  }
+}
+
+.searching-status {
+  height: 48px;
+  display: flex;
+  align-items: center;
+
+  .keyword {
+    font-weight: bold;
+  }
+
+  .loader {
+    width: 30px;
+    height: 30px;
+    margin-right: 0px;
+  }
+}
+
+.mat-chip-input {
+  width: 160px !important;
+}
+
+.shared-mark {
+  border-radius: 11px;
+  padding: 2px 8px;
+}

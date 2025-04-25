@@ -1,0 +1,107 @@
+.title-desc {
+  line-height: 1;
+  font-weight: 400;
+}
+
+.popup {
+  flex-direction: column;
+}
+
+.searched-contacts {
+  padding: 25px 0px 0px 0px;
+  width: 240px;
+  max-height: 210px;
+  overflow: auto;
+  border: 1px solid gainsboro;
+  border-radius: 4px;
+  box-shadow: 0px 4px 8px #aaa8;
+  transform: translateY(3px);
+
+  .chip {
+    cursor: pointer;
+    padding-left: 12px;
+    padding-right: 12px;
+    background-color: #fafafa;
+
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  }
+
+  .action {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: calc(100% - 2px);
+    text-align: center;
+    background: white;
+    font-size: 14px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+  }
+
+  div.empty {
+    text-align: center;
+    border-radius: 5px;
+    margin: 0px;
+    border: none;
+
+    .manual {
+      font-weight: 600;
+      color: #5e72e4;
+    }
+  }
+}
+
+.button-more {
+  display: inline-block;
+
+  .i-icon {
+    width: 10px;
+    height: 10px;
+  }
+  a {
+    &::after {
+      display: none;
+    }
+  }
+}
+
+.button-more-container {
+  .actions {
+    padding: 0px 5px;
+    text-align: left;
+  }
+}
+
+.label-search {
+  background: #1fb34c;
+  border-radius: 4px;
+  font-size: 12px;
+  color: white;
+  padding: 2px 6px;
+}
+
+.field-actions {
+  button {
+    padding: 5px 10px;
+    height: 22px;
+    line-height: 14px;
+    transform: none!important;
+    font-size: 11px;
+    margin-right: 5px;
+    box-shadow: none;
+    font-weight: bold;
+
+    @media screen and (max-width: 576px) {
+      padding: 5px;
+      margin: 3px;
+    }
+  }
+
+  .button-more-container {
+    button {
+      margin: 5px 0px;
+    }
+  }
+}

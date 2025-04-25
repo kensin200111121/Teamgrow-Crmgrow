@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>crmgrow</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0 user-scalable=no">
+  <meta http-equiv="cache-control" content="no-cache, must-revalidate, post-check=0, pre-check=0">
+  <meta http-equiv="expires" content="0">
+  <meta http-equiv="pragma" content="no-cache">
+
+  <meta name="description" content="Provides the contact management functionality and material tracking system.">
+  <meta name="author" content="Garrett Team">
+  <meta name="theme-color" content="#1976d2">
+
+  <meta property="og:title" , content="crmgrow">
+  <meta property="og:description" ,
+    content="Provides the contact management functionality and material tracking system.">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image" content="https://app.crmgrow.com/assets/img/site_placeholder.jpg">
+
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="manifest" href="manifest.webmanifest">
+  <!-- Material Default Font & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSFbYGvju9pcvRgB1-skml8uocN71z4HI&libraries=places&language=en"></script>
+  <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+  <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+  <script type="text/javascript">
+    Stripe.setPublishableKey('pk_test_51MrkAzEqXQpehsocIJPEM8RGjLv6rH3wDvCGJuXJM91gQEGHybiBQO0HbK930P4NpxJpAIzxe2kFUqkjCANmfLX20059UZEAhd');
+    var global = global || window;
+  </script>
+  <script type="module" src="https://cdn.zapier.com/packages/partner-sdk/v0/zapier-elements/zapier-elements.esm.js"></script>
+  <link rel="stylesheet" href="https://cdn.zapier.com/packages/partner-sdk/v0/zapier-elements/zapier-elements.css"/>
+</head>
+
+<body class="">
+  <app-root></app-root>
+  <script>
+    function goToMaterial(e) {
+      e.preventDefault();
+      const linkDom = e.target.closest('a');
+      if (!linkDom) {
+        return;
+      }
+      const user = localStorage.getItem('u_id');
+      let id = linkDom.getAttribute('href');
+      const type = linkDom.getAttribute('data-type');
+      id = id.replace('{{', '');
+      id = id.replace('}}', '');
+      if (id && user && type) {
+        window.open(`https://material.crmgrow.com/${type}?${type}=${id}&user=${user}`, '_blank');
+      }
+    }
+  </script>
+
+  <script>
+    (function(w){w.fpr=w.fpr||function(){w.fpr.q = w.fpr.q||[];w.fpr.q[arguments[0]=='set'?'unshift':'push'](arguments);};})(window);
+    fpr("init", {cid:"q8wwcpij"}); 
+    fpr("click");
+  </script>
+
+  <script src="https://cdn.firstpromoter.com/fpr.js" async></script>
+  <noscript>Please enable JavaScript to continue using this application.</noscript>
+
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=294868089468225&ev=PageView&noscript=1"
+  /></noscript>
+
+  <script>window.STONLY_WID = "10496f0a-7fa6-11ec-82f1-064cee365e5a";</script>
+  <script>
+  !function(s,t,o,n,l,y,w,g){s.StonlyWidget||((w=s.StonlyWidget=function(){
+    w._api?w._api.apply(w,arguments):w.queue.push(arguments)}).scriptPath=n,w.queue=[],(y=t.createElement(o)).async=!0,
+    (g=new XMLHttpRequest).open("GET",n+"version?v="+Date.now(),!0),g.onreadystatechange=function(){
+    4===g.readyState&&(y.src=n+"stonly-widget.js?v="+(200===g.status?g.responseText:Date.now()),
+    (l=t.getElementsByTagName(o)[0]).parentNode.insertBefore(y,l))},g.send())
+    }(window,document,"script","https://stonly.com/js/widget/v2/");
+  </script>
+</body>
+
+</html>

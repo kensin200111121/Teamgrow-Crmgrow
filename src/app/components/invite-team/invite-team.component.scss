@@ -1,0 +1,40 @@
+.list-content {
+  height: calc(32vh - 145px);
+  min-height: 46px;
+  overflow: auto;
+}
+
+hr {
+  border-top-width: 2px;
+}
+
+.description {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .copy-wrapper {
+    display: inline-flex;
+    width: 84px;
+  }
+}
+
+.btn-decline.loading {
+  background-color: #E02020;
+}
+
+@media screen and (max-width: 576px) {
+  .description {
+    display: block;
+
+    .copy-descirption {
+      display: inline-block;
+    }
+  }
+}
+
+:host ::ng-deep {
+  .dropdown-toggle::after {
+    display: none;
+  }
+}

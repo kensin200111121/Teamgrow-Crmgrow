@@ -1,0 +1,91 @@
+<ng-container [ngSwitch]="tab.id">
+  <div class="notes-detail" *ngSwitchCase="'note'">
+    <div class="v-center justify-content-between mb-3">
+      <div class="v-center">
+        <div class="history-icon mr-1">
+          <i class="act-icon act-notes"></i>
+        </div>
+        <div class="d-flex v-center">
+          <span class="text-capitalize">{{ activity.activityOverView.content }}</span>
+          <ng-container *ngIf="activity?.activityOverView?.user">
+            <app-contact-action-user [user]="activity.activityOverView.user"></app-contact-action-user>
+          </ng-container>
+        </div>
+      </div>
+      <div class="v-center ml-auto">
+        <span class="f-3 op-56">
+          {{ activity.activityOverView.created_at | datetimeFormat }}
+        </span>
+        <div *ngIf="!isPending" ngbDropdown class="button-more p-1 rounded contact-action-btn" placement="bottom-right">
+          <a class="d-flex c-pointer no-carot" ngbDropdownToggle>
+            <i class="i-icon i-menu-more bg-dark" aria-hidden="true"></i>
+          </a>
+          <div ngbDropdownMenu class="light py-1">
+            <ng-container *ngIf="
+                                activity.action && !isPending;
+                                else removedNoteAction
+                            ">
+              <button class="v-center border-0 py-1 c-dark dropdown-item" (click)="
+                                openEditNoteForm(
+                                    activity.action
+                                )
+                                ">
+                <i class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i>
+                <span class="ml-3 f-2 font-weight-bold" translate>Edit</span>
+              </button>
+              <button class="v-center border-0 py-1 c-dark dropdown-item" (click)="
+                                deleteNoteDetail(
+                                    activity.action
+                                )
+                                ">
+                <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+                <span class="ml-3 f-2 font-weight-bold" translate>Delete</span>
+              </button>
+            </ng-container>
+            <ng-template #removedNoteAction>
+              <button class="v-center border-0 py-1 c-dark dropdown-item" (click)="deleteNoteDetail(activity.action)">
+                <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+                <span class="ml-3 f-2 font-weight-bold" translate>Delete</span>
+              </button>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-container *ngIf="activity?.action?.audio">
+      <audio controls class="flex-grow-1 w-100" preload="auto">
+        <source [src]="
+                        domSanitizer.bypassSecurityTrustUrl(
+                          activity.action.audio
+                        )
+                      " type="audio/wav" />
+      </audio>
+    </ng-container>
+    <div class="collapsed" *ngIf="!more">
+      <span class="note-content"
+        [innerHTML]="activity.action?.content || 'No Content' | removeEntity | shorten: 150: '...' | safeHtml">
+      </span>
+      <a class="more f-3 mt-2 c-pointer fw-600 d-block w-fit" *ngIf="isLongContent" (click)="more = true" translate>Expand</a>
+    </div>
+    <div class="expanded" *ngIf="more">
+      <span class="note-content" [innerHTML]="activity?.action?.content | safeHtml">
+      </span>
+      <a class="more f-3 mt-2 c-pointer fw-600 d-block w-fit"  *ngIf="isLongContent" (click)="more = false" translate>Collapse</a>
+    </div>
+  </div>
+  <div class="notes-detail" *ngSwitchCase="'note_update'">
+    <div class="v-center mb-3">
+      <div class="history-icon mr-1">
+        <i class="act-icon act-notes"></i>
+      </div>
+      <div>
+        <span translate>note</span>
+      </div>
+    </div>
+    <div class="main-history-item">
+      <app-inline-note-editor [contact]="contactId" [value]="noteToEdit"  [isFocused]="true" (onCancel)="closeEditNoteForm()"
+        (onUpdated)="onUpdateNote($event)" [storeAudio]="true">
+      </app-inline-note-editor>
+    </div>
+  </div>
+</ng-container>

@@ -1,0 +1,73 @@
+<form #form="ngForm" (ngSubmit)="form.form.valid ? submit() : false" [class.was-validated]="form.submitted"
+  class="general">
+  <h1 mat-dialog-title translate>Bulk edit tasks</h1>
+  <mat-dialog-content>
+    <div class="form-group mt-3">
+      <label translate>Task Type</label>
+      <div>
+        <app-task-type [(value)]="type"></app-task-type>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label translate>Change Subject</label>
+      <select class="form-control theme-control" [(ngModel)]="keepSubject" name="changeSubject" #changeSubject="ngModel"
+        required>
+        <option value="new_subject">{{ 'Set with new subject' | translate }}</option>
+        <option value="keep_subject">{{ 'Keep original subject' | translate }}</option>
+      </select>
+    </div>
+
+    <div class="form-group" *ngIf="keepSubject === 'new_subject'">
+      <div class="v-center">
+        <label for="subject" class="mb-0" translate>Subject</label>
+        <span class="error ml-auto" *ngIf="taskSubject.errors">
+          <ng-container *ngIf="taskSubject.errors.required">
+            {{ 'Required!' | translate }}
+          </ng-container>
+        </span>
+      </div>
+      <input type="text" id="subject" class="form-control" [(ngModel)]="subject" name="taskSubject"
+        #taskSubject="ngModel" required />
+    </div>
+
+    <div class="form-group">
+      <label translate>Change due dates?</label>
+      <select class="form-control theme-control" [(ngModel)]="keepDate" name="changeDate" #changeDate="ngModel"
+        required>
+        <option value="new_date">{{ 'Set with new date' | translate }}</option>
+        <option value="keep_date">{{ 'Keep original date' | translate }}</option>
+      </select>
+    </div>
+
+    <div class="row" *ngIf="keepDate === 'new_date'">
+      <div class="col-sm-6 col-12">
+        <div class="form-group">
+          <div class="v-center">
+            <label for="date_tc" class="mb-0" translate>Date</label>
+            <span class="error ml-auto" *ngIf="!date" translate>Required!</span>
+          </div>
+          <app-date-input type="prepend" [(value)]="date" [minDate]="MIN_DATE"></app-date-input>
+        </div>
+      </div>
+      <div class="col-sm-6 col-12">
+        <div class="form-group">
+          <label for="time_tc" class="d-block mb-0" translate>Time</label>
+          <select class="form-control" name="due_time" #due_time="ngModel" [(ngModel)]="time">
+            <option *ngFor="let time of TIMES" [value]="time.id">
+              {{time.text}}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button class="btn c-blue" mat-dialog-close>
+      {{ 'Cancel' | translate }}
+    </button>
+    <button class="btn btn-primary" [class.loading]="updating">
+      {{ 'Update' | translate }}
+    </button>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,92 @@
+<form #form="ngForm" (ngSubmit)="submitted = true; form.form.valid ? update() : false;" [class.was-validated]="form.submitted">
+    <div class="v-center justify-content-between">
+        <h1 mat-dialog-title class="m-0" translate>Edit additional information</h1>
+        <button type="button" class="v-center border-0 bgc-trans close-button" mat-dialog-close>
+            <i class="i-icon i-close bgc-black ml-1" aria-hidden="true"></i>
+        </button>
+    </div>
+    <mat-dialog-content>
+      <div class="form-group v-center justify-content-between mt-10 mb-2">
+        <label class="col-5 mb-0" translate>Additional Fields</label>
+        <div class="v-center justify-content-end col-6 c-pointer" (click)="addField()">
+          <i class="i-icon sm i-plus bgc-blue d-block"></i>
+          <span class="ml-1 c-blue f-3 font-weight-bold" translate>New Field</span>
+        </div>
+      </div>
+      <div class="additional-fields pb-2" *ngIf="additional_fields.length > 0">
+        <ng-container *ngFor="let field of additional_fields; let i = index;">
+          <div class="row mt-2">
+            <div class="col-1 v-center justify-content-center" placement="bottom">
+              <div class="c-pointer" *ngIf="field.isExtra" (click)="convertField(field, i)">
+                <i class="i-icon i-global op-75 bgc-dark-trans75 d-block"></i>
+              </div>
+            </div>
+            <div class="col-5 v-center">
+              <div class="form-group flex-grow-1 mb-0">
+                <label class="additional-field-label" *ngIf="!field.isExtra">{{ field.name }}</label>
+                <input type="text" class="form-control" *ngIf="field.isExtra" [(ngModel)]="field.name" [placeholder]="field.placeholder ? field.placeholder : 'Field name | translate'" name="{{'additional-field-name-' + i}}" required />
+              </div>
+            </div>
+            <div class="v-center" [class]="field.isExtra ? 'col-5' : 'col-6'">
+              <div class="form-group flex-grow-1 mb-0" [ngSwitch]="field.type" #wrapper>
+                <input type="text"
+                  class="form-control"
+                  *ngSwitchCase="'text'"
+                  name="{{'additional-field-value-' + i}}"
+                  [placeholder]="field.placeholder ? field.placeholder : 'Field value | translate'"
+                  [(ngModel)]="field.value" />
+                <input type="email"
+                  class="form-control"
+                  *ngSwitchCase="'email'"
+                  name="{{'additional-field-value-' + i}}"
+                  placeholder="{{field.placeholder}}"
+                  [(ngModel)]="field.value"
+                  pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$" />
+                <span class="error mt-1" *ngIf="field.type === 'email'" translate>
+                  Email is invalid!
+                </span>
+                <input type="text"
+                  class="form-control"
+                  *ngSwitchCase="'link'"
+                  name="{{'additional-field-value-' + i}}"
+                  placeholder="{{field.placeholder}}"
+                  [(ngModel)]="field.value" />
+                <app-phone-input
+                  [cssClass]="'form-control'"
+                  *ngSwitchCase="'phone'"
+                  name="{{'additional-field-value-' + i}}"
+                  [onlyCountries]="countries"
+                  [selectedCountryISO]="CountryISO.UnitedStates"
+                  [(ngModel)]="field.value"
+                  (ngModelChange)="checkPhoneValidation(wrapper, phoneControl, $event)"
+                  [placeholder]="field.placeholder"
+                  #phoneControl
+                >
+                </app-phone-input>
+                <app-date-input *ngSwitchCase="'date'" type="prepend" [(value)]="field.value" [minDate] = "field?.minDate"  [maxDate] = "field?.maxDate" [placeholder]="field.placeholder" [required]="false">
+                </app-date-input>
+                <span class="error mt-1" *ngIf="field.type === 'phone'"  translate>
+                  Phone is invalid!
+                </span>
+                <select class="form-control" *ngSwitchCase="'dropdown'" [(ngModel)]="field.value" name="{{'additional-field-value-' + i}}" #option="ngModel">
+                  <option value="" translate>None</option>
+                  <option *ngFor="let option of field.options" value="{{option.value}}">{{option.value}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-1 v-center" *ngIf="field.isExtra" placement="bottom" ngbTooltip="{{'Remove' | translate}}">
+              <div class="remove">
+                <a class="c-pointer" (click)="removeField(i)">
+                  <i class="i-icon i-remove bgc-white d-block"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button type="button" mat-dialog-close class="btn c-blue" translate>Cancel</button>
+        <button [attr.data-action]="'contact-update-additional-information'" type="submit" class="btn btn-primary" [class.loading]="isUpdating" translate>Update</button>
+    </mat-dialog-actions>
+</form>

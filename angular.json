@@ -1,0 +1,374 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "crmgrow": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-builders/custom-webpack:browser",
+          "options": {
+            "customWebpackConfig": {
+              "path": "webpack-config.ts"
+            },
+            "outputPath": "dist/crmgrow",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.app.json",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              "src/manifest.webmanifest"
+            ],
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "./node_modules/intl-tel-input/build/css/intlTelInput.css",
+              "./node_modules/codemirror/lib/codemirror.css",
+              "src/globalScope.scss",
+              "src/styles.scss",
+              "node_modules/quill/dist/quill.core.css",
+              "node_modules/quill/dist/quill.snow.css"
+            ],
+            "scripts": [
+              "node_modules/quill/dist/quill.js",
+              "node_modules/quill/dist/quill.core.js",
+              "src/assets/js/annyang.js",
+              "src/assets/js/materialLink.js"
+            ],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true,
+            "allowedCommonJsDependencies": [
+              "@angular/material",
+              "@wavv/dialer",
+              "@wavv/ringless",
+              "style-loader",
+              "moment",
+              "src/app/layouts/admin-layout/admin-layout.module",
+              "!../node_modules/style-loader/dist/runtime/insertBySelector.js",
+              "!../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+              "!../node_modules/style-loader/dist/runtime/insertStyleElement.js",
+              "!../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js",
+              "!../node_modules/style-loader/dist/runtime/styleDomAPI.js",
+              "!../node_modules/style-loader/dist/runtime/styleTagTransform.js",
+              "quill-better-table",
+              "quill-blot-formatter",
+              "html2canvas"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/styles/crmgrow"
+              ]
+            }
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "stylePreprocessorOptions": {
+                "includePaths": [
+                  "src/styles/crmgrow"
+                ]
+              },
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "customWebpackConfig": {
+                "path": "webpack-config.ts"
+              },
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "24mb",
+                  "maximumError": "30mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "20kb",
+                  "maximumError": "25kb"
+                }
+              ],
+              "serviceWorker": true,
+              "ngswConfigPath": "ngsw-config.json"
+            },
+            "staging": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.staging.ts"
+                }
+              ],
+              "stylePreprocessorOptions": {
+                "includePaths": [
+                  "src/styles/crmgrow"
+                ]
+              },
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "customWebpackConfig": {
+                "path": "webpack-config.ts"
+              },
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "24mb",
+                  "maximumError": "30mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "20kb",
+                  "maximumError": "25kb"
+                }
+              ],
+              "serviceWorker": true,
+              "ngswConfigPath": "ngsw-config.json"
+            },
+            "dev": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev.ts"
+                }
+              ],
+              "stylePreprocessorOptions": {
+                "includePaths": [
+                  "src/styles/crmgrow"
+                ]
+              },
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "customWebpackConfig": {
+                "path": "webpack-config.ts"
+              },
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "24mb",
+                  "maximumError": "30mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "20kb",
+                  "maximumError": "25kb"
+                }
+              ],
+              "serviceWorker": true,
+              "ngswConfigPath": "ngsw-config.json"
+            },
+            "dev-sspa": {
+              "outputPath": "dist/dev-sspa",
+              "main": "src/main.sspa.ts",
+              "tsConfig": "tsconfig.sspa.json",
+              "customWebpackConfig": {
+                "path": "webpack-config.sspa.js",
+                "libraryName": "crmgrow",
+                "libraryTarget": "umd"
+              },
+              "outputHashing": "none",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev-sspa.ts"
+                }
+              ],
+              "stylePreprocessorOptions": {
+                "includePaths": [
+                  "src/styles/vortex"
+                ]
+              }
+            },
+            "prod-sspa": {
+              "outputPath": "dist/prod-sspa",
+              "main": "src/main.sspa.ts",
+              "tsConfig": "tsconfig.sspa.json",
+              "customWebpackConfig": {
+                "path": "webpack-config.sspa.js",
+                "libraryName": "crmgrow",
+                "libraryTarget": "umd"
+              },
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod-sspa.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "none",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "24mb",
+                  "maximumError": "30mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "20kb",
+                  "maximumError": "25kb"
+                }
+              ],
+              "serviceWorker": true,
+              "ngswConfigPath": "ngsw-config.json",
+              "stylePreprocessorOptions": {
+                "includePaths": [
+                  "src/styles/vortex"
+                ]
+              }
+            },
+            "stage-sspa": {
+              "outputPath": "dist/stage-sspa",
+              "main": "src/main.sspa.ts",
+              "tsConfig": "tsconfig.sspa.json",
+              "customWebpackConfig": {
+                "path": "webpack-config.sspa.js",
+                "libraryName": "crmgrow",
+                "libraryTarget": "umd"
+              },
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.stage-sspa.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "none",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "24mb",
+                  "maximumError": "30mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "20kb",
+                  "maximumError": "25kb"
+                }
+              ],
+              "serviceWorker": true,
+              "ngswConfigPath": "ngsw-config.json",
+              "stylePreprocessorOptions": {
+                "includePaths": [
+                  "src/styles/vortex"
+                ]
+              }
+            }
+          },
+          "defaultConfiguration": ""
+        },
+        "serve": {
+          "builder": "@angular-builders/custom-webpack:dev-server",
+          "options": {
+            "browserTarget": "crmgrow:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "crmgrow:build:production"
+            },
+            "staging": {
+              "browserTarget": "crmgrow:build:staging"
+            },
+            "dev": {
+              "browserTarget": "crmgrow:build:dev"
+            },
+            "prod-sspa": {
+              "browserTarget": "crmgrow:build:prod-sspa"
+            },
+            "stage-sspa": {
+              "browserTarget": "crmgrow:build:stage-sspa"
+            },
+            "dev-sspa": {
+              "browserTarget": "crmgrow:build:dev-sspa"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "crmgrow:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "src/test/test.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              "src/manifest.webmanifest"
+            ],
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "./node_modules/codemirror/lib/codemirror.css",
+              "src/globalScope.scss",
+              "src/styles.scss"
+            ],
+            "scripts": [],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/styles/crmgrow"
+              ]
+            }
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "e2e/protractor.conf.js",
+            "devServerTarget": "crmgrow:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "crmgrow:serve:production"
+            }
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": "b917c27d-3cdd-4289-a47d-0aa44ad5fc2b"
+  }
+}

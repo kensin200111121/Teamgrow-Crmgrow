@@ -1,0 +1,18 @@
+<div class="dialog-container">
+  <mat-dialog-content>
+    <i class="i-icon i-information d-block bgc-blue mx-auto"></i>
+    <p class="my-4 text-center" translate>Failed the accept contacts</p>      
+    <div>
+      <div *ngIf="data.duplicatedContacts?.length > 0" class="f-4 text-center mb-1" [translateParams]="{length: data.duplicatedContacts.length / 2}" translate>
+        length contacts are duplicated in your contacts list
+      </div>
+      <div *ngIf="data.limitedContacts?.length > 0" class="f-4 text-center" [translateParams]="{length: data.limitedContacts.length}" translate>
+        length contacts are limited in your contacts list
+      </div>
+    </div> 
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button type="button" class="btn btn-white c-blue font-weight-bold" (click)="closeDialog()" translate>Close</button>
+    <button *ngIf="data.duplicatedContacts?.length > 0" type="button" class="btn btn-primary f-6 font-weight-bold px-3 mr-3" (click)="doMerge()" translate>Merge</button>
+  </mat-dialog-actions>
+</div>

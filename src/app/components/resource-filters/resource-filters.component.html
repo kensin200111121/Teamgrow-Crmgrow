@@ -1,0 +1,53 @@
+<div class="form-group mb-3">
+  <label class="mb-2" translate>Type</label>
+  <div class="filter-check-item" *ngFor="let type of resourTypes">
+    <div class="custom-checkbox mb-1">
+      <input type="checkbox" class="custom-control-input" id="ft-{{type.id}}" name="ft-{{type.id}}"
+        (change)="toggleTypeOption(type.id)" [checked]="typeOptions.includes(type.id)">
+      <label class="custom-control-label" for="ft-{{type.id}}">
+        <div class="f-3 mt-1">{{type.label}}</div>
+      </label>
+    </div>
+  </div>
+</div>
+<div class="form-group" *ngIf="teams.length && mode !== FilterMode.USER">
+  <label class="mb-2" translate>shared with</label>
+  <div class="filter-check-item" *ngFor="let team of teams">
+    <div class="custom-checkbox mb-1">
+      <input type="checkbox" class="custom-control-input" id="mft-{{team._id}}" name="mfu-{{team._id}}"
+        (change)="toggleTeamOption(team._id)" [checked]="teamOptions.includes(team._id)">
+      <label class="custom-control-label" for="mft-{{team._id}}">
+        <div class="f-3 mt-1">{{team.name}}</div>
+      </label>
+    </div>
+  </div>
+</div>
+
+<div class="form-group" *ngIf="mode !== FilterMode.TEAM">
+  <label class="mb-2" translate>owner</label>
+  <div class="filter-check-item">
+    <!-- <div class="custom-checkbox mb-1">
+      <input type="checkbox" class="custom-control-input" id="mfu-admin" name="mfu-admin" (change)="toggleAdminOption()"
+        [checked]="isAdmin">
+      <label class="custom-control-label" for="mfu-admin">
+        <div class="f-3 mt-1" translate>Admin</div>
+      </label>
+    </div>
+    <div class="custom-checkbox mb-1">
+      <input type="checkbox" class="custom-control-input" id="mfu-me" name="mfu-me" (change)="toggleUserOption(user_id)"
+        [checked]="userOptions.indexOf(user_id) !== -1">
+      <label class="custom-control-label" for="mfu-me">
+        <div class="f-3 mt-1" translate>Me</div>
+      </label>
+    </div> -->
+    <ng-container *ngFor="let user of users">
+      <div class="custom-checkbox mb-1" *ngIf="user._id != user_id">
+        <input type="checkbox" class="custom-control-input" id="mfu-{{user._id}}" name="mfu-{{user._id}}"
+          (change)="toggleUserOption(user._id)" [checked]="userOptions.indexOf(user._id) !== -1">
+        <label class="custom-control-label" for="mfu-{{user._id}}">
+          <div class="f-3 mt-1">{{user.user_name}}</div>
+        </label>
+      </div>
+    </ng-container>
+  </div>
+</div>

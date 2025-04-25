@@ -1,0 +1,45 @@
+<div class="v-center justify-content-between">
+  <h1 mat-dialog-title class="m-0" translate>
+      Buy new profile
+  </h1>
+</div>
+<mat-dialog-content>
+  <div class="package-wrapper">
+      <div class="package-item active">
+          <div class="package-feature">
+              <span class="mb-1 d-block" translate>Additional Subscription</span>
+              <div class="package-price">
+                  <span class="dollar">$</span>
+                  <span class="price mr-1">19</span>
+                  <span class="month" translate> / month</span>
+              </div>
+          </div>
+          <div class="package-line"></div>
+          <ul class="package-description">
+              <li translate>Unlimited Contacts</li>
+              <li translate>Unlimited Material Uploads & Video Recordings</li>
+              <li translate>3000 Active Automations</li>
+              <li translate>Unlimited Calendar</li>
+              <li translate>Unlimited Pipeline</li>
+              <li translate>1 Assistant Access</li>
+              <li translate>2 Websites</li>
+          </ul>
+          <div class="v-center justify-content-end mt-4">
+            <button class="btn btn-white c-dark" mat-dialog-close>
+                Cancel
+            </button>
+            <button class="btn btn-primary btn-package ml-3"
+                [class.loading]="buying"
+                (click)="buyAccount()"
+                translate
+                data-action="start-new-profile"
+            >
+                Start new profile
+            </button>
+          </div>
+
+      </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+</mat-dialog-actions>

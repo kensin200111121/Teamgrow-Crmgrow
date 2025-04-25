@@ -1,0 +1,110 @@
+.team-select {
+  margin-bottom: 20px;
+}
+
+.align-items-end {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.custom-control-label {
+  margin-left: 30px;
+}
+
+.checkbox-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+
+  .label-item {
+    margin: 0.75rem 0.25rem 0.75rem 2rem;
+  }
+
+  .custom-checkbox {
+    .custom-control-input {
+      &:indeterminate ~ .custom-control-label {
+        &::before {
+          border: rgba(16, 19, 54, 0.4) solid 2px;
+          background-color: unset;
+        }
+        &::after {
+          background-image: none;
+        }
+      }
+    }
+  }
+}
+
+:host ::ng-deep {
+  .mat-expansion-indicator {
+    position: absolute;
+    right: 10px;
+    width: 12px;
+    height: 12px;
+    transform-origin: center center;
+
+    &::after {
+      position: absolute;
+      top: 0px;
+      left: 2px;
+    }
+  }
+  .mat-expansion-panel-body {
+    padding-bottom: 4px;
+    padding-right: 8px;
+  }
+
+  .mat-content {
+    align-items: center;
+  }
+
+  .view-tabs {
+    .tab-container {
+      height: 36px;
+      padding: 4px;
+
+      .tab {
+        padding-left: 4px;
+        padding-right: 4px;
+        font-size: 13px;
+        height: 24px;
+        letter-spacing: 1px;
+      }
+      .tab-indicator {
+        height: 30px !important;
+      }
+    }
+  }
+}
+
+.custom-checkbox.indeterminate {
+  .custom-control-label::before {
+    background: blue;
+    border: blue;
+  }
+  .custom-control-label::after {
+    background-image: url(../../../assets/img/remove-white.svg);
+    background-size: 70%;
+  }
+}
+
+
+.team-badge {
+  font-size: 12px;
+  line-height: 16px;
+  background-color: #00a9ff;
+  color: #FFF;
+  font-weight: 400;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.community-badge {
+  font-size: 12px;
+  line-height: 16px;
+  background-color: #066FD3;
+  color: #FFF;
+  font-weight: 400;
+  padding: 2px 4px;
+  border-radius: 4px;
+}

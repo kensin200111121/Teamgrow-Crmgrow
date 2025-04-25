@@ -1,0 +1,78 @@
+.tree-container {
+  margin-bottom: 10px;
+  .folder-icon {
+    color: #ffc107;
+    background: none;
+    border: none;
+    outline: none;
+    justify-content: flex-end;
+    min-width: 48px;
+  }
+  /* Note: If you're using an SVG icon, you should make the class target the `<svg>` element */
+  .folder-icon svg {
+      fill: #ffc107;
+  }
+
+  .i-folder {
+    background-color: #eeaf53;
+    margin-left: 0px;
+  }
+
+  .i-chev-right {
+    transition: all .2s;
+    &.expanded {
+      transform: rotate(90deg);
+    }
+  }
+
+  .mat-tree-node  {
+    min-height:40px;
+   // max-width: 150px;
+  }
+
+  /*
+ * This padding sets alignment of the nested nodes.
+ */
+  .mat-nested-tree-node div[role=group] {
+    padding-left: 5px;
+  }
+
+}
+
+.one-line-text {
+  white-space: nowrap;
+}
+
+.tree-container-invisible {
+  display: none;
+}
+
+.tree-container ul,
+.tree-container li {
+  margin-top: 0;
+  margin-bottom: 0;
+  list-style-type: none;
+}
+
+
+
+
+/*
+ * Padding for leaf nodes.
+ * Leaf nodes need to have padding so as to align with other non-leaf nodes
+ * under the same parent.
+ */
+
+.material-tree-progress-bar{
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.material-root-tree-progress-bar{
+  margin-top: 15px;
+  margin-bottom: 15px;
+  margin-left: auto;
+  margin-right: auto;
+}

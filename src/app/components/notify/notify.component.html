@@ -1,0 +1,11 @@
+<mat-dialog-content>
+  <div [innerHTML]="data.message | safeHtml" ></div>
+</mat-dialog-content>
+<mat-dialog-actions class="mx-0" [class.justify-content-between]="data?.show_checkbox" align="end">
+  <div *ngIf="data?.show_checkbox" class="custom-control custom-checkbox">
+    <input type="checkbox" class="custom-control-input" id="isConfirm"
+      name="loginSetting" [(ngModel)]="isConfirm" />
+    <label class="custom-control-label f-6 field-name" for="isConfirm" translate>Don't show again</label>
+  </div>
+  <button class="btn btn-custom btn-primary" (click)="close()">{{data.label || ('OK' | translate)}}</button>
+</mat-dialog-actions>

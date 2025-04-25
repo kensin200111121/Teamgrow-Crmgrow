@@ -1,0 +1,35 @@
+a.copy-icon {
+  display: inline-block;
+}
+
+ul {
+  padding: 0rem;
+
+  li {
+    margin-bottom: 0.5rem;
+
+    code {
+      display: block;
+      background: #f5f5f5;
+      border: 1px solid #e6e6e6;
+      border-radius: 4px;
+      padding: 8px;
+      color: #6a6a6a;
+      white-space: pre-wrap;
+    }
+  }
+}
+
+::ng-deep {
+  .custom-expansion-panel .mat-expansion-panel-header {
+    padding: 12px 4px !important; /* Custom styles here */
+    background-color: transparent!important; /* Example: custom background */
+    height: 60px !important;
+  }
+  .custom-expansion-panel.mat-expansion-panel {
+    box-shadow: unset!important;
+  }
+  .custom-expansion-panel .mat-expansion-panel-body {
+    padding: 0 12px 0px;
+  }
+}

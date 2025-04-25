@@ -1,0 +1,20 @@
+<div class="summary" [class.isShown]="!isFocused" (click)="focus()">
+  {{ (note?.content || 'Write your note') | stripTags | removeEntity | shorten: 30:'...' }}
+</div>
+
+<form #form="ngForm" (ngSubmit)="form.form.valid? save() : false;" [class.was-validated]="form.submitted" class="inline-note-form">
+  <div class="form-group has-feedback">
+    <app-html-editor [(value)]="note.content" [hasToken]="false" [hasTemplates]="false" [noImage]="true" [placeholder]="'Start typing here...'"
+      [style]="{height: '70px'}" [storeAudio]="true" [required]="true" (onEditorCreated)="getEditorInstance($event)"
+      #editor>
+    </app-html-editor>
+    <div class="my-2" *ngIf="isFocused">
+      <app-audio-note [url]="note.audio" (onRecorded)="insertAudioNote($event)" (onRemoved)="removeAudioNote()" (onRecordStart)="startAudioNote()"
+        #recorder></app-audio-note>
+    </div>
+  </div>
+  <div class="d-flex justify-content-end">
+    <button *ngIf="!disableHideContent" class="btn c-blue" (click)="close()" translate>Cancel</button>
+    <button class="btn btn-yellow-light" type="submit" [class.loading]="saving" [class.disable]="recording" translate>Save</button>
+  </div>
+</form>

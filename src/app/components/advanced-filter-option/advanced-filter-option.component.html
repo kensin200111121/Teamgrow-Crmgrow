@@ -1,0 +1,105 @@
+<h2 class="v-center d-flex">
+  <span class="text-capitalize" translate>{{ data.title }}</span>
+  <button class="border-0 bgc-trans ml-auto" (click)="closeDialog()">
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</h2>
+<div [ngSwitch]="data.filter_id" class="mt-4">
+  <app-advanced-filter-label
+    *ngSwitchCase="'label'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+    [selectedTab]="selectedTab"
+  ></app-advanced-filter-label>
+
+  <app-advanced-filter-material
+    *ngSwitchCase="'material'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+  ></app-advanced-filter-material>
+
+  <app-advanced-filter-country
+    *ngSwitchCase="'country'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+  ></app-advanced-filter-country>
+
+  <app-advanced-filter-state
+    *ngSwitchCase="'state'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+  ></app-advanced-filter-state>
+
+  <app-advanced-filter-city
+    *ngSwitchCase="'city'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+  ></app-advanced-filter-city>
+
+  <app-advanced-filter-zipcode
+    *ngSwitchCase="'zipcode'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+  ></app-advanced-filter-zipcode>
+
+  <app-advanced-filter-source
+    *ngSwitchCase="'source'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+  ></app-advanced-filter-source>
+
+  <app-advanced-filter-company
+    *ngSwitchCase="'company'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+  ></app-advanced-filter-company>
+
+  <app-advanced-filter-tag
+    *ngSwitchCase="'tag'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+  ></app-advanced-filter-tag>
+
+  <app-advanced-filter-stage
+    *ngSwitchCase="'stage'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+  ></app-advanced-filter-stage>
+
+  <app-advanced-filter-activity
+    *ngSwitchCase="'activity'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+  ></app-advanced-filter-activity>
+
+  <app-advanced-filter-assignee
+    *ngSwitchCase="'assignee'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+    [selectionType]="'checkbox'"
+  ></app-advanced-filter-assignee>
+
+  <app-advanced-filter-team
+    *ngSwitchCase="'community'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+  ></app-advanced-filter-team>
+
+  <!-- Custom field -->
+  <app-advanced-filter-custom-field
+    *ngSwitchCase="'custom_field'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+    [column]="data.title"
+  ></app-advanced-filter-custom-field>
+
+  <app-advanced-filter-unsubscribed
+    *ngSwitchCase="'unsubscribed'"
+    (filter)="applyFilter($event)"
+  ></app-advanced-filter-unsubscribed>
+
+  <app-advanced-filter-automation
+    *ngSwitchCase="'automation'"
+    (filter)="applyFilter($event)"
+  ></app-advanced-filter-automation>
+</div>

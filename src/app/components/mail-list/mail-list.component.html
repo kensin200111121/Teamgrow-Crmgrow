@@ -1,0 +1,35 @@
+<div class="custom-mat-field mat-select-wrapper">
+  <mat-form-field style="display: block;" appearance="outline">
+    <mat-select [formControl]="formControl" placeholder={{placeholder}} #selector [disableOptionCentering]="true">
+      <mat-select-trigger>
+        <ng-container *ngIf="formControl.value">
+          <ng-container *ngIf="resultItemTemplate; else defaultResult" [ngTemplateOutlet]="resultItemTemplate" [ngTemplateOutletContext]="{ $implicit: formControl.value }">
+          </ng-container>
+          <ng-template #defaultResult>
+            <div class="v-center selected-value">
+              <div class="f-3 font-weight-bold">{{formControl.value.title}}</div>
+<!--              <div class="f-1 c-badge rect ml-2">{{formControl.value.contacts.length}}</div>-->
+            </div>
+          </ng-template>
+        </ng-container>
+      </mat-select-trigger>
+      <mat-option>
+        <ngx-mat-select-search
+          [formControl]="inputControl"
+          [searching]="searching"
+          [placeholderLabel]="formPlaceholder"
+          noEntriesFoundLabel="There is no searched results."
+          preventHomeEndKeyPropagation="true">
+        </ngx-mat-select-search>
+      </mat-option>
+      <mat-option *ngFor="let item of filteredResults | async" [value]="item" style="height: unset; line-height: unset;">
+        <div class="py-3">
+          <div class="v-center mb-2 mail-list">
+            <div class="f-3 font-weight-bold">{{item.title}}</div>
+<!--            <div class="f-1 c-badge rect ml-2">{{item.contacts}}</div>-->
+          </div>
+        </div>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

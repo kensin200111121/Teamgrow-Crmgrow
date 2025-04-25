@@ -1,0 +1,31 @@
+<div class="v-center justify-content-between">
+    <h1 class="m-0" mat-dialog-title translate>
+        Edit Status
+    </h1>
+    <i class="d-block i-icon i-close bgc-dark" mat-dialog-close></i>
+</div>
+<mat-dialog-content>
+    <div class="d-flex mt-3">
+        <div class="select-color">
+            <div class="f-1 op-40 text-uppercase label" translate>
+                pick color
+            </div>
+            <div class="mt-2">
+                <color-swatches (onChange)="handleChange($event)" [colors]="COLORS" width="170" height="120"></color-swatches>
+            </div>
+        </div>
+        <div class="label-preview ml-auto">
+            <div class="f-1 op-40 text-uppercase label" translate>
+                status-preview
+            </div>
+            <div class="v-center mt-2">
+                <i class="i-icon i-label d-block mr-2 bgc-dark" [style.backgroundColor]="color"></i>
+                <span class="f-3 fw-600" translate>Example status</span>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button class="btn btn-white f-6 font-weight-bold c-dark mr-2" mat-dialog-close translate>Cancel</button>
+    <button class="btn btn-primary f-6 font-weight-bold" [class.loading]="saving" (click)="changeColor()" translate>Apply</button>
+</mat-dialog-actions>

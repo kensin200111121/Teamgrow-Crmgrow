@@ -1,0 +1,104 @@
+@import 'variables';
+
+.contact-automation-status {
+  width: 100vw;
+  max-width: 600px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .title {
+    padding: 24px 16px 0px 16px;
+  }
+
+  .card-body {
+    padding-top: 0.5rem;
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+  .flows-container {
+    height: 100%;
+    background: #f2f2f2;
+    position: relative;
+
+    .zoom-button-wrapper {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+
+      button {
+        padding: 4px;
+
+        i {
+          width: 14px;
+          height: 14px;
+          min-width: 14px;
+        }
+      }
+    }
+  }
+}
+
+
+.trueCase {
+  background-color: #BFF2DF;
+  padding: 2px 6px 2px 6px;
+  margin-bottom: 30px;
+  text-align: center;
+  width: 44px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #116947;
+  border-radius: 5px;
+  font-size: 10px;
+}
+.falseCase {
+  background-color: #F4CFC7;
+  padding: 2px 6px 2px 6px;
+  margin-bottom: 30px;
+  text-align: center;
+  width: 44px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #8C2A18;
+  border-radius: 5px;
+  font-size: 10px;
+}
+
+.edge {
+  .line {
+      &.completed {
+          stroke: $color-red;
+      }
+      &.active {
+          stroke: $color-red;
+      }
+  }
+}
+
+.cardContainer {
+  label {
+      &.completed {
+          color: $color-green-weak;
+      }
+      &.checking {
+          color: $color-orange-weak;
+      }
+      &.pending {
+          color: $color-orange-weak;
+      }
+      &.active {
+          color: $color-blue;
+      }
+      &.disabled {
+          color: $color-red;
+      }
+      &.error {
+          color: $color-red;
+      }
+      &.warning {
+        color: $color-pink-red
+      }
+  }
+}

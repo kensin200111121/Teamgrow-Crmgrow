@@ -1,0 +1,125 @@
+<div class="step-body">
+  <form id="brand-campaign-form" [class.submitted]="campaignForm.submitted"
+    (ngSubmit)="campaignForm.form.valid ? createCampagin() : null;" #campaignForm="ngForm">
+    <div class="form-group">
+      <div class="v-center">
+        <label>Campaign Description <span>(Describe what you will be using this campaign for.)</span> <a
+            [ngbPopover]="descriptionContent">Learn more</a></label>
+      </div>
+      <div class="description-box">
+        <textarea type="text" class="form-control" name="campaign-description"
+          placeholder="Example: This campaign sends one-time passcodes to the end users when they try to log into our company’s website."
+          [(ngModel)]="campaign.description" #description required>
+        </textarea>
+        <div class="error">Required!</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="v-center">
+        <label>Message Flow <span>(How do end-users consent to receive messages? (40-2048 characters))</span></label>
+      </div>
+      <div class="description">
+        <strong>Did you know?</strong><br/>
+        Most Campaigns that fail or are rejected are due to incorrect information being submitted in the "How do
+        end-users consent to receive messages?" Please check the <a target="_blank" href="https://console.twilio.com//f32cfe7b3505d76b.png">sample screenshot</a><br/>
+        <br/>
+        This field should describe how end users opt-in to the campaign, therefore giving consent to the sender to
+        receive their messages. If multiple opt-in methods can be used for the same campaign, they must all be listed.
+        <a [ngbPopover]="flowContent">Learn more</a>
+      </div>
+      <div class="description-box">
+        <textarea type="text" class="form-control" name="message-flow"
+          placeholder="Example: End users opt-in by visiting www.examplewebsite.com and adding their phone number. They then check a box agreeing to receive text messages from Example Brand. Opt-in occurs after end users create an account; see screenshot of opt-in (www.example.com/screenshot-of-the-form-field). Additionally, end users can also opt-in by texting START to (111) 222-3333 to opt in."
+          [(ngModel)]="campaign.messageFlow" #messageFlow required>
+        </textarea>
+        <div class="error">Required!</div>
+      </div>
+    </div>
+    <div class="v-center justify-content-between">
+      <label>Messages</label>
+      <ng-container *ngIf="5 > campaign.messages.length">
+        <button class="btn c-blue f-3 pr-0" (click)="insertNewMessage()">
+          + New message
+        </button>
+      </ng-container>
+    </div>
+    <div class="description">
+      Provide an example of a message that you will be sending with this campaign. This message sample will be used by
+      carriers to help identify your traffic. <a [ngbPopover]="messageContent">Learn more</a>
+    </div>
+    <div class="message-box-list-{{campaign.messages.length}}">
+      <ng-container *ngFor="let message of msgCounter(); let i = index;">
+        <div class="d-flex position-relative message-box">
+          <div class="form-group flex-grow-1">
+            <textarea class="form-control" maxlength="1024" name="message-{{i}}" [(ngModel)]="campaign.messages[i]"
+              required>
+            </textarea>
+            <div class="error">Required!</div>
+          </div>
+          <a (click)="removeMessage(i)" class="c-pointer close-action">
+            <i class="i-icon d-block bgc-blue i-close"></i>
+          </a>
+        </div>
+      </ng-container>
+    </div>
+  </form>
+</div>
+<div class="step-actions">
+  <button class="btn btn-primary" form="brand-campaign-form" type="submit" [class.loading]="creating">{{ campaignId ?
+    'Update' : 'Create'}}</button>
+</div>
+<ng-template #descriptionContent>
+  <strong>Campaign use case description</strong><br />
+  Explanation of Campaign objective or purpose.<br />
+  <br />
+  If the Campaign pertains to financial services, please include "Direct Lending" in the Campaign description to avoid
+  failure or rejection of this Campaign.<br />
+  <strong>Successful Example:</strong><br />
+  "This Campaign sends OTP for MFA challenges to login to an online portal to make changes to a user profile for
+  security purposes. Customer confirms with an SMS when profile changes are made."<br />
+  (Campaign description matches sample message and sample message)<br />
+  <br />
+  <strong>Failure Example:</strong><br />
+  "Blank"<br />
+  "This Campaign sends appointment information and confirmations to customer"
+</ng-template>
+<ng-template #flowContent>
+  <strong>How do end-users consent to receive messages?</strong><br />
+  This field should describe how and when consumers opt-in to the campaign, therefore giving consent to the sender to
+  receive their messages. The call-to-action must be explicitly clear and inform consumers of the nature of the program.
+  If multiple opt-in methods can be used for the same, list them all.<br />
+  <br />
+  Provide website where opt-in occurs.<br />
+  List all opt-in methods.<br />
+  Include an opt-in message if users can text.<br />
+  If a website is provided, it must be accessible with privacy policy and terms.<br />
+  If opt-in occurs behind a gated login or on paper, provide a hosted link of a screenshot or document of the
+  opt-in.<br />
+  <strong>Successful Example:</strong><br />
+  "Customers provide opt-in specifically when enrolling into our website, or in person by requesting SMS capabilities
+  within the store. Opt-in during website is a self-service process and occurs at acme.com/signup. By submitting, you
+  authorize ACME to send text messages with offers and other information. Message/data rates apply. Consent is not a
+  condition of purchase. [Link to terms and conditions]."
+  <br />
+  <strong>Failure Example:</strong><br />
+  "Customers sign up"<br />
+  <br />
+  (Where and how the customer provides opt-in is unclear, campaign will be rejected.)
+</ng-template>
+<ng-template #messageContent>
+  <div>
+    <strong>Sample messages</strong><br />
+    Sample messages should reflect actual messages to be sent under campaign.<br />
+    <br />
+    Do not use placeholder text for your sample messages<br />
+    Use brackets to indicate templated fields in sample message<br />
+    Consistency in sample message, use case, and campaign description<br />
+    <br />
+    <strong>Successful Example:</strong><br />
+    "ACME 2FA Notice: Here is your one time password: 1234Call [phone-number] to report if this request was not made by
+    you."<br />
+    <br />
+    <strong>Failure Example:</strong><br />
+    "You have an upcoming appointment"
+  </div>
+</ng-template>

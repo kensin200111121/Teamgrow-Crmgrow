@@ -1,0 +1,65 @@
+<mat-expansion-panel [expanded]="true">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <h5>{{ title }}</h5>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  
+  <div>
+    <ng-container *ngIf="isEmptyLoading; else listView">
+      <div class="list-loading text-center">
+        <div class="loader mt-5 lg"></div>
+        <h4 class="fw-600 mt-2" translate>Loading...</h4>
+      </div>
+    </ng-container>
+    <ng-template #listView>
+      <ng-container *ngIf="!isEmpty; else emptyView">
+        
+        <div class="d-flex conversation header">
+          <div class="name ml-0">Name</div>
+          <div class="buckets">Relationship</div>
+          <div class="referrral">Likely Referral</div>
+          <div class="phone">Phone</div>
+          <div *ngIf="type !== 'first'" class="contact-at">Last Contacted</div>
+          <div class="action mr-0 pr-3">Actions</div>
+        </div>
+
+        <div *ngFor="let contact of contacts">
+          <app-conversation-item [contact]="contact" [type]="type" (action)="handleItemAction(contact, $event)"></app-conversation-item>
+        </div>
+
+        <div class="mt-2">
+          <ng-container *ngIf="isLoadingMore; else loadMoreView">
+            <div class="d-flex">
+              <a class="btn c-blue loading">Loading</a>
+              <span>Loading More...</span>
+            </div>
+          </ng-container>
+          <ng-template #loadMoreView>
+            <ng-container *ngIf="hasMore">
+              <a class="c-blue text-decoration-none c-pointer font-weight-bold pl-2 d-flex" (click)="load()">
+                <i class="i-icon i-circle-add d-block bgc-blue mr-2 ml-1"></i>
+                <span>Load More Contacts</span>
+              </a>
+            </ng-container>
+          </ng-template>
+        </div>
+      </ng-container>
+      <ng-template #emptyView>
+        <div>
+          <div class="empty-list">
+            <div class="object-icon v-center">
+              <i class="i-icon i-lunch d-block bgc-dark"></i>
+            </div>
+            <h4 class="font-weight-bold mt-3 mb-3" translate>
+              {{ type + '_empty_conversation' }}
+            </h4>
+            <a class="btn btn-primary" (click)="load()">
+              <span class="font-weight-bold f-3" translate>Reload</span>
+            </a>
+          </div>
+        </div>
+      </ng-template>
+    </ng-template>
+  </div>
+</mat-expansion-panel>

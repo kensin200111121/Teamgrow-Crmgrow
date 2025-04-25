@@ -1,0 +1,1340 @@
+@import './variables';
+
+.i-event-note {
+  mask-image: url('/assets/img/event_note.svg');
+}
+.i-calendar-conflicts {
+  mask-image: url('/assets/img/calendar-conflicts.svg');
+}
+.i-calendar-add {
+  mask-image: url('/assets/img/calendar-add.svg');
+}
+.i-one-on-one {
+  mask-image: url('/assets/img/one-on-one.svg');
+}
+.i-group {
+  mask-image: url('/assets/img/group.svg');
+}
+.i-calendar-left-arrow {
+  mask-image: url('/assets/img/calendar-left-arrow.svg');
+}
+.i-calendar-right-arrow {
+  mask-image: url('/assets/img/calendar-right-arrow.svg');
+}
+.i-check-mark {
+  mask-image: url('/assets/img/check-mark.svg');
+}
+.i-automation {
+  mask-image: url('/assets/img/automation.svg');
+}
+.i-automations {
+  mask-image: url('/assets/img/automation.svg');
+}
+.i-leadhub {
+  mask-image: url('/assets/img/hub_black.svg');
+}
+.i-broadcasts {
+  mask-image: url('/assets/img/broadcasts.svg');
+}
+.i-calendar {
+  mask-image: url('/assets/img/calendar.svg');
+}
+.i-error {
+  mask-image: url('/assets/img/error.svg');
+}
+.i-calendly {
+  mask-image: url('/assets/img/calendly.svg');
+}
+.i-timer {
+  mask-image: url('/assets/img/timer.svg');
+}
+.i-contact {
+  mask-image: url('/assets/img/assistant.svg');
+}
+.i-copy {
+  mask-image: url('/assets/img/copy.svg');
+}
+.i-deadline {
+  mask-image: url('/assets/img/deadline.svg');
+}
+.i-download {
+  mask-image: url('/assets/img/download.svg');
+}
+.i-edit {
+  mask-image: url('/assets/img/edit.svg');
+}
+.i-event {
+  mask-image: url('/assets/img/event.svg');
+}
+.i-follow {
+  mask-image: url('/assets/img/follow.svg');
+}
+.i-list {
+  mask-image: url('/assets/img/list.svg');
+}
+.i-list-circle {
+  mask-image: url('/assets/img/list-circle.svg');
+}
+.i-location {
+  mask-image: url('/assets/img/location.svg');
+}
+.i-lunch {
+  mask-image: url('/assets/img/lunch.svg');
+}
+.i-message {
+  mask-image: url('/assets/img/message.svg');
+}
+.i-label {
+  mask-image: url('/assets/img/label.svg');
+}
+.i-notification {
+  mask-image: url('/assets/img/notification.svg');
+}
+.i-pdf {
+  mask-image: url('/assets/img/pdf_icon.svg');
+}
+.i-phone {
+  mask-image: url('/assets/img/phone.svg');
+}
+.i-call {
+  mask-image: url('/assets/img/phone.svg');
+}
+.i-pdf-email {
+  mask-image: url('/assets/img/pdf_email.svg');
+}
+.i-person {
+  mask-image: url('/assets/img/person.svg');
+}
+.i-person-add {
+  mask-image: url('/assets/img/person_add.svg');
+}
+.i-assignee {
+  mask-image: url('/assets/img/contact.svg'); //TODO: replace with the actual icon for the assignee
+}
+.i-sent {
+  mask-image: url('/assets/img/sent.svg');
+}
+.i-setting {
+  mask-image: url('/assets/img/setting.svg');
+}
+.i-share {
+  mask-image: url('/assets/img/share.svg');
+}
+.i-share-contact {
+  mask-image: url('/assets/img/share_contact.svg');
+}
+.i-share-team {
+  mask-image: url('/assets/img/share_material.svg');
+}
+.i-share-off {
+  mask-image: url('/assets/img/share-off.png');
+}
+.i-sms-limits {
+  mask-image: url('/assets/img/sms_limits.svg');
+}
+.i-sms-sent {
+  mask-image: url('/assets/img/sms_limits.svg');
+}
+.i-text-schedule {
+  mask-image: url('/assets/img/schedule_send.svg');
+}
+.i-schedule-send {
+  mask-image: url('/assets/img/schedule_black_24dp.svg');
+}
+.i-dashboard {
+  mask-image: url('/assets/img/dashboard.svg');
+}
+.i-task {
+  mask-image: url('/assets/img/task.svg');
+}
+.i-template {
+  mask-image: url('/assets/img/template.svg');
+}
+.i-task-desc {
+  mask-image: url('/assets/img/task_desc.svg');
+}
+.i-trash {
+  mask-image: url('/assets/img/trash.svg');
+}
+.i-webpage {
+  mask-image: url('/assets/img/webpage.svg');
+}
+.i-video {
+  mask-image: url('/assets/img/video.svg');
+}
+.i-image {
+  mask-image: url('/assets/img/image.svg');
+}
+.i-upload {
+  mask-image: url('/assets/img/upload.svg');
+}
+.i-upload-video {
+  mask-image: url('/assets/img/icon_upload_video.svg');
+}
+.i-plus {
+  mask-image: url('/assets/img/plus.svg');
+
+  &.sm.i-icon {
+    width: 12px;
+    height: 12px;
+    min-width: 12px;
+  }
+}
+.i-minus {
+  mask-image: url('assets/img/minus.svg');
+}
+.i-circle-minus {
+  mask-image: url('assets/img/circle-minus.svg');
+}
+.i-expand-more {
+  mask-image: url('assets/img/expand_more.svg');
+}
+.i-expand-less {
+  mask-image: url('assets/img/expand_less.svg');
+}
+.i-menu {
+  mask-image: url('/assets/img/menu.svg');
+}
+.i-close {
+  mask-image: url('/assets/img/close.svg');
+}
+.i-minimize {
+  mask-image: url('/assets/img/maximize.svg');
+  transform: rotate(180deg);
+}
+.i-maximize {
+  mask-image: url('/assets/img/maximize.svg');
+}
+.i-general {
+  mask-image: url('/assets/img/general.svg');
+}
+.i-signature {
+  mask-image: url('/assets/img/signature.svg');
+}
+.i-signature-1 {
+  mask-image: url('/assets/img/signature1.svg');
+  width: 88px;
+  height: 32px;
+}
+.i-signature-1-white {
+  mask-image: url('/assets/img/signature1_white.svg');
+  width: 72px;
+  height: 32px;
+}
+.i-signature-2 {
+  mask-image: url('/assets/img/signature2.svg');
+  width: 88px;
+  height: 32px;
+}
+.i-signature-2-white {
+  mask-image: url('/assets/img/signature2_white.svg');
+  width: 72px;
+  height: 32px;
+}
+.i-signature-3 {
+  mask-image: url('/assets/img/signature3.svg');
+  width: 48px;
+  height: 64px;
+}
+.i-signature-3-white {
+  mask-image: url('/assets/img/signature3_white.svg');
+  width: 32px;
+  height: 54px;
+}
+.i-signature-4 {
+  mask-image: url('/assets/img/signature4.svg');
+  width: 48px;
+  height: 64px;
+}
+.i-signature-4-white {
+  mask-image: url('/assets/img/signature4_white.svg');
+  width: 32px;
+  height: 54px;
+}
+.i-signature-5 {
+  mask-image: url('/assets/img/signature5.svg');
+  width: 44px;
+  height: 15px;
+}
+.i-signature-5-white {
+  mask-image: url('/assets/img/signature5_white.svg');
+  width: 44px;
+  height: 15px;
+}
+.i-security {
+  mask-image: url('/assets/img/security.svg');
+}
+.i-company {
+  mask-image: url('/assets/img/company.svg');
+}
+.i-integration {
+  mask-image: url('/assets/img/integration.svg');
+}
+.i-payment {
+  mask-image: url('/assets/img/payment.svg');
+}
+.i-billing {
+  mask-image: url('/assets/img/billing.svg');
+}
+.i-social {
+  mask-image: url('/assets/img/social.svg');
+}
+.i-folder {
+  mask-image: url('/assets/img/folder.svg');
+  background-color: #83b9f5 !important;
+}
+.i-folder-dynasty {
+  mask-image: url('/assets/img/folder_dynasty.svg');
+}
+.i-menu-more {
+  mask-image: url('/assets/img/more_menu.svg');
+}
+.i-assistant {
+  mask-image: url('/assets/img/assistant.svg');
+}
+.i-lead-capture {
+  mask-image: url('/assets/img/lead_capture.svg');
+}
+.i-tag-manager {
+  mask-image: url('/assets/img/tag_manager.svg');
+}
+.i-zapier {
+  mask-image: url('./assets/img/zapier.svg');
+}
+.i-team_calls {
+  mask-image: url('./assets/img/group_call.svg');
+}
+.i-lock {
+  mask-image: url('./assets/img/lock.svg');
+}
+.i-information {
+  mask-image: url('./assets/img/information.svg');
+}
+.i-merge {
+  mask-image: url('./assets/img/merge.svg');
+}
+.i-record {
+  mask-image: url('/assets/img/record.svg');
+  position: relative;
+  &:after {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background-color: red;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+.i-record-toolbar {
+  mask-image: url('/assets/img/record.svg');
+  background-color: red;
+}
+.i-block {
+  mask-image: url('/assets/img/block.svg');
+}
+.i-triangle-up {
+  mask-image: url('/assets/img/up_triangle.svg');
+}
+.i-triangle-down {
+  mask-image: url('/assets/img/down_triangle.svg');
+}
+.i-check {
+  mask-image: url('/assets/img/check.svg');
+}
+.i-round-check {
+  mask-image: url('/assets/img/onboarding/check.svg');
+}
+.i-question {
+  mask-image: url('/assets/img/question.svg');
+}
+.i-like {
+  mask-image: url('/assets/img/like.svg');
+}
+.i-triangle-right {
+  mask-image: url('/assets/img/triangle-right.svg');
+}
+.i-triangle-left {
+  mask-image: url('/assets/img/triangle-left.svg');
+}
+.i-list-text {
+  mask-image: url('/assets/img/list-text.svg');
+}
+.i-activity {
+  mask-image: url('/assets/img/activity.svg');
+}
+.i-round-check {
+  mask-image: url('/assets/img/round-check.svg');
+}
+.i-round {
+  mask-image: url('/assets/img/round.svg');
+}
+.i-triangle-more {
+  mask-image: url('/assets/img/triangle-right.svg');
+}
+.i-remove {
+  mask-image: url('/assets/img/remove.svg');
+}
+
+.i-auto-video {
+  mask-image: url('/assets/img/auto_video.svg');
+}
+.i-auto-follow {
+  mask-image: url('/assets/img/auto_follow.svg');
+}
+.i-copy-link {
+  mask-image: url('/assets/img/copy_link.svg');
+}
+.i-invite {
+  mask-image: url('/assets/img/invite.svg');
+}
+.i-duplicate {
+  mask-image: url('/assets/img/duplicate.svg');
+}
+.i-backward {
+  mask-image: url('/assets/img/backward.svg');
+}
+.i-forward {
+  mask-image: url('/assets/img/forward.svg');
+}
+.i-contact-merge {
+  mask-image: url('/assets/img/contact_merge.svg');
+}
+.i-group-call-schedule {
+  mask-image: url('/assets/img/group_call_schedule.svg');
+}
+.i-contact-location {
+  mask-image: url('/assets/img/profile_location.svg');
+}
+.i-contact-phone {
+  mask-image: url('/assets/img/profile_phone.svg');
+}
+.i-contact-source {
+  mask-image: url('/assets/img/source-code.svg');
+}
+.i-contact-company {
+  mask-image: url('/assets/img/building.svg');
+}
+.i-google {
+  mask-image: url('/assets/img/google.svg');
+}
+.i-automation-start {
+  mask-image: url('/assets/img/automation_assign.svg');
+}
+.i-automation-cancel {
+  mask-image: url('/assets/img/automation_cancel.svg');
+}
+.i-search {
+  mask-image: url('/assets/img/search.svg');
+}
+.i-material {
+  mask-image: url('/assets/img/materials.svg');
+}
+.i-openai {
+  mask-image: url('/assets/img/openai/openai.svg');
+}
+.i-send-ai {
+  mask-image: url('/assets/img/openai/send_ai.svg');
+}
+.i-person-manage {
+  mask-image: url('/assets/img/openai/person_manage.svg');
+}
+.i-magic-bar {
+  mask-image: url('/assets/img/openai/magic_bar.svg');
+}
+.i-lock {
+  mask-image: url('/assets/img/openai/lock.svg');
+}
+.i-reminder {
+  mask-image: url('/assets/img/reminder.svg');
+}
+.i-back {
+  mask-image: url('/assets/img/back.svg');
+}
+.i-notes {
+  mask-image: url('/assets/img/notes.svg');
+}
+.i-note {
+  mask-image: url('/assets/img/note.svg');
+}
+.i-emails {
+  mask-image: url('/assets/img/delivered_mail.svg');
+}
+.i-email {
+  mask-image: url('/assets/img/message.svg');
+}
+.i-texts {
+  mask-image: url('/assets/img/sms_limits.svg');
+}
+.i-text {
+  mask-image: url('/assets/img/sms_limits.svg');
+}
+.i-appointments {
+  mask-image: url('/assets/img/calendar.svg');
+}
+.i-appointment {
+  mask-image: url('/assets/img/calendar.svg');
+}
+.i-group_calls {
+  mask-image: url('/assets/img/group_call.svg');
+}
+.i-follow_ups {
+  mask-image: url('/assets/img/task.svg');
+}
+.i-follow_up {
+  mask-image: url('/assets/img/task.svg');
+}
+.i-deals {
+  mask-image: url('/assets/img/flame.svg');
+}
+.i-deal {
+  mask-image: url('/assets/img/flame.svg');
+}
+.i-expand {
+  mask-image: url('assets/img/external_expand.svg');
+}
+.i-sort-up {
+  mask-image: url('assets/img/sort_up.svg');
+}
+.i-sort-down {
+  mask-image: url('assets/img/sort_down.svg');
+}
+.i-arrow-up {
+  mask-image: url('assets/img/arrow_up.svg');
+}
+.i-arrow-down {
+  mask-image: url('assets/img/arrow_down.svg');
+}
+.i-icon.i-label {
+  width: 24px;
+  height: 24px;
+}
+.i-label-manager {
+  mask-image: url('assets/img/label-icon.svg');
+}
+.i-refresh {
+  mask-image: url('assets/img/refresh.svg');
+}
+.i-claim {
+  mask-image: url('assets/img/error_outline.svg');
+}
+.i-return {
+  mask-image: url('assets/img/return.svg');
+}
+.i-server {
+  mask-image: url('assets/img/server.svg');
+}
+
+.i-alt-email {
+  mask-image: url('assets/img/alternate_email.svg');
+}
+.i-sand-timer {
+  mask-image: url('assets/img/sand_timer.svg');
+}
+.i-spinner {
+  mask-image: url('assets/img/spinner.svg');
+}
+.i-emoji {
+  mask-image: url('assets/img/icon_emoji.svg');
+}
+.i-token {
+  mask-image: url('assets/img/icon_token.svg');
+}
+.i-insert-material {
+  mask-image: url('/assets/img/icon_insert_material.svg');
+}
+.i-filter {
+  mask-image: url('/assets/img/filter.svg');
+}
+///////////// design icons //////////////////
+
+.i-sent-mail {
+  mask-image: url('/assets/img/sent_mail.svg');
+}
+.i-opened-mail {
+  mask-image: url('/assets/img/opened_mail.svg');
+}
+.i-clicked-mail {
+  mask-image: url('/assets/img/clicked_mail.svg');
+}
+.i-clicked-link {
+  mask-image: url('/assets/img/activities/link_clicked.svg');
+}
+.i-delivered-mail {
+  mask-image: url('/assets/img/delivered_mail.svg');
+}
+.i-unsubscribed-mail {
+  mask-image: url('/assets/img/email_unsubscribe.svg');
+}
+.i-bounced-mail {
+  mask-image: url('/assets/img/email_unsubscribe.svg');
+}
+.i-teams {
+  mask-image: url('/assets/img/teams.svg');
+}
+.i-group-call {
+  mask-image: url('/assets/img/group_call_schedule.svg');
+}
+.i-invite-member {
+  mask-image: url('/assets/img/invite.svg');
+}
+.i-send {
+  mask-image: url('/assets/img/sent.svg');
+}
+.i-support {
+  mask-image: url('/assets/img/help.svg');
+}
+.i-copy-link {
+  mask-image: url('/assets/img/copy.svg');
+}
+.i-edit-template {
+  mask-image: url('/assets/img/template.svg');
+}
+.i-duplicate {
+  mask-image: url('/assets/img/duplicate.svg');
+}
+.i-screen {
+  mask-image: url('/assets/img/monitor.svg');
+}
+.i-camera {
+  mask-image: url('/assets/img/webcamera.svg');
+}
+.i-mic {
+  mask-image: url('/assets/img/mic.svg');
+}
+.i-mute {
+  mask-image: url('/assets/img/mic_no.svg');
+}
+.i-screen-camera {
+  mask-image: url('/assets/img/monitor_camera.svg');
+}
+.i-record-check {
+  mask-image: url('/assets/img/record_check.svg');
+}
+.i-record-mic {
+  mask-image: url('/assets/img/record_mic.svg');
+}
+.i-record-arrow {
+  mask-image: url('/assets/img/record_arrow.svg');
+}
+.i-record-pause {
+  mask-image: url('/assets/img/record_pause.svg');
+}
+.i-forward {
+  mask-image: url('/assets/img/icon_forward.svg');
+}
+.i-record-play {
+  mask-image: url('/assets/img/record_play.svg');
+}
+.i-record-close {
+  mask-image: url('/assets/img/record_close.svg');
+}
+.i-record-photo {
+  mask-image: url('/assets/img/photo_camera.svg');
+}
+.i-facebook {
+  mask-image: url('/assets/img/facebook.svg');
+}
+.i-twitter {
+  mask-image: url('/assets/img/twitter.svg');
+}
+.i-linkedin {
+  mask-image: url('/assets/img/linkedin.svg');
+}
+.i-warning-red {
+  mask-image: url('/assets/img/warning.svg');
+  background-color: #e02020;
+}
+.i-warning-yellow {
+  mask-image: url('/assets/img/warning.svg');
+  background-color: #ffaa2a;
+}
+.i-warning-gray {
+  mask-image: url('/assets/img/warning.svg');
+  background-color: #888888;
+}
+.i-alert {
+  mask-image: url('/assets/img/onboarding/alert.svg');
+  background-color: #faad14;
+}
+.i-link {
+  mask-image: url('/assets/img/link.svg');
+  background-color: #0b76b4;
+  transform: rotate(90deg);
+}
+.i-link-inverse {
+  mask-image: url('/assets/img/link.svg');
+}
+.i-reload {
+  mask-image: url('/assets/img/reload.svg');
+  background-color: #0b76b4;
+}
+.i-deals {
+  mask-image: url('/assets/img/flame.svg');
+}
+.i-analytics {
+  mask-image: url('/assets/img/analytics.svg');
+}
+.i-affiliate {
+  mask-image: url('/assets/img/affiliate.svg');
+  &.i-icon {
+    height: 24px;
+  }
+}
+.i-affiliate-link {
+  mask-image: url('/assets/img/affiliate/link.svg');
+}
+.i-affiliate-dashboard {
+  mask-image: url('/assets/img/affiliate/dashboard.svg');
+}
+.i-affiliate-share {
+  mask-image: url('/assets/img/affiliate/share.svg');
+}
+.i-affiliate-email {
+  mask-image: url('/assets/img/affiliate/email.svg');
+}
+.i-affiliate-linkedin {
+  mask-image: url('/assets/img/affiliate/linkedin.svg');
+}
+.i-affiliate-facebook {
+  mask-image: url('/assets/img/affiliate/facebook.svg');
+}
+.i-attachment {
+  mask-image: url('/assets/img/attachment.svg');
+}
+.i-first {
+  mask-image: url('/assets/img/page_first.svg');
+}
+.i-prev {
+  mask-image: url('/assets/img/next.svg');
+  transform: rotate(180deg);
+}
+.i-next {
+  mask-image: url('/assets/img/next.svg');
+}
+.i-end {
+  mask-image: url('/assets/img/page_end.svg');
+}
+.i-chev-left {
+  mask-image: url('/assets/img/chevron_left.svg');
+}
+.i-chev-right {
+  mask-image: url('/assets/img/chevron_right.svg');
+}
+.i-text-send {
+  mask-image: url('/assets/img/sent.svg');
+}
+.i-material-send {
+  mask-image: url('/assets/img/send.svg');
+}
+.i-material-eye {
+  mask-image: url('/assets/img/eye.svg');
+}
+.i-material-track {
+  mask-image: url('/assets/img/track.svg');
+}
+
+.icon-close {
+  background-image: url('/assets/img/close.svg');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  display: block;
+  width: 16px;
+  height: 16px;
+
+  &.primary {
+    background-image: url('/assets/img/close-blue.svg');
+  }
+}
+.i-call-connected {
+  mask-image: url('/assets/img/call_success.svg');
+  background-color: #00c242;
+}
+.i-call-disconnected {
+  mask-image: url('/assets/img/call_failed.svg');
+  background-color: #ff6068;
+}
+.i-phone_logs {
+  mask-image: url('/assets/img/dialer_call.svg');
+  background-color: blue;
+}
+.i-phone_log {
+  mask-image: url('/assets/img/dialer_call.svg');
+}
+.i-zoom-in {
+  mask-image: url('/assets/img/automations/zoom_in.svg');
+}
+.i-zoom-out {
+  mask-image: url('/assets/img/automations/zoom_out.svg');
+}
+.i-full-screen {
+  mask-image: url('/assets/img/automations/full_screen.svg');
+}
+.i-global {
+  mask-image: url('/assets/img/global.svg');
+}
+.i-calendar-recurrence {
+  mask-image: url('/assets/img/calendar_recurrence.svg');
+}
+
+.i-visible {
+  mask-image: url('/assets/img/visible.svg');
+  background-color: #0b76b4;
+}
+
+.i-invisible {
+  mask-image: url('/assets/img/invisible.svg');
+  background-color: gray;
+}
+
+.i-bucket {
+  mask-image: url('/assets/img/bucket.svg');
+}
+
+.i-sphere {
+  mask-image: url('/assets/img/sphere.svg');
+}
+
+.i-lightbulb {
+  mask-image: url('/assets/img/lightbulb.svg');
+}
+
+.i-bedroom {
+  mask-image: url('/assets/img/bedroom.svg');
+}
+
+.i-bathroom {
+  mask-image: url('/assets/img/bathroom.svg');
+}
+
+.i-area {
+  mask-image: url('/assets/img/area.svg');
+}
+.i-hours {
+  mask-image: url('./assets/img/access_time.svg');
+}
+.i-onboard-link {
+  mask-image: url('/assets/img/link_contact.svg');
+}
+
+///////////// Activity List Icons //////////////////
+.act-icon {
+  mask-position: center;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  display: block;
+
+  &.s-14 {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+  }
+  &.sm {
+    width: 13px;
+    height: 13px;
+    min-width: 14px;
+  }
+  &.s-8 {
+    width: 8px;
+    height: 8px;
+    min-width: 8px;
+  }
+}
+.act-bell {
+  mask-image: url('/assets/img/notification.svg');
+  background-color: #0000ff;
+}
+.act-videos {
+  mask-image: url('/assets/img/activities/video.svg');
+  background-color: #0000ff;
+}
+.act-pdfs {
+  mask-image: url('/assets/img/activities/pdf.svg');
+  background-color: #d92121;
+}
+.act-images {
+  mask-image: url('/assets/img/activities/image.svg');
+  background-color: #9000fb;
+}
+.act-emails {
+  mask-image: url('/assets/img/activities/email.svg');
+  background-color: #f19d50;
+}
+.act-events {
+  mask-image: url('assets/img/fire.svg');
+  background-color: #f19d50;
+}
+.act-video_trackers {
+  mask-image: url('/assets/img/activities/video.svg');
+  background-color: #0000ff;
+}
+.act-form_trackers {
+  mask-image: url('/assets/img/activities/form.svg');
+  background-color: #0000ff;
+}
+// .act-video_trackers.watch {
+//   background-image: url('/assets/img/activities/video_watched.svg');
+// }
+.act-video_trackers.thumbs {
+  mask-image: url('/assets/img/activities/video_like.svg');
+  background-color: #f7b500;
+}
+.act-video_trackers.unsubscribe {
+  mask-image: url('/assets/img/activities/email_unsubscribed.svg');
+  background-color: #f7b500;
+}
+.act-video_trackers.share {
+  mask-image: url('/assets/img/activities/video_like.svg');
+  background-color: #f7b500;
+}
+
+.act-image_trackers {
+  mask-image: url('/assets/img/activities/image.svg');
+  background-color: #9000fb;
+}
+// .act-image_trackers.watch {
+//   background-image: url('/assets/img/activities/image_watched.svg');
+// }
+.act-image_trackers.thumbs {
+  mask-image: url('/assets/img/activities/image_like.svg');
+  background-color: #9000fb;
+}
+.act-image_trackers.unsubscribe {
+  mask-image: url('/assets/img/activities/email_unsubscribed.svg');
+  background-color: #9000fb;
+}
+.act-image_trackers.share {
+  mask-image: url('/assets/img/activities/image_like.svg');
+}
+.act-pdf_trackers {
+  mask-image: url('/assets/img/activities/pdf.svg');
+  background-color: #d92121;
+}
+// .act-pdf_trackers.watch {
+//   background-image: url('/assets/img/activities/pdf_watched.svg');
+// }
+.act-pdf_trackers.thumbs {
+  mask-image: url('/assets/img/activities/pdf_like.svg');
+  background-color: #d92121;
+}
+.act-pdf_trackers.unsubscribe {
+  mask-image: url('/assets/img/activities/email_unsubscribed.svg');
+  background-color: #f7b500;
+}
+.act-pdf_trackers.share {
+  mask-image: url('/assets/img/activities/pdf_like.svg');
+}
+.act-email_trackers {
+  mask-image: url('/assets/img/activities/email_opened.svg');
+  background-color: #f7b500;
+}
+.act-email_trackers.open {
+  mask-image: url('/assets/img/activities/email_opened.svg');
+  background-color: #f7b500;
+}
+.act-email_trackers.click {
+  mask-image: url('/assets/img/activities/link_clicked.svg');
+  background-color: #f7b500;
+}
+.act-email_trackers.unsubscribe {
+  mask-image: url('/assets/img/activities/email_unsubscribed.svg');
+  background-color: #f7b500;
+}
+.act-contacts {
+  mask-image: url('/assets/img/activities/contact.svg');
+  background-color: #0000ff;
+}
+.act-follow_ups {
+  mask-image: url('/assets/img/activities/task.svg');
+  background-color: #0000ff;
+}
+.act-phone_logs {
+  mask-image: url('/assets/img/dialer_call.svg');
+  background-color: #0000ff;
+}
+.act-notes {
+  mask-image: url('/assets/img/activities/note.svg');
+  background-color: #f7b500;
+}
+.act-appointments {
+  mask-image: url('/assets/img/calendar.svg');
+  background-color: #51a500;
+}
+.act-sms {
+  mask-image: url('/assets/img/activities/note.svg');
+  background-color: #f7b500;
+}
+.act-sms_trackers {
+  mask-image: url('/assets/img/activities/note.svg');
+  background-color: #f7b500;
+}
+.act-texts {
+  mask-image: url('/assets/img/activities/text.svg');
+  background-color: #00a3ff;
+}
+.act-text_trackers {
+  mask-image: url('/assets/img/activities/text.svg');
+  background-color: #00a3ff;
+}
+.act-text_tracker {
+  mask-image: url('/assets/img/activities/text.svg');
+  background-color: #00a3ff;
+}
+.act-deals {
+  mask-image: url('/assets/img/flame.svg');
+  background-color: #101336;
+}
+.act-automations {
+  mask-image: url('/assets/img/automation.svg');
+  background-color: #00a3ff;
+}
+.act-team_calls {
+  mask-image: url('/assets/img/group_call.svg');
+  background-color: #101336;
+}
+.act-users,
+.act-team {
+  mask-image: url('/assets/img/activities/shared.svg');
+  background-color: #101336;
+}
+.act-dialer {
+  mask-image: url('/assets/img/dialer_call.svg');
+  background-color: blue;
+}
+
+.act-landing_pages {
+  mask-image: url('/assets/img/activities/sent_page.svg');
+  background-color: #0000ff;
+}
+
+.n_material_track {
+  mask-image: url('/assets/img/video.svg');
+  background-color: #0000ff;
+}
+.n_unsubscribe {
+  mask-image: url('/assets/img/activities/email_unsubscribed.svg');
+  background-color: #f19d50;
+}
+.n_open_email {
+  mask-image: url('/assets/img/activities/email_opened.svg');
+  background-color: #f7b500;
+}
+.n_click_link {
+  mask-image: url('/assets/img/activities/link_clicked.svg');
+  background-color: #f7b500;
+}
+.n_bulk_email {
+  mask-image: url('/assets/img/activities/email.svg');
+  background-color: #ff9300;
+}
+.n_send_email {
+  mask-image: url('/assets/img/activities/email.svg');
+  background-color: #ff9300;
+}
+.n_bulk_sms {
+  mask-image: url('/assets/img/activities/text.svg');
+  background-color: #01cc00;
+}
+.n_bulk_text {
+  mask-image: url('/assets/img/activities/text.svg');
+  background-color: #01cc00;
+}
+.n_send_text {
+  mask-image: url('/assets/img/activities/text.svg');
+  background-color: #01cc00;
+}
+.n_assign_automation {
+  mask-image: url('./assets/img/automation.svg');
+  background-color: #04b800;
+}
+.n_information {
+  mask-image: url('./assets/img/information.svg');
+}
+.n_automation_completed {
+  mask-image: url('./assets/img/automation.svg');
+  background-color: #04b800;
+}
+.n_dialer_call {
+  mask-image: url('./assets/img/dialer_call.svg');
+  background-color: blue;
+}
+.i-shared-by {
+  mask-image: url('./assets/img/share_black.svg');
+}
+.i-link-track {
+  mask-image: url('./assets/img/link_black.svg');
+}
+.i-shared-with {
+  mask-image: url('./assets/img/group_black.svg');
+}
+.i-page-builder {
+  mask-image: url('./assets/img/page_builder.svg');
+}
+.i-hour-glass {
+  mask-image: url('./assets/img/hourglass.svg');
+}
+.i-star {
+  mask-image: url('./assets/img/star.svg');
+}
+.i-circle-add {
+  mask-image: url('./assets/img/circle_add.svg');
+}
+.i-stars {
+  width: 80px !important;
+  height: 20px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  &.one {
+    background-image: url('./assets/img/stars-one.svg');
+  }
+  &.two {
+    background-image: url('./assets/img/stars-two.svg');
+  }
+  &.three {
+    background-image: url('./assets/img/stars-three.svg');
+  }
+  &.four {
+    background-image: url('./assets/img/stars-four.svg');
+  }
+  &.five {
+    background-image: url('./assets/img/stars-five.svg');
+  }
+  &.zero {
+    background-image: url('./assets/img/stars.svg');
+  }
+}
+
+.i-toast {
+  &.error {
+    mask-image: url('./assets/img/toast_error.svg');
+  }
+  &.success {
+    mask-image: url('./assets/img/toast_success.svg');
+  }
+  &.warning {
+    mask-image: url('./assets/img/toast_warning.svg');
+  }
+}
+
+.i-icon {
+  &.task-campaign {
+    mask-image: url('./assets/img/broadcasts.svg');
+  }
+  &.task-email {
+    mask-image: url('./assets/img/email.svg');
+  }
+  &.task-text {
+    mask-image: url('./assets/img/activities/text.svg');
+  }
+  &.task-automation {
+    mask-image: url('./assets/img/automation.svg');
+  }
+}
+
+.i-flag {
+  display: inline-block;
+  width: 16px;
+  height: 11px;
+  &:before {
+    content: '';
+    background: url('./assets/img/all_flags.png') no-repeat -108px -1976px;
+    display: block;
+    width: 16px;
+    height: 11px;
+  }
+
+  &.united-states::before {
+    background-position: -72px -1950px !important;
+  }
+
+  &.france::before {
+    background-position: 0 -1976px !important;
+  }
+
+  &.japan::before {
+    background-position: -36px -910px !important;
+  }
+
+  &.spain::before {
+    background-position: 0 -1742px !important;
+  }
+
+  &.taiwan::before {
+    background-position: -72px -1820px !important;
+  }
+  &.hongkong::before {
+    background-position: -36px -468px !important;
+  }
+}
+
+.i-expire {
+  background-image: url('./assets/img/expire.png');
+  background-size: contain;
+}
+
+.i-fsbo {
+  background-image: url('./assets/img/fsbo.png');
+  background-size: contain;
+}
+
+.i-frbo {
+  background-image: url('./assets/img/frbo.png');
+  background-size: contain;
+}
+
+.i-foreclosure {
+  background-image: url('./assets/img/foreclosure.png');
+  background-size: contain;
+}
+
+.i-import {
+  background-image: url('./assets/img/import.png');
+  background-size: contain;
+}
+
+.i-duration {
+  mask-image: url('./assets/img/duration.svg');
+}
+
+.folder-thumb {
+  height: 30px;
+  background-size: 100% 100%;
+  width: 54px;
+  background-position: 0px 0px;
+  transform-origin: left top;
+  background-image: url('./assets/img/folder.svg');
+}
+
+.title-folder-thumb {
+  height: 60px;
+  background-size: 100% 100%;
+  width: 60px;
+  background-position: 0px 0px;
+  transform-origin: left top;
+  background-image: url('./assets/img/folder.svg');
+  margin: 0 auto;
+}
+
+.i-preference {
+  mask-image: url('./assets/img/preference.svg');
+}
+
+.i-skip-next {
+  mask-image: url('./assets/img/skip_next.svg');
+}
+
+.i-skip-previous {
+  mask-image: url('./assets/img/skip_previous.svg');
+}
+
+.i-keyboard-enter {
+  mask-image: url('./assets/img/keyboard_enter.svg');
+}
+
+.i-redo {
+  mask-image: url('./assets/img/redo.svg');
+}
+
+.i-undo {
+  mask-image: url('./assets/img/undo.svg');
+}
+
+.i-right {
+  mask-image: url('/assets/img/right.svg');
+}
+
+.i-grid_view {
+  mask-image: url('/assets/img/grid_view.svg');
+}
+
+.i-custom-field {
+  mask-image: url('/assets/img/custom-field.svg');
+}
+
+.i-check-plus-circle {
+  mask-image: url('/assets/img/check-plus-circle.svg');
+}
+
+.i-triangle-right-2 {
+  mask-image: url('/assets/img/triangle_right.svg');
+}
+
+.i-tag-plus {
+  mask-image: url('assets/img/tag-plus.svg');
+}
+
+.i-birthday {
+  mask-image: url('assets/img/birthday.svg');
+}
+
+.i-preview {
+  mask-image: url('assets/img/preview.svg');
+}
+
+.i-detail {
+  mask-image: url('assets/img/detail.svg');
+}
+
+.i-person-pin-circle {
+  mask-image: url('assets/img/personpincircle.svg');
+}
+
+.i-note-check {
+  mask-image: url('assets/img/notecheck.svg');
+}
+
+.plus-contacts {
+  mask-image: url('/assets/img/contact.svg');
+}
+
+.i-code {
+  mask-image: url('/assets/img/code.svg');
+}
+
+.i-move-to {
+  mask-image: url('/assets/img/move-to.svg');
+}
+
+.i-page-detail {
+  mask-image: url('/assets/img/page_detail.svg');
+}
+.i-preview {
+  mask-image: url('/assets/img/preview.svg');
+}
+
+.i-visibility {
+  mask-image: url('/assets/img/visibility.svg');
+}
+
+.i-person-pin-circle {
+  mask-image: url('/assets/img/person_pin_circle.svg');
+}
+
+.i-note-check {
+  mask-image: url('assets/img/notecheck.svg');
+}
+
+.i-response {
+  mask-image: url('/assets/img/response.svg');
+}
+
+.i-embed {
+  mask-image: url('/assets/img/embed.svg');
+}
+
+.i-detail {
+  mask-image: url('/assets/img/detail.svg');
+}
+
+.i-allow {
+  mask-image: url('/assets/img/allow.svg');
+}

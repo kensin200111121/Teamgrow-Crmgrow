@@ -1,0 +1,114 @@
+<a class="navbar-toggler" (click)="isCollapsed = true" aria-controls="sidenav-collapse-main">
+  <span class="i-icon i-menu bgc-dark d-block"></span>
+</a>
+<div class="sidebar">
+  <div class="sidebar-content d-flex flex-column">
+    <div class="sidebar-header v-center">
+      <a class="navbar-brand m-0 p-0" [routerLink]="['/home']">
+        <img [src]="sspaService.toAsset('img/crmgrow-logo.svg')" class="navbar-brand-img" alt="CRMGROW">
+      </a>
+    </div>
+    <ul class="sidebar-nav">
+      <ng-container *ngFor="let menuItem of menuItems; let i = index" class="{{menuItem.class}} nav-item">
+        <ng-container *enableByFeatures="menuItem.feature">
+          <li *ngIf="!menuItem.role || menuItem.protectedRole.indexOf(profile.role) === -1" (click)="isCollapsed = false"
+            [class.active]="menuItem.active">
+            <div [attr.data-name]="'sidebar-item-' + menuItem.title" class="menu" (click)="toggle(i)">
+              <a *ngIf="menuItem.path !=''" [routerLinkActive]="isSuspended ? '' : 'active'" [routerLink]="[isSuspended ? suspendRouting : menuItem.path]" class="nav-link c-dark v-center d-flex justify-content-between">
+                <div class='d-flex'>
+                <i class="i-icon {{menuItem.icon}} d-block mr-2"></i>
+                <span class="menu-label">{{'sidebar.' + menuItem.title | translate}}</span>
+                <ng-container *ngIf="menuItem.beta">
+                  <span class="{{menuItem.betaClass}}">
+                    {{'sidebar.' + menuItem.betaLabel | translate}}
+                  </span>
+                </ng-container>
+              </div>
+                <i class="i-icon s-8 i-triangle-down bgc-dark" *ngIf="menuItem.subMenuItems.length > 0"></i>
+              </a>
+              <a *ngIf="menuItem.path ==''" class="nav-link c-dark v-center c-pointer justify-content-between">
+                <div class='d-flex'>
+                <i class="i-icon {{menuItem.icon}} d-block mr-2"></i>
+                <span class="menu-label">{{'sidebar.' + menuItem.title | translate}}</span>
+                <ng-container *ngIf="menuItem.beta">
+                  <span class="{{menuItem.betaClass}}">
+                    {{'sidebar.' + menuItem.betaLabel | translate}}
+                  </span>
+                </ng-container>
+              </div>
+                <i class="i-icon s-8 i-triangle-down bgc-dark" *ngIf="menuItem.subMenuItems.length > 0"></i>
+              </a>
+            </div>
+            <ul class="submenu" #submenu *ngIf="menuItem.active && !isSuspended">
+              <ng-container *ngFor="let submenu of menuItem.subMenuItems" >
+                <ng-container *enableByFeatures="submenu.feature">
+                  <li class="submenu-list" [attr.data-name]="'sidebar-submenu-item-' + submenu.label">
+                    <a routerLinkActive="active" class="opacity c-dark" [routerLink]="[submenu.path]" [class.invisible]="!menuItem.active">
+                      {{'sidebar.' + submenu.label | translate}}</a>
+                  </li>
+                </ng-container>
+              </ng-container>
+            </ul>
+          </li>
+        </ng-container>
+      </ng-container>
+    </ul>
+
+  </div>
+</div>
+<div class="overlayer" [class.show]="isCollapsed" (click)="isCollapsed = false"></div>
+<mat-sidenav-container>
+  <mat-sidenav #sidenav [opened]="isCollapsed">
+    <div class="sidebar-content">
+      <div class="sidebar-header v-center">
+        <a class="navbar-brand mobile m-0 p-0" [routerLink]="['/home']">
+          <img [src]="sspaService.toAsset('img/crmgrow-logo.svg')" class="navbar-brand-img" alt="CRMGROW">
+        </a>
+      </div>
+
+      <ul class="sidebar-nav">
+        <ng-container *ngFor="let menuItem of menuItems; let i = index" class="{{menuItem.class}} nav-item">
+          <ng-container *enableByFeatures="menuItem.feature">
+            <li *ngIf="!menuItem.role || menuItem.protectedRole.indexOf(profile.role) === -1" (click)="isCollapsed = false"
+              [class.active]="menuItem.active">
+              <div class="menu" (click)="toggle(i)">
+                <a *ngIf="menuItem.path !=''" routerLinkActive="active" [routerLink]="[menuItem.path]" class="nav-link c-dark v-center">
+                  <i class="i-icon {{menuItem.icon}} d-block mr-2"></i>
+                  <span class="menu-label">{{'sidebar.' + menuItem.title | translate}}</span>
+                  <ng-container *ngIf="menuItem.beta">
+                    <span class="{{menuItem.betaClass}}">
+                      {{menuItem.betaLabel | translate}}
+                    </span>
+                  </ng-container>
+                  <i class="i-icon s-8 i-triangle-down bgc-dark" *ngIf="menuItem.subMenuItems.length > 0"></i>
+                </a>
+                <a *ngIf="menuItem.path ==''" class="nav-link c-dark v-center c-pointer">
+                  <i class="i-icon {{menuItem.icon}} d-block mr-2"></i>
+                  <span class="menu-label">{{'sidebar.' + menuItem.title | translate}}</span>
+                  <ng-container *ngIf="menuItem.beta">
+                    <span class="{{menuItem.betaClass}}">
+                      {{'sidebar.' + menuItem.betaLabel | translate}}
+                    </span>
+                  </ng-container>
+                  <i class="i-icon s-8 i-triangle-down bgc-dark" *ngIf="menuItem.subMenuItems.length > 0"></i>
+                </a>
+              </div>
+
+              <ul class="submenu" #submenu *ngIf="!menuItem.active">
+                <ng-container *ngFor="let submenu of menuItem.subMenuItems">
+                  <li class="submenu-list" *enableByFeatures="submenu.feature">
+                    <a class="opacity c-dark" routerLinkActive="active" [routerLink]="[submenu.path]" [class.invisible]="!menuItem.active">
+                      {{ 'sidebar.' + submenu.label | translate}}</a>
+                  </li>
+                </ng-container>
+              </ul>
+            </li>
+          </ng-container>
+        </ng-container>
+      </ul>
+    </div>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <div class="contents"></div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

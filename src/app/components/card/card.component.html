@@ -1,0 +1,74 @@
+<form #cardForm="ngForm" id="billing-update-form" (ngSubmit)="cardForm.form.valid ? submitCard() : false;">
+  <div class="v-center justify-content-between">
+    <h1 *ngIf="!is_add" mat-dialog-title translate>Update payment information</h1>
+    <h1 *ngIf="is_add" mat-dialog-title translate>Add payment information</h1>    
+    <i class="i-icon i-close d-block bgc-black c-pointer" (click)="close()"></i>
+  </div>
+  <mat-dialog-content>
+    <ng-container *ngIf="!is_add">
+      <div class="v-center">
+        <div class="card-img">
+            <ng-container [ngSwitch]="card.card_brand">
+                <img [src]="sspaService.toAsset('img/card_visa.svg')" *ngSwitchCase="'Visa'">
+                <img [src]="sspaService.toAsset('img/card_amex.svg')" *ngSwitchCase="'American Express'">
+                <img [src]="sspaService.toAsset('img/card_master.svg')" *ngSwitchCase="'MasterCard'">
+                <img [src]="sspaService.toAsset('img/card_jcb.svg')" *ngSwitchCase="'JCB'">
+                <img [src]="sspaService.toAsset('img/card_discover.svg')" *ngSwitchCase="'Discover'">
+                <img [src]="sspaService.toAsset('img/card_diners.svg')" *ngSwitchCase="'Diners'">
+                <img [src]="sspaService.toAsset('img/card_visa.svg')" *ngSwitchDefault>
+            </ng-container>
+        </div>
+        <div class="f-4 ml-3">
+          •••• •••• •••• {{card.last4}}
+        </div>
+        <div class="f-4 ml-auto card-div">
+          <select
+              [(ngModel)]="exp_month"
+              name="exp_month"
+              class="form-control card-select mr-3">
+              <option value="" disabled translate>MM</option>
+              <option *ngFor="let m of months" value="{{m}}">{{m}}
+              </option>
+          </select>
+          <select
+              [(ngModel)]="exp_year"
+              name="exp_year"
+              class="form-control card-select"
+              (change)="changeYear()">
+              <option value="" disabled translate>YYYY</option>
+              <option *ngFor="let y of years" value="{{y}}">{{y}}
+              </option>
+          </select>
+        </div>
+      </div>    
+    </ng-container>  
+    <ng-container *ngIf="is_add">
+      <div class="form-group card-detail mt-3">
+        <label translate>Credit or Debit Card</label>
+        <stripe-card #stripeCard [options]="stripeOptions" (invalidChange)="cardInvalid($event)"
+          (completeChange)="cardComplete($event)"></stripe-card>
+      </div>
+      <div class="cards-preview v-center mt-3">
+        <img [src]="sspaService.toAsset('img/card_visa.svg')" alt="visa">
+        <img [src]="sspaService.toAsset('img/card_amex.svg')" alt="amex">
+        <img [src]="sspaService.toAsset('img/card_master.svg')" alt="master">
+        <img [src]="sspaService.toAsset('img/card_jcb.svg')" alt="jcb">
+        <img [src]="sspaService.toAsset('img/card_discover.svg')" alt="discover">
+        <img [src]="sspaService.toAsset('img/card_diners.svg')" alt="diners">
+        <img [src]="sspaService.toAsset('img/card_unionpay.svg')" alt="unionpay">
+      </div>
+    </ng-container>
+    <div class="form-group mt-4">
+      <re-captcha id="recaptcha" name="recaptcha" #recaptcha="ngModel" [(ngModel)]="captchaToken"></re-captcha>
+      <span class="error mt-1" [class.d-block]="submitted">
+        <ng-container *ngIf="!captchaToken">
+          {{ 'Please check if you are not a robot.' | translate }}
+        </ng-container>
+      </span>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button data-action="billing-update-cancel" class="btn c-dark" mat-dialog-close translate>Cancel</button>
+    <button data-action="billing-update-save" class="btn btn-primary" type="submit" [class.loading]="saving" translate>Save</button>    
+  </mat-dialog-actions>
+</form>

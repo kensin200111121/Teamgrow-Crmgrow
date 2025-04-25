@@ -1,0 +1,100 @@
+<div class="contacts-list-panel flex-column h-100 d-flex overflow-hidden">
+  <h6 class="fw-600 pt-4 px-3 panel-header pb-2">
+    <span
+      [translateParams]="{ count: length }"
+      [translate]="length === 0 || length === 1 ? 'count contact for tag' : 'count contacts for tag'">
+    </span>&nbsp;
+    <span class="font-weight-bold tag-label">"{{tag}}"</span>
+  </h6>
+  <div class="v-center contact-list-controls">
+    <div class="form-group mb-0 search-form ml-3">
+      <div class="input-group-prepend">
+        <i class="i-icon i-search d-block bgc-dark"></i>
+      </div>
+      <input type="text" class="form-control" placeholder="{{ 'Search' | translate }}"
+        aria-label="search" aria-describedby="search-addon"
+        [(ngModel)]="searchStr" (ngModelChange)="changeSearchStr()">
+      <ng-container *ngIf="searchStr">
+        <div class="cancel-action c-pointer" (click)="clearSearchStr()">
+          <i class="i-icon i-close d-block bgc-dark"></i>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div class='flex-column d-flex contacts-list' *ngIf='tagContacts.length && tagContacts.length > 0'>
+    <div class="contacts-list position-relative mt-1">
+      <table class="page-table w-100">
+        <thead>
+          <tr>
+            <th><span class="f-3" translate>contact name</span></th>
+            <th><span class="f-3" translate>tag</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let contact of tagContacts | paginate: {id: 'contactPages', itemsPerPage: pageSize.id, currentPage: page, totalItems: length}">
+            <td>
+              <a class="v-center py-2 avatar-wrapper"
+                [routerLink]="['/contacts/' + contact._id]">
+                <div class="v-center justify-content-center f-0 text-white avatar">
+                  {{contact.avatarName}}
+                </div>
+                <div class="f-3 text-primary name">
+                  {{contact.fullName}}
+                </div>
+              </a>
+            </td>
+            <td>
+              <div class="f-3 px-2 py-1 tag-label">{{tag}}</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class='flex-column d-flex'
+    *ngIf='!tagContacts.length'>
+    <ng-container *ngIf="isLoading">
+      <div class="empty-list py-5">
+        <div class="loader mt-2"></div>
+        <h6 class="fw-600 mt-2" translate>Loading Contacts</h6>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="!isLoading">
+      <div class="empty-list py-5">
+        <div class="object-icon v-center">
+          <i class="i-icon i-lunch d-block bgc-dark"></i>
+        </div>
+        <h4 class="fw-600 mt-3 mb-3" style='font-size:12px' translate>
+          There is no contact with this tag.
+        </h4>
+      </div>
+    </ng-container>
+  </div>
+  <div class="pagination-wrapper d-flex justify-content-center w-100"
+    *ngIf='length > MIN_ROW_COUNT'
+    style='padding-left:5px'>
+    <pagination-controls (pageChange)="changePage($event)"
+      (pageBoundsCorrection)="pageChanged($event)" id="contactPages" maxSize="5"
+      previousLabel="" nextLabel="">
+    </pagination-controls>
+    <div class="shadow-dropdown ml-auto page-size-control" ngbDropdown
+      placement="top-right">
+      <div class="v-center c-pointer f-3 p-1 font-weight-bold"
+        ngbDropdownToggle>
+        <span class="pr-2 c-blue" [translateParams]="{count: pageSize.id}" translate>pagination</span>
+      </div>
+      <div ngbDropdownMenu aria-labelledby="contactPageSize">
+        <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS"
+          (click)="changePageSize(type)">
+          <span class="f-3 v-center"
+            [class.font-weight-bold]="type.id === pageSize.id">
+            <span [translateParams]="{count: type.id}" translate>pagination</span>
+            <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+              *ngIf="type.id === pageSize.id"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

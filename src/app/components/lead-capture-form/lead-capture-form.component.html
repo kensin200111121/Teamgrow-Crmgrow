@@ -1,0 +1,83 @@
+<div class="v-center justify-content-between">
+    <h1 class="m-0" mat-dialog-title translate>
+        Material Edit Lead Form
+    </h1>
+    <i class="d-block i-icon i-close bgc-dark" mat-dialog-close></i>
+</div>
+<mat-dialog-content>
+    <div class="v-center custom-control custom-switch p-0 mt-3">
+        <span class="f-6" translate>Enable lead form</span>
+        <label class="custom-toggle mb-0 ml-auto" placement="top">
+            <input
+                type="checkbox"
+                (change)="setCapture($event)"
+                [checked]="isCapture"
+                id="lead-capture"
+            />
+            <span class="custom-toggle-slider rounded-circle"></span>
+        </label>
+    </div>
+    <ng-container *ngIf="isCapture">
+        <hr/>
+        <div class="space-between-row">
+            <span class="f-8 font-weight-bold c-dark" translate>Assigned lead forms</span>
+            <button [attr.data-action]="'add-lead-capture-form-btn'" class="v-center btn btn-primary f-6 font-weight-bold" (click)="setForm('', true)">
+                <i class="d-block i-icon i-plus sm bgc-white"></i>
+                <span class="ml-2" translate>Add Form</span>
+            </button>
+        </div>
+        <ng-container *ngIf="dataSource?.length; else notForms" class="mat-table-wrapper">
+            <table mat-table class="w-100 page-table" [dataSource]="dataSource">
+                <!-- Key Column -->
+                <ng-container matColumnDef="key">
+                    <th mat-header-cell *matHeaderCellDef >Form Name</th>
+                    <td mat-cell *matCellDef="let element" class="font-weight-bold c-black">{{getName(element.key)}}</td>
+                </ng-container>
+
+                <!-- Value Column -->
+                <ng-container matColumnDef="value">
+                    <th mat-header-cell *matHeaderCellDef >Delay Time</th>
+                    <td mat-cell *matCellDef="let element" class="c-black">{{getDelayTime(element.value)}}</td>
+                </ng-container>
+                <!-- Action Column -->
+                <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef >Action</th>
+                    <td mat-cell *matCellDef="let element" class="pr-0 action-col">
+                        <div class="v-center c-pointer">
+                            <button
+                            type="button"
+                            class="v-center btn bgc-trans c-blue border-0 py-1"
+                            (click)="setForm(element.key, false)"
+                            >
+                            <i class="i-icon i-edit bgc-blue"></i>
+                            </button>
+                            <button
+                            type="button"
+                            class="v-center btn bgc-trans c-red border-0 py-1"
+                            (click)="deleteForm(element.key)"
+                            >
+                            <i class="i-icon i-trash bgc-red"></i>
+                            </button>
+                        </div>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </ng-container>
+        <ng-template #notForms>
+            <div class="empty-list mt-3">
+                <div class="object-icon v-center">
+                  <i class="i-icon i-lead-capture d-block bgc-dark"></i>
+                </div>
+                <h4 class="font-weight-bold mt-4 mb-3" translate>
+                    There are still no forms assigned
+                </h4>
+            </div>
+        </ng-template>
+    </ng-container>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <a class="btn btn-white f-6 font-weight-bold c-blue mr-2" mat-dialog-close translate>Cancel</a>
+    <button [attr.data-action]="'material-lead-capture-save'" class="btn btn-primary f-6 font-weight-bold" [class.loading]="saving" (click)="saveForm()" translate>Save</button>
+</mat-dialog-actions>

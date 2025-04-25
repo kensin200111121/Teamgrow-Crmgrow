@@ -1,0 +1,371 @@
+<div class="p-4c panel" style="padding-bottom: 80px !important ">
+  <div class="v-center mb-3 panel-header">
+    <h4 class="font-weight-bold mb-0 title mr-auto" translate>
+      Advanced Filter
+    </h4>
+    <!-- <app-slide-tab *ngIf="teams.length" [tabs]="tabs" [selected]="selectedTab" (onChange)="changeTab($event)"
+      class="view-tabs" type="same">
+    </app-slide-tab> -->
+    <button class="v-center border-0 bgc-trans" type="button" (click)="close()">
+      <i class="d-block i-icon i-close bgc-dark"></i>
+    </button>
+  </div>
+  <div>
+    <div class="form-group">
+      <label translate>List Type</label>
+      <div class="v-center">
+        <div class="flex-grow-1">
+          <app-filter-input (onSelect)="changeCurrentFilter($event)" [filter]="currentFilterId"></app-filter-input>
+        </div>
+        <ng-container *ngIf="currentFilterId">
+          <button type="button" class="btn btn-primary ml-2" (click)="updateFilters()" translate>
+            Update
+          </button>
+          <button type="button" class="btn btn-primary ml-2" (click)="removeFilters()" translate>
+            Remove
+          </button>
+        </ng-container>
+      </div>
+
+      <div class="my-3" *ngIf="teams.length" [class.d-none]="selectedTab.id === 'normal'">
+        <div class="form-group mb-0">
+          <label translate>Team</label>
+        </div>
+        <div class="">
+          <ng-container *ngFor="let team of teams">
+            <mat-expansion-panel class="no-shadow">
+              <mat-expansion-panel-header class="pl-0 pr-3 team-header">
+                <div class="custom-checkbox my-2 mr-2 team-checkbox"
+                  [class.indeterminate]="teamOptions[team._id]?.flag === 0">
+                  <input type="checkbox" class="custom-control-input" id="team-{{ team._id }}"
+                    name="team-{{ team._id }}" (change)="toggleTeam(team._id)"
+                    [checked]="teamOptions[team._id]?.flag === 1" />
+                  <label class="custom-control-label f-3 pt-1" for="team-{{ team._id }}">{{ team.name }}</label>
+                </div>
+              </mat-expansion-panel-header>
+              <div>
+                <app-member-selector [dataSource]="teamMembers[team._id]"
+                  [selected]="teamOptions[team._id]?.members || []"
+                  (onSelect)="changeTeamMemberOptions(team._id, $event)"></app-member-selector>
+              </div>
+            </mat-expansion-panel>
+          </ng-container>
+          <div class="form-group form-group mb-1 mt-2">
+            <label class="label mb-1" translate>Share Option</label>
+          </div>
+          <div class="custom-checkbox my-2 mr-2 team-checkbox">
+            <input type="checkbox" class="custom-control-input" id="team-share-with" name="team-share-with"
+              (change)="changeShareOption('share_with')" [checked]="isShareWith" />
+            <label class="custom-control-label f-3 pt-1" for="team-share-with" translate>Share With</label>
+          </div>
+          <div class="custom-checkbox my-2 mr-2 team-checkbox">
+            <input type="checkbox" class="custom-control-input" id="team-share-by" name="team-share-by"
+              (change)="changeShareOption('share_by')" [checked]="isShareBy" />
+            <label class="custom-control-label f-3 pt-1" for="team-share-by" translate>Share By</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="my-3">
+        <label translate>Keyword Search</label>
+        <div class="form-group mb-0 search-string">
+          <input type="text" class="form-control" [(ngModel)]="searchOption.searchStr"
+            placeholder="{{ 'Type in keyword' | translate }}" name="global_search" #global_search="ngModel"
+            (ngModelChange)="updateSearchStr($event)" />
+          <div class="cancel-action" (click)="clearSearchStr()" *ngIf="searchOption.searchStr">
+            <i class="i-icon i-close d-block bgc-dark"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="v-center justify-content-between">
+      <div class="form-group mt-4 mb-1">
+        <label class="mb-0" translate>Status</label>
+      </div>
+      <div class="v-center">
+        <div class="f-3 fw-600 c-dark" translate>Include</div>
+        <label class="custom-toggle mb-0 mx-2" placement="top">
+          <input type="checkbox" [checked]="!searchOption.includeLabel" (change)="toggleInclude('label')"
+            name="includeLabel" />
+          <span class="custom-toggle-slider rounded-circle"></span>
+        </label>
+        <div class="f-3 fw-600 c-dark" translate>Exclude</div>
+      </div>
+    </div>
+    <div class="checkbox-wrapper label-options mb-3 w-100">
+      <div class="custom-checkbox label-item">
+        <input type="checkbox" class="custom-control-input" id="label-no-label" name="label-no-label"
+          (change)="toggleLabels(null)" [checked]="searchOption.labelCondition.indexOf(null) !== -1" />
+        <label class="custom-control-label d-flex" for="label-no-label">
+          <i class="i-icon i-label d-block mr-2" [style.backgroundColor]="'#000'"></i>
+          <span class="f-3 fw-600 mt-1" translate>No Status</span>
+        </label>
+      </div>
+      <div class="custom-checkbox label-item" *ngFor="let item of labels" style="height: unset; line-height: unset">
+        <input type="checkbox" class="custom-control-input" id="label-{{ item._id }}" name="label-{{ item._id }}"
+          (change)="toggleLabels(item)" [checked]="searchOption.labelCondition.indexOf(item._id) !== -1" />
+        <label class="custom-control-label v-center" for="label-{{ item._id }}">
+          <i class="i-icon i-label d-block mr-2 mb-auto" [style.backgroundColor]="
+              item.color === '#FFF' ? '#000' : item.color
+            "></i>
+          <span class="f-3 fw-600 mt-0" [class.no-title]="!item.name">{{
+            (item.name?.length > 10)? (item.name | slice:0:10)+'...':(item.name) || 'Undefined'
+            }}</span>
+          <span class="f-0 ml-1" *ngIf="item.role; else labelBadge">({{ item.role }})</span>
+          <ng-template #labelBadge>
+            <span class="f-0 ml-1" *ngIf="item.multiple" [translateParams]="{ total: item.multiple }"
+              translate>filter.multiple_account</span>
+          </ng-template>
+        </label>
+      </div>
+    </div>
+    <div class="v-center justify-content-between" [class.disable-form]="enableTeamSearchOption()"
+      [class.d-none]="selectedTab.id === 'team'">
+      <div class="v-center form-group mb-0">
+        <div class="v-center">
+          <label class="mb-0" translate>Material Activity</label>
+        </div>
+      </div>
+    </div>
+    <div class="checkbox-wrapper materials w-100 my-3" [class.disable-form]="enableTeamSearchOption()"
+      [class.d-none]="selectedTab.id === 'team'">
+      <div class="custom-checkbox material-action" *ngFor="let item of materialActions"
+        style="height: unset; line-height: unset">
+        <input type="checkbox" class="custom-control-input" id="material-{{ item._id }}" name="material-actions"
+          (click)="selectMaterialAction(item.title)" [checked]="selectedMaterialActions == item.title" />
+        <label class="custom-control-label v-center" for="material-{{ item._id }}">
+          <div class="f-3 fw-600 material-action-title">{{ item.title }}</div>
+          <div class="count f-3 font-weight-bold c-white bgc-blue ml-2 mr-2 text-center rounded-circle"
+            *ngIf="item.count">
+            {{ item.count }}
+          </div>
+          <button type="button"
+            class="list f-1 font-weight-bold border border-primary rounded c-blue c-pointer bgc-white"
+            [disabled]="selectedMaterialActions != item.title" (click)="selectMaterial()" translate>
+            List
+          </button>
+        </label>
+      </div>
+    </div>
+    <div class="v-center justify-content-between">
+      <div class="form-group mt-4 mb-1">
+        <label class="mb-0" translate>Unsubscribed</label>
+      </div>
+      <div class="v-center">
+        <div class="f-3 fw-600 c-dark" translate>Include</div>
+        <label class="custom-toggle mb-0 mx-2" placement="top">
+          <input type="checkbox" [checked]="!searchOption.includeUnsubscribed" (change)="toggleInclude('unsubscribed')"
+            name="includeLabel" />
+          <span class="custom-toggle-slider rounded-circle"></span>
+        </label>
+        <div class="f-3 fw-600 c-dark" translate>Exclude</div>
+      </div>
+    </div>
+    <div class="checkbox-wrapper unsubscribed w-100 my-3">
+      <div class="custom-checkbox unsubscribed-action"
+        style="height: unset; line-height: unset">
+        <input
+          type="checkbox"
+          class="custom-control-input"
+          id="unsubscribed-email"
+          name="unsubscribed-email"
+          (change)="selectUnsubscribedAction('email')"
+          [checked]="searchOption.unsubscribed.email"
+        />
+        <label class="custom-control-label v-center" for="unsubscribed-email">
+          <span class="f-3 fw-600 unsubscribed-action-title" translate>Email Unsubscribed</span>
+        </label>
+      </div>
+      <div class="custom-checkbox label-item">
+        <input
+          type="checkbox"
+          class="custom-control-input"
+          id="unsubscribed-text"
+          name="unsubscribed-text"
+          (change)="selectUnsubscribedAction('text')"
+          [checked]="searchOption.unsubscribed.text"
+        />
+        <label class="custom-control-label v-center" for="unsubscribed-text">
+          <span class="f-3 fw-600 unsubscribed-action-title" translate>Text Unsubscribed</span>
+        </label>
+      </div>
+    </div>
+    <div class="form-group my-3">
+      <label for="country_cc" translate>country</label>
+      <app-input-country [selectedCountries]="searchOption.countryCondition"
+        (onSelect)="updateFilter()"></app-input-country>
+    </div>
+    <div class="form-group my-3">
+      <label for="state" translate>State</label>
+      <app-input-state [selectedRegions]="searchOption.regionCondition"
+        [selectedCountries]="searchOption.countryCondition" (onSelect)="updateFilter()"></app-input-state>
+    </div>
+    <div class="form-group my-3">
+      <label for="city" translate>City</label>
+      <input type="text" class="form-control" [(ngModel)]="searchOption.cityCondition" (ngModelChange)="updateFilter()"
+        placeholder="" id="city" name="city" #city="ngModel" />
+    </div>
+    <div class="form-group my-3">
+      <label for="zipcode" translate>Zip Code</label>
+      <input type="text" class="form-control" [(ngModel)]="searchOption.zipcodeCondition"
+        (ngModelChange)="updateFilter()" placeholder="" id="zipcode" name="zipcode" #zipcode="ngModel" />
+    </div>
+
+    <div class="my-3" [class.disable-form]="enableTeamSearchOption()" [class.d-none]="selectedTab.id === 'team'">
+      <div class="d-flex align-items-end justify-content-between">
+        <div class="form-group mb-0">
+          <label for="city" translate>Source</label>
+        </div>
+        <div class="v-center mb-2">
+          <div class="f-3 fw-600 c-dark" translate>Include</div>
+          <label class="custom-toggle mb-0 mx-2" placement="top">
+            <input type="checkbox" id="source_check" name="source_check" [checked]="!searchOption.includeSource"
+              (change)="toggleInclude('source')" />
+            <span class="custom-toggle-slider rounded-circle"></span>
+          </label>
+          <div class="f-3 fw-600 c-dark" translate>Exclude</div>
+        </div>
+      </div>
+      <app-input-source [selectedTags]="searchOption.sourceCondition" [onlyFromSearch]="true"
+        (onSelect)="updateFilter()"></app-input-source>
+    </div>
+    <div class="my-3" [class.disable-form]="enableTeamSearchOption()" [class.d-none]="selectedTab.id === 'team'">
+      <div class="d-flex align-items-end justify-content-between">
+        <div class="form-group mb-0">
+          <label for="city" translate>Company</label>
+        </div>
+        <div class="v-center mb-2">
+          <div class="f-3 fw-600 c-dark" translate>Include</div>
+          <label class="custom-toggle mb-0 mx-2" placement="top">
+            <input type="checkbox" id="company_check" name="company_check" [checked]="!searchOption.includeBrokerage"
+              (change)="toggleInclude('brokerage')" />
+            <span class="custom-toggle-slider rounded-circle"></span>
+          </label>
+          <div class="f-3 fw-600 c-dark" translate>Exclude</div>
+        </div>
+      </div>
+      <app-input-company [selectedTags]="searchOption.brokerageCondition" [onlyFromSearch]="true"
+        (onSelect)="updateFilter()"></app-input-company>
+    </div>
+
+    <div class="my-3" [class.disable-form]="enableTeamSearchOption()" [class.d-none]="selectedTab.id === 'team'">
+      <div class="d-flex align-items-end justify-content-between">
+        <div class="form-group mb-0">
+          <label for="tag_check" translate>Tag</label>
+        </div>
+        <div class="v-center mb-2">
+          <div class="f-3 fw-600 c-dark" translate>Include</div>
+          <label class="custom-toggle mb-0 mx-2" placement="top">
+            <input type="checkbox" id="tag_check" name="tag_check" [checked]="!searchOption.includeTag"
+              (change)="toggleInclude('tag')" />
+            <span class="custom-toggle-slider rounded-circle"></span>
+          </label>
+          <div class="f-3 fw-600 c-dark" translate>Exclude</div>
+        </div>
+      </div>
+      <app-input-tag [selectedTags]="searchOption.tagsCondition" [onlyFromSearch]="true" (onSelect)="updateFilter()"
+        [hasNoTag]="true"></app-input-tag>
+    </div>
+
+    <div class="my-3" [class.disable-form]="enableTeamSearchOption()" [class.d-none]="selectedTab.id === 'team'">
+      <div class="d-flex align-items-end justify-content-between">
+        <div class="form-group mb-0">
+          <label for="stage_check" translate>Stage</label>
+        </div>
+        <!-- <div class="v-center mb-2">
+          <div class="f-3 fw-600 c-dark">Include</div>
+          <label class="custom-toggle mb-0 mx-2" placement="top">
+            <input type="checkbox" id="stage_check" name="stage_check" [checked]="!searchOption.includeStage" (change)="toggleInclude('stage')">
+            <span class="custom-toggle-slider rounded-circle"></span>
+          </label>
+          <div class="f-3 fw-600 c-dark">Exclude</div>
+        </div> -->
+      </div>
+      <app-input-stage [selectedStages]="searchOption.stagesCondition" (onSelect)="updateFilter()"></app-input-stage>
+    </div>
+
+    <div class="my-3">
+      <div class="form-group mb-0 v-center mb-2">
+        <label class="mr-2 mb-0" style="white-space: nowrap" translate>Activity</label>
+        <div class="v-center">
+          <app-date-input type="prepend" [clearable]="true" [(value)]="searchOption.activityStart"
+            (valueChange)="updateFilter()" [markToday]="true"></app-date-input>
+          <div class="mx-2">-</div>
+          <app-date-input type="prepend" [clearable]="true" [(value)]="searchOption.activityEnd"
+            (valueChange)="updateFilter()" [markToday]="true"></app-date-input>
+        </div>
+      </div>
+      <div class="checkbox-wrapper">
+        <div class="custom-checkbox material-action" *ngFor="let item of activities"
+          style="height: unset; line-height: unset">
+          <ng-container *enableByFeatures="item.feature">
+            <input type="checkbox" class="custom-control-input" id="activity-{{ item._id }}"
+              name="activity-{{ item._id }}" (change)="toggleActivities(item.title)" [checked]="
+                searchOption.activityCondition.indexOf(
+                  activityDefine[item.title]
+                ) !== -1
+              " />
+            <label class="custom-control-label" for="activity-{{ item._id }}">
+              <div class="f-3 mt-1">{{ item.title }}</div>
+            </label>
+          </ng-container>
+          <!-- <ng-container *ngIf="item.title == 'sent image'">
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              id="activity-{{ item._id }}"
+              name="activity-{{ item._id }}"
+              (change)="toggleActivities(item.title)"
+              [checked]="searchOption.lastMaterial.send_image.flag"
+            />
+            <label class="custom-control-label" for="activity-{{ item._id }}">
+              <div class="f-3 mt-1">{{ item.title }}</div>
+            </label>
+          </ng-container> -->
+          <!-- <ng-container *ngIf="item.title == 'reviewed pdf'">
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              id="activity-{{ item._id }}"
+              name="activity-{{ item._id }}"
+              (change)="toggleActivities(item.title)"
+              [checked]="searchOption.lastMaterial.watched_pdf.flag"
+            />
+            <label class="custom-control-label" for="activity-{{ item._id }}">
+              <div class="f-3 mt-1">{{ item.title }}</div>
+            </label>
+          </ng-container>
+          <ng-container *ngIf="item.title == 'reviewed image'">
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              id="activity-{{ item._id }}"
+              name="activity-{{ item._id }}"
+              (change)="toggleActivities(item.title)"
+              [checked]="searchOption.lastMaterial.watched_image.flag"
+            />
+            <label class="custom-control-label" for="activity-{{ item._id }}">
+              <div class="f-3 mt-1">{{ item.title }}</div>
+            </label>
+          </ng-container> -->
+        </div>
+      </div>
+    </div>
+    <!-- <div class="form-group my-3 pb-2" [class.disable-form]="enableTeamSearchOption()" [class.d-none]="selectedTab.id === 'team'">
+      <label>Select Date Range</label>
+    </div> -->
+    <div class="fixed-action-group mt-4 d-flex">
+      <button type="button" class="btn btn-white font-weight-bold ml-auto" type="button" (click)="close()" translate>
+        Cancel
+      </button>
+      <button type="button" class="btn btn-white-blue font-weight-bold ml-2" (click)="clearAllFilters()" translate>
+        Clear All Filters
+      </button>
+      <ng-container *ngIf="!currentFilterId">
+        <button type="button" class="btn btn-primary ml-2" (click)="saveFilters()" translate>
+          Save
+        </button>
+      </ng-container>
+    </div>
+  </div>
+</div>

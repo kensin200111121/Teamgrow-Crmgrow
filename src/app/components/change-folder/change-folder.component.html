@@ -1,0 +1,49 @@
+<h1 mat-dialog-title class="v-center d-flex">
+    <span [translateParams]="{fileType: fileType}" translate>folder_action.move_folder</span>
+    <button class="border-0 bgc-trans ml-auto" mat-dialog-close>
+      <i class="d-block i-icon i-close bgc-dark"></i>
+    </button>
+  </h1>
+  <mat-dialog-content>
+    <div class="form-group">
+      <div class="v-center">
+        <label for="target_folder" class="mb-0" translate>select folder</label>
+        <span class="error ml-auto" *ngIf="selectedFolder._id" translate>
+          Required!
+        </span>
+      </div>
+      <div class="border rounded py-2 px-2 mt-1">
+        <mat-select [(ngModel)]="selectedFolder"
+          name="fullname"
+          id="target_folder"
+          name="folder"
+          #folder="ngModel"
+          required
+          placecholder="Select Folder"
+          (ngModelChange)="folderAction($event)"
+        >
+          <mat-option disabled translate>Please select folder</mat-option>
+          <mat-option [value]="newFolder" [translateParams]="{fileType: fileType}" translate>folder_action.new_folder</mat-option>
+          <ng-container *ngIf="!isRoot">
+            <mat-option [value]="rootFolder">
+              <div class="f-3 c-black" translate>
+                <span class="f-3 mr-1">..</span>to the root
+              </div>
+            </mat-option>
+          </ng-container>
+          <mat-option *ngFor="let folder of folders" [value]="folder">
+            <div class="v-center">
+              <i class="i-icon i-folder d-block bgc-dark" aria-hidden="true"></i>
+              <div class="f-3 c-black ml-2">
+                {{folder.title}}
+              </div>
+            </div>
+          </mat-option>
+        </mat-select>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button class="btn c-blue" mat-dialog-close translate>Cancel</button>
+    <button class="btn btn-primary" [class.loading]="moving" (click)="move()" translate>Move</button>
+  </mat-dialog-actions>

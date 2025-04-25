@@ -1,0 +1,224 @@
+<div class="v-center justify-content-between">
+  <h1 class="m-0" mat-dialog-title translate>
+    {{data['title']}}
+  </h1>
+  <i class="d-block i-icon i-close bgc-dark" mat-dialog-close *ngIf="!submitting"></i>
+</div>
+<mat-dialog-content class="description">
+  <div class="text-center f-5 c-dark mt-3">
+    <div *ngIf="data['option']" class="fw-700" translate>
+      {{ data['subject'] }}
+    </div>
+    {{ data['message'] | translate }}
+  </div>
+
+  <!-- Additional Action -->
+  <div class="additional f-3 text-center fw-600 mt-4 mb-2" *ngIf="data['additional']">
+    <ng-container *ngFor="let item of data['additional'];">
+      <div class="v-center justify-content-center secondary-contact c-pointer w-100 mt-1"
+        (click)="expandDetails(item.team.id)">
+        <div class="team-avatar">
+          <div class="thumbnail">
+            <a href="{{siteUrl}}/community/{{item.team.id}}/members/root" target="_blank">
+              <img class="thumbnail md rounded mr-2" [src]="item.team.picture"
+                (error)="sspaService.imgError($event,'img/team_placeholder.png')" />
+            </a>
+          </div>
+        </div>
+        <div class="team-info">
+          <div>
+            <span class="f-4 ci-dark fw-700">
+              <a class="c-pointer c-blue" href="{{siteUrl}}/community/{{item.team.id}}/members/root" target="_blank">
+                {{item.team.name}}
+              </a>
+            </span>
+          </div>
+        </div>
+        <div class="team-action">
+          <i class="d-block i-icon bgc-blue"
+            [ngClass]="{'i-expand-less': d_status[item.team.id], 'i-expand-more': !d_status[item.team.id]}"></i>
+        </div>
+      </div>
+      <div *ngFor="let message of item.error_message;" [class.d-none]="!d_status[item.team.id]">
+        <div *ngIf="message.reason === 'automations'">
+          <div class="mb-1 mt-1 team-reason">
+            <div class="team-reason-title">
+              <span class="mr-4" translate>Reason:</span>
+            </div>
+            <div class="team-reason-content">
+              <div class="ci-dark mr-1"
+                [innerHTML]="'These automations are shared in this team' | translate"></div>
+            </div>
+          </div>
+          <div class="mb-1 mt-1 team-reason">
+            <div class="team-reason-title"></div>
+            <div class="team-reason-content">
+              <ng-container *ngFor="let automation of message.automations; let i = index">
+                <a class="c-pointer c-blue" [routerLink]="['/autoflow/edit/' + automation._id]" target="_blank">
+                  "{{ automation.title | translate }}"
+                </a>
+                <span *ngIf="i < message.automations.length - 1">, </span>
+                <span *ngIf="i === message.automations.length - 1">. </span>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="message.reason === 'templates'">
+          <div class="mb-1 mt-1 team-reason">
+            <div class="team-reason-title">
+              <span class="mr-4" translate>Reason:</span>
+            </div>
+            <div class="team-reason-content">
+              <div class="ci-dark mr-1"
+                [innerHTML]="'These templates are shared in this team' | translate"></div>
+            </div>
+          </div>
+          <div class="mb-1 mt-1 team-reason">
+            <div class="team-reason-title"></div>
+            <div class="team-reason-content">
+              <ng-container *ngFor="let template of message.templates; let i = index">
+                <a class="c-pointer c-blue" [routerLink]="['/templates/edit/' + template._id]" target="_blank">
+                  "{{ template.title | translate }}"
+                </a>
+                <span *ngIf="i < message.templates.length - 1">, </span>
+                <span *ngIf="i === message.templates.length - 1">. </span>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="message.reason === 'folders'">
+          <div class="mb-1 mt-1 team-reason">
+            <div class="team-reason-title">
+              <span class="mr-4" translate>Reason:</span>
+            </div>
+            <div class="team-reason-content">
+              <div class="ci-dark mr-1"
+                [innerHTML]="'These folders are shared in this team' | translate"></div>
+            </div>
+          </div>
+          <div class="mb-1 mt-1 team-reason">
+            <div class="team-reason-title"></div>
+            <div class="team-reason-content">
+              <ng-container *ngFor="let folder of message.folders; let i = index">
+                <a class="c-pointer c-blue">
+                  "{{ folder.title | translate }}"
+                </a>
+                <span *ngIf="i < message.folders.length - 1">, </span>
+                <span *ngIf="i === message.folders.length - 1">. </span>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="message.reason === 'materials'">
+          <div class="mb-1 mt-1 team-reason">
+            <div class="team-reason-title">
+              <span class="mr-4" translate>Reason:</span>
+            </div>
+            <div class="team-reason-content">
+              <div class="ci-dark mr-1"
+                [innerHTML]="'These materials are shared in this team' | translate"></div>
+            </div>
+          </div>
+          <div class="mb-1 mt-1 team-reason">
+            <div class="team-reason-title"></div>
+            <div class="team-reason-content">
+              <ng-container *ngFor="let item of message.materials; let i = index">
+                <ng-container [ngSwitch]="item.type">
+                  <ng-container *ngSwitchCase="'video'">
+                    <ng-container
+                      *ngIf="item.material.converted == 'completed' || item.material.converted == 'disabled'; else checkUrl;">
+                      <a href="{{siteUrl}}/video/{{item.material._id}}" target="_blank">
+                        <div class="thumb-prev-wrapper">
+                          <img [src]="item.material.thumbnail" class="thumbnail"
+                            (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+                        </div>
+                      </a>
+                    </ng-container>
+                    <ng-template #checkUrl>
+                      <a (click)="openUrl(item.material)">
+                        <div class="thumb-prev-wrapper">
+                          <img [src]="item.material.thumbnail" class="thumbnail"
+                            (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+                          <img [src]="item.material.preview" class="preview"
+                            (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+                        </div>
+                      </a>
+                    </ng-template>
+                  </ng-container>
+                  <a *ngSwitchCase="'pdf'" href="{{siteUrl}}/pdf/{{item.material._id}}" class="c-pointer c-blue"
+                    target="_blank">
+                    <img class="thumbnail" src="{{item.material.preview}}"
+                      (error)="sspaService.imgError($event,'img/pdf_overlay.png')" />
+                  </a>
+                  <a *ngSwitchCase="'image'" href="{{siteUrl}}/image/{{item.material._id}}" class="c-pointer c-blue"
+                    target="_blank">
+                    <img class="thumbnail" src="{{item.material.preview}}"
+                      (error)="sspaService.imgError($event,'img/image_overlay.png')" />
+                  </a>
+                </ng-container>
+                <span class="font-weight-bold d-flex align-items-center mr-4">{{(item.material.title || '') | shorten:
+                  20: '...'}}</span>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="message.reason === 'contacts'">
+          <div class="mb-1 mt-1 team-reason">
+            <div class="team-reason-title">
+              <span class="mr-4" translate>Reason:</span>
+            </div>
+            <div class="team-reason-content">
+              <div class="ci-dark mr-1"
+                [innerHTML]="'These contacts are shared over a team' | translate"></div>
+            </div>
+          </div>
+          <div class="mb-1 mt-1 team-reason">
+            <div class="team-reason-title"></div>
+            <div class="team-reason-content">
+              <ng-container *ngFor="let contact of message.contacts; let i = index">
+                <a class="v-center c-pointer ml-3 mb-2 fw-600 undecoration" [routerLink]="['/contacts/' + contact._id]"
+                  target="_blank">
+                  <div class="contact-avatar f-3 mr-2">
+                    {{avatarName(contact)}}
+                  </div>
+                  <span class="f-4">{{fullName(contact)}}</span>
+                </a>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="message.reason === 'pipelines'">
+          <div class="mb-1 mt-1 team-reason">
+            <div class="team-reason-title">
+              <span class="mr-4" translate>Reason:</span>
+            </div>
+            <div class="team-reason-content">
+              <div class="ci-dark mr-1"
+                [innerHTML]="'These pipelines are shared in this team' | translate"></div>
+            </div>
+          </div>
+          <div class="mb-1 mt-1 team-reason">
+            <div class="team-reason-title"></div>
+            <div class="team-reason-content">
+              <ng-container *ngFor="let pipeline of message.pipelines; let i = index">
+                <a class="c-pointer c-blue" [routerLink]="['/pipeline/' + pipeline._id]" target="_blank">
+                  "{{ pipeline.title | translate }}"
+                </a>
+                <span *ngIf="i < message.pipelines.length - 1">, </span>
+                <span *ngIf="i === message.pipelines.length - 1">. </span>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="mx-0" *ngIf="data['option']">
+  <button class="btn btn-red f-6 font-weight-bold text-white mr-2" [class.loading]="submitting" type="button"
+    (click)="doRemove(1)" translate>Yes</button>
+  <button class="btn btn-white f-6 font-weight-bold c-blue mr-2" (click)="close()" [class.disabled]="submitting"
+    translate>Cancel</button>
+</mat-dialog-actions>

@@ -1,0 +1,41 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "dataGroups": [
+    {
+      "name": "from-api",
+      "urls": ["/video", "/video/**", "/redirect", "/redirect/**",  "/unsubscribe", "/unsubscribe/**",  "/social-oauth/google", "/social-oauth/outlook", "/social-oauth/**", "/social-oauth-callback/google", "/social-oauth-callback/outlook", "/social-oauth-callback/**", "/video1", "/video1/**", "/pdf", "/pdf/**", "/pdf1", "/pdf1/**", "/support","/support/**", "/api", "/auth", "/login", "/signup", "/oneonone", "/home", "/profile", "/contacts", "/api/**", "/image**/", "/image/**", "/image", "/image1", "/image1/**", "/login-with-demo", "https://teamgrow.s3.us-east-2.amazonaws.com/**"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 0,
+        "maxAge": "0u"
+      }
+    }
+  ],
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/index.html",
+          "/manifest.webmanifest",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/**",
+          "/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)"
+        ]
+      }
+    }
+  ]
+}

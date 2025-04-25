@@ -1,0 +1,18 @@
+<h1 mat-dialog-title translate>Remove action</h1>
+<mat-dialog-content class="description">
+  <div class="f-3 c-dark mt-3">
+    {{data['message']}}
+  </div>
+  <div class="mt-3">
+    <ng-container *ngFor="let case of data['cases']">
+      <div class="case my-2 p-2" [class.selected]="case.id === selectedCase?.id" (click)="selectCase(case)">
+        <div class="f-5 c-black font-weight-bold">{{case['title']}}</div>
+        <div class="f-3 c-dark mt-2">{{case['description']}}</div>
+      </div>
+    </ng-container>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="mx-0">
+  <button type="button" class="btn btn-white c-blue mr-2" [mat-dialog-close]="false">{{data['cancelLabel'] || ('Cancel' | translate)}}</button>
+  <button type="button" class="btn btn-primary" [disabled]="!selectedCase" (click)="confirm()">{{data['confirmLabel'] || ('OK' | translate)}}</button>
+</mat-dialog-actions>

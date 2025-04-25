@@ -1,0 +1,307 @@
+<div class="page-content calendar-page" [class.disable]="!isPackageCalendar">
+  <div class="v-center justify-content-between pb-3 calendar-time">
+    <div class="v-center justify-content-center">
+      <div class="v-center justify-content-center text-center c-dark date">
+        <span *ngIf="view == 'month'">
+          {{ viewDate | date : 'MMMM y' : '' : locale }}
+        </span>
+        <span *ngIf="view == 'week'">
+          <ng-container [ngSwitch]="weekStringMode">
+            <ng-container *ngSwitchCase="'day'">{{
+              viewDate | date : 'MMM y' : '' : locale
+              }}</ng-container>
+            <ng-container *ngSwitchCase="'month'">{{ weekStart | date : 'MMM' : '' : locale  }} -
+              {{ weekEnd | date : 'MMM y' }}</ng-container>
+            <ng-container *ngSwitchCase="'year'">{{ weekStart | date : 'MMM y' : '' : locale  }} -
+              {{ weekEnd | date : 'MMM y' : '' : locale  }}</ng-container>
+          </ng-container>
+        </span>
+        <span *ngIf="view == 'day'">
+          {{ viewDate | date : 'EEE, MMM d y' }}
+        </span>
+      </div>
+      <div class="v-center calendar-controls">
+        <i class="i-icon d-block i-chev-left bgc-blue c-pointer" mwlCalendarPreviousView [view]="view"
+          [(viewDate)]="viewDate" (viewDateChange)="calendarDateChange('prev')" placement="bottom"
+          [ngbTooltip]="prevContent">
+        </i>
+        <i class="i-icon d-block i-chev-right bgc-blue c-pointer" mwlCalendarNextView [view]="view"
+          [(viewDate)]="viewDate" (viewDateChange)="calendarDateChange('next')" placement="bottom"
+          [ngbTooltip]="nextContent">
+        </i>
+        <div class="text-primary text-center font-weight-bold c-pointer border border-primary rounded py-1 px-3 mr-2"
+          mwlCalendarToday [(viewDate)]="viewDate" (viewDateChange)="calendarDateChange()" placement="bottom"
+          [ngbTooltip]="todayContent">
+          {{ 'Today' | translate }}
+        </div>
+        <ng-template #prevContent>
+          <div [ngSwitch]="view" translate>
+            <ng-container *ngSwitchCase="'month'">
+              Previous month
+            </ng-container>
+            <ng-container *ngSwitchCase="'week'"> Previous week </ng-container>
+            <ng-container *ngSwitchCase="'day'"> Previous day </ng-container>
+          </div>
+        </ng-template>
+        <ng-template #nextContent>
+          <div [ngSwitch]="view" translate>
+            <ng-container *ngSwitchCase="'month'"> Next month </ng-container>
+            <ng-container *ngSwitchCase="'week'"> Next week </ng-container>
+            <ng-container *ngSwitchCase="'day'"> Next day </ng-container>
+          </div>
+        </ng-template>
+        <ng-template #todayContent>
+          {{ today | date : 'EEEE, MMMM d' }}
+        </ng-template>
+      </div>
+    </div>
+    <div class="v-center justify-content-center view-time">
+      <app-slide-tab [tabs]="tabs" [selected]="selectedTab" (onChange)="changeTab($event)">
+      </app-slide-tab>
+      <button [attr.data-action]="'calendar-add-new-meeting'" class="v-center btn btn-blue f-6 font-weight-bold text-white ml-4 mr-3 new-event" (click)="newEvent()">
+        <span translate>New Meeting</span>
+        <i class="i-icon bg-white i-plus"></i>
+      </button>
+      <div class="calendar-setting" placement="bottom" ngbTooltip="{{ 'Setting' | translate }}">
+        <button class="btn btn-tras" (click)="calendarSetting()">
+          <i class="d-block i-icon i-setting bgc-blue"></i>
+        </button>
+      </div>
+
+      <div ngbDropdown class="p-2 m-0 calendar-list">
+
+        <a ngbDropdownToggle
+          class="btn btn-tras no-carot" placement="bottom" ngbTooltip="{{'List Calendar' | translate}}">
+
+          <i class="d-block i-icon i-calendar bgc-blue"></i>
+        </a>
+        <div ngbDropdownMenu class="light menu-hide">
+          <div class="light px-3 calendar-list-content py-2">
+            <div class="first-calendar" *ngFor="let account of accounts">
+              <label class="f-1 font-weight-bold m-0">{{
+                account.email
+                }}</label>
+              <div class="v-center mt-1" *ngFor="let calendar of account.calendars">
+                <ng-container *ngIf="
+                    !selectedCalendars?.includes(calendar.id);
+                    else selectedTemplate
+                  ">
+                  <div class="unchecked-calendar" (click)="toggleCalendar(calendar)"></div>
+                </ng-container>
+                <ng-template #selectedTemplate>
+                  <div class="checked-calendar" (click)="toggleCalendar(calendar)">
+                    <i class="i-icon i-check bgc-white sm" aria-hidden="true"></i>
+                  </div>
+                </ng-template>
+                <div class="v-center">
+                  <div [ngStyle]="{ 'background-color': calendar.color || 'blue' }" class="color"></div>
+                  <span class="f-3 font-weight-bold" translate>{{
+                    calendar.title
+                    }}</span>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-blue f-3 font-weight-bold text-white mt-3 w-100" (click)="addCalendar()" translate>
+              Add new calendar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="calendar-wrapper">
+    <ng-container *ngIf="(isLoading && !events.length) || isUpdating">
+      <div class="list-loading text-center">
+        <div class="loader"></div>
+      </div>
+    </ng-container>
+    <div [ngSwitch]="view">
+      <div *ngSwitchCase="'month'">
+        <mwl-calendar-month-view [viewDate]="viewDate" [events]="showingEvents" [cellTemplate]="monthCellTemplate"
+          [headerTemplate]="monthHeaderTemplate" [locale]="locale">
+        </mwl-calendar-month-view>
+        <ng-template #monthCellTemplate let-day="day" let-locale="locale" let-eventClicked="eventClicked">
+          <div class="cal-month-cell h-100" #eventCell (click)="openOverlay(day, eventCell, $event)">
+            <div class="cal-cell-top mt-1 mb-2">
+              <span class="cal-day-number">
+                {{ day.date | calendarDate : 'monthViewDayNumber' : locale }}
+              </span>
+            </div>
+            <ng-container *ngIf="day.events.length < 4; else moreEvent">
+              <div class="cal-event m-0" *ngFor="let event of day.events" [ngStyle]="{
+                  'background-color': calendars[event.meta.calendar_id]?.color
+                }" #monthEventView (mwlClick)="openDetail(event, monthEventView)">
+                <div [attr.data-name]="'calendar-event-body-day-' + day.date" class="f-2 font-weight-bold c-white p-1 cal-event-body">
+                  {{
+                  event.title || '(No Title)'
+                  | stripTags
+                  | removeEntity
+                  | shorten : 20 : '...'
+                  }}
+                </div>
+              </div>
+            </ng-container>
+            <ng-template #moreEvent>
+              <div class="cal-event m-0" *ngFor="let event of day.events.slice(0, 2)" [ngStyle]="{
+                  'background-color': calendars[event.meta.calendar_id]?.color
+                }" #monthEventView (mwlClick)="openDetail(event, monthEventView)">
+                <div [attr.data-name]="'calendar-event-body-day-' + day.date" class="f-2 font-weight-bold c-white p-1 cal-event-body">
+                  {{
+                  event.title || '(No Title)'
+                  | stripTags
+                  | removeEntity
+                  | shorten : 20 : '...'
+                  }}
+                </div>
+              </div>
+              <div class="cal-event m-0" [ngStyle]="{ 'background-color': '#fff' }" #moreEventView
+                (mwlClick)="moreView(day, moreEventView, moreOverlay)">
+                <div [attr.data-name]="'calendar-event-more-day-' + day.date" class="f-3 font-weight-bold text-center c-blue p-1 cal-event-body" [translateParams]="{length: day.events.length - 2}" translate>
+                  calendar.more
+                </div>
+              </div>
+            </ng-template>
+            <div *ngIf="day.events.length > 0" [attr.event]="day.events[0].start | date : 'yyyy-MM-dd'"></div>
+          </div>
+        </ng-template>
+        <ng-template #monthHeaderTemplate let-days="days" let-locale="locale">
+          <div class="v-center cal-header py-2">
+            <div class="cal-header-cell desktop" *ngFor="let day of days">
+              <span>{{ day.date | date : 'EEEE' : '' : locale }}</span>
+            </div>
+            <div class="cal-header-cell mobile" *ngFor="let day of days">
+              <span>{{ day.date | date : 'EEE' : '' : locale }}</span>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+      <div *ngSwitchCase="'week'">
+        <mwl-calendar-week-view [viewDate]="viewDate" [events]="showingEvents" [eventTemplate]="weekEventTemplate"
+          [headerTemplate]="weekHeaderTemplate" [hourSegmentHeight]="60" [hourSegments]="1"
+          [hourSegmentTemplate]="weekHourTemplate" [locale]="locale">
+        </mwl-calendar-week-view>
+        <ng-template #weekEventTemplate let-weekEvent="weekEvent" let-locale="locale" let-eventClicked="eventClicked">
+          <div class="cal-event" #weekEventView [ngStyle]="{
+              'background-color':
+                calendars[weekEvent.event.meta.calendar_id]?.color
+            }" (mwlClick)="openDetail(weekEvent.event, weekEventView)">
+            <div class="f-1 font-weight-bold c-white cal-event-title">
+              {{ weekEvent.event.title }}
+            </div>
+            <div class="f-1 font-weight-bold c-white cal-event-title">
+              {{ weekEvent.event.start | timeWithProfile }}-{{ weekEvent.event.end | timeWithProfile }}
+            </div>
+          </div>
+        </ng-template>
+        <ng-template #weekHourTemplate let-segment="segment" let-locale="locale" let-isTimeLabel="isTimeLabel">
+          <div *ngIf="isTimeLabel; else calHourCell">
+            <div class="cal-hour-segment">
+              <span class="cal-time f-1 font-weight-bold op-64">
+                {{ segment.date | calendarDate : 'dayViewHour' : locale }}
+              </span>
+              <div class="time-line ml-3">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+              </div>
+            </div>
+          </div>
+          <ng-template #calHourCell let-close="close" let-data>
+            <!-- {{ segment.date | json }} -->
+            <div class="cal-hour h-100" #createWeek (click)="openOverlay(segment.date, createWeek)"></div>
+          </ng-template>
+        </ng-template>
+        <ng-template #weekHeaderTemplate let-days="days" let-locale="locale" let-weekHeaderClicked="weekHeaderClicked">
+          <div class="cal-day-headers">
+            <div class="cal-header" *ngFor="let day of days" mwlDroppable [class.cal-today]="day.isToday">
+              <div class="v-center justify-content-center avatar-wrapper mb-1">
+                <div class="v-center justify-content-center f-8 font-weight-bold avatar">
+                  {{ day.date | date : 'd' }}
+                </div>
+              </div>
+              <span class="desktop f-1 font-weight-bold text-uppercase">
+                {{ day.date | date : 'EEEE' : '' : locale }}
+              </span>
+              <span class="mobile f-1 font-weight-bold text-uppercase">
+                {{ day.date | date : 'EEE' : '' : locale }}
+              </span>
+              <div class="global-events week-events" #weekAllDayEventView>
+                <div (click)="openDetail(event, weekAllDayEventView)" class="event c-pointer f-1"
+                  *ngFor="let event of getDayEvent(day.date)">
+                  <div class="event-cell" [ngStyle]="{
+                      'background-color':
+                        calendars[event.meta.calendar_id]?.color
+                    }">
+                    {{ event.title || '' | shorten : 20 : '...' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+      <div *ngSwitchCase="'day'">
+        <div class="global-events day-events" #dayAllDayEventView>
+          <div class="event" *ngFor="let event of getDayEvent(viewDate)">
+            <div (click)="openDetail(event, dayAllDayEventView)" class="event-cell c-pointer p-1 f-1" [ngStyle]="{
+                'background-color': calendars[event.meta.calendar_id]?.color
+              }">
+              {{ event.title || '' | shorten : 40 : '...' }}
+            </div>
+          </div>
+        </div>
+        <mwl-calendar-day-view [viewDate]="viewDate" [events]="showingEvents" [hourSegmentHeight]="60"
+          [hourSegments]="1" [hourSegmentTemplate]="dayHourTemplate" [eventTemplate]="dayEventTemplate">
+        </mwl-calendar-day-view>
+        <ng-template #dayEventTemplate let-dayEvent="weekEvent" let-locale="locale" let-eventClicked="eventClicked">
+          <div class="cal-event" #dayEventView [ngStyle]="{
+              'background-color':
+                calendars[dayEvent.event.meta.calendar_id]?.color
+            }" (mwlClick)="openDetail(dayEvent.event, dayEventView)">
+            <div class="f-2 font-weight-bold c-white cal-event-title">
+              {{ dayEvent.event.title }}
+            </div>
+            <div class="f-2 font-weight-bold c-white cal-event-title">
+              {{ dayEvent.event.start | timeWithProfile }}-{{ dayEvent.event.end | timeWithProfile }}
+            </div>
+          </div>
+        </ng-template>
+        <ng-template #dayHourTemplate let-segment="segment" let-locale="locale" let-isTimeLabel="isTimeLabel">
+          <div class="h-100" #createDay (click)="openOverlay(segment.date, createDay)">
+            <div class="cal-day-timelabel">
+              <div class="cal-hour-segment">
+                <span class="cal-time f-1 font-weight-bold op-64">
+                  {{ segment.date | calendarDate : 'dayViewHour' : locale }}
+                </span>
+                <div class="time-line ml-3">
+                  <div class="line"></div>
+                  <div class="line"></div>
+                  <div class="line"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #creatPortalContent>
+    <app-calendar-event-dialog
+      mode="overlay"
+      (onClose)="closeOverlay()"
+      (onCreate)="createEvent($event)"
+      [start_date]="selectedDate"
+      [user_email]="user.email"
+      [events]="events">
+    </app-calendar-event-dialog>
+  </ng-template>
+  <ng-template #detailPortalContent>
+    <app-calendar-event [event]="event" [events]="events" (onClose)="closeOverlay($event)">
+    </app-calendar-event>
+  </ng-template>
+  <ng-template #moreOverlay let-close="close" let-data>
+    <app-calendar-more-event [events]="data.data"  (onClose)="closeOverlay($event)" (onShowDetail)="onShowMoreDetail($event)">
+    </app-calendar-more-event>
+  </ng-template>
+</div>

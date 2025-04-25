@@ -1,0 +1,16 @@
+<div class="buckets-container px-3 py-4 pb-2">
+  <div class="d-flex mb-3 align-items-center">
+    <h5 class="mr-auto mb-0"><strong>Sort Preferences</strong></h5>
+    <a class="mx-2 c-pointer" (click)="closeList()">
+      <i class="i-icon i-close d-block bgc-dark"></i>
+    </a>
+  </div>
+  <div cdkDropList (cdkDropListDropped)="updateScore($event)">
+    <div *ngFor="let item of buckets; let i = index;" cdkDrag class="mb-3">
+      <app-bucket-item [bucket]="item" (save)="onSave($event, i)" (remove)="onRemove(item)"></app-bucket-item>
+    </div>
+    <a class="new-bucket c-pointer" data-action="new-bucket" (click)="addNew()" *ngIf="!(buckets.length >= 3)">
+      Add New Bucket
+    </a>
+  </div>
+</div>

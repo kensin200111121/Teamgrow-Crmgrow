@@ -1,0 +1,121 @@
+<div class="select-form">
+  <ng-container *ngIf="(leadFormService.loadStatus$ | async) === STATUS.SUCCESS; else loadingStatus">
+    <label class="c-dark type-label fw-600 f-6" for="lead_form" translate
+      >Select Form</label
+    >
+    <div class="row">
+      <div class="col-12 form-group m-0">
+        <select
+          class="form-control c-dark f-4"
+          [ngModel]="formId"
+          (change)="onSelectForm(formSelect.value)"
+          name="lead_form"
+          #formSelect
+        >
+          <option></option>
+          <option *ngFor="let form of leadForms" value="{{ form._id }}">
+            {{ form.name }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #loadingStatus>
+    <div class="tex-center">
+      <div class="loader"></div>
+      <p class="text-center font-weight-bold" translate>Loading lead forms...</p>
+    </div>
+  </ng-template>
+</div>
+<div *ngIf="leadForm">
+  <label class="c-dark type-label fw-600 f-4 mt-4" translate
+    >conditional_question_answer
+  </label>
+  <div
+    *ngFor="let form_conditions of leadFormConditions; let i = index"
+    [class]="{ 'mt-3': i > 0 }"
+  >
+    <div *ngIf="i > 0" class="mb-4 d-flex justify-content-center">
+      <span class="badge badge-pill f-4 badge-dark p-2" translate>Or</span>
+    </div>
+    <div class="card bg-light">
+      <div class="card-body">
+        <div
+          class="row mb-3 no-gap"
+          *ngFor="let condition of form_conditions; let idx = index"
+        >
+          <div class="d-flex justify-content-center w-100 align-items-center px-3" *ngIf="idx > 0">
+            <div class="flex-grow-1 gray_bar"></div>
+            <div class="c-secondary f-4" translate>And</div>
+            <div class="flex-grow-1 gray_bar"></div>
+          </div>
+          <div class="col-12 form-group mb-0 d-flex align-items-center">
+            <select
+              class="form-control"
+              [(ngModel)]="condition.field"
+              (change)="updateField($event.target.value, i, idx)"
+              name="field_{{ i }}"
+            >
+              <option>Select Question</option>
+              <option
+                *ngFor="let field of leadForm.fields"
+                value="{{ field.name }}"
+              >
+                {{ field.name }}
+              </option>
+            </select>
+            <div class="c-pointer" (click)="onRemoveCondition(i, idx)">
+              <i class="i-icon bgc-light-gray d-block mr-1 i-trash"></i>
+            </div>
+          </div>
+          <div class="col-12 col-md form-group mb-0">
+            <select
+              class="form-control operator_box"
+              [(ngModel)]="condition.operator"
+              (change)="updateCondition()"
+              name="operator_{{ i }}"
+            >
+              <option>Select Operator</option>
+              <option
+                *ngFor="let oItem of operateList[condition.type]"
+                value="{{ oItem.value }}"
+                translate
+              >
+                {{ oItem.label }}
+              </option>
+            </select>
+          </div>
+          <div class="col-12 col-md form-group mb-0">
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="condition.value"
+              (keyup)="updateCondition()"
+              name="value_{{ i }}"
+              placeholder="Enter Value"
+            />
+          </div>
+        </div>
+        <div class="row">
+          <div
+            class="col c-pointer add_link d-flex align-items-center justify-content-start"
+            (click)="onAddCondition(i)"
+          >
+            <i class="i-icon i-plus d-block bgc-plus sm"></i>
+            <span translate class="f-4">add_condition</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div
+      class="col c-pointer add_link d-flex align-items-center justify-content-start ps-2"
+      (click)="onAddOrCondition()"
+    >
+      <i class="i-icon i-plus d-block bgc-plus sm"></i>
+      <span translate class="f-4">add_alternative_rule</span>
+    </div>
+  </div>
+</div>

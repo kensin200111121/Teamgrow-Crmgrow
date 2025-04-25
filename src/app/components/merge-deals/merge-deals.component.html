@@ -1,0 +1,134 @@
+<div mat-dialog-title class="title mx-0 mt-4 px-4">
+    <div class="v-center justify-content-between">
+        <h1 mat-dialog-title class="font-weight-bold m-0" translate>
+            Merge deals
+        </h1>
+        <button class="v-center border-0 bgc-trans p-0" mat-dialog-close>
+            <i class="d-block i-icon i-close bgc-dark"></i>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="page-content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 form-group">
+                <label for="title" translate>Title</label>
+                <mat-select [(ngModel)]="result.title">
+                    <mat-option *ngFor="let value of getTitles()" [value]="value">
+                        <div class="f-3 c-black" [class.selected-option-text]="value == result.title">
+                            {{ value }}
+                        </div>
+                    </mat-option>
+                </mat-select>
+            </div>
+            <div class="col-xs-12 col-sm-6 form-group">
+                <label for="stage" translate>Stage</label>
+                <select class="form-control mb-0" [(ngModel)]="result.deal_stage" name="select_stage" #select_stage="ngModel">
+                    <option *ngFor="let stage of getStages()" value="{{stage._id}}">
+                        {{stage.title}}
+                    </option>
+                </select>
+            </div>
+            <div *ngIf="hasAutomation()" class="col-xs-12 col-sm-6 form-group">
+                <label for="automation" translate>Automation</label>
+                <mat-select [(ngModel)]="result['automation_id']">
+                    <mat-option *ngFor="let value of getAutomations()" [value]="value._id">
+                        <div class="f-3 c-black" [class.selected-option-text]="value._id == result['automation_id']">
+                            {{ value.title }}
+                        </div>
+                    </mat-option>
+                </mat-select>
+            </div>
+        </div>
+        <div class="contacts-wrapper">
+            <div class="contacts-table-wrapper">
+                <table class="table deal-contacts-table mb-0">
+                    <thead>
+                        <tr>
+                            <th class="name-col" translate>Contact name</th>
+                            <th class="email-col" translate>Email</th>
+                            <th class="primary-col" translate>Primary</th>
+                            <th class="action-col sticky-action-col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let contact of result.contacts; let cIndex = index;" [id]="'contact-' + contact._id">
+                            <td class="name-col f-3 fw-600">
+                                <div class="v-center c-pointer">
+                                    <div class="contact-avatar f-3 mr-2">
+                                        {{ getAvatarName(contact) }}
+                                    </div>
+                                    <span class="fw-600">
+                                        {{ contact.first_name || '' }} {{ contact.last_name || '' }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="email-col f-3 fw-600">{{ contact.email }}</td>
+                            <td class="primary-col">
+                                <div class="custom-radio-container" (click)="setPrimary(contact)">
+                                    <input class="custom-radio" type="radio" [id]="'deal-contact-' + contact._id"
+                                        [name]="'deal-contact-' + contact._id" [checked]="result.primary_contact._id == contact._id">
+                                    <label class="f-6 font-weight-bold"></label>
+                                </div>
+                            </td>
+                            <td class="action-col sticky-action-col">
+                                <div class="v-center" *ngIf="result.contacts.length > 1">
+                                    <a class="v-center border-0 bgc-trans c-pointer ml-2 p-0" (click)="removeContact(contact)">
+                                        <i class="i-icon i-trash bgc-black" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr *ngIf="adding">
+                            <td class="name-col f-3 fw-600">
+                                <mat-select [(ngModel)]="newContact" name="new_contact" #new_contact="ngModel">
+                                    <mat-option *ngFor="let item of getContactsList()" [value]="item" style="height: unset; line-height: unset;">
+                                        <div class="d-flex chip py-2">
+                                            <div class="form-avatar rounded-circle bg-dark mr-3 mt-1">
+                                                {{ getAvatarName(item) }}
+                                            </div>
+                                            <div class="info">
+                                                <div class="f-5 font-weight-bold">{{ item.first_name || '' }} {{ item.last_name || '' }}</div>
+                                                <div class="f-2">{{ item.email }}</div>
+                                            </div>
+                                        </div>
+                                    </mat-option>
+                                </mat-select>
+                            </td>
+                            <td class="email-col-f-3-fw-600">{{ newContact?.email || '' }}</td>
+                            <td></td>
+                            <td class="action-col sticky-action-col">
+                                <div class="v-center">
+                                    <a class="v-center border-0 bgc-trans c-pointer ml-2 p-0" (click)="addContactToDeal()">
+                                        <i class="i-icon i-plus sm bgc-blue" aria-hidden="true"></i>
+                                    </a>
+                                    <a class="v-center border-0 bgc-trans c-pointer ml-2 p-0" (click)="cancelAddContactToDeal()">
+                                        <i class="i-icon i-trash sm bgc-blue" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions class="mx-0">
+    <div class="v-center justify-content-between my-2 w-100">
+        <button *ngIf="!adding" class="btn btn-primary f-6 font-weight-bold rounded ml-2 px-3 text-white shadow"
+            [class.disabled]="!hasContacts()" (click)="hasContacts() ? addContacts() : null" translate>
+            Add Contacts
+        </button>
+        <div class="v-center">
+            <button class="v-center btn btn-white border border-primary f-6 font-weight-bold rounded mr-2 px-3"
+                (click)="cancel()" translate>
+                Cancel
+            </button>
+            <button class="btn btn-primary f-6 font-weight-bold rounded ml-2 px-3 text-white shadow" [class.loading]="saving"
+                (click)="saving ? null : save()" translate>
+                Merge
+            </button>
+        </div>
+    </div>
+</mat-dialog-actions>

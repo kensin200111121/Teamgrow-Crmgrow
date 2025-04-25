@@ -1,0 +1,23 @@
+@import "variables";
+
+.tab-options {
+  border: 1px solid $color-blue;
+  height: 40px;
+
+  .tab-option {
+    padding: 0.625rem;
+    color: $color-blue;
+    transition: all .2s;
+    cursor: pointer;
+    border-right: 1px solid $color-blue;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &.active {
+      background-color: $color-blue;
+      color: white;
+    }
+  }
+}

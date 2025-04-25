@@ -1,0 +1,107 @@
+<div class="detail-main-info">
+  <div class="price-wrapper c-dark f-4">
+    <div class="col-6 col-md-3 px-0">
+      <div>Price</div>
+      <div class="fw-700">
+        {{ deal?.main?.price ? '$' + deal.main.price : '-' }}
+      </div>
+    </div>
+    <div class="col-6 col-md-3 px-0">
+      <div>Commission</div>
+      <div class="fw-700">{{ convertCommision(deal?.main?.commission) }}</div>
+    </div>
+    <div class="col-6 col-md-3 px-0">
+      <div>Agent Split</div>
+      <div class="fw-700">
+        {{ deal?.main?.agent_price ? '$' + deal.main.agent_price : '-' }}
+      </div>
+    </div>
+    <div class="col-6 col-md-3 px-0">
+      <div>Team Split</div>
+      <div class="fw-700">
+        {{ deal?.main?.team_price ? '$' + deal.main.team_price : '-' }}
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-between align-items-center mx-0">
+    <div>
+      <div class="c-secondary fw-700 f-4">Pipeline</div>
+      <div class="fw-700 c-dark f-6 mx-0">
+        {{ deal?.main?.deal_stage?.pipe_line?.title }} >
+        {{ deal?.main?.deal_stage?.title }}
+      </div>
+    </div>
+    <div>
+      <div class="c-secondary fw-700 f-4">Close Date</div>
+      <div class="fw-700 c-dark f-6 mx-0">
+        {{ deal?.main?.close_date ? (deal?.main?.close_date | date: 'MMM dd, yyyy') : '-'}}
+      </div>
+    </div>
+  </div>
+  <div>
+    <h6 class="f-4">Description</h6>
+    <p class="f-6">{{ deal?.main?.description || '-' }}</p>
+  </div>
+  <div class="row mx-0">
+    <div class="col px-0 c-dark">
+      <div class="c-dark f-4">Primary Contact</div>
+      <div
+        class="row col mx-0 px-0 align-items-center mt-2 c-pointer"
+        *ngIf="primaryContact"
+        (click)="openContact(primaryContact)"
+      >
+        <div class="contact-avatar">{{ getAvatar(primaryContact) }}</div>
+        <div class="f-6 c-dark font-weight-bold ml-2">
+          {{ primaryContact?.first_name }} {{ primaryContact?.last_name }}
+        </div>
+      </div>
+    </div>
+    <div class="col px-0 c-dark">
+      <div class="c-dark f-4">Other Contact</div>
+      <ng-container *ngFor="let contact of otherContacts; let i = index">
+        <div
+          class="row col mx-0 px-0 align-items-center mt-2 c-pointer"
+          *ngIf="contact"
+          (click)="openContact(contact)"
+        >
+          <div class="contact-avatar">{{ getAvatar(contact) }}</div>
+          <div class="f-6 c-dark font-weight-bold ml-2">
+            {{ contact?.first_name }} {{ contact?.last_name }}
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div>
+    <h6 class="c-secondary f-4 fw-700">Team</h6>
+    <div data-name="profile-entrance" class="v-center c-pointer">
+      <app-avatar-team-members
+        [isSplit]="false"
+        [members]="memberIds"
+        [width]="32"
+        [height]="32"
+        [space]="4"
+        [maxCount]="memberIds.length"
+      ></app-avatar-team-members>
+    </div>
+  </div>
+</div>
+<div class="custom-fields-container py-4">
+  <div class="row justify-content-between align-items-center mx-0 mb-3">
+    <div>Custom Fields</div>
+    <div
+      class="v-center f-3 fw-600 mr-3 c-blue c-pointer"
+      (click)="editCustomField($event)"
+    >
+      <i class="d-block i-icon i-edit bgc-blue mr-2"></i>
+      <span translate>Edit Fields</span>
+    </div>
+  </div>
+  <div
+    class="row justify-content-between align-items-center f-6 mx-0 mt-2"
+    *ngFor="let field of additional_fields; let i = index"
+  >
+    <div class="font-weight-bold c-secondary">{{ field?.name }}</div>
+    <div class="font-weight-bold">{{ field?.value }}</div>
+  </div>
+</div>

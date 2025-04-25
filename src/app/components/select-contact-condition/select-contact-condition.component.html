@@ -1,0 +1,36 @@
+<div class="v-center justify-content-between">
+  <h1 class="m-0" mat-dialog-title translate>
+    Select a condition
+  </h1>
+  <i class="d-block i-icon i-close bgc-dark c-pointer" (click)="close()"></i>
+</div>
+<mat-dialog-content class="description">
+  <div class="text-center f-5 c-dark mt-3">
+    {{ 'Which branch would you connect the following actions to' | translate }}
+  </div>
+  <div class="condition-container mt-3">
+    <div class="v-center mb-2" *ngFor="let condition of conditions; let i = index">
+      <div class="custom-radio-container" (click)="setCondition(condition)">
+        <input class="custom-radio" type="radio" id="condition-{{i}}" name="condition-{{i}}" [checked]="isSelected(condition)">
+        <label class="f-5 font-weight-bold"></label>
+      </div>
+      <div class="f-3 ml-2" translate>{{getContactConditionLabel(condition)}}</div>
+    </div>
+    <div class="v-center mb-2">
+      <div class="custom-radio-container" (click)="setCondition('else')">
+        <input class="custom-radio" type="radio" id="condition-else" name="condition-else" [checked]="isSelected('else')">
+        <label class="f-5 font-weight-bold"></label>
+      </div>
+      <div class="f-3 ml-2" translate>Else</div>
+    </div>    
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="mx-0">
+  <button class="btn btn-accept f-6 font-weight-bold text-white" (click)="onConfirm()" cdkFocusInitial>
+    {{ 'Confirm' | translate }}
+  </button>
+  <button class="btn btn-white ml-2 f-6 font-weight-bold c-blue" (click)="close()">
+    {{ 'Cancel' | translate }}
+  </button>
+</mat-dialog-actions>
+

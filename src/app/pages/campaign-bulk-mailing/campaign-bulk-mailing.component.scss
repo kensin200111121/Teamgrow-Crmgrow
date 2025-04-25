@@ -1,0 +1,76 @@
+.campaign-bulk-mailing-page {
+  margin-top: -50px;
+}
+.list-table-container {
+  overflow: visible;
+  z-index: 1;
+  position: relative;
+}
+.mat-table-wrapper table {
+  min-width: unset;
+}
+.checkbox-col {
+  width: 36px;
+}
+.align{
+  margin-top:20px;
+}
+
+.status-col{
+  width: 250px;
+}
+.title-col {
+  width: 300px;
+  a:hover {
+    color: #101336;
+  }
+}
+.count-col {
+  text-align: right;
+}
+.template-table {
+  tr td {
+    height: 40px;
+  }
+  th {
+    height: 45px;
+    color: rgba(0,0,0,.54);
+    .head-sort {
+      span {
+        line-height: 1;
+      }
+      i {
+          width: 8px;
+          height: 12px;
+          min-width: 8px;
+      }
+    }
+  }
+}
+
+tr:hover {
+  .sub-actions-col .sub-item-action {
+    opacity: 1;
+  }
+}
+
+.create-button {
+  width: fit-content;
+  @media screen and (max-width: 750px) {
+    top: -40px;
+  }
+}
+
+:host ::ng-deep {
+  th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
+    padding-left: 0;
+  }
+
+  td.mat-cell, td.mat-footer-cell {
+    padding: 10px 0px;
+  }
+}
+
+.visible-hidden {
+  visibility: hidden;
+}

@@ -1,0 +1,82 @@
+<div class="file rounded mb-3" *ngFor="let action of timeline">
+  <ng-container *ngIf="materials[action.material]">
+    <div class="thumbnail">
+      <img [src]="materials[action.material]?.thumbnail || materials[action.material]?.preview">
+    </div>
+    <div class="p-2">
+      <ng-container *ngIf="action.sent_times > 1; else oneSent">
+        <div class="f-1 font-weight-bold">
+          {{materials[action.material]?.title}}
+        </div>
+        <div class="f-1">
+          {{'Sent' | translate}} {{action.sent_times}} {{'times between' | translate}} {{action.first_sent | date: 'hh:mm MM/dd'}} {{'and' | translate}} {{action.last_sent | date: 'hh:mm MM/dd'}}
+        </div>
+      </ng-container>
+      <ng-template #oneSent>
+        <div class="f-1 font-weight-bold">
+          {{materials[action.material]?.title}}
+        </div>
+        <div class="f-1">
+          {{'Sent at' | translate}} {{action.first_sent | date: 'hh:mm MM/dd'}}
+        </div>
+      </ng-template>
+      <ng-container *ngIf="trackers[action.material] && trackers[action.material].length">
+        <ng-container *ngIf="trackers[action.material].length > 1; else oneTracked">
+          <ng-container *ngIf="dGroups.indexOf(action.material) == -1; else expandedTrackers">
+            <div class="d-flex mt-3">
+              <div class="d-inline-block f-1 font-weight-bold bgc-blue c-white rounded px-1">
+                {{'WATCHED FOR' | translate}} {{(trackers[action.material][0]?.duration || 0) | timeDuration}}
+              </div>
+              <span class="ml-auto f-1 op-56">
+                {{trackers[action.material][0]?.updated_at | date: 'hh:mm MM/dd'}}
+              </span>
+            </div>
+            <div class="d-block track-timeline">
+              <app-play-timelines [data]="trackers[action.material][0]" [duration]="materials[action.material]?.duration"></app-play-timelines>
+            </div>
+            <a (click)="showMoreDetail(action.material)" class="f-2 fw-600 c-pointer">Show other {{trackers[action.material].length - 1}} {{'trackers' | translate}}</a>
+          </ng-container>
+          <ng-template #expandedTrackers>
+            <ng-container *ngFor="let tracker of trackers[action.material]">
+              <div class="d-flex mt-3">
+                <div class="d-inline-block f-1 font-weight-bold bgc-blue c-white rounded px-1">
+                  {{'WATCHED FOR' | translate}} {{(tracker?.duration || 0) | timeDuration}}
+                </div>
+                <span class="ml-auto f-1 op-56">
+                  {{tracker?.updated_at | date: 'hh:mm MM/dd'}}
+                </span>
+              </div>
+              <div class="d-block track-timeline">
+                <app-play-timelines [data]="tracker" [duration]="materials[action.material]?.duration"></app-play-timelines>
+              </div>
+            </ng-container>
+            <a (click)="hideMoreDetail(action.material)" class="f-2 fw-600 c-pointer" translate>Collapse</a>
+          </ng-template>
+        </ng-container>
+        <ng-template #oneTracked>
+          <div class="d-flex mt-3">
+            <div class="d-inline-block f-1 font-weight-bold bgc-blue c-white rounded px-1">
+              {{'WATCHED FOR' | translate}} {{(trackers[action.material][0]?.duration || 0) | timeDuration}}
+            </div>
+            <span class="ml-auto f-1 op-56">
+              {{trackers[action.material][0]?.updated_at | date: 'hh:mm MM/dd'}}
+            </span>
+          </div>
+          <div class="d-block track-timeline">
+            <app-play-timelines [data]="trackers[action.material][0]" [duration]="materials[action.material]?.duration"></app-play-timelines>
+          </div>
+        </ng-template>
+      </ng-container>
+        <!-- <div class="f-1 font-weight-bold op-40 mt-2">
+            {{tracker.updated_at | datetimeFormat : 'yyyy MMM dd HH:MM a'}}
+        </div>
+        <div class="d-inline-block f-1 font-weight-bold bgc-blue c-white rounded px-1 mt-3">
+            WATCHED {{(tracker.duration || 0) | timeDuration}}
+        </div> -->
+    </div>
+  </ng-container>
+</div>
+
+<ng-container *ngIf="!timeline.length">
+  <div class="text-center px-3 mt-5" translate>There are no materials that are sent to this contact</div>
+</ng-container>

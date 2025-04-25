@@ -1,0 +1,244 @@
+<div class="history-detail {{ _lastActivity?.type }}-detail p-3 mt-1 mb-2">
+  <div class="v-center justify-content-between">
+    <div class="v-center">
+      <div class="history-icon mr-3">
+        <i class="act-icon act-{{ _lastActivity?.type }}"></i>
+      </div>
+      <div class="f-6">
+        <span class="c-black">{{ _lastActivity.content }}</span>
+        <span class="c-light-gray pl-1">by {{ _lastActivity.user?.user_name | shorten: 12: '...'}}</span>
+      </div>
+    </div>    
+    <div class="f-3 op-56 ml-auto mr-span">
+      {{ _lastActivity?.created_at | date: 'MMM d, hh:mm a' }}
+    </div>
+  </div>
+  <div class="v-center mb-1 mb-3">
+    <span class="f-6" translate>Contacts:</span>
+    <ng-container *ngIf="lastActivityContact as contact; else dealActivity">
+      <div class="v-center">
+        <div class="v-center">
+          <div class="d-flex align-items-start flex-wrap ml-5">
+            <div class="contact dropdown" ngbDropdown container="body">
+              <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                ngbDropdownToggle>
+                {{contact.avatarName}}
+              </div>
+              <div ngbDropdownMenu class="contact-list drowdown-menu light px-2">
+                <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                  <div class="v-center">
+                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                      {{contact.avatarName}}</div>
+                    <div class="ml-2">
+                      <div class="f-2 font-weight-bold name">{{contact.fullName}}</div>
+                      <div class="f-1">{{contact.email}}</div>
+                      <div class="f-1">{{contact.cell_phone}}</div>
+                    </div>
+                  </div>
+                  <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #dealActivity>
+      <div class="d-flex align-items-start flex-wrap ml-5">
+        <div class="related-contact" *ngFor="let contact of getContactListFromActivities(_lastActivity.sub_activities).slice(0, 2)">
+          <div class="contact dropdown" ngbDropdown container="body">
+            <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+              ngbDropdownToggle>
+              {{contact.avatarName}}
+            </div>
+            <div ngbDropdownMenu class="contact-list drowdown-menu light px-2">
+              <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+              [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                <div class="v-center">
+                  <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                    {{contact.avatarName}}</div>
+                  <div class="ml-2">
+                    <div class="f-2 font-weight-bold name">{{contact.fullName}}</div>
+                    <div class="f-1">{{contact.email}}</div>
+                    <div class="f-1">{{contact.cell_phone}}</div>
+                  </div>
+                </div>
+                <i class="d-block i-icon i-expand bgc-dark sm"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <ng-container *ngIf="_lastActivity?.sub_activities?.length > 2">
+          <div class="contact related-contact" ngbDropdown container="body">
+            <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+              ngbDropdownToggle>
+              +{{_lastActivity?.sub_activities?.length - 2}}
+            </div>
+            <div ngbDropdownMenu class="contact-list light px-2">
+              <div class="v-center"
+                *ngFor="let contact of getContactListFromActivities(_lastActivity.sub_activities).slice(2, _lastActivity.sub_activities.length)">
+                <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                  <div class="v-center">
+                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                      {{contact.avatarName}}</div>
+                    <div class="ml-2">
+                      <div class="f-2 font-weight-bold name">{{contact.fullName}}</div>
+                      <div class="f-1">{{contact.email}}</div>
+                      <div class="f-1">{{contact.cell_phone}}</div>
+                    </div>
+                  </div>
+                  <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </ng-template>
+  </div>
+  <ng-container *ngIf="!expanded">
+    <div class="stage d-flex">
+      <div class="f-4 fw-600 op-40 ml-2 mr-2">
+        {{ 'Stage' | translate }}
+      </div>
+      <ng-container *ngFor="
+          let dealStage of dealsService.stages$
+            | async
+        ">
+        <span class="f-4 fw-600 op-40 ml-2 mr-2" *ngIf="
+            dealStage._id ==
+            _lastActivity.deal_stages
+          ">
+          {{ dealStage.title }}
+        </span>
+      </ng-container>    
+    </div>
+  </ng-container>
+  <ng-container>
+    <div class="collapsed" *ngIf="!expanded">    
+      <a class="more f-3 mt-3 c-pointer fw-600 d-block w-fit" (click)="expand()" translate>Expand</a>
+    </div>
+    <div class="expanded" *ngIf="expanded">    
+      <div class="timelines">
+        <div class="content w-100">
+          <div class="timelines ml-2">
+            <div class="timeline" *ngFor="
+                let detailActivity of _timelines;
+                let i = index
+              ">
+              <div class="d-flex mb-1">
+                <div class="history-icon mr-1">
+                  <i class="act-icon act-deals"></i>
+                </div>
+                <div class="mr-4 px-3">
+                  <span>
+                    {{ detailActivity.content }}
+                  </span>
+                </div>
+                
+                <div class="mr-4">
+                  <ng-container *ngFor="
+                      let dealStage of dealsService.stages$
+                        | async
+                    ">
+                    <span *ngIf="
+                        dealStage._id ==
+                        detailActivity.deal_stages
+                      ">
+                      {{ dealStage.title }}
+                    </span>
+                  </ng-container>
+                </div>
+                <ng-container *ngIf="getContactsInfo(detailActivity.contacts) as contact; else dealActivity">
+                  <div class="related-contact">                    
+                    <div class="contact dropdown" ngbDropdown container="body">
+                      <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                        ngbDropdownToggle>
+                        {{contact.avatarName}}
+                      </div>
+                      <div ngbDropdownMenu class="contact-list drowdown-menu light px-2">
+                        <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                        [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                          <div class="v-center">
+                            <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                              {{contact.avatarName}}</div>
+                            <div class="ml-2">
+                              <div class="f-2 font-weight-bold name">{{contact.fullName}}</div>
+                              <div class="f-1">{{contact.email}}</div>
+                              <div class="f-1">{{contact.cell_phone}}</div>
+                            </div>
+                          </div>
+                          <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-template #dealActivity>
+                  <div class="related-contact" *ngFor="let contact of getContactListFromActivities(detailActivity?.sub_activities).slice(0, 2)">
+                    <div class="contact dropdown" ngbDropdown container="body">
+                      <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                        ngbDropdownToggle>
+                        {{contact.avatarName}}
+                      </div>
+                      <div ngbDropdownMenu class="contact-list drowdown-menu light px-2">
+                        <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                        [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                          <div class="v-center">
+                            <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                              {{contact.avatarName}}</div>
+                            <div class="ml-2">
+                              <div class="f-2 font-weight-bold name">{{contact.fullName}}</div>
+                              <div class="f-1">{{contact.email}}</div>
+                              <div class="f-1">{{contact.cell_phone}}</div>
+                            </div>
+                          </div>
+                          <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <ng-container *ngIf="detailActivity?.sub_activities?.length > 2">
+                    <div class="contact related-contact" ngbDropdown container="body">
+                      <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                        ngbDropdownToggle>
+                        +{{detailActivity?.sub_activities?.length - 2}}
+                      </div>
+                      <div ngbDropdownMenu class="contact-list light px-2">
+                        <div class="v-center"
+                          *ngFor="let contact of getContactListFromActivities(detailActivity?.sub_activities).slice(2, detailActivity?.sub_activities?.length)">
+                          <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                          [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                            <div class="v-center">
+                              <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                {{contact.avatarName}}</div>
+                              <div class="ml-2">
+                                <div class="f-2 font-weight-bold name">{{contact.fullName}}</div>
+                                <div class="f-1">{{contact.email}}</div>
+                                <div class="f-1">{{contact.cell_phone}}</div>
+                              </div>
+                            </div>
+                            <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </ng-template>            
+                <div class="ml-auto c-trans56 f-3">
+                  {{
+                  detailActivity.created_at
+                  | date: 'MMM d, hh:mm a'
+                  }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a class="more f-3 mt-3 c-pointer fw-600 d-block w-fit" (click)="collapse()" translate>Collapse</a>
+    </div>
+  </ng-container>
+</div>

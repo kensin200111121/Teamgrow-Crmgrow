@@ -1,0 +1,28 @@
+<div data-name="meeting2action_scheduler_event_select" class="custom-mat-field mat-select-wrapper">
+  <mat-form-field style="display: block;" appearance="outline">
+    <mat-select [formControl]="formControl" [placeholder]="'Search Event Type' | translate" #selector [disableOptionCentering]="true">
+      <mat-select-trigger>
+        <ng-container *ngIf="formControl.value">
+          <ng-container *ngIf="resultItemTemplate; else defaultResult" [ngTemplateOutlet]="resultItemTemplate"
+            [ngTemplateOutletContext]="{ $implicit: formControl.value }">
+          </ng-container>
+          <ng-template #defaultResult>
+            <div class="v-center selected-value">
+              <div class="f-3 font-weight-bold event-name" title="{{formControl.value.title}}">
+                {{formControl.value.title}}
+              </div>
+            </div>
+          </ng-template>
+        </ng-container>
+      </mat-select-trigger>
+      <mat-option>
+        <ngx-mat-select-search [formControl]="inputControl" [searching]="searching" placeholderLabel="{{'Search Event Types' | translate}}"
+          noEntriesFoundLabel="{{'There is no searched results.' | translate}}" preventHomeEndKeyPropagation="true">
+        </ngx-mat-select-search>
+      </mat-option>
+      <mat-option *ngFor="let item of filteredResults | async; let i = index;" [value]="item" style="height: unset; line-height: unset;">
+        <div id="scheduler-event-select-{{i}}" class="f-3 py-3 font-weight-bold event-name" title="{{item.title}}">{{item.title}}</div>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

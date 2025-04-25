@@ -1,0 +1,25 @@
+:host ::ng-deep {
+    email-editor {
+        iframe {
+            min-width: unset !important;
+        }
+    }
+}
+.card-header {
+    .form-group {
+        width: 480px;
+    }
+    .btn-primary {
+        height: 40px;
+        margin-top: 30px;
+    }
+}
+
+.card-body email-editor {
+    height: 600px;
+}
+
+#preview-thumbnail {
+    position: fixed;
+    top: -5000px;
+}

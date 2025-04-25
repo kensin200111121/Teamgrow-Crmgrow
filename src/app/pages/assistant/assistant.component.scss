@@ -1,0 +1,68 @@
+@import 'variables';
+
+.page-content {
+    width: 100%;
+    max-width: 550px;
+    table {
+        width: 500px;
+        &.table th {
+            position: sticky;
+            top: 0px;
+            background-color: white;
+            letter-spacing: 0px;
+            z-index: 11;
+        }
+        
+        th, td {
+            padding: 10px 10px;
+            vertical-align: middle !important;
+            background-color: white;
+            &.checkbox-col {
+                opacity: 1;
+            }
+            @media screen and (max-width: 576px) {
+                padding: 10px 5px;
+            }
+        }
+        .password-col {
+            width: 24%;
+        }
+        .toggle-col, .delete-col {
+            width: 12%;
+        }
+        .avatar-wrapper {
+            display: flex;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            min-width: unset;
+          
+            .avatar {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              width: 40px;
+              min-width: 40px;
+              height: 40px;
+              min-height: 40px;
+              background-color: $color-dark;
+              color: #ffffff;
+              font-size: 16px;
+              margin-right: 10px;
+              box-shadow: unset;
+            }
+        }
+        @media screen and (max-width: 576px) {
+            width: 100%;
+        }
+        @media screen and (max-width: 400px) {
+            th span{
+                display: none;
+            }
+        }
+    }
+}
+
+.new-header {
+    max-width: 500px;
+}

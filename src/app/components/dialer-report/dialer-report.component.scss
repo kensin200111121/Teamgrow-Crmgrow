@@ -1,0 +1,40 @@
+.note {
+  border: 1px solid rgba(218, 218, 218, 0.28);
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 13px;
+  margin-top: 4px;
+  font-style: italic;
+  background: #fff2db;
+
+  &.empty {
+    background: #fff2db;
+    font-style: italic;
+    color: #a7a7a7;
+  }
+}
+
+.history-item {
+  min-height: 70px;
+}
+
+.history-list-wrapper .history-item:last-child .spliter {
+  display: none;
+}
+
+:host ::ng-deep {
+  mat-select {
+    border: 1px solid gainsboro;
+    border-radius: 4px;
+    padding: 6px 14px;
+    margin-top: 4px;
+
+    span {
+      font-size: 13px;
+    }
+  }
+  .mat-select-panel .mat-option {
+    line-height: 2em!important;
+    height: 2em!important;
+  }
+}

@@ -1,0 +1,166 @@
+<div class="avatar-wrapper mb-4">
+  <img [src]="user.picture_profile || sspaService.toAsset('img/user_avatar.svg')" class="avatar" />
+  <button type="button" class="bgc-blue btn rounded-circle btn-icon" (click)="openProfilePhoto()">
+    <i class="i-icon i-plus bg-white d-block"></i>
+  </button>
+</div>
+<form #profileForm="ngForm" (ngSubmit)="profileForm.form.valid && userTimezone.value ? updateProfile(profileForm.value) : false">
+  <div class="profile-wrapper">
+    <div class="row">
+      <div class="col-sm-6 col-12">
+        <div class="form-group" [ngClass]="{
+            invalid:
+              profileForm.submitted &&
+              user_name.invalid &&
+              (user_name.dirty || user_name.touched || profileForm.submitted)
+          }">
+          <div class="d-flex">
+            <label for="user_name" class="mr-auto">{{
+              'Full Name' | translate
+              }}</label>
+            <span class="error" *ngIf="user_name.errors">
+              <ng-container *ngIf="user_name.errors.required">{{
+                'Required!' | translate
+                }}</ng-container>
+            </span>
+          </div>
+          <input type="text" class="form-control" [(ngModel)]="name" id="user_name" name="user_name"
+            #user_name="ngModel" required />
+        </div>
+      </div>
+      <div class="col-sm-6 col-12">
+        <div class="form-group" [ngClass]="{
+            invalid:
+              profileForm.submitted &&
+              email.invalid &&
+              (email.dirty || email.touched || profileForm.submitted)
+          }">
+          <div class="d-flex">
+            <label for="email" class="mr-auto" translate>Email</label>
+            <span class="error" *ngIf="email.errors">
+              <ng-container *ngIf="email.errors.required">{{
+                'Required!' | translate
+                }}</ng-container>
+              <ng-container *ngIf="email.errors.pattern">{{
+                'Wrong email format!' | translate
+                }}</ng-container>
+            </span>
+          </div>
+          <input type="text" class="form-control" [(ngModel)]="userEmail" id="email" name="email" #email="ngModel"
+            required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$" />
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6 col-12">
+        <div class="form-group phone-form">
+          <div class="d-flex">
+            <label for="phone" class="mr-auto" translate>Phone</label>
+            <span class="error" [class.d-block]="profileForm.submitted">
+              <ng-container *ngIf="!phoneNumber; else wrongTemplate">{{
+                'Required!' | translate
+                }}</ng-container>
+              <ng-template #wrongTemplate>
+                <ng-container *ngIf="phoneControl && phoneNumber && !phoneControl.valid">
+                  {{ 'Wrong cell-phone!' | translate }}
+                </ng-container>
+              </ng-template>
+            </span>
+            <div>
+              <i class="d-block i-icon i-information tooltip-icon sm ml-1 bgc-black" placement="left"
+                ngbTooltip="{{ 'profile_phone_info' | translate }}">
+              </i>
+            </div>
+          </div>
+          <app-phone-input [cssClass]="'form-control phone-form'" [onlyCountries]="countries"
+            [selectedCountryISO]="CountryISO.UnitedStates" [(ngModel)]="phoneNumber"
+            (ngModelChange)="confirmPhone($event)" name="phone" #phoneControl>
+          </app-phone-input>
+        </div>
+      </div>
+      <div class="col-sm-6 col-12">
+        <div class="form-group" [ngClass]="{
+            invalid:
+              profileForm.submitted &&
+              company.invalid &&
+              (company.dirty || company.touched || profileForm.submitted)
+          }">
+          <div class="d-flex">
+            <label for="company_info" class="mr-auto" translate>Your Company</label>
+            <span class="error" *ngIf="company.errors">
+              <ng-container *ngIf="company.errors.required">{{
+                'Required!' | translate
+                }}</ng-container>
+            </span>
+          </div>
+          <select
+            class="form-control c-blue f-5"
+            [(ngModel)]="userCompany"
+            name="company"
+            id="company"
+            data-name="company"
+            required
+            #company="ngModel"
+            (ngModelChange)="confirmCompany()"
+          >
+            <option
+              *ngFor="let company_info of companies"
+              value="{{ company_info }}"
+            >
+              {{ company_info }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6 col-12">
+        <div class="form-group">
+          <div class="d-flex">
+            <label for="learn_more" class="mr-auto" translate>landing page redirect link</label>
+          </div>
+          <input type="text" class="form-control" [(ngModel)]="website" id="learn_more" name="learn_more"
+            #learn_more="ngModel" />
+        </div>
+      </div>
+      <div class="col-sm-6 col-12">
+        <div class="form-group" [ngClass]="{
+          invalid:
+            profileForm.submitted &&
+            !userTimezone.value
+        }">
+          <div class="d-flex">
+            <label for="time_zone_info" class="mr-auto" translate>time zone</label>
+            <span class="error" *ngIf="!userTimezone.value">
+              {{
+                'Required!' | translate
+              }}
+            </span>
+          </div>
+          <app-select-timezone
+            [(timezone)]="timezone"
+            [uiType]="'selector'"
+            #userTimezone
+            name="time_zone_info"
+            id="time_zone_info"
+            required>
+          </app-select-timezone>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-1">
+      <a class="btn c-blue font-weight-bold ml-auto mr-4 mt-4">{{
+        'Cancel' | translate
+      }}</a>
+      <button
+        data-action="profile-change-save"
+        type="submit"
+        class="btn btn-primary font-weight-bold mr-2 mt-4"
+        [class.loading]="saving"
+        [disabled]="!profileForm.dirty"
+      >
+        {{ 'Save Changes' | translate }}
+      </button>
+    </div>
+  </div>
+</form>

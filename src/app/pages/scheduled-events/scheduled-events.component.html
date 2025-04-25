@@ -1,0 +1,209 @@
+<div class="page_event-list container">
+  <div class="filter-container v-center justify-content-between mt-3">
+    <div class="v-center" *ngIf="filterType.id=='daterange'">
+      <app-date-input type="prepend" class="date-input-width" [clearable]="true" [(value)]="dateRange.due_start" [markToday]="true">
+      </app-date-input>
+      <div class="mx-2">-</div>
+      <app-date-input type="prepend" class="date-input-width" [clearable]="true" [(value)]="dateRange.due_end" [markToday]="true">
+      </app-date-input>
+
+      <button class="btn btn-primary ml-2 f-4" (click)="filterByDate()" [class.disabled]="loading" [class.loading]="loading" translate>
+        Apply
+      </button>
+    </div>
+
+    <div ngbDropdown placement="bottom-right" class="ml-auto v-center c-pointer">
+      <div [attr.data-name]="'scheduled-events-sortby'" class="f-3 font-weight-bold p-2 hover" id="dropdownBasic2" ngbDropdownToggle translate>{{filterType.id == 'all' ? 'Sort by' : filterType.label}}
+      </div>
+      <div ngbDropdownMenu aria-labelledby="dropdownBasic2" class="border py-2 mt-1">
+        <div class="py-2 px-3" ngbDropdownItem *ngFor="let type of filterTypes" (click)="filterEvents(type)">
+          <span [attr.data-name]="'scheduled-events-sortby-' + type.label" class="f-3 v-center" [class.font-weight-bold]="type.id === filterType.id">
+            {{type.label | translate}}
+            <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1" *ngIf="type.id === filterType.id"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="c-pointer ml-4 mr-3" ngbDropdown placement="bottom-right">
+      <div ngbDropdownToggle class="event-types-filter-icon">
+        <!-- <span class="f-4"> Event Types</span> -->
+        <i class="d-block i-icon i-calendar bgc-black"></i>
+      </div>
+      <div ngbDropdownMenu class="border-1 px-3 py-2 mt-2 c-default" (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()">
+        <div class="c-dark">
+          <li *ngFor="let eventType of scheduleService.eventTypes$ | async" class="v-center py-1">
+            <mat-checkbox class="mr-2" [checked]="selectedEventTypes.includes(eventType._id)" [color]="'primary'"
+              (change)="selectEventType(eventType)">
+            </mat-checkbox>
+            <span class="f-4">{{ eventType.title }}</span>
+          </li>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="events_wrapper">
+    <div class="events-container">
+      <div class="daterange" *ngIf="filterType.id == 'daterange' && validDateRange()">
+        {{ getDateRange() }}
+      </div>
+      <ng-container *ngIf="(scheduleService.pageEvents$ | async | keyvalue)?.length">
+        <div class="updating-status" *ngIf="(scheduleService.loadingEvents$ | async) === STATUS.REQUEST" translate>
+          LOADING
+        </div>
+        <div class="">
+          <div *ngFor="let daySchedule of allSchedules | keyvalue | paginate : {
+                      id: 'eventsPages',
+                      itemsPerPage: pageSize.id,
+                      currentPage: page,
+                      totalItems: scheduleService.total$ | async
+                    }
+            ">
+            <div class="f-6 font-weight-bold v-center mt-3 mb-1">
+              <div class="title-label title-label-border"></div>
+              <div>{{ daySchedule.key | date: 'EEEE, MMMM d, y' }}</div>
+            </div>
+            <div class=" row">
+              <div class="events-list1 col-6" *ngFor="let schedule of daySchedule.value; let i=index">
+                <mat-accordion>
+                  <mat-expansion-panel>
+                    <mat-expansion-panel-header class="my-3">
+                      <div class="row w-100">
+                        <div class="col-8 v-center">
+                          <div class="d-block">
+                            <div class="f-6 font-weight-bold pt-3 pb-1 v-center">
+                              <!-- <div class="title-label" [ngClass]="labelColors[i%15]"></div> -->
+                              <div><a href="{{'/contacts/' + getLinks(schedule)}}" target="_blank">{{ getNames(schedule) }}</a></div>
+                            </div>
+                            <div class="pt-1 pb-3 event-detail1 v-center">
+                              <div *ngIf="schedule.event_type && schedule.event_type.type == 1" class="f-6 c-dark mr-3">
+                                One-on-one
+                              </div>
+                              <div *ngIf="schedule.event_type && schedule.event_type.type != 1" class="f-6 c-dark mr-3">
+                                Group
+                              </div>
+                              <div class="f-4 c-grey-light" [translateParams]="{duration: calDuration(schedule)}" translate>shcedule_meeting_duration</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-4 v-center justify-content-center">
+                          <i class="i-icon i-timer d-block bgc-light-dark mr-1"></i>
+                          <span class="f-4">{{ getTimes(schedule) }}</span>
+                        </div>
+                      </div>
+                    </mat-expansion-panel-header>
+                    <div class="row">
+                      <div class="col-8 pl-4">
+                        <div class="f-5 font-weight-bold pt-3 pb-1" translate>EMAIL</div>
+                        <div>{{ getEmails(schedule) }}</div>
+                        <div class="f-5 font-weight-bold pt-3 pb-1" translate>
+                          LOCATION
+                        </div>
+                        <div>{{ schedule.location }}</div>
+                        <div class="f-5 font-weight-bold pt-3 pb-1" translate>
+                          INVITEE TIME ZONE
+                        </div>
+                        <div>{{ schedule.scheduler_timezone }}</div>
+                        <div *ngIf="schedule.scheduler_comment">
+                          <div class="f-5 font-weight-bold pt-3 pb-1">
+                            INVITEE COMMENT
+                          </div>
+                          <div>
+                            {{ schedule.scheduler_comment }}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-4 v-center justify-content-center">
+                        <div class="pl-3">
+                          <!-- <a class="v-center c-pointer f-6" (click)="filterByEventType(schedule.event_type)">
+                            <img [src]="sspaService.toAsset('img/filter.svg')" alt="filter-icon" class="mr-1" width="20" />Filter by Event Type</a> -->
+                        </div>
+                      </div>
+                    </div>
+                  </mat-expansion-panel>
+                </mat-accordion>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="(scheduleService.total$ | async) > MIN_ROW_COUNT">
+        <div class="my-2 table-control mode-1">
+          <div class="pagination-wrapper m-auto">
+            <pagination-controls (pageChange)="changePage($event)" (pageBoundsCorrection)="pageChanged($event)" id="eventsPages" maxSize="5"
+              previousLabel="" nextLabel="">
+            </pagination-controls>
+          </div>
+          <div class="shadow-dropdown ml-auto page-size-control" ngbDropdown placement="top-right">
+            <div [attr.data-name]="'scheduled-events-pagination-show'" class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+              <span class="pr-2 c-blue">Show {{ pageSize.id }} rows per page</span>
+            </div>
+            <div ngbDropdownMenu aria-labelledby="contactPageSize">
+              <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS" (click)="changePageSize(type)">
+                <span [attr.data-name]="'scheduled-events-pagination-show-' + type.id" class="f-3 v-center" [class.font-weight-bold]="type.id === pageSize.id" [translateParams]="{pageSize: type.label}" translate>
+                  autoflow.perPage
+                  <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1" *ngIf="type.id === pageSize.id"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="
+          !(scheduleService.pageEvents$ | async | keyvalue)?.length
+
+        ">
+        <ng-container [ngSwitch]="scheduleService.loadingEvents$ | async">
+          <div class="empty-list mt-5" *ngSwitchCase="STATUS.SUCCESS">
+            <div class="object-icon v-center mt-5">
+              <i class="i-icon i-event-note d-block bgc-dark"></i>
+            </div>
+            <h4 class="font-weight-bold mt-3 mb-3" translate>
+              There are no scheduled events yet
+            </h4>
+          </div>
+          <div class="empty-list mt-5" *ngSwitchCase="STATUS.FAILURE">
+            <div class="object-icon v-center mt-5">
+              <i class="i-icon i-event-note d-block bgc-dark"></i>
+            </div>
+            <h4 class="font-weight-bold mt-3 mb-3" translate>
+              There are no scheduled events yet
+            </h4>
+          </div>
+          <div class="list-loading text-center mt-5 pt-5" *ngSwitchCase="STATUS.REQUEST">
+            <div class="loader mt-5 pt-5 lg"></div>
+            <h4 class="fw-600 mt-2" translate>Loading schedules...</h4>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+
+    <ng-template #dateFilterRef>
+      <form #form="ngForm" (ngSubmit)="
+          form.form.valid && validDateRange() ? filterByDate() : false
+        ">
+        <h5 translate>Select the date range</h5>
+        <div class="v-center mt-3 mb-1" [ngClass]="{
+            'invalid form-group': form.submitted && !validDateRange()
+          }">
+          <app-date-input type="prepend" [clearable]="true" [(value)]="dateRange.due_start" [markToday]="true"></app-date-input>
+          <div class="mx-2">-</div>
+          <app-date-input type="prepend" [clearable]="true" [(value)]="dateRange.due_end" [markToday]="true"></app-date-input>
+        </div>
+        <div class="text-danger pt-1 text-center" *ngIf="form.submitted && !validDateRange()" translate>
+          Invalid date range
+        </div>
+        <div class="d-flex justify-content-end step-next mt-3">
+          <button class="btn btn-primary f-4" mat-button matDialogClose translate>
+            Cancel
+          </button>
+          <button class="btn btn-primary ml-2 f-4" type="submit" [class.disabled]="saving" [class.loading]="saving" translate>
+            Apply
+          </button>
+        </div>
+      </form>
+    </ng-template>
+  </div>
+</div>

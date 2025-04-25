@@ -1,0 +1,54 @@
+ul {
+  padding: 0px;
+  margin: 16px 0px;
+}
+li {
+  cursor: pointer;
+}
+.trigger-item {
+  display: inline-table;
+  padding: 8px 16px;
+  max-height: calc(100vh - 170px);
+  overflow: auto;
+
+  & div {
+    gap: 16px;
+  }
+
+  & .btn-trigger {
+    width: 40px !important;
+    height: 40px !important;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    padding: 0px;
+    background-color: #F4CFC7;
+    color: #8C2A18;
+    line-height: 10px;
+    font-weight: 400;
+  }
+
+  & .trigger-title {
+    font-size: 14px;
+    line-height: 20px;
+    color: #4D4D4D;
+    &.f-6 {
+      font-size: 16px !important;
+    }
+  }
+
+  & .trigger-description {
+    font-size: 12px;
+    line-height: 16px;
+    color: #989898;
+  }
+
+  & .btn-icon-primary {
+    width: 32px;
+    height: 32px;
+    padding: 0px;
+    line-height: 12px;
+    color: #066FD3;
+    background-color: transparent;
+    font-weight: 400;
+  }
+}

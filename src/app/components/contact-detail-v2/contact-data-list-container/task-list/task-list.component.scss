@@ -1,0 +1,123 @@
+
+@import 'variables';
+
+@media screen and (min-width: 1201px) {   
+  .history-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .cdk-scroll-viewport {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .scroll-viewport {
+    flex: 1;
+  }
+}
+
+.history-detail {
+  border-radius: 8px;
+  border: 1px solid #e6e6e6;
+  transition: box-shadow 0.2s;
+  word-break: break-word;
+  background-color: #fafafa;
+  &:hover {
+    box-shadow: 0px 2px 10px $color-trans28;
+  }
+} 
+// To-do task item style
+.task-item {
+  .task-summary {
+    display: flex;
+
+    &.task-email {
+      .i-icon.task-type {
+        background-color: #f19d50;
+      }
+    }
+
+    &.task-campaign {
+      .i-icon.task-type {
+        background-color: #f19d50;
+      }
+    }
+
+    &.task-text {
+      .i-icon.task-type {
+        background-color: #00a3ff;
+      }
+    }
+
+    &.task-automation {
+      .i-icon.task-type {
+        background-color: blue;
+      }
+    }
+
+    .task-type {
+      //text-transform: capitalize;
+    }
+
+    .task-time {
+      margin-left: auto;
+    }
+
+    .action-name {
+      width: 200px;
+    }
+  }
+
+  .task-detail {
+    margin-top: 6px;
+  }
+}
+
+@keyframes rotateEffect {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.reload {
+  position:absolute;
+  top: 18vh;
+  right: -8px;
+  width: 30px;
+  height: 30px;
+  background: blue;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  // z-index: 1001;
+  overflow: hidden;
+
+  .i-icon {
+    width: 24px !important;
+    height: 24px !important;
+    margin: 3px !important;
+
+    &.progressing {
+      animation-name: rotateEffect;
+      animation-duration: 0.6s;
+      animation-iteration-count: infinite;
+      animation-delay: 0s;
+    }
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .scroll-viewport {
+     height: 100vh;
+  }
+}
+
+.data-section-content {
+  height: 250px;
+}

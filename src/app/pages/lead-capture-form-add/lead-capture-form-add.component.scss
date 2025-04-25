@@ -1,0 +1,85 @@
+@import  "variables";
+
+.form-group {
+    .add-button {
+        i {
+            width: 12px;
+            height: 12px;
+            min-width: 12px;
+        }
+    }
+    .custom-control-label {
+        opacity: 1;
+    }
+    .required-field {
+        .field-name {
+            width: 150px;
+        }
+        .field-display {
+            width: 50px;
+        }
+        .field-required {
+            width: 60px;
+        }
+        .field-match {
+            width: 150px;
+        }
+        .field-action {
+            width: 70px;
+        }
+    }
+    .video-wrapper {
+        position: relative;
+        width: 180px;
+        height: 100px;
+        video {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            background-color: gainsboro;
+            border-radius: 5px;
+        }
+        .play-button {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            z-index: 3;
+            color: white;
+            width: 50px;
+            height: 50px;
+            background: #0008;
+            border-radius: 25px;
+            cursor: pointer;
+            padding: 13px;
+        }
+    }
+    .video-action {
+        a {
+            &:hover {
+                text-decoration: none;
+            }
+            &.c-red {
+                color: $color-red;
+            }
+            &.c-blue {
+                color: $color-blue;
+            }
+        }
+    }
+}
+
+.delay label {
+    text-transform: unset;
+}
+
+.loader.video-uploading {
+    margin-top: -10px;
+    margin-bottom: -12px;
+    height: 40px;
+}
+
+.mat-dialog-content {
+    max-height: unset;
+}

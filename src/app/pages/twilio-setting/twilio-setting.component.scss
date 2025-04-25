@@ -1,0 +1,21 @@
+.step {
+  margin-bottom: 24px;
+  max-width: 640px;
+
+  .step-title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .step-description {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+}
+
+:host ::ng-deep {
+  .step-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+}

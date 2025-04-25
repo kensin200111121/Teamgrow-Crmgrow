@@ -1,0 +1,210 @@
+<div style="position: relative">
+  <ng-container *ngIf="!isProduct; else goToStore">
+    <span class="productButton" (click)="toProducts()">My Products</span>
+  </ng-container>
+  <ng-template #goToStore>
+    <span class="goToStoreButton" (click)="toProducts()">Go to Store</span>
+  </ng-template>
+</div>
+<ng-container *ngIf="!isProduct; else productList">
+  <div>
+    <app-slide-tab [tabs]="tabs" [selected]="tab" type="plain" class="border-bottom pl-0 rounded-0">
+    </app-slide-tab>
+    <div class="searchDiv">
+      <i class="bgc-dark d-block i-icon i-search mr-2"></i>
+      <input
+        class="searchInput"
+        placeholder="Search"
+        [(ngModel)]="searchQuery"
+        (input)="search()"
+      />
+    </div>
+    <div class="flex subDiv">
+      <div class="filterDiv">
+        <div class="categoryLabel">Categories</div>
+        <div class="p-12 filter-list">
+          <div *ngFor="let type of filterList" class="cursor-pointer">
+            <input
+              type="checkbox"
+              (change)="filterCheckboxChanged($event, type)"
+              [checked]="isSelected(type)"
+              style="margin-right: 5px"
+            /><span>{{ type }}</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <ng-container *ngIf="mostPopulars.length">
+          <div class="sub-title">Most Popular 🔥 🔥 🔥</div>
+          <div class="sub-desc">
+            Save time and effort connecting your CRM with these top apps
+          </div>
+          <div class="integration-container">
+            <div
+              class="integration-account"
+              *ngFor="let item of mostPopulars"
+            >
+              <ng-container
+                *ngTemplateOutlet="integrationItem; context: { $implicit: item }">
+              </ng-container>
+            </div>
+          </div>
+        </ng-container>
+        <div class="sub-title" style="margin-top: 40px">All</div>
+        <div class="integration-container">
+          <div
+            class="integration-account relative"
+            *ngFor="let item of filteredIntegrations"
+          >
+            <ng-container
+              *ngTemplateOutlet="integrationItem; context: { $implicit: item }">
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<ng-template #productList>
+  <div class="searchDiv">
+    <i class="bgc-dark d-block i-icon i-search mr-2"></i>
+    <input class="searchInput" placeholder="Search" />
+  </div>
+  <div class="sub-title mt-3">My Products</div>
+  <div class="sub-desc mt-2">Manage your Integrations.</div>
+  <div class="product-container mt-3">
+    <div
+      class="integration-account relative"
+      *ngFor="let item of productsList"
+    >
+      <ng-container
+        *ngTemplateOutlet="integrationItem; context: { $implicit: item }">
+      </ng-container>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #integrationItem let-item>
+  <div class="icon">
+    <div class="itemImageDiv">
+      <img [src]="sspaService.toAsset(item.icon)" />
+    </div>
+  </div>
+  <div class="p-2">
+    <div class="d-flex mb-3">
+      <div class="title">
+        <div
+          class="title f-18 c-black font-weight-bold"
+          style="font-size: 18px; line-height: 24px"
+        >
+          {{ item.title }}
+        </div>
+        <div *ngIf="item.isConnected; else itemStatus">
+          <span translate class="connected-label">
+            integration_connected_label
+          </span>
+        </div>
+        <ng-template #itemStatus>
+          <div *ngIf="item.popular">
+            <img
+              style="width: 16px; height: 16px"
+              [src]="sspaService.toAsset('img/red_fire.svg')"
+            />
+            <img
+              style="width: 16px; height: 16px"
+              [src]="sspaService.toAsset('img/red_fire.svg')"
+            />
+            <img
+              style="width: 16px; height: 16px"
+              [src]="sspaService.toAsset('img/red_fire.svg')"
+            />
+          </div>
+        </ng-template>
+      </div>
+      <div class="action ml-auto">
+        <button
+          class="btn bg-white border-primary f-4 font-weight-bold connect"
+          *ngIf="!item.isConnected; else disconnect"
+          (click)="connect(item)"
+          translate
+        >
+          {{ item.button || 'integration_connect_mail' }}
+        </button>
+        <ng-template #disconnect>
+          <button
+            class="btn bg-white border-primary f-4 font-weight-bold disconnect"
+            translate
+            (click)="iDisconnect(item)"
+            *ngIf="!item.disableDisconnect; else settingBtn"
+          >
+            integration_disconnect
+          </button>
+          <ng-template #settingBtn>
+            <button
+              class="btn bg-white border-primary f-4 font-weight-bold setting"
+              translate
+              (click)="connect(item)"
+            >
+              Setting
+            </button>
+          </ng-template>
+        </ng-template>
+      </div>
+
+    </div>
+    <div class="description">
+      <div *ngIf="item.authorizedInfo?.length; else notConnectedInfo">
+        <div class="f-4 c-dark font-weight-bold mt-3 mb-2" translate>integration_authorized_label</div>
+        <ng-container *ngFor="let connection of item.authorizedInfo">
+          <div class="v-center mb-1 d-flex">
+            <div class="f-4 c-dark font-weight-bold mr-1 flex-fill overflow-hidden text-truncate">{{connection.connected_email}}</div>
+            <button type="button" class="cal-disconnect btn w-100 f-4 font-weight-bold sm p-2 ml-auto" (click)="disconnectCalendar(connection.connected_email, connection.connected_calendar_type, connection.id)" *ngIf="item.isMultiple">
+              <div class="f-4 c-dark" translate>integration_disconnect</div>
+            </button>
+          </div>
+          <ng-container *ngIf="connection?.connected_email && item.id == 'calendly'">
+            <button class="v-center btn bg-white c-blue border-primary f-4 font-weight-bold connect" (click)="selectCalendly()">
+              <i class="i-icon i-warning-yellow d-block" *ngIf="!connection?.id || !connection?.link"></i>
+              <span class="w-100 text-white" *ngIf="!connection?.id || !connection?.link" translate>integration_select_event</span>
+              <span class="w-100 text-white" *ngIf="connection?.id && connection?.link" translate>integration_change_event</span>
+            </button>
+          </ng-container>
+        </ng-container>
+
+        <div *ngIf="item.aliasList?.length > 1" class="mt-2">
+          <div *ngFor="let alias of item.aliasList">
+            <div class="v-center">
+              <span class="f-4 c-dark text-truncate" [ngClass]="alias.primary ? 'font-weight-bold' : ''">Email: {{alias.email}}</span>
+              <div class="v-center ml-auto">
+                <div ngbTooltip="{{'integration_alias_primary' | translate}}" placement="bottom">
+                  <i class="d-block i-icon i-check bgc-blue" (click)="setPrimaryAlias(item, alias)" *ngIf="!alias.primary"></i>
+                </div>
+                <div ngbTooltip="{{'integration_alias_edit' | translate}}" placement="bottom">
+                  <i class="d-block i-icon i-edit bgc-blue ml-1" (click)="editAlias(item, alias)" *ngIf="!alias.is_default"></i>
+                </div>
+                <div ngbTooltip="{{'integration_alias_remove' | translate}}" placement="bottom">
+                  <i class="d-block i-icon i-trash bgc-blue ml-1" (click)="removeAlias(item, alias)" *ngIf="!(alias.primary || alias.is_default)"></i>
+                </div>
+              </div>
+            </div>
+            <div class="v-center w-100">
+              <span class="f-4 c-dark max-width" [ngClass]="alias.primary ? 'font-weight-bold' : ''">Name: {{alias.name}}</span>
+              <span class="f-4 c-dark font-weight-bold ml-2" *ngIf="alias.primary" translate>(default)</span>
+            </div>
+          </div>
+        </div>
+        <div class="" *ngIf="item.aliasList">
+          <a class="f-4 font-weight-bold c-pointer" (click)="createAlias(item)" translate>integration_new_alias</a>
+        </div>
+      </div>
+      <ng-template #notConnectedInfo>
+        <div translate>
+          {{ item.description }}
+        </div>
+        <div class="mt-3" *ngIf="!item.hasSpecial">
+          <a class="f-4 font-weight-bold c-pointer" (click)="connect(item)">Learn More</a>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</ng-template>

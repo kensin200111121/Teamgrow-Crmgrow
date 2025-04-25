@@ -1,0 +1,74 @@
+@import 'variables.scss';
+
+.contacts-list-panel {
+    width: 100vw;
+    max-width: 420px;
+}
+
+.contacts-list {
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 100%;
+}
+
+.panel-header {
+    position: sticky;
+    top: 0px;
+    background: white;
+    z-index: 2;
+}
+
+.pagination-wrapper {
+    position: sticky;
+    bottom: 0px;
+    background: white;
+    padding: 8px 0px;
+}
+
+.panel-header {
+    position: sticky;
+    top: 0px;
+    background: white;
+    z-index: 2;
+}
+
+.avatar-wrapper {
+    width: 100%;
+    height: 100%;
+    outline: none !important;
+
+    .avatar {
+        width: 24px;
+        min-width: 24px;
+        height: 24px;
+        min-height: 24px;
+        background-color: $color-dark;
+        margin-right: 10px;
+        box-shadow: unset;
+    }
+
+    &:hover {
+        text-decoration: none;
+    }
+}
+
+.tag-label {
+  overflow-wrap: anywhere;
+}
+
+:host ::ng-deep {
+    .page-table thead tr:first-child th {
+        top: 0;
+    }
+
+    .page-table thead tr th {
+        padding: 5px 10px;
+        border-bottom: 1px solid $color-silver;
+        vertical-align: middle;
+    }
+
+    .page-table tbody tr td {
+        padding: 5px 10px;
+        vertical-align: middle;
+    }
+}

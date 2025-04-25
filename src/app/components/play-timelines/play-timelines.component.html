@@ -1,0 +1,22 @@
+<div class="watch-tracker">
+  <div class="from-to">
+    <ng-container *ngIf="type == 'video_trackers' || type == 'videos'; else otherTrack">
+      <span [translateParams]="{from: (start | timeDuration), to: (end | timeDuration)}" translate>time
+        range</span>
+    </ng-container>
+    <ng-template #otherTrack>
+      <div *ngIf="(type == 'pdf_trackers' || type == 'pdf') && total_pages != 0">
+        <span [translateParams]="{current: read_pages == 0 ? 1 : read_pages , total: total_pages}" translate>page read status</span>
+      </div>
+    </ng-template>
+  </div>
+  <div class="tracker-timeline" *ngIf="type == 'video_trackers' || type == 'videos'">
+    <canvas width="300" height="4" #canvas></canvas>
+    <div class="start d-none" #startBar></div>
+    <div class="end d-none" #endBar></div>
+  </div>
+  <div class="completion" *ngIf="(type == 'video_trackers' || type == 'videos') ">
+      <span [translateParams]="{percent: completion}" translate>completion progress</span>
+  </div>
+
+</div>

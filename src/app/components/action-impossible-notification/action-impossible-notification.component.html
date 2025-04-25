@@ -1,0 +1,28 @@
+<div class="v-center justify-content-between">
+    <h1 mat-dialog-title>{{title}}</h1>
+    <button class="v-center border-0 bgc-trans" mat-dialog-close>
+        <i class="d-block i-icon i-close bgc-dark"></i>
+    </button>
+</div>
+<mat-dialog-content>
+    <p>{{message}}</p>
+    <ng-container *ngFor="let detail of details">
+        <ng-container *ngIf="detail.link; else description;">
+            <div class="d-flex detail-item">
+                <span class="detail-type mr-3" *ngIf="detail.type">{{detail.type}}:</span>
+                <a [routerLink]="[detail.link]">{{detail.title}}</a>
+            </div>
+        </ng-container>
+        <ng-template #description>
+            <div class="d-flex detail-item">
+                <span class="detail-type mr-3" *ngIf="detail.type">{{detail.type}}:</span>
+                <span>{{detail.title}}</span>
+            </div>
+        </ng-template>
+    </ng-container>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button class="btn btn-primary font-weight-bold ml-auto" mat-dialog-close translate>
+        Close
+    </button>
+</mat-dialog-actions>

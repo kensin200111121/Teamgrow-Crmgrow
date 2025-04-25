@@ -1,0 +1,376 @@
+<div  class="d-flex w-100 flex-column track-data-list">
+  <!-- history type dropdown -->
+  <div class="v-center table-control-header py-2">
+    <div ngbDropdown class="v-center ml-auto" placement="bottom-end">
+      <div class="v-center" ngbDropdownToggle>
+        <span class="f-4 c-dark c-pointer ml-2 fw-600">
+          {{
+          historyTab.label | translate
+          }}
+        </span>
+      </div>
+      <div ngbDropdownMenu class="light">
+        <div class="v-center justify-content-between dropdown-item" *ngFor="let tabItem of historyTabs"
+          (click)="changeHistoryActivityType(tabItem)">
+
+            <ng-container>
+              <div class="f-3 c-dark" [ngClass]="{
+                'font-weight-bold': tabItem.id == historyTab?.id
+              }">
+                {{ tabItem.label }}
+              </div>
+            </ng-container>
+          <div *ngIf="tabItem.id == activityType?.id">
+            <i class="d-block i-icon i-check bgc-blue"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <i class="i-icon i-refresh bgc-blue c-pointer ml-2" [class.reloading]="reloading"
+      (click)="loadData(materialIdType._id, materialIdType.type, 'reload')"></i>
+  </div>
+
+  <div class="position-relative">
+    <ng-container [ngSwitch]="historyTab.id">
+        <!-- sent history -->
+        <ng-container *ngSwitchCase="'sent'">
+          <div class="mat-table-wrapper" [class.empty]="!sentCount">
+            <table class="w-100 page-table" mat-table [dataSource]="
+              sents
+                | paginate
+                  : {
+                      id: 'sentTable',
+                      itemsPerPage: pageInfo['sent'].pageSize.id,
+                      currentPage: pageInfo['sent'].pageIndex,
+                      totalItems: sentCount
+                    }
+            ">
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef translate>
+                  Name
+                </th>
+                <td mat-cell *matCellDef="let element" (click)="toContact(element.contacts._id)">
+                  <div class="v-center c-pointer">
+                    <div class="f-4">
+                      <div *ngIf="
+                        !element.contacts.first_name &&
+                        !element.contacts.last_name
+                      " translate>
+                        Unnamed Contact
+                      </div>
+                      <div *ngIf="
+                        element.contacts.first_name ||
+                        element.contacts.last_name
+                      ">
+                        {{ element.contacts.first_name || '' }}
+                        {{ element.contacts.last_name || '' }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef translate>email</th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.contacts.email | shorten: 8: '...'}}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef translate>Date</th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.created_at | date : 'MMM dd, hh:mm a'  }}
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="SENT_DISPLAY_COLUMNS" class="table-header"></tr>
+              <tr mat-row *matRowDef="
+                let row;
+                let index = index;
+                columns: SENT_DISPLAY_COLUMNS
+              "></tr>
+            </table>
+            <ng-container *ngIf="sentCount > MIN_ROW_COUNT">
+              <div class="my-2 table-control mode-1">
+                <div class="pagination-wrapper m-auto">
+                  <pagination-controls (pageChange)="changeSentPage($event)"
+                    (pageBoundsCorrection)="changeSentPage($event)" id="sentTable" maxSize="5" previousLabel=""
+                    nextLabel="">
+                  </pagination-controls>
+                </div>
+                <div class="shadow-dropdown ml-auto page-size-control" ngbDropdown placement="top-right">
+                  <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+                    <span class="pr-2 c-blue" translate [translateParams]="{ count: pageInfo['sent'].pageSize.id }">
+                      pagination
+                    </span>
+                  </div>
+                  <div ngbDropdownMenu aria-labelledby="sentTableSize">
+                    <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS"
+                      (click)="changeSentPageSize(type)">
+                      <span class="f-3 v-center" [class.font-weight-bold]="type.id === pageInfo['sent'].pageSize.id">
+                        <span translate [translateParams]="{ count: type.label }">
+                          pagination
+                        </span>
+                        <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                          *ngIf="type.id === pageInfo['sent'].pageSize.id"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
+      <!-- watch history -->
+      <ng-container *ngSwitchCase="'watch'">
+        <div class="mat-table-wrapper" [class.empty]="!viewCount">
+          <div class="v-center justify-content-between">
+            <div class="f-4" translate>Show Anonymous</div>
+            <label class="custom-toggle mb-0">
+              <input
+                type="checkbox"
+                name="public"
+                [checked]="showAnonymous"
+                (change)="toggleShowAnonymous()"
+              />
+              <span class="custom-toggle-slider rounded-circle"></span>
+            </label>
+          </div>
+
+
+          <table class="w-100 page-table" mat-table [dataSource]="
+            contacts
+              | paginate
+                : {
+                    id: 'watchTable',
+                    itemsPerPage: pageInfo['watch'].pageSize.id,
+                    currentPage: pageInfo['watch'].pageIndex,
+                    totalItems: viewCount
+                  }
+          ">
+
+            <ng-container matColumnDef="name" >
+              <th mat-header-cell *matHeaderCellDef translate class="pl-0">
+                Name
+              </th>
+              <td mat-cell *matCellDef="let element" (click)="toContact(element._id)" class="pl-0">
+                <div class="v-center c-pointer">
+                  <div class="f-4 ml-2">
+                    <div *ngIf="(element.first_name || element.last_name)">
+                      {{ [element.first_name, element.last_name] | name }}
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="progress">
+              <th mat-header-cell *matHeaderCellDef translate class="text-right">
+                Progress
+              </th>
+              <td mat-cell *matCellDef="let element">
+                <div class="progress-box f-3 font-weight-bold  text-right"
+                  *ngIf="materialPreview.material_type=='video'">
+                  <ng-container *ngIf="materialPreview.duration >= 0;else liveVideo">
+                  <span>
+                    {{(element.duration / materialPreview.duration * 100).toFixed(1)}} %
+                  </span>
+                  </ng-container>
+                  <ng-template #liveVideo>
+                    <span>
+                      {{element.duration | timeDuration}}
+                    </span>
+                  </ng-template>
+                </div>
+                <div class="progress-box f-3 font-weight-bold  text-right"
+                  *ngIf="materialPreview.material_type=='pdf'">
+                  {{((element.read_pages / element.total_pages) * 100).toFixed(1)}}
+                  %</div>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef translate>
+                Date
+              </th>
+              <td mat-cell *matCellDef="let element">
+                {{ element.last_watch_at ?? element.updated_at | date : 'M/d H:mm' }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+              <th mat-header-cell *matHeaderCellDef class="px-0"></th>
+              <td mat-cell *matCellDef="let element" class="px-0">
+                <div class="d-flex" *ngIf="!element._id">
+                  <div
+                    class="d-flex flex-grow-1"
+                    style="justify-content: space-evenly"
+                  >
+                    <div class="new contact">
+                      <button
+                        class="v-center btn p-1 c-dark"
+                        (click)="createContact(element)"
+                        placement="top-right"
+                        ngbTooltip="{{ 'Create Contact' | translate }}"
+                      >
+                        <i
+                          class="i-icon i-person bgc-dark"
+                          aria-hidden="true"
+                        ></i>
+                      </button>
+                    </div>
+                    <div class="assign contact">
+                      <button
+                        class="v-center btn p-1 c-dark"
+                        (click)="assignContact(element)"
+                        placement="top-right"
+                        ngbTooltip="{{ 'Assign Contact' | translate }}"
+                      >
+                        <i
+                          class="i-icon i-person-add bgc-dark"
+                          aria-hidden="true"
+                        ></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="WATCH_DISPLAY_COLUMNS" class="table-header"></tr>
+            <tr mat-row *matRowDef="
+              let row;
+              let index = index;
+              columns: WATCH_DISPLAY_COLUMNS
+            "></tr>
+          </table>
+          <ng-container *ngIf="viewCount > MIN_ROW_COUNT">
+            <div class="my-2 table-control mode-1">
+              <div class="pagination-wrapper m-auto">
+                <pagination-controls (pageChange)="changeWatchPage($event)"
+                  (pageBoundsCorrection)="changeWatchPage($event)" id="watchTable" maxSize="5" previousLabel=""
+                  nextLabel="">
+                </pagination-controls>
+              </div>
+              <div class="shadow-dropdown ml-auto page-size-control" ngbDropdown placement="top-right">
+                <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+                  <span class="pr-2 c-blue" translate [translateParams]="{ count: pageInfo['watch'].pageSize.id }">
+                    pagination
+                  </span>
+                </div>
+                <div ngbDropdownMenu aria-labelledby="watchTableSize">
+                  <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS"
+                    (click)="changeWatchPageSize(type)">
+                    <span class="f-3 v-center" [class.font-weight-bold]="type.id === pageInfo['watch'].pageSize.id">
+                      <span translate [translateParams]="{ count: type.label }">
+                        pagination
+                      </span>
+                      <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                        *ngIf="type.id === pageInfo['watch'].pageSize.id"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
+
+      <!-- contact history -->
+      <ng-container *ngSwitchCase="'contact'">
+        <div class="mat-table-wrapper" [class.empty]="!contactCount">
+          <table class="w-100 page-table" mat-table [dataSource]="
+            unique_contacts
+              | paginate
+                : {
+                    id: 'contactTable',
+                    itemsPerPage: pageInfo['contact'].pageSize.id,
+                    currentPage: pageInfo['contact'].pageIndex,
+                    totalItems: contactCount
+                  }
+          ">
+            <ng-container matColumnDef="name" >
+              <th mat-header-cell *matHeaderCellDef translate class="pl-0">
+                Name
+              </th>
+              <td mat-cell *matCellDef="let element" (click)="toContact(element._id)" class="pl-0">
+                <div class="v-center c-pointer">
+                  <div class="f-4 ml-2">
+                    <div *ngIf="(element.first_name || element.last_name)">
+                      {{ [element.first_name, element.last_name] | name }}
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="progress">
+              <th mat-header-cell *matHeaderCellDef translate class="text-right">
+                Progress
+              </th>
+              <td mat-cell *matCellDef="let element">
+                <div class="progress-box f-3 font-weight-bold  text-right"
+                  *ngIf="materialPreview.material_type=='video'">
+                  <ng-container *ngIf="materialPreview.duration >= 0;else liveVideo">
+                  <span>
+                    {{(element.duration / materialPreview.duration * 100).toFixed(1)}} %
+                  </span>
+                  </ng-container>
+                  <ng-template #liveVideo>
+                    <span>
+                      {{element.duration | timeDuration}}
+                    </span>
+                  </ng-template>
+                </div>
+                <div class="progress-box f-3 font-weight-bold  text-right"
+                  *ngIf="materialPreview.material_type=='pdf'">
+                  {{((element.read_pages / element.total_pages) * 100).toFixed(1)}}
+                  %</div>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef translate>
+                Date
+              </th>
+              <td mat-cell *matCellDef="let element">
+                {{ element.last_watch_at ?? element.updated_at | date : 'MMM dd, hh:mm a' }}
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="CONTACT_DISPLAY_COLUMNS" class="table-header"></tr>
+            <tr mat-row *matRowDef="
+              let row;
+              let index = index;
+              columns: CONTACT_DISPLAY_COLUMNS
+            "></tr>
+          </table>
+          <ng-container *ngIf="contactCount > MIN_ROW_COUNT">
+            <div class="my-2 table-control mode-1">
+              <div class="pagination-wrapper m-auto">
+                <pagination-controls (pageChange)="changeContactPage($event)"
+                  (pageBoundsCorrection)="changeContactPage($event)" id="contactTable" maxSize="5"
+                  previousLabel="" nextLabel="">
+                </pagination-controls>
+              </div>
+              <div class="shadow-dropdown ml-auto page-size-control" ngbDropdown placement="top-right">
+                <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+                  <span class="pr-2 c-blue" translate [translateParams]="{ count: pageInfo['contact'].pageSize.id }">
+                    pagination
+                  </span>
+                </div>
+                <div ngbDropdownMenu aria-labelledby="contactTableSize">
+                  <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS"
+                    (click)="changeContactPageSize(type)">
+                    <span class="f-3 v-center" [class.font-weight-bold]="
+                      type.id === pageInfo['contact'].pageSize.id
+                    ">
+                      <span translate [translateParams]="{ count: type.label }">
+                        pagination
+                      </span>
+                      <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                        *ngIf="type.id === pageInfo['contact'].pageSize.id"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
+    </ng-container>
+
+  </div>
+</div>

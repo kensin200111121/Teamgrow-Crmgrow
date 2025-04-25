@@ -1,0 +1,586 @@
+<div class="font-weight-bold subject">{{replaceContent(email?.subject)}}</div>
+<ng-container *ngIf="!_includedMaterials?.length; else withMaterials">
+  <ng-container *ngIf="_timelines.length > 1; else onlySent">
+    <div class="collapsed" *ngIf="!expanded">
+      <span class="email-content"
+        [innerHTML]="replaceContent(email?.content) || '' | removeEntity | shorten: 200: '...'| safeHtml  "></span>
+      <a class="more f-3 mt-3 c-pointer fw-600 d-block w-fit" (click)="expand()" translate>Expand</a>
+    </div>
+    <div class="expanded" *ngIf="expanded">
+      <div class="email-content-wrapper">
+        <ng-container *ngIf="!more; else fullDesc">
+          <span class="email-content"
+            [innerHTML]="replaceContent(email?.content) || '' | removeEntity | shorten: 200: '...' | safeHtml"></span>
+          <a class="more ml-2 f-3 c-pointer" (click)="more = true" translate>More</a>
+        </ng-container>
+        <ng-template #fullDesc>
+          <span class="email-content"
+            [innerHTML]="(replaceContent(email?.content) || '') | makeRedirect | safeHtml"></span>
+          <a class="more f-3 mt-2 c-pointer fw-600 d-block w-fit" (click)="more = false" translate>Less</a>
+        </ng-template>
+      </div>
+      <label translate>Sessions</label>
+      <div class="timelines">
+        <div class="timeline" *ngFor="let activity of _timelines">
+          <div class="header v-center">
+            <i class="act-icon act-{{activity.type}} {{activity[activity.type]?.type}} d-block mr-2"></i>
+            {{activity.content}}
+            <div class="v-center ml-3" *ngIf="activity.assigned_contacts && activity.assigned_contacts.length > 0">
+              <div class="v-center">
+                <div class="d-flex align-items-start flex-wrap ml-5">
+                  <div class="related-contact" *ngFor="let contact of activity.assigned_contacts.slice(0, 2)">
+                    <div class="contact" ngbDropdown>
+                      <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                        ngbDropdownToggle>
+                        {{contact.avatarName}}
+                      </div>
+                      <div ngbDropdownMenu class="contact-list light px-2">
+                        <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                        [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                          <div class="v-center">
+                            <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                              {{contact.avatarName}}</div>
+                            <div class="ml-2">
+                              <div class="f-2 font-weight-bold name">{{contact.fullName}}</div>
+                              <div class="f-1">{{contact.email}}</div>
+                              <div class="f-1">{{contact.cell_phone}}</div>
+                            </div>
+                          </div>
+                          <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <ng-container *ngIf="activity.assigned_contacts.length > 2">
+                    <div class="contact related-contact" ngbDropdown>
+                      <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                        ngbDropdownToggle>
+                        +{{activity.assigned_contacts.length - 2}}
+                      </div>
+                      <div ngbDropdownMenu class="contact-list light px-2">
+                        <div class="v-center"
+                          *ngFor="let contact of activity.assigned_contacts.slice(2, activity.assigned_contacts.length)">
+                          <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                          [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                            <div class="v-center">
+                              <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                {{contact.avatarName}}</div>
+                              <div class="ml-2">
+                                <div class="f-2 font-weight-bold name">{{contact.fullName}}</div>
+                                <div class="f-1">{{contact.email}}</div>
+                                <div class="f-1">{{contact.cell_phone}}</div>
+                              </div>
+                            </div>
+                            <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+            <span class="time f-3 ml-auto op-56">
+              {{ activity.created_at | datetimeFormat }}
+            </span>
+          </div>
+          <div class="content ml-4">
+            <ng-container *ngIf="activity[activity.type]?.type === 'click' && activity[activity.type]?.link">
+              <a class="f-3 fw-600 mt-2 mb-2 d-block" href="{{activity[activity.type]?.link}}"
+                target="_blank">{{activity[activity.type]?.link}}</a>
+            </ng-container>
+            <ng-container *ngIf="showContact && activity.contacts && _contactObj[activity.contacts]">
+              <div class="contact-member-wrapper" [innerHTML]="getContactHTML(_contactObj[activity.contacts])"></div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <ng-container *ngIf="loading">
+        <div class="my-2">
+          <i class="small-spinner"></i>
+        </div>
+      </ng-container>
+      <a class="more f-3 mt-3 c-pointer fw-600 d-block w-fit" (click)="collapse()" translate>Collapse</a>
+    </div>
+  </ng-container>
+  <ng-template #onlySent>
+    <div class="collapsed" *ngIf="!expanded">
+      <span class="email-content"
+        [innerHTML]="replaceContent(email?.content) || '' | removeEntity | shorten: 200: '...' | safeHtml"></span>
+      <a class="more ml-2 f-3 c-pointer" (click)="expand()" translate>More</a>
+    </div>
+    <div class="expanded" *ngIf="expanded">
+      <button class="btn c-blue email-loading" [class.loading]="detailLoading"></button>
+      <div *ngIf="email?.type && email?.message_attachments?.length">
+        <span class="mt-3 f-2 p-1 text-light bg-secondary rounded">Attachments</span>
+        <ng-container *ngFor="let attachment of email.message_attachments">
+          <div class="c-pointer" (click)="getAttachment(attachment)">
+            <span class="f-2 text-primary text-decoration-underline">{{attachment?.filename}}</span>
+          </div>
+        </ng-container>
+      </div>
+      <span class="email-content"
+        [innerHTML]="email?.type ? email?.message_detail : (replaceContent(email?.content) || '') | makeRedirect | safeHtml"></span>
+      <a class="more f-3 mt-2 c-pointer fw-600 d-block w-fit" (click)="collapse()" translate>Less</a>
+    </div>
+  </ng-template>
+</ng-container>
+<ng-template #withMaterials>
+  <div class="collapsed" *ngIf="!expanded">
+    <div class="included-materials d-flex flex-wrap" *ngIf="_includedMaterials?.length > 1; else oneMaterial">
+      <ng-container *ngFor="let material of _includedMaterials">
+        <ng-container *ngIf="_materials[material]">
+          <ng-container [ngSwitch]="_materials[material].material_type">
+            <a *ngSwitchCase="'video'" class="material-thumbnail"
+              href="{{SITE}}/video?video={{_materials[material]._id}}&user={{userId}}" target="_blank">
+              <img src="{{_materials[material].preview}}" />
+            </a>
+            <a *ngSwitchCase="'pdf'" class="material-thumbnail"
+              href="{{SITE}}/pdf?pdf={{_materials[material]._id}}&user={{userId}}" target="_blank">
+              <img src="{{_materials[material].preview}}" />
+            </a>
+            <a *ngSwitchCase="'image'" class="material-thumbnail"
+              href="{{SITE}}/image?image={{_materials[material]._id}}&user={{userId}}" target="_blank">
+              <img src="{{_materials[material].preview}}" />
+            </a>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </div>
+    <ng-template #oneMaterial>
+      <div class="material d-flex" *ngIf="_materials[_firstM]">
+        <ng-container [ngSwitch]="_materials[_firstM].material_type">
+          <a *ngSwitchCase="'video'" class="material-thumbnail"
+            href="{{SITE}}/video?video={{_materials[_firstM]._id}}&user={{userId}}" target="_blank">
+            <img src="{{_materials[_firstM].preview}}" />
+          </a>
+          <a *ngSwitchCase="'pdf'" class="material-thumbnail"
+            href="{{SITE}}/pdf?pdf={{_materials[_firstM]._id}}&user={{userId}}" target="_blank">
+            <img src="{{_materials[_firstM].preview}}" />
+          </a>
+          <a *ngSwitchCase="'image'" class="material-thumbnail"
+            href="{{SITE}}/image?image={{_materials[_firstM]._id}}&user={{userId}}" target="_blank">
+            <img src="{{_materials[_firstM].preview}}" />
+          </a>
+        </ng-container>
+        <div class="material-content ml-2">
+          <div class="title font-weight-bold">
+            {{_materials[_firstM].title}}
+          </div>
+          <div class="time" *ngIf="_materials[_firstM].material_type === 'video'">
+            {{_materials[_firstM].duration | timeDuration}}
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    <ng-container *ngIf="main.type === 'video_trackers' && main[main.type]?.type === 'watch'">
+      <div class="v-center">
+        <app-play-timelines [data]="main[main.type]" [type]="main.type"
+          [duration]="_materials[main.video_trackers?.video]?.duration || _materials[main.video_trackers?.video[0]]?.duration"></app-play-timelines>
+        <div class="d-flex align-items-start flex-wrap ml-5"
+          *ngIf="_timelines[0].assigned_contacts && _timelines[0].assigned_contacts.length > 0">
+          <div class="related-contact" *ngFor="let contact of _timelines[0].assigned_contacts.slice(0, 2)">
+            <div class="contact" ngbDropdown>
+              <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer" ngbDropdownToggle>
+                {{contact.avatarName}}
+              </div>
+              <div ngbDropdownMenu class="contact-list light px-2">
+                <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                  <div class="v-center">
+                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">{{contact.avatarName}}
+                    </div>
+                    <div class="ml-2">
+                      <div class="f-2 font-weight-bold name">{{contact.fullName}}</div>
+                      <div class="f-1">{{contact.email}}</div>
+                      <div class="f-1">{{contact.cell_phone}}</div>
+                    </div>
+                  </div>
+                  <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          <ng-container *ngIf="_timelines[0].assigned_contacts.length > 2">
+            <div class="contact related-contact" ngbDropdown>
+              <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer" ngbDropdownToggle>
+                +{{_timelines[0].assigned_contacts.length - 2}}
+              </div>
+              <div ngbDropdownMenu class="contact-list light px-2">
+                <div class="v-center"
+                  *ngFor="let contact of _timelines[0].assigned_contacts.slice(2, _timelines[0].assigned_contacts.length)">
+                  <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                  [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                    <div class="v-center">
+                      <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">{{contact.avatarName}}
+                      </div>
+                      <div class="ml-2">
+                        <div class="f-2 font-weight-bold name">{{contact.fullName}}</div>
+                        <div class="f-1">{{contact.email}}</div>
+                        <div class="f-1">{{contact.cell_phone}}</div>
+                      </div>
+                    </div>
+                    <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <ng-container *ngIf="showContact && main.contacts && _contactObj[main.contacts]">
+        <div class="contact-member-wrapper" [innerHTML]="getContactHTML(_contactObj[main.contacts])"></div>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="main[main.type]?.type === 'click' && main[main.type]?.link">
+      <a class="f-3 fw-600 mt-2 d-block mb-2" href="{{main[main.type]?.link}}"
+        target="_blank">{{main[main.type]?.link}}</a>
+      <ng-container *ngIf="showContact && main.contacts && _contactObj[main.contacts]">
+        <div class="contact-member-wrapper" [innerHTML]="getContactHTML(_contactObj[main.contacts])"></div>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="main.type === 'pdf_trackers' && main[main.type]?.type === 'review' && main[main.type]?.read_pages && main[main.type]?.read_pages !== 0">
+      <div class="d-flex">
+        <app-play-timelines [data]="main[main.type]" [type]="main.type">
+        </app-play-timelines>
+        <div class="header v-center">
+          <ng-container *ngIf="main.type === 'pdf_trackers'">
+            <div class="mat-thumb" (click)="openDetail(main.pdf_trackers?.pdf, $event)">
+              <img src="{{_materials[main.pdf_trackers?.pdf]?.preview}}" />
+            </div>
+          </ng-container>
+          <div class="v-center ml-3" *ngIf="main.assigned_contacts && main.assigned_contacts.length > 0">
+            <div class="v-center">
+              <div class="d-flex align-items-start flex-wrap ml-5">
+                <div class="related-contact" *ngFor="let contact of main.assigned_contacts.slice(0, 2)">
+                  <div class="contact" ngbDropdown>
+                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                      ngbDropdownToggle>
+                      {{contact.avatarName}}
+                    </div>
+                    <div ngbDropdownMenu class="contact-list light px-2">
+                      <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                        href="{{siteUrl}}/contacts/{{contact._id}}" target="_blank">
+                        <div class="v-center">
+                          <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                            {{contact.avatarName}}</div>
+                          <div class="ml-2">
+                            <div class="f-2 font-weight-bold name">{{contact.fullName}}</div>
+                            <div class="f-1">{{contact.email}}</div>
+                            <div class="f-1">{{contact.cell_phone}}</div>
+                          </div>
+                        </div>
+                        <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <ng-container *ngIf="main.assigned_contacts.length > 2">
+                  <div class="contact related-contact" ngbDropdown>
+                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                      ngbDropdownToggle>
+                      +{{main.assigned_contacts.length - 2}}
+                    </div>
+                    <div ngbDropdownMenu class="contact-list light px-2">
+                      <div class="v-center"
+                        *ngFor="let contact of main.assigned_contacts.slice(2, main.assigned_contacts.length)">
+                        <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                          href="{{siteUrl}}/contacts/{{contact._id}}" target="_blank">
+                          <div class="v-center">
+                            <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                              {{contact.avatarName}}</div>
+                            <div class="ml-2">
+                              <div class="f-2 font-weight-bold name">{{contact.fullName}}</div>
+                              <div class="f-1">{{contact.email}}</div>
+                              <div class="f-1">{{contact.cell_phone}}</div>
+                            </div>
+                          </div>
+                          <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <span class="time f-3 op-56 ml-3">
+            {{ main.created_at | datetimeFormat }}
+          </span>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="main.type === 'image_trackers'">
+      <div class="d-flex">
+        <div class="header v-center">
+          <ng-container *ngIf="main.type === 'image_trackers'">
+            <div class="mat-thumb" (click)="openDetail(main.pdf_trackers?.pdf, $event)">
+              <img src="{{_materials[main.image_trackers?.image]?.preview}}" />
+            </div>
+          </ng-container>
+          <div class="v-center ml-3" *ngIf="main.assigned_contacts && main.assigned_contacts.length > 0">
+            <div class="v-center">
+              <div class="d-flex align-items-start flex-wrap ml-5">
+                <div class="related-contact" *ngFor="let contact of main.assigned_contacts.slice(0, 2)">
+                  <div class="contact" ngbDropdown>
+                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                      ngbDropdownToggle>
+                      {{contact.avatarName}}
+                    </div>
+                    <div ngbDropdownMenu class="contact-list light px-2">
+                      <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                        href="{{siteUrl}}/contacts/{{contact._id}}" target="_blank">
+                        <div class="v-center">
+                          <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                            {{contact.avatarName}}</div>
+                          <div class="ml-2">
+                            <div class="f-2 font-weight-bold name">{{contact.fullName}}</div>
+                            <div class="f-1">{{contact.email}}</div>
+                            <div class="f-1">{{contact.cell_phone}}</div>
+                          </div>
+                        </div>
+                        <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <ng-container *ngIf="main.assigned_contacts.length > 2">
+                  <div class="contact related-contact" ngbDropdown>
+                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                      ngbDropdownToggle>
+                      +{{main.assigned_contacts.length - 2}}
+                    </div>
+                    <div ngbDropdownMenu class="contact-list light px-2">
+                      <div class="v-center"
+                        *ngFor="let contact of main.assigned_contacts.slice(2, main.assigned_contacts.length)">
+                        <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                          href="{{siteUrl}}/contacts/{{contact._id}}" target="_blank">
+                          <div class="v-center">
+                            <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                              {{contact.avatarName}}</div>
+                            <div class="ml-2">
+                              <div class="f-2 font-weight-bold name">{{contact.fullName}}</div>
+                              <div class="f-1">{{contact.email}}</div>
+                              <div class="f-1">{{contact.cell_phone}}</div>
+                            </div>
+                          </div>
+                          <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <span class="time f-3 op-56 ml-3">
+            {{ main.created_at | datetimeFormat }}
+          </span>
+        </div>
+      </div>
+    </ng-container>
+    <a class="more f-3 mt-3 c-pointer fw-600 d-block w-fit" (click)="expand()" translate>Expand</a>
+  </div>
+  <div class="expanded" *ngIf="expanded">
+    <div class="email-content-wrapper">
+      <ng-container *ngIf="!more; else fullDesc">
+        <span class="email-content"
+          [innerHTML]="replaceContent(email?.content) || '' | removeEntity | shorten: 200: '...' | safeHtml"></span>
+        <a class="more ml-2 f-3 c-pointer" (click)="more = true" translate>More</a>
+      </ng-container>
+      <ng-template #fullDesc>
+        <div class="email-content" [innerHTML]="(replaceContent(email?.content) || '') | makeRedirect | safeHtml"></div>
+        <a class="more f-3 mt-2 c-pointer fw-600 d-block w-fit" (click)="more = false" translate>Less</a>
+      </ng-template>
+    </div>
+    <ng-container *ngIf="_timelines.length > 1; else sentMaterials">
+      <label class="session" translate>Sessions</label>
+      <div class="timelines">
+        <div class="timeline" *ngFor="let activity of _timelines">
+          <div class="header v-center">
+            <i class="act-icon act-{{activity.type}} {{activity[activity.type]?.type}} d-block mr-2"></i>
+            <span>{{activity.content}}</span>
+            <ng-container *ngIf="activity.type === 'video_trackers'">
+              <div class="mat-thumb" (click)="openDetail(activity.video_trackers?.video, $event)">
+                <img src="{{_materials[activity.video_trackers?.video]?.preview}}" />
+              </div>
+            </ng-container>
+            <ng-container *ngIf="activity.type === 'pdf_trackers'">
+              <div class="mat-thumb" (click)="openDetail(activity.pdf_trackers?.pdf, $event)">
+                <img src="{{_materials[activity.pdf_trackers?.pdf]?.preview}}" />
+              </div>
+            </ng-container>
+            <ng-container *ngIf="activity.type === 'image_trackers'">
+              <div class="mat-thumb" (click)="openDetail(activity.image_trackers?.image, $event)">
+                <img src="{{_materials[activity.image_trackers?.image]?.preview}}" />
+              </div>
+            </ng-container>
+            <div class="v-center ml-3" *ngIf="activity.assigned_contacts && activity.assigned_contacts.length > 0">
+              <div class="v-center">
+                <div class="d-flex align-items-start flex-wrap ml-5">
+                  <div class="related-contact" *ngFor="let contact of activity.assigned_contacts.slice(0, 2)">
+                    <div class="contact" ngbDropdown>
+                      <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                        ngbDropdownToggle>
+                        {{contact.avatarName}}
+                      </div>
+                      <div ngbDropdownMenu class="contact-list light px-2">
+                        <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                        [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                          <div class="v-center">
+                            <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                              {{contact.avatarName}}</div>
+                            <div class="ml-2">
+                              <div class="f-2 font-weight-bold name">{{contact.fullName}}</div>
+                              <div class="f-1">{{contact.email}}</div>
+                              <div class="f-1">{{contact.cell_phone}}</div>
+                            </div>
+                          </div>
+                          <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <ng-container *ngIf="activity.assigned_contacts.length > 2">
+                    <div class="contact related-contact" ngbDropdown>
+                      <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                        ngbDropdownToggle>
+                        +{{activity.assigned_contacts.length - 2}}
+                      </div>
+                      <div ngbDropdownMenu class="contact-list light px-2">
+                        <div class="v-center"
+                          *ngFor="let contact of activity.assigned_contacts.slice(2, activity.assigned_contacts.length)">
+                          <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                          [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                            <div class="v-center">
+                              <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                {{contact.avatarName}}</div>
+                              <div class="ml-2">
+                                <div class="f-2 font-weight-bold name">{{contact.fullName}}</div>
+                                <div class="f-1">{{contact.email}}</div>
+                                <div class="f-1">{{contact.cell_phone}}</div>
+                              </div>
+                            </div>
+                            <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+            <span class="time f-3 ml-auto op-56">
+              {{ activity.created_at | datetimeFormat }}
+            </span>
+          </div>
+          <div class="content ml-4">
+            <ng-container *ngIf="activity.type === 'video_trackers' && activity[activity.type]?.type === 'watch'">
+              <app-play-timelines [data]="activity[activity.type]" [type]="activity.type"
+                [duration]="_materials[activity.video_trackers?.video]?.duration || _materials[activity.video_trackers?.video[0]]?.duration"></app-play-timelines>
+            </ng-container>
+            <ng-container
+              *ngIf="activity.type === 'pdf_trackers' && activity[activity.type]?.type === 'review' && activity[activity.type]?.read_pages && activity[activity.type]?.read_pages !== 0">
+              <app-play-timelines [data]="activity[activity.type]" [type]="activity.type">
+              </app-play-timelines>
+            </ng-container>
+            <ng-container *ngIf="activity[activity.type]?.type === 'click' && activity[activity.type]?.link">
+              <a class="f-3 fw-600 mt-2 mb-2 d-block" href="{{activity[activity.type]?.link}}"
+                target="_blank">{{activity[activity.type]?.link}}</a>
+            </ng-container>
+            <ng-container *ngIf="showContact && activity.contacts && _contactObj[activity.contacts]">
+              <div class="contact-member-wrapper" [innerHTML]="getContactHTML(_contactObj[activity.contacts])"></div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #sentMaterials>
+      <ng-container *ngIf="!more">
+        <div class="included-materials d-flex flex-wrap mt-3" *ngIf="_includedMaterials?.length > 1; else oneMaterial">
+          <ng-container *ngFor="let material of _includedMaterials">
+            <ng-container *ngIf="_materials[material]">
+              <ng-container [ngSwitch]="_materials[material].material_type">
+                <a *ngSwitchCase="'video'" class="material-thumbnail"
+                  href="{{SITE}}/video?video={{_materials[material]._id}}&user={{userId}}" target="_blank">
+                  <img src="{{_materials[material].preview}}" />
+                </a>
+                <a *ngSwitchCase="'pdf'" class="material-thumbnail"
+                  href="{{SITE}}/pdf?pdf={{_materials[material]._id}}&user={{userId}}" target="_blank">
+                  <img src="{{_materials[material].preview}}" />
+                </a>
+                <a *ngSwitchCase="'image'" class="material-thumbnail"
+                  href="{{SITE}}/image?image={{_materials[material]._id}}&user={{userId}}" target="_blank">
+                  <img src="{{_materials[material].preview}}" />
+                </a>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </div>
+        <ng-template #oneMaterial>
+          <div class="material d-flex mt-3" *ngIf="_materials[_firstM]">
+            <ng-container [ngSwitch]="_materials[_firstM].material_type">
+              <a *ngSwitchCase="'video'" class="material-thumbnail"
+                href="{{SITE}}/video?video={{_materials[_firstM]._id}}&user={{userId}}" target="_blank">
+                <img src="{{_materials[_firstM].preview}}" />
+              </a>
+              <a *ngSwitchCase="'pdf'" class="material-thumbnail"
+                href="{{SITE}}/pdf?pdf={{_materials[_firstM]._id}}&user={{userId}}" target="_blank">
+                <img src="{{_materials[_firstM].preview}}" />
+              </a>
+              <a *ngSwitchCase="'image'" class="material-thumbnail"
+                href="{{SITE}}/image?image={{_materials[_firstM]._id}}&user={{userId}}" target="_blank">
+                <img src="{{_materials[_firstM].preview}}" />
+              </a>
+            </ng-container>
+            <div class="material-content ml-2">
+              <div class="title font-weight-bold">
+                {{_materials[_firstM].title}}
+              </div>
+              <div class="time" *ngIf="_materials[_firstM].material_type === 'video'">
+                {{_materials[_firstM].duration | timeDuration}}
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </ng-container>
+    </ng-template>
+    <ng-container *ngIf="loading">
+      <div class="my-2">
+        <i class="small-spinner"></i>
+      </div>
+    </ng-container>
+    <a class="more f-3 mt-3 c-pointer fw-600 d-block w-fit" (click)="collapse()" translate>Collapse</a>
+  </div>
+</ng-template>
+
+<ng-template #materialDetailPortal>
+  <div class="bg-white w-100 shadow rounded detail-panel">
+    <div class="material">
+      <div class="title d-flex">
+        <span>{{detailMaterial?.title}}</span>
+        <ng-container [ngSwitch]="detailMaterial?.material_type">
+          <a *ngSwitchCase="'video'" class="ml-auto" href="{{SITE}}/video?video={{detailMaterial?._id}}&user={{userId}}"
+            target="_blank">
+            <i class="i-icon i-expand d-block bgc-dark"></i>
+          </a>
+          <a *ngSwitchCase="'pdf'" class="ml-auto" href="{{SITE}}/pdf?pdf={{detailMaterial?._id}}&user={{userId}}"
+            target="_blank">
+            <i class="i-icon i-expand d-block bgc-dark"></i>
+          </a>
+          <a *ngSwitchCase="'image'" class="ml-auto" href="{{SITE}}/image?image={{detailMaterial?._id}}&user={{userId}}"
+            target="_blank">
+            <i class="i-icon i-expand d-block bgc-dark"></i>
+          </a>
+        </ng-container>
+      </div>
+      <div class="thumbnail">
+        <img [src]="detailMaterial?.preview" alt="Material Thumbnail">
+      </div>
+      <div class="description mt-2">
+        {{detailMaterial?.description || '' | removeEntity | shorten: 180: '...' | safeHtml }}
+      </div>
+    </div>
+  </div>
+</ng-template>

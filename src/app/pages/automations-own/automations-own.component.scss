@@ -1,0 +1,225 @@
+.custom-folder {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.automation-table {
+    tr.is_root {
+      display: none;
+    }
+
+    td {
+      padding: 10px;
+    }
+
+    .action-count,
+    .contacts,
+    .created {
+      text-align: right;
+    }
+    .type {
+      text-align: left;
+      max-width: 100px;
+    }
+    .checkbox-col {
+      width: 36px;
+    }
+    .icon-button {
+      cursor: pointer;
+    }
+    .title, .root-folder {
+      a:hover {
+        color: #101336;
+      }
+    }
+
+    .button-more {
+      a {
+        &::after {
+          content: none;
+        }
+      }
+    }
+    .label{
+      text-transform: capitalize;
+    }
+    th {
+      color: rgba(0,0,0,.54);
+      padding-left: 10px;
+
+      &.root-folder {
+        text-transform: none;
+        color: blue;
+        font-size: 14px;
+        opacity: 1;
+        border-bottom: none;
+      }
+
+      .head-sort {
+        span {
+          line-height: 1;
+        }
+
+        i {
+          width: 8px;
+          height: 12px;
+          min-width: 8px;
+        }
+      }
+    }
+    :host ::ng-deep {
+      .show.dropdown {
+          position: unset;
+      }
+      th {
+          .head-sort {
+              span {
+                  line-height: 1;
+              }
+              i {
+                  width: 8px;
+                  height: 12px;
+                  min-width: 8px;
+              }
+          }
+      }
+      thead tr.selected {
+          th {
+              background-color: #f5f6fd;
+          }
+      }
+      thead tr.selection-info th {
+          background-color: #f5f6fd;
+          border-bottom: none;
+      }
+      tbody {
+          tr {
+              &:hover {
+                  .sub-item-action {
+                      .items {
+                          opacity: 1;
+                      }
+                  }
+                  .item-action {
+                      .material-actions {
+                          opacity: 1;
+                      }
+                  }
+              }
+          }
+      }
+      .dropdown-toggle.disable {
+          pointer-events: none;
+          opacity: 0.4;
+      }
+  }
+
+    @media screen and (max-width: 576px) {
+      .action-count, .contacts, .created {
+        display: none;
+      }
+    }
+
+    @media screen and (max-width: 375px) {
+      .auth {
+        display: none;
+      }
+    }
+  }
+
+  .i-triangle-up.disabled {
+    pointer-events: none;
+    opacity: 0.3;
+  }
+
+
+  tr.mat-row {
+    &.automation-detail-row {
+      height: unset;
+
+      td {
+        padding: 0px;
+
+        .automation-detail {
+          padding: 15px;
+          border-radius: 10px;
+          background-color: #eee;
+          min-height: 150px;
+
+          .loader {
+            width: 100px;
+            height: 100px;
+          }
+        }
+      }
+    }
+  }
+
+
+  tr td {
+    background-color: white;
+  }
+
+  .contact-chip {
+    .form-avatar {
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      font-size: 20px;
+    }
+  }
+
+  input.disabled {
+    pointer-events: none;
+    background-color: #f8f8f8;
+  }
+
+  :host ::ng-deep {
+    .assign-action {
+      min-width: 60px;
+      max-width: 60px;
+
+      button {
+        opacity: 0;
+      }
+    }
+
+    .additional-action {
+      min-width: 40px;
+      max-width: 40px;
+      opacity: 0;
+    }
+
+    .actions-btn {
+      opacity: 0;
+    }
+
+    tr:hover {
+      .assign-action button {
+        opacity: 1;
+      }
+
+      .additional-action {
+        opacity: 1;
+      }
+
+      .actions-btn {
+        opacity: 1;
+      }
+    }
+  }
+
+  .selected-files .folder-row .custom-checkbox {
+    opacity: 0.4;
+    pointer-events: none;
+
+    .custom-control-input:checked ~ label {
+      &::before {
+        background-color: #0000ff44;
+        border-color: #0000ff44;
+      }
+    }
+  }
+  .active {
+    background-color: #00CC7E;
+    color:white;
+  }

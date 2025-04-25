@@ -1,0 +1,24 @@
+@import "variables";
+
+:host ::ng-deep {
+  .zap-row {
+    border: 1px solid #E6E6E6 !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
+  }
+
+  .zap-description {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: $color-dark !important;
+  }
+
+  .zap-button {
+    background-color: #EEAF53 !important;
+  }
+
+  .zap-power-bar__description {
+    font-size: 14px !important;
+    color: #989898 !important;
+  }
+}

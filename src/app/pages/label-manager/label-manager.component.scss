@@ -1,0 +1,311 @@
+@import 'variables';
+
+.form-group {
+  margin-bottom: 0px;
+}
+
+.form-group label.title {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.form-group label.sub-title {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 24px;
+}
+
+.page-content {
+  width: 100%;
+  max-width: 500px;
+
+  .table {
+    .table-header {
+      border-bottom: 1px solid #e9ecef;
+      background-color: white;
+      text-transform: uppercase;
+      opacity: 1;
+      padding: 0 10px;
+      width: 100%;
+      position: sticky;
+      top: $table-header-top;
+      z-index: 2;
+
+      &.selected {
+        background-color: #f5f6fd;
+      }
+
+      .label-col {
+        width: 200px;
+      }
+
+      .contact-col {
+        width: 150px;
+        text-align: center;
+      }
+
+      .action-col {
+        width: 60px;
+      }
+
+      @media screen and (max-width: 425px) {
+        .tag-col {
+          width: 275px;
+        }
+
+        .action-col {
+          width: 35px;
+        }
+      }
+
+      @media screen and (max-width: 375px) {
+        .tag-col {
+          width: 200px;
+        }
+      }
+
+      @media screen and (max-width: 320px) {
+        .time-col {
+          width: 70px;
+        }
+      }
+    }
+
+    .table-body {
+      .checkbox-col {
+        width: 40px;
+      }
+
+      .label-col {
+        width: 200px;
+      }
+
+      .hidden {
+        visibility: hidden;
+      }
+
+      .contact-col {
+        width: 150px;
+        text-align: center;
+      }
+
+      .action-col {
+        width: 60px;
+      }
+
+      @media screen and (max-width: 425px) {
+        .label-col {
+          width: 275px;
+        }
+
+        .action-col {
+          width: 35px;
+        }
+      }
+
+      @media screen and (max-width: 375px) {
+        .label-col {
+          width: 200px;
+        }
+      }
+
+      @media screen and (max-width: 320px) {
+        .label-col {
+          width: 70px;
+        }
+      }
+    }
+  }
+}
+
+.label-detail {
+  width: 20%;
+}
+
+.contact-detail {
+  width: 20%;
+}
+
+.header {
+  border-bottom: 1px solid #e9ecef;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.color-picker-button {
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+  border: 0px;
+  background-size: 16px 16px;
+
+  &:focus {
+    border: 0px;
+    outline: none;
+  }
+
+  i.i-icon {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+  }
+}
+
+.i-small {
+  width: 12px;
+  height: 12px;
+}
+
+.label-name-input {
+  max-width: 250px;
+  height: 34px;
+}
+
+.label-list {
+  max-width: 400px;
+}
+
+.label-item {
+  margin-left: -8px;
+  margin-right: -8px;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.panel {
+  max-width: 480px;
+}
+
+@media screen and (max-width: 400px) {
+  .color-label {
+    display: none;
+  }
+
+  .panel {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .label-item {
+    button {
+      padding: 0.25rem;
+
+      span {
+        font-size: 12px !important;
+
+        span {
+          display: none;
+        }
+      }
+
+      i {
+        width: 13px !important;
+        height: 13px !important;
+        min-width: 13px !important;
+      }
+    }
+  }
+}
+
+.cdk-drag-preview {
+  background: white;
+  border-radius: 4px;
+  z-index: 1004 !important;
+  position: relative;
+  box-shadow: 0px 2px 10px 2px $color-trans28;
+}
+
+.contacts-list-panel {
+  width: 100vw;
+  max-width: 380px;
+}
+
+.avatar-wrapper {
+  width: 100%;
+  height: 100%;
+  outline: none !important;
+
+  .avatar {
+    width: 24px;
+    min-width: 24px;
+    height: 24px;
+    min-height: 24px;
+    background-color: $color-dark;
+    margin-right: 10px;
+    box-shadow: unset;
+  }
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.admin-contact-count {
+  margin-right: 203px;
+
+  @media screen and (max-width: 768px) {
+    margin-right: 84px;
+  }
+
+  @media screen and (max-width: 480px) {
+    margin-right: 43px;
+  }
+}
+
+.label-item {
+  @media screen and (max-width: 768px) {
+    button span {
+      display: none;
+    }
+  }
+}
+
+.pagination-wrapper {
+  position: sticky;
+  bottom: 0px;
+  background: white;
+  padding: 8px 0px;
+  z-index: 2;
+}
+
+.panel-header {
+  position: sticky;
+  top: 0px;
+  background: white;
+  z-index: 2;
+}
+
+.contacts-list {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.load-status {
+  position: absolute;
+  background: #000000aa;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: white;
+  z-index: 2;
+  left: 400px;
+  top: 50%;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+:host ::ng-deep {
+  .page-table thead tr:first-child th {
+    top: 0;
+  }
+
+  .mat-drawer-inner-container {
+    height: unset;
+  }
+}
+
+.label-name {
+  word-break: break-all;
+}

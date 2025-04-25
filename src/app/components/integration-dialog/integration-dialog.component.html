@@ -1,0 +1,420 @@
+<div class="v-center justify-content-between">
+  <h1 class="m-0 title" mat-dialog-title translate>
+    {{integration['title']}}
+  </h1>
+  <i class="d-block i-icon i-close bgc-dark" mat-dialog-close *ngIf="!isConfirm"></i>
+</div>
+<ng-container *ngIf="step === 1">
+  <mat-dialog-content>
+    <div class="d-flex mt-3 logo-section">
+      <div class="logo">
+        <img class="logo" [src]="sspaService.toAsset(integration['icon'])">
+      </div>
+      <div class="ml-3">
+        <div class="integration-title c-dark">{{integration['title']}}</div>
+        <div class="summary" translate>{{integration['summary'] || integration['description']}}</div>
+      </div>
+    </div>
+    <div class="v-center mt-3 description-section">
+      <div class="description">
+        <ng-container *ngIf="integration.id === 'google_calendar' && googleCalendars.length">
+          <div class="f-4 c-dark font-weight-bold mt-3 mb-2" translate>integration_authorized_label</div>
+          <ng-container *ngFor="let calendar of googleCalendars">
+            <div class="v-center mb-1">
+              <div class="f-4 c-dark font-weight-bold mr-1 text-truncate" placement="top" ngbTooltip="{{calendar.connected_email}}">{{calendar.connected_email}}</div>
+              <span class="f-2 mr-1" translate>integration_connected_label</span>
+              <button type="button" class="cal-disconnect btn border-dark f-3 sm px-2 py-1 ml-auto" (click)="disconnectCalendar(calendar.connected_email, 'gmail', calendar?.id)">
+                <div class="f-4 c-dark" translate>integration_disconnect</div>
+              </button>
+            </div>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngIf="integration.id === 'outlook_calendar' && outlookCalendars.length">
+          <div class="f-4 c-dark font-weight-bold mt-3 mb-2" translate>integration_authorized_label</div>
+          <ng-container *ngFor="let calendar of outlookCalendars">
+            <div class="v-center mb-1">
+              <div class="f-4 c-dark font-weight-bold mr-1 text-truncate" placement="top" ngbTooltip="{{calendar.connected_email}}">{{calendar.connected_email}}</div>
+              <span class="f-2 mr-1" translate>integration_connected_label</span>
+              <button type="button" class="cal-disconnect btn border-dark f-3 sm px-2 py-1 ml-auto" (click)="disconnectCalendar(calendar.connected_email, 'outlook', calendar?.id)">
+                <div class="f-4" translate>integration_disconnect</div>
+              </button>
+            </div>
+          </ng-container>
+        </ng-container>
+        <div class="mt-3" translate>
+          {{integration['description'] || integration['summary']}}
+        </div>
+      </div>
+      <div class="demo-video" *ngIf="integration['video']; else integrationImage">
+        <iframe [src]="demoVideoLink" class="video-box"></iframe>
+      </div>
+      <ng-template #integrationImage>
+        <div class="demo-video" *ngIf="integration['image']">
+          <img [src]="integration['image']"/>
+        </div>
+      </ng-template>
+    </div>
+    <div class="mt-3">
+      <h5 class="m-0 about-title" translate>About this integration</h5>
+      <div class="about-integration mt-3">
+        <div>
+          <div class="sub-title">Launched</div>
+          <div class="sub-content">May 3, 2012</div>
+        </div>
+        <div>
+          <div class="sub-title">Device</div>
+          <div class="sub-content">Web and Mobile</div>
+        </div>
+        <div>
+          <div class="sub-title">Type</div>
+          <div class="sub-content">Integration</div>
+        </div>
+        <div>
+          <div class="sub-title">Category</div>
+          <div class="sub-content">{{integration['type']}}</div>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end" class="mx-0">
+    <button class="btn btn-white f-6 font-weight-bold mr-2" [mat-dialog-close]="false"
+      [class.disabled]="submitting"
+      translate
+      *ngIf="!data?.hideCancel"
+    >
+      {{ data['closeLabel'] || 'Close' }}
+    </button>
+    <button class="btn btn-primary f-6 font-weight-bold text-white"
+      [class.loading]="submitting"
+      type="button"
+      (click)="doConnect()"
+      translate
+    >
+      {{ data['connectLabel'] || 'Connect' }}
+    </button>
+  </mat-dialog-actions>
+</ng-container>
+<ng-container *ngIf="step === 2">
+  <mat-dialog-content>
+    <div class="v-center mt-4 learn-more c-pointer" (click)="doLearnMore()" >
+      <i class="d-block i-icon i-triangle-left bgc-grey mr-2"></i>
+      <span translate>Learn More</span>
+    </div>
+    <ng-container *ngIf="integration.id === 'smtp_mail'; else apiKeyTemplate">
+      <div class="d-flex pt-3">
+        <div class="sub-sidebar my-3">
+            <ul class="m-0 p-0">
+                <ng-container *ngFor="let menuItem of menuItems" class="nav-item">
+                    <li>
+                        <a class="d-flex nav-link c-dark c-pointer px-0 {{menuItem.id}}"
+                            [ngClass]="{active: currentTab === menuItem.id}"
+                            (click)="changeMenu(menuItem.id)"
+                            [class.hidden]="(menuItem.id != 'smtp' && !isSMTPConnected)"
+                        >
+                            <i class="i-icon bgc-dark {{menuItem.icon}} mr-2"></i>
+                            <span class="f-3 menu-label font-weight-bold">{{menuItem.label | translate}}</span>
+                        </a>
+                    </li>
+                </ng-container>
+            </ul>
+        </div>
+
+        <div class="smtp-container my-3 mx-lg-3 mx-md-3">
+            <ng-container *ngIf="currentTab == 'smtp'">
+                <ng-container *ngIf="!isSMTPConnected; else connectedTitle">
+                    <h5 class="f-6 font-weight-bold mt-2" translate>Connect with your SMTP Server</h5>
+                    <div class="f-3 mb-3 mt-2 op-75" translate>
+                        In order to use SMTP functionality you will need to get an SMTP service to link up to crmgrow. Once you have signed up for an SMTP service you will be able to fill in all the information below.
+                    </div>
+                </ng-container>
+                <ng-template #connectedTitle>
+                    <h5 class="f-6 font-weight-bold mt-2" translate>SMTP Server</h5>
+                    <div class="f-3 mb-3 mt-2 op-75" translate>
+                        In order to use SMTP functionality you will need to get an SMTP service to link up to crmgrow. Once you have signed up for an SMTP service you will be able to fill in all the information below.
+                    </div>
+                </ng-template>
+
+                <form class="smtp-forms" #smtpForm="ngForm" (ngSubmit)="smtpForm.form.valid ? syncSMTP() : false" >
+                    <div class="form-group" [class.disabled]="isSMTPConnected && !isEdit" [ngClass]="{invalid: smtpForm.submitted && hostname.invalid && (hostname.dirty || hostname.touched || smtpForm.submitted)}">
+                        <label for="hostname" class="mr-auto" translate>SMTP Host</label>
+                        <input type="text" class="form-control"
+                            [(ngModel)]="smtpHost"
+                            name="hostname"
+                            id="hostname"
+                            required
+                            #hostname="ngModel"
+                            (ngModelChange)="checkHostName($event)"
+                        />
+                        <span class="error" *ngIf="hostname.errors">
+                            <ng-container *ngIf="hostname.errors.required" translate>Required!</ng-container>
+                        </span>
+                        <ng-container *ngIf="host !== 'other'">
+                            <div class="mt-2 f-3 c-red" [ngSwitch]="host">
+                                <div *ngSwitchCase="'gmail'">
+                                    <span translate>Sorry! We don't support the G Suit SMTP server. Please try with another one.</span>
+                                </div>
+                                <div *ngSwitchCase="'outlook'">
+                                    <span translate>Sorry! We don't support the Outlook SMTP server. Please try with another one.</span>
+                                </div>
+                                <div *ngSwitchCase="'office'">
+                                    <span translate>Sorry! We don't support the Office 365 SMTP server. Please try with another one.</span>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <div class="form-group" [class.disabled]="isSMTPConnected && !isEdit" [ngClass]="{invalid: smtpForm.submitted && port.invalid && (port.dirty || port.touched || smtpForm.submitted)}">
+                        <label for="port" class="mr-auto" translate>SMTP Port</label>
+                        <input type="text" class="form-control"
+                            [(ngModel)]="smtpPort"
+                            name="port"
+                            id="port"
+                            required
+                            #port="ngModel"
+                        />
+                        <span class="error" *ngIf="port.errors">
+                            <ng-container *ngIf="port.errors.required" translate>Required!</ng-container>
+                        </span>
+                    </div>
+                    <div class="form-group" [class.disabled]="isSMTPConnected && !isEdit" [ngClass]="{invalid: smtpForm.submitted && username.invalid && (username.dirty || username.touched || smtpForm.submitted)}">
+                        <label for="username" class="mr-auto" translate>USER</label>
+                        <input type="text" class="form-control"
+                            [(ngModel)]="senderName"
+                            name="username"
+                            id="username"
+                            required
+                            #username="ngModel"
+                        />
+                        <span class="error" *ngIf="username.errors">
+                            <ng-container *ngIf="username.errors.required" translate>Required!</ng-container>
+                        </span>
+                    </div>
+                    <div class="form-group" [class.disabled]="isSMTPConnected && !isEdit" [ngClass]="{invalid: smtpForm.submitted && smtpPassword.invalid && (smtpPassword.dirty || smtpPassword.touched || smtpForm.submitted)}">
+                        <label for="smtpPassword" class="mr-auto" translate>Password</label>
+                        <input type="password" class="form-control"
+                            [(ngModel)]="password"
+                            name="smtpPassword"
+                            id="smtpPassword"
+                            required
+                            #smtpPassword="ngModel"
+                        />
+                        <span class="error" *ngIf="smtpPassword.errors">
+                            <ng-container *ngIf="smtpPassword.errors.required" translate>Required!</ng-container>
+                        </span>
+                    </div>
+                    <ng-container *ngIf="!isSMTPConnected">
+                        <div class="mb-3">
+                            <div class="custom-control custom-checkbox">
+                                <input
+                                    type="checkbox"
+                                    class="custom-control-input"
+                                    id="isLoadFromOther"
+                                    name="isLoadFromOther"
+                                    [disabled]="!previous_isSMTPConnected || (this.smtp_info && !isEdit)"
+                                    [(ngModel)]="isLoadFromOther"
+                                    (ngModelChange)="loadSmtpInfo(isLoadFromOther)"
+                                />
+                                <label class="custom-control-label mr-auto" [class.disabled]="!previous_isSMTPConnected || (this.smtp_info && !isEdit)" for="isLoadFromOther" translate>Fill information from campaign sender</label>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <div class="v-center justify-content-end mt-4">
+                        <button class="btn btn-white c-blue font-weight-bold" mat-dialog-close *ngIf="!isEdit" translate>Cancel</button>
+                        <button type="button" class="btn btn-white font-weight-bold" (click)="cancel()" *ngIf="isSMTPConnected && isEdit" translate>Cancel</button>
+                        <ng-container *ngIf="isSMTPConnected && !isEdit; else connectsmtp">
+                            <button type="button" class="btn btn-primary font-weight-bold ml-2" (click)="edit(smtpForm)" translate>Edit</button>
+                        </ng-container>
+                        <ng-template #connectsmtp>
+                            <button type="submit" class="btn btn-primary font-weight-bold ml-2" [class.loading]="isConnecting" translate>Connect</button>
+                        </ng-template>
+                    </div>
+                </form>
+            </ng-container>
+
+            <ng-container *ngIf="currentTab == 'email'">
+                <form class="email-forms" #emailForm="ngForm" (ngSubmit)="emailForm.form.valid ? verifyEmail() : false">
+                    <ng-container *ngIf="!isSMTPConnected; else connectedEmailTemplate">
+                        <h5 class="f-6 font-weight-bold mt-2 mb-2" translate>Sender Email</h5>
+                        <div class="info-section" translate>
+                            In order to use SMTP functionality you will need to get an SMTP service to link up to crmgrow. Once you have signed up for an SMTP service you will be able to fill in all the information below.
+                        </div>
+                        <div class="v-center justify-content-end mt-3">
+                            <button type="button" class="btn btn-primary font-weight-bold ml-2" (click)="currentTab = 'smtp'" translate>Connect SMTP</button>
+                        </div>
+                    </ng-container>
+
+                    <ng-template #connectedEmailTemplate>
+                        <ng-container *ngIf="!isSMTPVerified; else verifiedEmailTemplate">
+                            <div class="f-6 font-weight-bold mt-2" translate>Verify your sender email</div>
+                            <div class="f-3 mb-3 op-75" translate>Make sure you verify your domain through your SMTP provider. After that is successful, please verify your email address here, then enter the verification code.</div>
+                            <div class="form-group email-form" [ngClass]="{invalid: emailForm.submitted && email.invalid && (email.dirty || email.touched || emailForm.submitted)}">
+                                <label for="email" class="mr-auto" translate>Email</label>
+                                <input type="email" class="form-control"
+                                    [(ngModel)]="senderEmail"
+                                    name="email"
+                                    id="email"
+                                    required
+                                    pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$"
+                                    #email="ngModel"
+                                />
+                                <span class="error" *ngIf="email.errors">
+                                    <ng-container *ngIf="email.errors.required" translate>Required!</ng-container>
+                                    <ng-container *ngIf="email.errors.pattern" translate>Wrong email format!</ng-container>
+                                </span>
+                            </div>
+                            <div class="v-center justify-content-end mt-4">
+                                <button class="btn btn-white c-blue font-weight-bold" mat-dialog-close translate>Cancel</button>
+                                <button type="submit" class="btn btn-primary font-weight-bold ml-2" [class.loading]="isVerifying" translate>Send code</button>
+                                <button type="button" class="btn btn-primary font-weight-bold ml-2" [class.disabled]="!smtp_info?.email" (click)="verifyCode()" translate>Verify code</button>
+                            </div>
+                        </ng-container>
+
+                        <ng-template #verifiedEmailTemplate>
+                            <ng-container *ngIf="isEditEmail; else nonEditTitle">
+                                <div class="f-6 font-weight-bold mt-2" translate>Update your sender email</div>
+                            </ng-container>
+                            <ng-template #nonEditTitle>
+                                <h5 class="f-6 font-weight-bold mt-2" translate>Sender Email</h5>
+                            </ng-template>
+                            <div class="f-3 mb-3 op-75" translate>Make sure you verify your domain through your SMTP provider. After that is successful, please verify your email address here, then enter the verification code.</div>
+                            <div class="form-group email-form" [ngClass]="{invalid: emailForm.submitted && email.invalid && (email.dirty || email.touched || emailForm.submitted)}">
+                                <label for="email" class="mr-auto" translate>Email</label>
+                                <input type="email" class="form-control"
+                                    [(ngModel)]="senderEmail"
+                                    name="email"
+                                    id="email"
+                                    required
+                                    pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$"
+                                    #email="ngModel"
+                                    [class.suspended]="!isEditEmail"
+                                />
+                                <span class="error" *ngIf="email.errors">
+                                    <ng-container *ngIf="email.errors.required" translate>Required!</ng-container>
+                                    <ng-container *ngIf="email.errors.pattern" translate>Wrong email format!</ng-container>
+                                </span>
+                            </div>
+                            <div class="v-center justify-content-end mt-4" *ngIf="!isEditEmail; else editEmailActions;">
+                                <button class="btn btn-white c-blue font-weight-bold" mat-dialog-close translate>Cancel</button>
+                                <button type="button" class="btn btn-primary font-weight-bold ml-2" (click)="editEmail()" translate>Edit</button>
+                            </div>
+                            <ng-template #editEmailActions>
+                                <div class="v-center justify-content-end mt-4">
+                                    <button type="button" class="btn btn-white font-weight-bold" (click)="cancelEditEmail()" translate>Cancel</button>
+                                    <button type="submit" class="btn btn-primary font-weight-bold ml-2" [class.loading]="isVerifying" translate>Send Code</button>
+                                </div>
+                            </ng-template>
+                        </ng-template>
+                    </ng-template>
+                </form>
+            </ng-container>
+
+            <ng-container *ngIf="currentTab == 'daily'">
+                <ng-container *ngIf="isSMTPConnected && isSMTPVerified; else noConnectedTemplate">
+                    <div class="f-6 font-weight-bold mt-2 mb-2" translate>SMTP Daily limit</div>
+                    <div class="f-3 mb-3 op-75" translate>Please enter the daily email limit set by your SMTP provider. This can very depending on provider and what package you have with them.</div>
+                    <div class="form-group smtp-forms mb-0">
+                        <label for="daily_limit" class="mr-auto" translate>Daily Limit</label>
+                        <input type="text" class="form-control"
+                            [(ngModel)]="dailyLimit"
+                            name="daily_limit"
+                            id="daily_limit"
+                        />
+                        <div class="v-center justify-content-end mt-4">
+                            <button class="btn btn-white c-blue font-weight-bold" mat-dialog-close translate>Cancel</button>
+                            <button type="button" class="btn btn-primary font-weight-bold ml-2" (click)="setDailyLimit()" [class.loading]="isUpdating" translate>Set</button>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-template #noConnectedTemplate>
+                    <h5 class="f-6 font-weight-bold mt-2 mb-2" translate>SMTP Daily limit</h5>
+                    <ng-container *ngIf="!isSMTPConnected">
+                        <div class="info-section" translate>
+                            In order to use SMTP functionality you will need to get an SMTP service to link up to crmgrow. Once you have signed up for an SMTP service you will be able to fill in all the information below.
+                        </div>
+                        <div class="v-center justify-content-end mt-3">
+                            <button type="button" class="btn btn-primary font-weight-bold ml-2" (click)="currentTab = 'smtp'" translate>Connect SMTP</button>
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="isSMTPConnected && !isSMTPVerified">
+                        <div class="info-section" translate>
+                            Make sure you verify your domain through your SMTP provider. After that is successful, please verify your email address here, then enter the verification code.
+                        </div>
+                        <div class="v-center justify-content-end mt-3">
+                            <button class="btn btn-white c-blue font-weight-bold" mat-dialog-close translate>Cancel</button>
+                            <button type="button" class="btn btn-primary font-weight-bold ml-2" (click)="currentTab = 'email'" translate>Verify Email</button>
+                        </div>
+                    </ng-container>
+                </ng-template>
+            </ng-container>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #apiKeyTemplate>
+      <div class="mt-4">
+        <span translate class="copy-key">Copy this key and…</span>
+        <div class="integration-header mt-2">
+          <p class="f-4 font-weight-bold m-0 key-label" translate>integration_api_key</p>
+          <div class="v-center mt-1" *ngIf="integration['id'] !== 'calendly'; else calendlyApiKey">
+            <div class="v-center key-container">
+              <input class="form-control f-4 w-100 p-1" [type]="!apiKeyVisible?'password':'text'" [ngModel]="apiKey" readonly placeholder="{{'API Key' | translate}}">
+              <i class="i-icon i-visible d-block eye ml-1" [class.i-invisible]="apiKeyVisible" (click)="setApiKeyVisible()"></i>
+            </div>
+            <div class="header-button ml-3">
+              <ng-container *ngIf="isApiKeyCopied; else copyButton">
+                <button class="v-center bg-white border-dark my-auto f-4 font-weight-bold key-copy">
+                  <span translate>integration_copied</span>
+                </button>
+              </ng-container>
+              <ng-template #copyButton>
+                <button type="button" class="v-center cal-disconnect btn border-dark f-4 font-weight-bold sm p-2 ml-auto" (click)="copyApiKey()">
+                  <i class="i-icon i-copy bgc-dark sm d-block"></i>
+                  <div class="f-4 c-dark ml-2" translate>integration_copy_key</div>
+                </button>
+              </ng-template>
+              <button class="v-center bg-white border-0 my-auto ml-2 f-4 font-weight-bold key-regenerate" (click)="getApiKey()">
+                  <i class="i-icon i-reload s-14 bgc-dark d-block"
+                    [ngClass]="{'rotating-icon': generatingApiKey}">
+                  </i>
+                <span class="f-4 c-dark ml-2" translate>integration_regenerate_key</span>
+              </button>
+              <a class="bg-white border-0 my-auto ml-2 f-4 font-weight-bold c-pointer" (click)="openAgentFire()" *ngIf="integration['id'] === 'agent_fire'">Open target</a>
+            </div>
+          </div>
+          <ng-template #calendlyApiKey>
+            <div class="v-center mt-1">
+              <div class="v-center key-container">
+                <input class="form-control f-4 w-100 p-1" name="apiKey" placeholder="{{'API Key' | translate}}" [(ngModel)]="apiKey">
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+      <div *ngIf="integration['id'] === 'zapier'" class="mt-2">
+        <div id="zapier" #zapierDiv></div>
+      </div>
+    </ng-template>
+
+    <div class="integration-contents mt-2 pt-4" *ngIf="integration.id !== 'smtp_mail'">
+      <h1 class="title" translate>How to Connect</h1>
+      <ul class="how-to">
+        <li class="py-1" *ngFor="let guide of integration.guide" translate="">{{guide}}</li>
+      </ul>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end" class="mx-0" *ngIf="integration.id !== 'smtp_mail'">
+    <button class="btn btn-white f-6 font-weight-bold mr-2" [mat-dialog-close]="false"
+      [class.disabled]="submitting"
+      translate
+      *ngIf="!data?.hideCancel"
+    >
+      {{ data['cancelLabel'] || 'Close' }}
+    </button>
+    <button class="btn btn-primary f-6 font-weight-bold text-white"
+      [class.loading]="submitting"
+      type="button"
+      (click)="doConfirm()"
+      translate
+    >
+      {{ data['confirmLabel'] || 'Confirm' }}
+    </button>
+  </mat-dialog-actions>
+</ng-container>

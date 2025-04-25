@@ -1,0 +1,19 @@
+.dialog-container{
+  padding: 1.5rem 1rem;
+
+  .close-button {
+    width: auto;
+    padding: 0;
+
+    &:focus, &:hover {
+      color: #000000;
+      background-color: transparent;
+    }
+
+    .i-icon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+

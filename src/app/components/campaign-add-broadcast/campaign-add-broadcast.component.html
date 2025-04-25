@@ -1,0 +1,97 @@
+<h1 mat-dialog-title translate>New Broadcast</h1>
+<form #actionForm="ngForm" (ngSubmit)="actionForm.form.valid ? addBroadcast() : false">
+  <mat-dialog-content>
+    <div class="form-group">
+      <div>
+        <label class="d-block mb-0" translate>Name</label>
+        <input class="form-control" name="broadcast_name" #broadcast_name="ngModel"
+               [(ngModel)]="title" type="text" required/>
+        <span class="invalid-feedback"
+              [class.invalid]="!title && actionForm.submitted" translate>Broadcast name is required.</span>
+      </div>
+      <div class="mt-3">
+        <label class="d-block mb-0" translate>Recipient list</label>
+        <app-mail-list [placeholder]="'Search mail lists'" [(maillist)]="selectedMailList"></app-mail-list>
+        <div class="invalid-feedback" [class.invalid]="!selectedMailList && actionForm.submitted" translate>Mail list is required.</div>
+      </div>
+      <div class="mt-3">
+        <label class="d-block mb-0" translate>Email Template</label>
+        <app-input-template
+          [type]="'email'"
+          [hasNewsletter]="true"
+          [placeholder]="'Search templates'"
+          [(template)]="selectedTemplate"
+          (templateChange)="selectTemplate($event)"
+        >
+        </app-input-template>
+        <div class="invalid-feedback" [class.invalid]="!selectedTemplate && actionForm.submitted" translate>Email template is required.</div>
+      </div>
+      <div class="my-3">
+        <label class="d-block mb-0" translate>Send Time</label>
+        <app-date-input type="prepend" uiType="mode1" [hasTime]="true" [(value)]="selectedDateTime" [minDate]="minDate"></app-date-input>
+        <div class="invalid-feedback" [class.invalid]="!selectedDateTime && actionForm.submitted" translate>Send time is required.</div>
+      </div>
+<!--      <p class="f-3 warning-text mt-4">Warning: Due to receiver limits you can only send 2000 mailings at one session.</p>-->
+<!--      <div class="mt-3">-->
+<!--        <table class="table">-->
+<!--          <thead>-->
+<!--          <th class="sending-session">Sending Session</th>-->
+<!--          <th class="count-mailing">Number of Mailings</th>-->
+<!--          <th class="date">Date</th>-->
+<!--          </thead>-->
+<!--          <tbody>-->
+<!--          <tr >-->
+
+<!--          </tr>-->
+<!--          </tbody>-->
+<!--        </table>-->
+<!--      </div>-->
+      <div class="mt-3">
+        <div class="d-flex v-center">
+          <label class="mb-0 d-block" [class.visible-hide]="selectedTemplate?.type === 'newsletter' && !templateMaterials?.length" translate>Material to send</label>
+          <ng-container *ngIf="materials.length || templateMaterials.length">
+            <a class="c-pointer ml-2 add-short-button" (click)="attachMaterials()" [class.d-none]="selectedTemplate?.type === 'newsletter'" translate>
+              Add more
+            </a>
+          </ng-container>
+        </div>
+        <div class="send-materials">
+          <div class="material-item v-center justify-content-between" *ngFor="let material of templateMaterials">
+            <div class="thumb-wrapper">
+              <img class="thumbnail" src="{{material.thumbnail || material.preview}}" alt="{{material.title}}" (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+            </div>
+            <div class="material-detail mx-3">
+              <div class="material-title f-3">{{material.title}}</div>
+              <div class="material-description f-1 mt-1" *ngIf="material.description">
+                {{material.description | stripTags | removeEntity | shorten: 80: '...'}}
+              </div>
+            </div>
+          </div>
+          <div class="material-item v-center justify-content-between" *ngFor="let material of materials">
+            <div class="thumb-wrapper">
+              <img class="thumbnail" src="{{material.thumbnail || material.preview}}" alt="{{material.title}}" (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+            </div>
+            <div class="material-detail mx-3">
+              <div class="material-title f-3">{{material.title}}</div>
+              <div class="material-description f-1 mt-1" *ngIf="material.description">
+                {{material.description | stripTags | removeEntity | shorten: 80: '...'}}
+              </div>
+            </div>
+            <button class="v-center justify-content-end border-0 bgc-blue delete-button" type="button" (click)="deleteMaterial(material)">
+              <i class="i-icon i-remove bgc-white" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+        <ng-container *ngIf="!materials.length && !templateMaterials.length">
+          <button class="btn btn-white-blue mt-1" type="button" (click)="attachMaterials()" [class.d-none]="selectedTemplate?.type === 'newsletter'" translate>Send material</button>
+        </ng-container>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions class="v-center justify-content-end mx-0">
+    <div>
+      <button class="btn btn-white" type="button" mat-dialog-close translate>Close</button>
+      <button class="btn btn-primary ml-2" type="submit" [class.loading]="adding" translate>Add</button>
+    </div>
+  </mat-dialog-actions>
+</form>

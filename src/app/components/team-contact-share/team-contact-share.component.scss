@@ -1,0 +1,11 @@
+.new-contacts-wrapper {
+  max-height: 30vh;
+  overflow: auto;
+}
+
+::ng-deep {
+  .mat-dialog-content {
+    min-height: 100px;
+
+  }
+}

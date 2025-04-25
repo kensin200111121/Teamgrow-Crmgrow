@@ -1,0 +1,30 @@
+<div class="v-center justify-content-between">
+  <h1 mat-dialog-title class="m-0" translate>
+    Schedule send
+  </h1>
+  <button class="v-center border-0 bgc-trans" mat-dialog-close>
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</div>
+<div class="v-center justify-content-between mt-2">
+  <p style="font-size:16px">{{time_zone}}</p>
+</div>
+<mat-dialog-content>
+  <div class="form-group">
+    <div class="v-center">
+      <table class="schedule_table mt-2">
+        <tr class='schedule' *ngFor="let schedule of schedule_list; let i = index;" (click)='sendSchedule(schedule.schedule_date)' [attr.data-name]="'schedule-time-select-' + i">
+          <td translate>{{schedule.schedule_text}}</td>
+          <td>{{schedule.schedule_date| date:"MMM d, y, h:mm a"}}</td>
+        </tr>
+      </table> 
+    </div>
+  </div>
+  <hr />
+</mat-dialog-content>
+<mat-dialog-actions align="center">
+  <div class='datepicker v-center' (click)="selectschedule()">
+    <i class="i-icon i-calendar bgc-dark mr-2"></i>
+    {{ 'Pick date and time' | translate }}
+  </div>
+</mat-dialog-actions>

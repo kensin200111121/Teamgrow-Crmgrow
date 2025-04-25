@@ -1,0 +1,42 @@
+<div class="page-content p-0">
+  <div class="form-group mt-3">
+    <div class="f-4 c-dark font-weight-bold">{{ 'Landing page default theme' | translate }}</div>
+    <div class="f-4 c-light-dark mt-2">
+      {{ 'The theme you select below will be your default theme for all materials and content, including any live video created.' | translate }}
+    </div>
+    <div class="v-center mt-3">
+      <button data-action="landing-page-default-theme-set" class="btn btn-primary f-6 font-weight-bold btn-font-bold btn-sm py-2" *ngIf="!selectedTheme"
+        (click)="editDefaultTheme()">
+        {{ 'Set the theme' | translate }}
+      </button>
+    </div>
+    <div class="v-center" *ngIf="selectedTheme">
+      <div class="theme-wrapper mt-1 mb-2">
+        <img src="{{selectedTheme.thumbnail}}" class="w-100 theme-thumb" />
+        <div class="f-4 text-center c-dark font-weight-bold pt-3">{{selectedTheme.name}}</div>
+      </div>
+      <button data-action="landing-page-default-theme-change" class="btn btn-primary f-3 ml-3" (click)="editDefaultTheme()">{{ 'Change Theme' | translate }}</button>
+    </div>
+  </div>
+
+  <div class="asset-item mt-3">
+    <div class="f-4 c-dark font-weight-bold">
+      {{ 'Highlights (Used in Highlight Landing Page)' | translate }}
+    </div>
+    <div class="f-4 c-light-dark mt-2 mb-2">
+      {{ 'Add highlight images to support your content when using the Highlight Landing Page.' | translate }}
+    </div>
+    <div cdkDropList class="highlights mt-2" cdkDropListOrientation="horizontal"
+      (cdkDropListDropped)="highlightMoved($event)">
+      <div class="highlight img-comp" [cdkDragData]="highlight" cdkDrag
+        *ngFor="let highlight of garbage.highlights; let i = index;">
+        <img src="{{highlight}}" />
+        <div class="remove-link" (click)="removeHighlight(i)"></div>
+        <img *cdkDragPreview [src]="highlight">
+      </div>
+      <div class="highlight placeholder img-comp" (click)="pickHighlights()">
+        <div class="plus">+</div>
+      </div>
+    </div>
+  </div>
+</div>

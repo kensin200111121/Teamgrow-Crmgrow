@@ -1,0 +1,227 @@
+@import  "variables";
+
+.browser-container{
+  .contact-list-controls{
+    .is_root {
+      display: none;
+    }
+    .search-form {
+      max-width: 250px;
+    }
+    .material-options {
+      font-size: 13px;
+      font-weight: bold;
+    }
+  }
+
+  .title-file-selected {
+    background-color: #FAFAFA;
+    color: $color-blue;
+    border-radius: 5px;
+  }
+
+  .form-group {
+    .custom-control-label {
+      text-transform: none;
+    }
+  }
+
+  .filtered-list {
+    min-height: 230px;
+  }
+
+  .file-thumbnail {
+    padding: 0px;
+    width: 100%;
+    object-fit: cover;
+    overflow: hidden;
+    margin: 0px;
+    border-radius: 8px;
+    aspect-ratio: 1/1;
+
+    .title-thumbnail {
+      width: 100%;
+      object-fit: cover;
+      margin: 0px;
+      aspect-ratio: 1/1;
+      overflow: hidden;
+      border-radius: 8px;
+
+    }
+
+    .title-thumbnail img {
+      border: 0;
+    }
+
+
+    .preview-active {
+      position: relative;
+      display: inline-block; /* Or use any appropriate display property */
+    }
+    .preview-active::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(88, 86, 222, 0.5); /* Change color and opacity as needed */
+      z-index: 1; /* Adjust the z-index if necessary */
+    }
+
+    .preview-active img {
+      display: block;
+      width: 100%;
+      height: auto;
+      z-index: 2; /* Make sure the image appears above the overlay */
+    }
+
+    .thumb-prev-wrapper img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+    }
+
+    .thumb-prev-wrapper .preview {
+      display: none;
+    }
+
+    .thumb-prev-wrapper {
+      &:hover .preview {
+        display: block;
+      }
+      &:hover .thumbnail {
+        display: none;
+      }
+    }
+  }
+  .file-info-title {
+    color: gray;
+    font-size: 12px;
+    text-transform: capitalize;
+  }
+
+  .material-list {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-gap: 4px;
+  }
+
+  .half-material-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 4px;
+  }
+
+  .folder {
+    width: 120px;
+    text-align: center;
+  }
+
+  .file-item{
+    width: 100%;
+    padding: 8px;
+
+    &.selected {
+      background-color: #0d1ff92b;
+      border: 1px solid blue;
+      border-radius: 6px;
+    }
+  }
+
+  .title-folder {
+    height: 40px;
+    text-align: center;
+  }
+
+
+    .preview-active {
+      position: relative;
+      display: inline-block; /* Or use any appropriate display property */
+    }
+    .preview-active::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(88, 86, 222, 0.5); /* Change color and opacity as needed */
+      z-index: 1; /* Adjust the z-index if necessary */
+    }
+
+    .preview-active img {
+      display: block;
+      width: 100%;
+      height: auto;
+      z-index: 2; /* Make sure the image appears above the overlay */
+    }
+
+  .thumb-prev-wrapper img {
+    // width: 56px;
+    // height: 32px;
+    object-fit: cover;
+    // margin-right: 12px;
+  }
+
+  .thumb-prev-wrapper .preview {
+    display: none;
+  }
+
+  .thumb-prev-wrapper {
+    &:hover .preview {
+        display: block;
+    }
+    &:hover .title-thumbnail {
+        display: none;
+    }
+  }
+
+  .file-title-label {
+    overflow-wrap: anywhere;
+    text-align: left;
+    font-size: 14px;
+  }
+
+}
+
+.clear-all-filters {
+  cursor: pointer;
+  color: #066FD3;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 10px 0;
+}
+.label {
+  display: flex;
+}
+@media screen and (max-width: 1140px) {
+  .material-list {
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 12px;
+  }
+  .title-tag-div {
+    top: 10px;
+    left: 10px;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .material-list {
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 12px;
+  }
+}
+
+@media screen and (max-width: 720px) {
+}
+
+@media screen and (max-width: 400px) {
+  .material-list {
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 12px;
+  }
+}

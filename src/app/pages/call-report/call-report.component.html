@@ -1,0 +1,268 @@
+<div class="page-content">
+    <div class="v-center">
+        <h1 class="page-title" translate>Call Report</h1>
+        <div class="ml-auto" ngbDropdown placement="bottom-right">
+            <div class="v-center c-pointer f-3 p-3 mr-2 font-weight-bold" ngbDropdownToggle>
+              <span class="pr-2" translate>{{!reportDayItem ? 'All Logs' : reportDayItem.label}}</span>
+            </div>
+            <div ngbDropdownMenu aria-labelledby="callLogDates">
+                <div class="py-2" ngbDropdownItem (click)="changeReportDurationGap(null)">
+                    <span class="f-3 v-center" [class.font-weight-bold]="!reportDayItem">
+                      {{'All Logs' | translate}}
+                      <i class="i-icon i-check d-block bgc-dark sm ml-1 mb-1" *ngIf="!reportDayItem"></i>
+                    </span>
+                </div>
+                <div class="py-2" ngbDropdownItem *ngFor="let item of reportData['time']" (click)="changeReportDurationGap(item)">
+                    <span class="f-3 v-center" [class.font-weight-bold]="'time_' + item.label === reportDayItem?.id">
+                        <span class="mr-2">
+                            {{item.label | translate}}
+                            <ng-container *ngIf="item.start">
+                                {{item.start | datetimeFormat : 'MM/dd' : '' : locale }} - {{item.end | datetimeFormat : 'MM/dd' : '' : locale}}
+                            </ng-container>
+                        </span>
+                        <span class="value ml-auto" [translateParams]="{count: item.count || 0}" translate>call_count</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="reports-section">
+        <label class="sub-title mt-2 mb-2" translate>Call Session History</label>
+        <div class="reports">
+            <div class="report-item total-info" (click)="selectType()">
+                <div class="title">Total calls made</div>
+                <div class="desc"></div>
+                <div class="value" *ngIf="totalLogsCount">{{totalLogsCount}} / {{totalDuration * 1000 | timeDuration}}</div>
+            </div>
+            <div class="report-item" *ngFor="let item of reportData['status']" (click)="selectType(item, 'status')">
+                <div class="title d-flex">
+                    <span class="title" translate>{{item.label}}</span>
+                    <div
+                        class="v-center no-carot c-pointer ml-auto"
+                        placement="left"
+                        ngbTooltip="{{OutcomeDescDic[item.label]}}"
+                    >
+                        <i class="d-block i-icon i-information bgc-dark"></i>
+                    </div>
+                </div>
+                <div class="desc"></div>
+                <div class="value mt-2">
+                    <span *ngIf="item.count; else emptyValue;">{{item.count}} / {{item.duration * 1000 || 0 | timeDuration}}</span>
+                    <div class="loader" *ngIf="loadingReport"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="reports-section">
+        <label class="sub-title mt-2 mb-2" translate>Call Disposition</label>
+        <div class="reports">
+            <div class="report-item" *ngFor="let item of reportData['label']" (click)="selectType(item, 'label')">
+                <div class="title" translate>{{item.label}}</div>
+                <div class="desc"></div>
+                <div class="value mt-2">
+                    <span *ngIf="item.count; else emptyValue;">{{item.count}} / {{item.duration * 1000 || 0 | timeDuration}}</span>
+                    <div class="loader" *ngIf="loadingReport"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ng-template #emptyValue>
+        <div class="value mt-2">
+            ---
+        </div>
+    </ng-template>
+
+    <div class="logs-list mt-4" id="call-logs-list">
+        <label class="sub-title mt-2 mb-2" translate>Call Logs
+            <span *ngIf="selectedReportItem && selectedReportItem.label">&nbsp;({{selectedReportItem.label}})</span>
+        </label>
+        <div class="v-center call-logs-list-controls">
+            <div class="form-group mb-0 search-form">
+                <div class="input-group-prepend">
+                  <i class="i-icon i-search d-block bgc-dark"></i>
+                </div>
+                <input type="text" class="form-control" placeholder="{{'Search' | translate}}" aria-label="search" aria-describedby="search-addon"
+                  [(ngModel)]="searchStr" (ngModelChange)="changeSearchStr()">
+                <ng-container *ngIf="searchStr">
+                  <div class="cancel-action c-pointer" (click)="clearSearchStr()">
+                    <i class="i-icon i-close d-block bgc-dark"></i>
+                  </div>
+                </ng-container>
+            </div>
+
+            <div class="ml-auto" ngbDropdown placement="bottom-right">
+                <div [attr.data-name]="'contact-call-sortby'" class="v-center c-pointer f-3 p-3 mr-2 font-weight-bold" ngbDropdownToggle>
+                    <span class="pr-2">{{ (sortType.label == 'Last called' ? 'Sort by' : sortType.label) | translate }}</span>
+                </div>
+                <div ngbDropdownMenu aria-labelledby="taskSortTypes">
+                    <div class="py-2" ngbDropdownItem *ngFor="let type of SORT_TYPES" (click)="changeSort(type)">
+                        <span [attr.data-name]="'contact-call-sortby-' + type.label" class="f-3 v-center" [class.font-weight-bold]="type.id === sortType.id">
+                            {{type.label | translate}}
+                            <i class="i-icon i-check d-block bgc-dark sm ml-1 mb-1" *ngIf="type.id === sortType.id"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="logs-wrapper">
+            <div class="table-wrapper">
+                <table class="w-100 page-table" mat-table
+                    [dataSource]="callLogs | paginate: {id: 'page', itemsPerPage: pageSize, currentPage: page, totalItems: selectedReportLogsCount}">
+
+                    <ng-container matColumnDef="loader-cell">
+                        <th mat-header-cell *matHeaderCellDef colspan="12" class="loader-cell">
+                            <div class="updating-status" *ngIf="callLogs.length && loadingLogs" translate>
+                                LOADING
+                            </div>
+                        </th>
+                    </ng-container>
+
+                    <ng-container matColumnDef="contact">
+                        <th mat-header-cell *matHeaderCellDef class="pl-2" translate>
+                            Contact
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="pl-2">
+                            <div class="v-center c-pointer py-2" *ngIf="element.contact; else removedContact"
+                                (click)="openContact(element.contact)">
+                                <div class="contact-avatar f-3 mr-2">
+                                    {{ getAvatarName(element.contact) }}
+                                </div>
+                                <span class="fw-600">
+                                    {{ element.contact?.first_name + ' ' + element.contact?.last_name }}
+                                </span>
+                            </div>
+                            <ng-template #removedContact>
+                                <div translate>Removed Contact</div>
+                            </ng-template>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="email">
+                        <th mat-header-cell *matHeaderCellDef class="pl-2" translate>
+                            Email
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="pl-2">
+                            <div class="c-pointer py-2" *ngIf="element.contact; else removedContact"
+                                (click)="openContact(element.contact)">
+                                <div class="f-2">{{ element.contact?.email }}</div>
+                            </div>
+                            <ng-template #removedContact>
+                                <div translate>Removed Contact</div>
+                            </ng-template>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="phone">
+                        <th mat-header-cell *matHeaderCellDef class="pl-2" translate>
+                            Phone
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="pl-2">
+                            <div class="c-pointer py-2" *ngIf="element.contact; else removedContact"
+                                (click)="openContact(element.contact)">
+                                <div class="c-blue font-weight-bold f-2">{{element.contact?.cell_phone | phone_format}}</div>
+                            </div>
+                            <ng-template #removedContact>
+                                <div translate>Removed Contact</div>
+                            </ng-template>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="label">
+                        <th mat-header-cell *matHeaderCellDef class="pl-2" translate>
+                          Status
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="pl-2">
+                            <div class="label">{{element.label}}</div>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="status">
+                        <th mat-header-cell *matHeaderCellDef class="pl-2" translate>
+                          Disposition
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="pl-2">
+                            <div class="" translate>
+                                {{element.status}}
+                            </div>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="note">
+                        <th mat-header-cell *matHeaderCellDef class="pl-2" translate>
+                            Note
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="pl-2">
+                            <div class="c-pointer" placement="top" ngbTooltip="{{element.content}}">
+                                {{element.content | shorten: 30: '...'}}
+                            </div>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="duration">
+                        <th mat-header-cell *matHeaderCellDef class="pl-2" translate>
+                            Duration
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="pl-2">
+                            <div class="">
+                                {{element.duration * 1000 | timeDuration}}
+                            </div>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="created_at">
+                        <th mat-header-cell *matHeaderCellDef class="pl-2" translate>
+                            Created at
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="pl-2">
+                            <div class="">
+                                {{element.created_at | datetimeFormat : 'hh:mm a, dd MMM'}}
+                            </div>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="['loader-cell']" class="loader-row"></tr>
+                    <tr mat-header-row *matHeaderRowDef="DISPLAY_COLUMNS" class="table-header"></tr>
+                    <tr mat-row *matRowDef="let row; columns: DISPLAY_COLUMNS;"></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="my-2 table-control mode-1 py-1" *ngIf="callLogs.length; else emptyListTemplate;">
+            <div class="pagination-wrapper m-auto">
+                <pagination-controls
+                    (pageChange)="changePage($event)"
+                    (pageBoundsCorrection)="changePage($event)"
+                    id="page"
+                    maxSize="5"
+                    previousLabel=""
+                    nextLabel=""
+                >
+                </pagination-controls>
+            </div>
+        </div>
+        <ng-template #emptyListTemplate>
+            <ng-container *ngIf="!loadingLogs">
+              <div class="empty-list pt-5">
+                <div class="object-icon v-center">
+                  <i class="i-icon i-information lock bgc-dark"></i>
+                </div>
+                <h4 class="font-weight-bold mt-3 mb-3" translate>
+                  there_are_no_call_logs
+                  <ng-container *ngIf="searchStr; else searchConditionTemplate;">
+                    <span translate> with your search option.</span>
+                  </ng-container>
+                  <ng-template #searchConditionTemplate>
+                    <span translate> yet.</span>
+                  </ng-template>
+                </h4>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="loadingLogs">
+                <div class="list-loading text-center">
+                    <div class="loader mt-5 lg"></div>
+                    <h4 class="fw-600 mt-2" translate>Loading logs...</h4>
+                </div>
+            </ng-container>
+        </ng-template>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+<div mat-dialog-title class="d-flex justify-content-between">
+    <span>{{title}}</span>
+    <button class="btn text-white close-mark" type="button" (click)="close()">
+      <i class="i-icon i-close bgc-dark d-block" aria-hidden="true"></i>
+    </button>
+</div>
+<div mat-dialog-content class="mt-3">
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="recurranceEvent" id="ownEvent" value="own" checked (change)="changeType($event)">
+      <label class="form-check-label" for="ownEvent" translate>
+        This event
+      </label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="recurranceEvent" id="followEvent" value="follow" (change)="changeType($event)">
+      <label class="form-check-label" for="followEvent">
+        This and following events
+      </label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="recurranceEvent" id="allEvents" value="all" (change)="changeType($event)">
+      <label class="form-check-label" for="allEvents" translate>
+        All events
+      </label>
+    </div>
+</div>
+<div mat-dialog-actions align="end">
+    <div class="row mx-0">
+      <div class="col-12">
+        <button type="button" mat-dialog-close class="btn btn-white py-2 ml-2" (click)="close()" translate>
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-danger text-white py-2" (click)="confirm()" translate>
+          OK
+        </button>
+      </div>
+    </div>
+</div>

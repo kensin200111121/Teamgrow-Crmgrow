@@ -1,0 +1,156 @@
+<div class="html-editor position-relative">
+  <div class="position-relative">
+    <button class="link-action actions" cdkOverlayOrigin #linkOverlay="cdkOverlayOrigin" type="button" (click)="showLink = true" translate>
+      OPEN
+    </button>
+    <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="linkOverlay" [cdkConnectedOverlayOpen]="showLink"
+      (overlayOutsideClick)="closeLink($event)">
+      <form #linkForm="ngForm" (ngSubmit)="linkForm.form.valid ? insertLink() : false" [class.was-validated]="linkForm.submitted">
+        <div class="link-container p-2">
+          <p class="f-6 c-dark m-0" translate>Edit link</p>
+          <div class="form-group mt-2 mb-0" *ngIf="isTextLink">
+            <label translate>Text to display:</label>
+            <input type="text" class="form-control" name="title" #title="ngModel" [(ngModel)]="displayText" />
+          </div>
+          <div class="form-group mt-2 mb-0">
+            <label translate>Link to:</label>
+            <input type="text" class="form-control" name="link" #link="ngModel" [(ngModel)]="displayLink" required />
+          </div>
+          <div class="v-center justify-content-end mt-2">
+            <button class="btn btn-primary f-3 font-weight-bold" translate>Save</button>
+          </div>
+        </div>
+      </form>
+    </ng-template>
+    <button class="templates-action actions" cdkOverlayOrigin #trigger="cdkOverlayOrigin" type="button" (click)="showTemplates = true" translate>
+      OPEN
+    </button>
+    <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="trigger" [cdkConnectedOverlayOpen]="showTemplates"
+      (overlayOutsideClick)="closeTemplates($event)">
+      <div class="templates-container">
+        <div class="template" *enableByFeatures="USER_FEATURES.BETA" (click)="createNew()">
+          <a class="f-3 font-weight-bold" translate>Create New Template ...</a>
+        </div>
+        <ng-container *ngFor="let template of (templateService.templates$ | async)">
+          <div class="position-relative template-wrapper" *ngIf="template.type === 'email'">
+            <div class="template dropdown-item v-center" (click)="selectTemplate(template, true)">
+              <div class="f-3 font-weight-bold w-100 text-ellipse template-title">{{template.title}}</div>
+            </div>
+            <a class="abrc-y" [routerLink]="['/templates/edit/' + template._id]" target="_blank">
+              <i class="d-block i-icon i-expand bgc-dark"></i>
+            </a>
+          </div>
+        </ng-container>
+      </div>
+    </ng-template>
+    <button class="emoji-action actions" cdkOverlayOrigin #emojiOverlay="cdkOverlayOrigin" type="button" (click)="showEmoji = true" translate>
+      OPEN
+    </button>
+    <div class="chatgpt-dropdown" *ngIf="hasChatgpt">
+      <app-chatgpt-button [enabled]="enableChatgpt" (setAiMode)="setAiMode($event)"></app-chatgpt-button>
+    </div>
+    <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="emojiOverlay" [cdkConnectedOverlayOpen]="showEmoji"
+      (overlayOutsideClick)="closeEmoji($event)">
+      <emoji-mart class="emoji-mart" [set]="set" [darkMode]="false" (emojiSelect)="insertEmailContentValue($event.emoji.native, true)"
+        title="Pick your emoji…">
+      </emoji-mart>
+    </ng-template>
+    <ng-container *ngIf="isCalendly">
+      <button class="calendly-action actions" cdkOverlayOrigin #calendlyOverlay="cdkOverlayOrigin" type="button" (click)="showCalendly = true" translate>
+        OPEN
+      </button>
+      <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="calendlyOverlay" [cdkConnectedOverlayOpen]="showCalendly"
+        (overlayOutsideClick)="closeCalendly($event)">
+        <div class="templates-container">
+          <ng-container *ngFor="let calendly of (connectService.calendlyAll$ | async)">
+            <div class="template" (click)="selectCalendly(calendly.scheduling_url)">
+              <div class="v-center">
+                <div class="f-3 font-weight-bold flex-grow-1 v-center">{{calendly.name}}</div>
+                <a class="ml-auto" [href]="calendly.scheduling_url" target="blank">
+                  <i class="d-block i-icon i-expand bgc-dark"></i>
+                </a>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </ng-template>
+    </ng-container>
+    <button class="record-action actions" cdkOverlayOrigin #recordOverlay="cdkOverlayOrigin" type="button" translate>
+      OPEN
+    </button>
+    <quill-editor
+      [attr.data-name]="'deal-action-description'"
+      class="w-100"
+      [styles]="style"
+      [class]="class"
+      [placeholder]="placeholder"
+      [ngModel]="value"
+      [modules]="config"
+      [formControl]="editorForm"
+      image-resize="true"
+      (onEditorCreated)="getEditorInstance($event)"
+      (click)="onFocusEvt()"
+      (keydown)="handleKeyDown($event)"
+      (onContentChanged)="onContentChanged($event)"
+      #emailEditor>
+    </quill-editor>
+    <button class="calendly-action actions" cdkOverlayOrigin #schedulerOverlay="cdkOverlayOrigin" type="button" (click)="showScheduler = true" translate>
+      OPEN
+    </button>
+    <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="schedulerOverlay" [cdkConnectedOverlayOpen]="showScheduler"
+      (overlayOutsideClick)="closeScheduler($event)">
+      <div class="templates-container">
+        <ng-container *ngFor="let eventType of (scheduleService.eventTypes$ | async)">
+          <div class="template" (click)="selectCalendly(eventType.link)">
+            <div class="v-center">
+              <div class="f-3 font-weight-bold flex-grow-1 v-center">{{eventType.title}}</div>
+              <a class="ml-auto" [href]="getRealEventTypeLink(eventType.link)" target="blank">
+                <i class="d-block i-icon i-expand bgc-dark"></i>
+              </a>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </ng-template>
+
+    <!-- [required]="required ? true : false" -->
+
+    <span class="c-red error" *ngIf="isEmpty() && (editorForm.touched || editorForm.dirty) && required && submitted" translate>
+      Required!
+    </span>
+    <ng-container *ngIf="hasToken">
+      <div ngbDropdown class="insert-token bottom-right">
+        <div class="v-center no-carot" ngbDropdownToggle>
+          <span class="f-1 font-weight-bold mr-1" translate>Merge field</span>
+          <i class="d-block i-icon i-triangle-down bgc-dark"></i>
+          <i class="d-block i-icon i-triangle-up bgc-dark"></i>
+        </div>
+        <div ngbDropdownMenu class="light py-1">
+          <ng-container *ngFor="let token of templateTokens">
+            <div class="f-2 py-1 px-2 c-pointer menu-item" (click)="insertEmailContentToken(token.name)" translate>
+              {{ token.name }}
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <div class="v-center mt-1 px-3" *ngIf="attachments && attachments.length">
+    <i class="i-icon i-attachment d-block bgc-dark"></i>
+    <span class="ml-2">{{ attachments.length }} {{'file(s) attached.' | translate}}</span>
+  </div>
+  <div class="attach-files my-1 px-3" *ngIf="attachments && attachments.length">
+    <div class="attachment" *ngFor="let attachment of attachments; let i = index">
+      <div class="name">{{ attachment.filename }}</div>
+      <div class="size">{{ attachment.size }}</div>
+      <div class="close c-pointer" (click)="removeAttachment(i)">
+        &times;
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #createNewContent>
+  <app-template-create class="w-100" [value]="value" (onClose)="closeOverlay($event)" [subject]="subject">
+  </app-template-create>
+</ng-template>

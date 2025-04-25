@@ -1,0 +1,170 @@
+<div class="v-center justify-content-between">
+  <h1 class="m-0" mat-dialog-title translate>
+    {{ data['title'] }}
+  </h1>
+  <i class="d-block i-icon i-close bgc-dark" mat-dialog-close *ngIf="!submitting"></i>
+</div>
+<mat-dialog-content class="description">
+  <div class="text-center f-5 c-dark mt-3" translate>
+    {{ data['message'] }}
+  </div>
+
+  <!-- Comment Area -->
+  <div class="form-group mt-3" *ngIf="data['comment']">
+    <label class="d-block mb-0" translate>{{ data['comment']['label'] || 'Comment' }}</label>
+    <textarea class="form-control" [(ngModel)]="comment"></textarea>
+  </div>
+
+  <!-- Additional Action -->
+  <div class="additional f-3 text-center fw-600 mt-4 mb-2" *ngIf="data['additional']">
+    <ng-container *ngFor="let item of data['additional'];">
+      <div class="v-center justify-content-center secondary-contact c-pointer w-100 mt-1"
+        (click)="expandDetails(item.material.id)">
+        <div class="material-avatar">
+          <div class="thumbnail">
+            <ng-container [ngSwitch]="item.material.type">
+              <a *ngSwitchCase="'video'"
+                href="{{siteUrl}}/video?video={{item.material.id}}&user={{this.data['user_id']}}" target="_blank">
+                <div class="thumb-prev-wrapper">
+                  <img [src]="item.material.thumbnail" class="thumbnail"
+                    (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+                </div>
+              </a>
+              <a *ngSwitchCase="'pdf'" href="{{siteUrl}}/pdf?pdf={{item.material.id}}&user={{this.data['user_id']}}"
+                target="_blank">
+                <img class="thumbnail" src="{{item.material.preview}}"
+                  (error)="sspaService.imgError($event,'img/pdf_overlay.png')" />
+              </a>
+              <a *ngSwitchCase="'image'"
+                href="{{siteUrl}}/image?image={{item.material.id}}&user={{this.data['user_id']}}" target="_blank">
+                <img class="thumbnail" src="{{item.material.preview}}"
+                  (error)="sspaService.imgError($event,'img/image_overlay.png')" />
+              </a>
+            </ng-container>
+          </div>
+        </div>
+        <div class="material-info">
+          <div>
+            <span class="f-4 ci-dark fw-700" translate>
+              {{item.material.title}}
+            </span>
+          </div>
+          <div>
+            <span class="f-3 font-weight-bold" translate>
+              {{getMaterialType(item.material.type)}}
+            </span>
+          </div>
+        </div>
+        <div class="material-action">
+          <i class="d-block i-icon bgc-blue"
+            [ngClass]="{'i-expand-less': d_status[item.material.id], 'i-expand-more': !d_status[item.material.id]}"></i>
+        </div>
+      </div>
+      <div *ngFor="let message of item.error_message;" [class.d-none]="!d_status[item.material.id]">
+        <div *ngIf="message.reason === 'automations'">
+          <div class="mb-1 mt-1 material-reason">
+            <div class="material-reason-title">
+              <span class="mr-4" translate>Reason:</span>
+            </div>
+            <div class="material-reason-content">
+              <span class="ci-dark mr-1" translate>This material is used in these</span>
+              <span class="c-red"> {{ 'automations' | translate }} </span>
+            </div>
+          </div>
+          <div class="mb-1 mt-1 material-reason">
+            <div class="material-reason-title"></div>
+            <div class="material-reason-content">
+              <ng-container *ngFor="let automation of message.automations; let i = index">
+                <a class="c-pointer c-blue" [routerLink]="['/autoflow/edit/' + automation._id]"
+                  target="_blank">
+                  "{{ automation.title | translate }}"
+                </a>
+                <span *ngIf="i < message.automations.length - 1">, </span>
+                <span *ngIf="i === message.automations.length - 1">. </span>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="message.reason === 'templates'">
+          <div class="mb-1 mt-1 material-reason">
+            <div class="material-reason-title">
+              <span class="mr-4" translate>Reason:</span>
+            </div>
+            <div class="material-reason-content">
+              <span class="ci-dark mr-1" translate>This material is used in these</span>
+              <span class="c-red"> {{ 'templates' | translate }} </span>
+            </div>
+          </div>
+          <div class="mb-1 mt-1 material-reason">
+            <div class="material-reason-title"></div>
+            <div class="material-reason-content">
+              <ng-container *ngFor="let template of message.templates; let i = index">
+                <a class="c-pointer c-blue" [routerLink]="['/templates/edit/' + template._id]"
+                  target="_blank">
+                  "{{ template.title | translate }}"
+                </a>
+                <span *ngIf="i < message.templates.length - 1">, </span>
+                <span *ngIf="i === message.templates.length - 1">. </span>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="message.reason === 'teams'">
+          <div class="mb-1 mt-1 material-reason">
+            <div class="material-reason-title">
+              <span class="mr-4" translate>Reason:</span>
+            </div>
+            <div class="material-reason-content">
+              <span class="ci-dark mr-1" translate>This material is used in these</span>
+              <span class="c-red"> {{ 'teams' | translate }} </span>
+            </div>
+          </div>
+          <div class="mb-1 mt-1 material-reason">
+            <div class="material-reason-title"></div>
+            <div class="material-reason-content">
+              <ng-container *ngFor="let team of message.shared_teams; let i = index">
+                <a class="c-pointer c-blue" [routerLink]="['/community/' + team._id + '/members/root']"
+                  target="_blank">"{{ team.name | translate }}"</a>
+                <span *ngIf="i < message.shared_teams.length - 1">, </span>
+                <span *ngIf="i === message.shared_teams.length - 1">. </span>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="message.reason === 'smartcodes'">
+          <div class="mb-1 mt-1 material-reason">
+            <div class="material-reason-title">
+              <span class="mr-4" translate>Reason:</span>
+            </div>
+            <div class="material-reason-content">
+              <span class="ci-dark mr-1" translate>This material is used in these</span>
+              <span class="c-red"> {{ 'smart codes' | translate }} </span>
+            </div>
+          </div>
+          <div class="mb-1 mt-1 material-reason">
+            <div class="material-reason-title"></div>
+            <div class="material-reason-content">
+              <ng-container *ngFor="let smartcode of message.smartcodes; let i = index">
+                <a class="c-pointer c-blue" [routerLink]="['lead-hub/smart-codes']" target="_blank">
+                  "{{ smartcode | translate }}"
+                </a>
+                <span *ngIf="i < message.smartcodes.length - 1">, </span>
+                <span *ngIf="i === message.smartcodes.length - 1">. </span>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Option Select  -->
+  <div class="d-flex flex-column mt-2">
+    <ng-container *ngFor="let answer of data.answers; let i=index;">
+      <button class="btn btn-red f-6 font-weight-bold text-white m-1"
+        (click)="closeWithAnswer(answer)">
+        {{answer['label'] || ('Answer' | translate) + (i + 1)}}
+      </button>
+    </ng-container>
+  </div>
+</mat-dialog-content>

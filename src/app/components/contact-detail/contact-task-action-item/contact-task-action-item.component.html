@@ -1,0 +1,168 @@
+<ng-container [ngSwitch]="tab.id">
+  <div class="follow_ups-detail" *ngSwitchCase="'follow_up'">
+    <div class="v-center justify-content-between mb-3">
+      <div class="v-center">
+        <div class="history-icon mr-1">
+          <i class="act-icon act-follow_ups"></i>
+        </div>
+        <div class="d-flex v-center">
+          <span class="text-capitalize">{{ activity.activityOverView.content }}</span>
+          <ng-container *ngIf="activity?.activityOverView?.user">
+            <app-contact-action-user [user]="activity.activityOverView.user"></app-contact-action-user>
+          </ng-container>
+        </div>
+      </div>
+      <div class="v-center ml-auto">
+        <span class="f-3 op-56">
+          {{ activity.action.updated_at | datetimeFormat }}
+        </span>
+        <div *ngIf="!isPending" ngbDropdown class="button-more p-1 rounded contact-action-btn" placement="bottom-right">
+          <a class="d-flex c-pointer no-carot" ngbDropdownToggle>
+            <i class="i-icon i-menu-more bg-dark" aria-hidden="true"></i>
+          </a>
+          <div ngbDropdownMenu class="light py-1">
+            <button class="v-center border-0 py-1 c-dark dropdown-item" *ngIf="activity.action.status !== 1"
+              (click)="editTask(activity.action)">
+              <i class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-2 font-weight-bold" translate>Edit</span>
+            </button>
+            <button class="v-center border-0 py-1 c-dark dropdown-item" *ngIf="activity.action.status === 1"
+              (click)="unCompleteTask(activity.action)">
+              <i class="i-icon i-check bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-2 font-weight-bold" translate>Uncomplete</span>
+            </button>
+            <button class="v-center border-0 py-1 c-dark dropdown-item" *ngIf="activity.action.status !== 1"
+              (click)="completeTask(activity.action)">
+              <i class="i-icon i-check bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-2 font-weight-bold" translate>Complete</span>
+            </button>
+            <button class="v-center border-0 py-1 c-dark dropdown-item" (click)="archiveTask(activity.action)">
+              <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-2 font-weight-bold" translate>Delete</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="task-history-item" [class.completed]="activity.action.status===1">
+      <div class="v-center">
+        <ng-container *ngIf="!isPending; else viewTaskTemplate">
+          <div class="v-center justify-content-center c-pointer task-status" (click)="completeTask(activity.action)"
+            *ngIf="
+                  !(activity.action.status === 1);
+                  else completedTaskMark
+                  ">
+            <i class="i-icon i-check bgc-dark"></i>
+          </div>
+          <ng-template #completedTaskMark>
+            <div class="v-center justify-content-center task-status">
+              <i class="i-icon i-check bgc-dark d-block"></i>
+            </div>
+          </ng-template>
+          <div class="f-6 font-weight-bold ml-3 content">
+            {{ activity.action?.content }}
+          </div>
+        </ng-container>
+        <ng-template #viewTaskTemplate>
+          <div class="f-6 font-weight-bold ml-3 content">
+            {{ activity.action?.content }}
+          </div>
+        </ng-template>
+      </div>
+      <div *ngIf="activity.action?.description" class="mt-3">
+        <div class="f-4 fw-600 op-40" translate>
+          Description
+        </div>
+        <div class="f-4">
+          {{ activity.action?.description }}
+        </div>
+      </div>
+      <div class="v-center mt-3">
+        <div class="time">
+          <div class="f-4 fw-600 op-40" translate>
+            Due date
+          </div>
+          <div class="v-center mt-1">
+            <i class="d-block i-icon i-calendar bgc-dark mr-2"></i>
+            <span class="f-4">{{ activity.action?.due_date | datetimeFormat : 'MMM/d/y' }}
+              at
+              {{ activity.action?.due_date | datetimeFormat : 'h:mm a' }}</span>
+          </div>
+        </div>
+        <div class="type ml-5">
+          <div class="f-4 fw-600 op-40" translate>
+            Type
+          </div>
+          <div class="v-center mt-1">
+            <ng-container [ngSwitch]="activity.action.type">
+              <i class="d-block i-icon i-task bgc-dark mr-2" *ngSwitchCase="'task'"></i>
+              <i class="d-block i-icon i-phone bgc-dark mr-2" *ngSwitchCase="'call'"></i>
+              <i class="d-block i-icon i-lunch bgc-dark mr-2" *ngSwitchCase="'meeting'"></i>
+              <i class="d-block i-icon i-message bgc-dark mr-2" *ngSwitchCase="'email'"></i>
+              <i class="d-block i-icon i-sms-sent bgc-dark mr-2" *ngSwitchCase="'text'"></i>
+              <i class="d-block i-icon i-task bgc-dark mr-2" *ngSwitchDefault></i>
+            </ng-container>
+            <span class="f-4 text-capitalize">{{
+              activity.action?.type
+              }}</span>
+          </div>
+        </div>
+        <div class="ml-5" *ngIf="activity.action?.set_recurrence">
+          <div class="f-4 fw-600 op-40" translate>
+            Recurrence
+          </div>
+          <div class="v-center mt-1">
+            <span class="f-4">{{
+              activity.action?.recurrence_mode
+              }}</span>
+          </div>
+        </div>
+      </div>
+      <ng-container *ngIf="activity.action.status == 0 || activity.action.status == 1">
+        <ng-container *ngIf="activity.action.comment; else leaveComment">
+          <div class="f-4 fw-600 op-40 mt-3" translate>
+            Task comment
+          </div>
+          <div class="f-3 mt-1">
+            <span>{{ activity.action.comment }}</span>
+            <a class="c-blue ml-2 fw-600 c-pointer" (click)="leaveTaskComment(activity.action)" translate>Edit</a>
+          </div>
+        </ng-container>
+        <ng-template #leaveComment>
+          <button class="btn btn-secondary f-2 py-0 mt-3 px-2" (click)="leaveTaskComment(activity.action)" translate>
+            Leave task comment
+          </button>
+        </ng-template>
+      </ng-container>
+    </div>
+
+    <ng-container *ngIf="isExpanded && !detailLoading && actionDetail?.activities?.length > 0">
+      <div class="related-history-item mt-3">
+        <label>Sessions</label>
+        <ng-container *ngFor="
+              let detailActivity of (actionDetail?.activities?? []);
+              let i = index
+              ">
+          <div class="d-flex mb-1">
+            <div class="mr-2 font-weight-bold">
+              #
+              {{
+              actionDetail?.activities.length - i
+              }}
+            </div>
+            <div class="mr-2 text-capitalize rounded-pill bgc-green-weak text-white px-3">
+              {{ detailActivity.content }}
+            </div>
+            <div class="ml-auto c-trans56">
+              {{ detailActivity.created_at | datetimeFormat }}
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+
+    <a class="more f-3 mt-1 c-pointer fw-600 d-block w-fit btn c-blue px-0" (click)="toggleSessions()"
+      [class.loading]="detailLoading" translate [innerText]="isExpanded ? 'Collapse' : 'Expand'">
+    </a>
+  </div>
+</ng-container>

@@ -1,0 +1,47 @@
+.page-content {
+    width: 100%;
+    max-width: 550px;
+    table.table th {
+        position: sticky;
+        top: 0px;
+        background-color: white;
+        z-index: 11;
+        opacity: 1;
+        font-size: 14px;
+        letter-spacing: 0;
+        font-weight: 400;
+    }
+
+    th, td {
+        padding: 10px 10px;
+        vertical-align: middle !important;
+        background-color: white;
+        border-bottom: 1px solid #e9ecef;
+        text-transform: capitalize;
+        &.checkbox-col {
+            opacity: 1;
+        }
+    }
+    .checkbox-col {
+        width: 36px;
+        text-align: center;
+    }
+    .form-control {
+        width: 120px;
+        @media screen and (max-width: 576px) {
+            width: 100%;
+        }
+    }
+    .reminder {
+        .form-group {
+            label {
+                text-transform: unset;
+            }
+        }
+    }
+    .btn-blue {
+        &:hover {
+            color: white;
+        }
+    }
+}

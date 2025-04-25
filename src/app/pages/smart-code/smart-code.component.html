@@ -1,0 +1,324 @@
+<div class="page-content">
+  <ng-container>
+    <div class="v-center">
+      <h1 class="page-title" translate>Smart Codes</h1>
+      <div class="ml-auto v-center create-actions">
+        <button [attr.data-action]="'add-new-smart-code'"
+          class="v-center btn btn-blue f-6 font-weight-bold btn-font-bold text-white rounded mr-2 px-3"
+          (click)="checkSmartCodeEnable()"
+        >
+          <span translate>Add New</span>
+        </button>
+      </div>
+    </div>
+      <label class="sub-title" translate>
+        Codes that trigger automatic return messages or even automations, when sent to your configured mobile phone
+      </label>
+    <div>
+    </div>
+    <div class="v-center material-list-controls mt-3 mb-2">
+      <div class="form-group mb-0 search-form">
+        <div class="input-group-prepend">
+          <i class="i-icon i-search d-block bgc-dark"></i>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          [placeholder]="'Search' | translate"
+          aria-label="search"
+          aria-describedby="search-addon"
+          [(ngModel)]="searchStr"
+          (ngModelChange)="filter()"
+        />
+        <ng-container *ngIf="searchStr">
+          <div class="cancel-action c-pointer" (click)="clearSearchStr()">
+            <i class="i-icon i-close d-block bgc-dark"></i>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="position-relative">
+      <div class="mat-table-wrapper" [class.empty]="!filteredCodes.length">
+        <table
+          class="w-100 page-table mt-3"
+          mat-table
+          [dataSource]="
+            filteredCodes
+              | paginate
+                : {
+                    id: 'capturePages',
+                    itemsPerPage: pageSize.id,
+                    currentPage: page,
+                    totalItems: filteredCodes.length
+                  }
+          "
+        >
+          <!-- Code Column -->
+          <ng-container matColumnDef="smart_code">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell mat-sort-header class="pl-0" translate>
+                Custom Code
+              </th>
+            </ng-container>
+            <td
+              mat-cell
+              *matCellDef="let element"
+              class="pl-0"
+              (click)="openSmartCode(element)"
+            >
+              <div class="v-center c-pointer pr-2">
+                <span class="fw-600">{{ element.code }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Tags Column -->
+          <ng-container matColumnDef="tags">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell mat-sort-header translate>Tags</th>
+            </ng-container>
+            <td
+              mat-cell
+              *matCellDef="let element"
+              (click)="openSmartCode(element)"
+            >
+              <div class="v-center c-pointer pr-2">
+                <span class="tag rounded mr-2" *ngIf="element.tags?.length">{{
+                  element.tags[0]
+                }}</span>
+                <span
+                  class="f-2 op-56"
+                  *ngIf="element.tags?.length > 1"
+                  [translateParams]="{ length: element.tags?.length - 1 }"
+                  translate
+                >
+                  +length more
+                </span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Message Column -->
+          <ng-container matColumnDef="message">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell mat-sort-header translate>Message To send</th>
+            </ng-container>
+            <td
+              mat-cell
+              *matCellDef="let element"
+              (click)="openSmartCode(element)"
+            >
+              <div class="v-center c-pointer">
+                <span class="message fw-600">{{ element.message }}</span>
+              </div>
+            </td>
+          </ng-container>
+          <!-- twilio number Column -->
+          <ng-container matColumnDef="twilio">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell mat-sort-header translate>Twilio Number</th>
+            </ng-container>
+            <td
+              mat-cell
+              *matCellDef="let element"
+              (click)="openSmartCode(element)"
+            >
+              <div class="v-center c-pointer">
+                <span class="message fw-600">{{ user.twilio_number }}</span>
+              </div>
+            </td>
+          </ng-container>
+          <!-- Material Thumbnail Column -->
+          <ng-container matColumnDef="materials">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell mat-sort-header translate>Materials</th>
+            </ng-container>
+            <td
+              mat-cell
+              *matCellDef="let element"
+              (click)="openSmartCode(element)"
+            >
+              <div class="material-td fw-300">
+                <div class="thumbnail">
+                  <ng-container [ngSwitch]="element?.type">
+                    <a *ngSwitchCase="'video'" target="_blank">
+                      <div class="thumb-prev-wrapper">
+                        <img
+                          [src]="element.thumbnail"
+                          class="thumbnail"
+                          (error)="sspaService.imgError($event,'img/video_thumb.jpg')"
+                        />
+                        <img
+                          [src]="element.preview"
+                          class="preview"
+                          (error)="sspaService.imgError($event,'img/video_thumb.jpg')"
+                        />
+                      </div>
+                    </a>
+                    <a *ngSwitchCase="'pdf'" target="_blank">
+                      <img
+                        class="thumbnail"
+                        src="{{ element.preview }}"
+                        (error)="sspaService.imgError($event,'img/pdf_overlay.png')"
+                      />
+                    </a>
+                    <a *ngSwitchCase="'image'" target="_blank">
+                      <img
+                        class="thumbnail"
+                        src="{{ element.preview }}"
+                        (error)="sspaService.imgError($event,'img/image_overlay.png')"
+                      />
+                    </a>
+                  </ng-container>
+                </div>
+                <div class="material_count" *ngIf="element?.material_count > 1">
+                  +{{ element.material_count - 1 }}
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Automation Column -->
+          <ng-container matColumnDef="automation">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell mat-sort-header translate>Automation</th>
+            </ng-container>
+            <td
+              mat-cell
+              *matCellDef="let element"
+              (click)="openSmartCode(element)"
+            >
+              <div class="v-center c-pointer">
+                <span class="message fw-600">{{
+                  element.automation_detail?.title
+                }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Action Column -->
+          <ng-container matColumnDef="actions">
+            <ng-container *matHeaderCellDef>
+              <th mat-header-cell class="pr-0 action-col" translate>Actions</th>
+            </ng-container>
+            <td mat-cell *matCellDef="let element" class="pr-0 action-col">
+              <div class="v-center c-pointer">
+                <button
+                  type="button"
+                  class="v-center btn bgc-trans c-blue border-0 py-1"
+                  (click)="editSmartCode(element)"
+                >
+                  <i class="i-icon i-edit bgc-dark"></i>
+                </button>
+                <button
+                  type="button"
+                  class="v-center btn bgc-trans c-red border-0 py-1"
+                  (click)="deleteSmartCode(element)"
+                >
+                  <i class="i-icon i-trash bgc-dark"></i>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr
+            mat-header-row
+            *matHeaderRowDef="DISPLAY_COLUMNS"
+            [class.selected]="selection.length"
+            class="table-header"
+          ></tr>
+          <tr mat-row *matRowDef="let row; columns: DISPLAY_COLUMNS"></tr>
+        </table>
+      </div>
+      <ng-container *ngIf="filteredCodes.length > MIN_ROW_COUNT">
+        <div
+          class="updating-status"
+          *ngIf="(userService.smartCodesLoading$ | async) === STATUS.REQUEST"
+          translate
+        >
+          LOADING
+        </div>
+        <div class="my-2 table-control mode-1">
+          <div class="pagination-wrapper m-auto">
+            <pagination-controls
+              (pageChange)="changePage($event)"
+              (pageBoundsCorrection)="changePage($event)"
+              id="capturePages"
+              maxSize="5"
+              previousLabel=""
+              nextLabel=""
+            >
+            </pagination-controls>
+          </div>
+          <div
+            class="shadow-dropdown ml-auto page-size-control"
+            ngbDropdown
+            placement="top-right"
+          >
+            <div
+              class="v-center c-pointer f-3 p-3 font-weight-bold"
+              ngbDropdownToggle
+            >
+              <span [attr.data-name]="'smart-code-pagination-show'"
+                class="pr-2 c-blue"
+                [translateParams]="{ count: pageSize.id }"
+                translate
+              >
+                pagination
+              </span>
+            </div>
+            <div ngbDropdownMenu aria-labelledby="contactPageSize">
+              <div
+                [attr.data-name]="'smart-code-pagination-show-' + type.id"
+                class="py-2"
+                ngbDropdownItem
+                *ngFor="let type of PAGE_COUNTS"
+                (click)="changePageSize(type)"
+              >
+                <span
+                  class="f-3 v-center"
+                  [class.font-weight-bold]="type.id === pageSize.id"
+                >
+                  <span [translateParams]="{ count: type.id }" translate
+                    >pagination</span
+                  >
+                  <i
+                    class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                    *ngIf="type.id === pageSize.id"
+                  ></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="!filteredCodes.length">
+        <ng-container [ngSwitch]="userService.smartCodesLoading$ | async">
+          <div class="empty-list py-5" *ngSwitchCase="STATUS.SUCCESS">
+            <ng-container>
+              <div class="object-icon v-center">
+                <i class="i-icon i-sms-limits d-block bgc-dark"></i>
+              </div>
+              <ng-container *ngIf="!smartCodes.length">
+                <h4 class="font-weight-bold mt-4 mb-3" translate>
+                  no_smart_codes_for_added_yet
+                </h4>
+              </ng-container>
+              <ng-container *ngIf="smartCodes.length">
+                <h4 class="font-weight-bold mt-4 mb-3" translate>
+                  no_smart_codes_to_match_your_search
+                </h4>
+              </ng-container>
+            </ng-container>
+          </div>
+          <div class="list-loading text-center" *ngSwitchCase="STATUS.REQUEST">
+            <div class="loader mt-5 lg"></div>
+            <h4 class="fw-600 mt-2" translate>Loading smart codes</h4>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </ng-container>
+</div>

@@ -1,0 +1,28 @@
+<div class="bgc-blue text-white action-items px-2 v-center" [ngClass]="{hide: !isShow, 'deactive': !isActiveFlag}">
+  <ng-container *ngFor="let action of actions" [ngSwitch]="action.type">
+    <div *ngSwitchCase="'button'" class="action-item c-pointer v-center" [ngClass]="{spliter: action.spliter}" (click)="runCommand(action)">
+      <i class="i-icon bg-white d-block mr-2" [class]="action.icon" *ngIf="action.icon"></i>
+      <span class="f-3 fw-600">{{action.label}}</span>
+    </div>
+    <div *ngSwitchCase="'toggle'" class="v-center action-item c-pointer" [ngClass]="{spliter: action.spliter}">
+      <label class="custom-toggle mb-0" placement="top">
+        <input type="checkbox" (change)="runCommand(action)" [checked]="action.status">
+        <span class="custom-toggle-slider rounded-circle"></span>
+      </label>
+      <span class="ml-2 f-3 fw-600">{{action.label}}</span>
+    </div>
+    <div *ngSwitchCase="'dropdown'" class="action-item c-pointer" ngbDropdown [ngClass]="{spliter: action.spliter}">
+      <div ngbDropdownToggle>
+        <i class="i-icon mr-2" [class]="action.icon" *ngIf="action.icon"></i>
+        <span class="f-3 fw-600">{{action.label}}</span>
+      </div>
+      <div ngbDropdownMenu class="light">
+        <div class="dropdown-item c-dark" *ngFor="let item of action.items" [class]="item.class" (click)="runCommand(item)">
+          {{item.label}}
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <div class="hide-action font-weight-bold text-white f-1 px-2 c-pointer" (click)="hide()">HIDE</div>
+  <div class="show-action bgc-blue h-100 v-center px-3" [ngClass]="{'d-none': isShow}" (click)="show()"><i class="i-icon i-setting d-block bg-white"></i></div>
+</div>

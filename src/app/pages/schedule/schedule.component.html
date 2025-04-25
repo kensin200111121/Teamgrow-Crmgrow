@@ -1,0 +1,46 @@
+<div class="card border-0 rounded-lg px-2 py-5 px-sm-5">
+    <img class="logo" [src]="sspaService.toAsset('img/crmgrow-logo.svg')">
+    <h4 class="text-center font-weight-bold mb-4">
+        {{ 'auth.schedule.title' | translate}}
+    </h4>
+    <p class="f-3 text-center mb-4">
+        {{ 'auth.schedule.desc' | translate}}
+    </p>
+    <div class="v-center justify-content-between plan p-3">
+        <div class="condition">
+            <div class="time">
+                {{ 'auth.schedule.item_title' | translate}}
+            </div>
+            <div class="summary">
+                {{ 'auth.schedule.item_summary' | translate}}
+            </div>
+        </div>
+        <div class="price">
+            <span class="price-symbol mr-1">$</span>49
+        </div>
+    </div>
+    <button class="btn btn-primary d-block w-100 f-8 font-weight-bold mt-4" [class.loading]="isSaving" (click)="schedule()">
+        {{ 'auth.schedule.button' | translate}}
+    </button>
+</div>
+<div class="footer">
+    <div class="v-center justify-content-between desktop">
+        <img class="logo-exit" [src]="sspaService.toAsset('img/logo-exit.png')">
+        <img class="logo-remax" [src]="sspaService.toAsset('img/logo-remax.png')">
+        <img class="logo-cent21" [src]="sspaService.toAsset('img/logo-cent21.png')">
+        <img class="logo-exp" [src]="sspaService.toAsset('img/logo-exp.png')">
+    </div>
+    <div class="mobile">
+        <div class="v-center justify-content-around">
+            <img class="logo-exit" [src]="sspaService.toAsset('img/logo-exit.png')">
+            <img class="logo-remax" [src]="sspaService.toAsset('img/logo-remax.png')">
+        </div>
+        <div class="v-center justify-content-around">
+            <img class="logo-cent21" [src]="sspaService.toAsset('img/logo-cent21.png')">
+            <img class="logo-exp" [src]="sspaService.toAsset('img/logo-exp.png')">
+        </div>
+    </div>
+    <div class="footer-text text-center f-5 mt-3">
+        {{ 'auth.schedule.page_disclaim' | translate}}
+    </div>
+</div>

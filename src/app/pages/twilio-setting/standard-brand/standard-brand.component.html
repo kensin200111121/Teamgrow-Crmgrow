@@ -1,0 +1,383 @@
+<div class="step-body">
+  <form id="brand-form" (ngSubmit)="brandForm.form.valid ? createBrand(brandForm.form.value) : null" #brandForm="ngForm">
+    <div class="form-section-description">
+      <span class="form-section-index">1.</span>
+      Please input the business summary information
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <div>
+          <label translate>Company Name</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="company-name"
+          [(ngModel)]="brandData.companyName"
+          required
+          #companyName
+        />
+      </div>
+      <div class="form-group">
+        <div>
+          <label translate>Company Email</label>
+        </div>
+        <input
+          type="email"
+          class="form-control"
+          name="company-email"
+          [(ngModel)]="brandData.companyEmail"
+          required
+          pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$"
+          #companyEmail
+        />
+      </div>
+    </div>
+
+    <div class="form-section-description">
+      <span class="form-section-index">2.</span>
+      Please input the business detail information
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <div class="v-center">
+          <label>Business name</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="business-name"
+          [(ngModel)]="brandData.businessName"
+          required
+          #businessName
+        />
+      </div>
+      <div class="form-group">
+        <div class="v-center">
+          <label>Business Profile</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="business-profile"
+          [(ngModel)]="brandData.businessProfileUrl"
+          required
+          #businessProfile
+        />
+      </div>
+      <div class="form-group">
+        <div class="v-center">
+          <label>Business Website</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="business-website"
+          [(ngModel)]="brandData.businessWebsite"
+          required
+          #businessWebsite
+        />
+      </div>
+      <div class="form-group">
+        <div class="v-center">
+          <label>Business Region</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="business-region"
+          [(ngModel)]="brandData.businessRegion"
+          required
+          #businessRegion
+        />
+      </div>
+      <div class="form-group">
+        <div class="v-center">
+          <label>Business Type</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="business-type"
+          [(ngModel)]="brandData.businessType"
+          required
+          #businessType
+        />
+      </div>
+      <div class="form-group">
+        <div class="v-center">
+          <label>Business Identifier</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="business-identifier"
+          [(ngModel)]="brandData.businessIdentifier"
+          required
+          #businessIdentifier
+        />
+      </div>
+      <div class="form-group">
+        <div class="v-center">
+          <label>Business Identity</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="business-identity"
+          [(ngModel)]="brandData.businessIdentity"
+          required
+          #businessIdentity
+        />
+      </div>
+      <div class="form-group">
+        <div class="v-center">
+          <label>Business industry</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="business-industry"
+          [(ngModel)]="brandData.businessIndustry"
+          required
+          #businessIndustry
+        />
+      </div>
+      <div class="form-group">
+        <div class="v-center">
+          <label>Business number</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="business-number"
+          [(ngModel)]="brandData.businessNumber"
+          required
+          #businessNumber
+        />
+      </div>
+    </div>
+    
+    <div class="form-section-description">
+      <span class="form-section-index">3.</span>
+      Please input the business member information (ex: CEO information)
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <div>
+          <label translate="">Position</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="first-member-position"
+          [(ngModel)]="brandData.firstMemberPosition"
+          required
+          #firstMemberPosition
+        />
+      </div>
+      <div class="form-group">
+        <div>
+          <label translate="">First name</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="first-member-firstname"
+          [(ngModel)]="brandData.firstMemberFirstName"
+          required
+          #firstMemberFirstName
+        />
+      </div>
+      <div class="form-group">
+        <div>
+          <label translate="">Last name</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="first-member-lastname"
+          [(ngModel)]="brandData.firstMemberLastName"
+          required
+          #firstMemberLastName
+        />
+      </div>
+      <div class="form-group">
+        <div>
+          <label>Email</label>
+        </div>
+        <input
+          type="email"
+          class="form-control"
+          name="first-member-email"
+          [(ngModel)]="brandData.firstMemberEmail"
+          required
+          pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$"
+          #firstMemberEmail
+        />
+      </div>
+      <div class="form-group">
+        <div>
+          <label>Phone</label>
+        </div>
+        <input
+          type="tel"
+          class="form-control"
+          name="first-member-phone"
+          [(ngModel)]="brandData.firstMemberPhone"
+          required
+          #firstMemberPhone
+        />
+      </div>
+    </div>
+
+    <div class="form-section-description">
+      <span class="form-section-index">4.</span>
+      Please input the business member information (ex: CMO information)
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <div>
+          <label translate="">Position</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="second-member-position"
+          [(ngModel)]="brandData.secondMemberPosition"
+          required
+          #secondMemberPosition
+        />
+      </div>
+      <div class="form-group">
+        <div>
+          <label translate="">First name</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="second-member-firstname"
+          [(ngModel)]="brandData.secondMemberFirstName"
+          required
+          #secondMemberFirstName
+        />
+      </div>
+      <div class="form-group">
+        <div>
+          <label translate="">Last name</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="second-member-lastname"
+          [(ngModel)]="brandData.secondMemberLastName"
+          required
+          #secondMemberLastName
+        />
+      </div>
+      <div class="form-group">
+        <div>
+          <label>Email</label>
+        </div>
+        <input
+          type="email"
+          class="form-control"
+          name="second-member-email"
+          [(ngModel)]="brandData.secondMemberEmail"
+          required
+          pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$"
+          #secondMemberEmail
+        />
+      </div>
+      <div class="form-group">
+        <div>
+          <label>Phone</label>
+        </div>
+        <input
+          type="tel"
+          class="form-control"
+          name="second-member-phone"
+          [(ngModel)]="brandData.secondMemberPhone"
+          required
+          #secondMemberPhone
+        />
+      </div>
+    </div>
+    
+    <div class="form-section-description">
+      <span class="form-section-index">5.</span>
+      Please input the business address information.
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <div>
+          <label>Street</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="street"
+          [(ngModel)]="brandData.street"
+          required
+          #street
+        />
+      </div>
+      <div class="form-group">
+        <div>
+          <label>City</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="city"
+          [(ngModel)]="brandData.city"
+          required
+          #city
+        />
+      </div>
+      <div class="form-group">
+        <div>
+          <label>State</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="region"
+          [(ngModel)]="brandData.region"
+          required
+          #region
+        />
+      </div>
+      <div class="form-group">
+        <div>
+          <label>Zipcode</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="postal"
+          [(ngModel)]="brandData.postalCode"
+          required
+          #postalCode
+        />
+      </div>
+      <div class="form-group">
+        <div>
+          <label>Country</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="company-name"
+          [(ngModel)]="brandData.isoCountry"
+          required
+          #country
+        />
+      </div>
+    </div>
+  </form>
+</div>
+<div class="step-actions">
+  <button class="btn" (click)="cancelForm()">Prev</button>
+  <button class="btn primary ml-1" type="submit" form="brand-form" [class.loading]="creating">Create</button>
+</div>

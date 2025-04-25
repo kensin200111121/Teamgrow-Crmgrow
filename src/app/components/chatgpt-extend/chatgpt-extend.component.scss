@@ -1,0 +1,40 @@
+@import 'variables';
+
+.ai-container {
+    width: 370px;
+    background-color: rgba(16, 19, 54, 0.04);
+    height: 700px;
+}
+.beta-rect {
+    border-radius: 5px;
+    background-color: rgba(16, 19, 54, 0.1);    
+}
+.white-form-block {
+    border-radius: 10px;
+    background-color: white;
+}
+.empty-area {
+    height: 480px;
+    width: 100%;
+}
+.content-box {
+    border-style: solid;
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: rgba(16, 19, 54, 0.04);
+    height: 220px;
+    overflow-y: auto;
+}
+
+.add-compare {
+    width: 200px;
+    border-radius: 5px;
+}
+.compare-list {
+    height: 600px;
+    overflow-y: auto;
+}
+.fix-height {
+    height: 600px;
+    overflow-y: auto;   
+}

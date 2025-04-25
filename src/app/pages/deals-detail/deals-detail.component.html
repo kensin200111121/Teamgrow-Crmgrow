@@ -1,0 +1,3068 @@
+<div class="page-content pt-0">
+  <div class="d-flex deal-panel">
+    <div class="deal-info-panel pr-3">
+      <app-back-button defaultTitle="Deals" defaultRoute="/deals"></app-back-button>
+      <div class="v-center justify-content-between deal-main mb-3">
+        <ng-container *ngIf="titleEditable; else displayTitleTemplate">
+          <div class="form-group mb-0 flex-grow-1 mr-3">
+            <input class="form-control title-input" [(ngModel)]="dealTitle" name="title" #title="ngModel" required
+              (blur)="checkAndSave({ keyCode: 13 })" (keyup)="checkAndSave($event)" [disabled]="saving"
+              [class.loading]="saving" />
+          </div>
+        </ng-container>
+        <ng-template #displayTitleTemplate>
+          <div class="f-6 font-weight-bold mr-3 text-truncate" (click)="focusTitle()">
+            {{ deal.main.title }}
+          </div>
+        </ng-template>
+        <div ngbDropdown class="ml-auto button-more p-0">
+          <div [attr.data-name]="'deal-actions'" class="v-center btn btn-blue" ngbDropdownToggle>
+            <span class="f-6 font-weight-bold text-white c-pointer px-2" translate>
+              Actions
+            </span>
+            <i class="d-block i-icon more-icon i-triangle-down bgc-white ml-2"></i>
+          </div>
+          <div ngbDropdownMenu class="light action-menu">
+            <button data-action="deal-action-meeting" class="v-center border-0 c-dark dropdown-item my-1" (click)="openAppointmentDlg()">
+              <i class="i-icon i-appointments bgc-dark"></i>
+              <span class="ml-2 f-3 font-weight-bold" translate>New Meeting</span>
+            </button>
+            <hr class="my-1" />
+            <button data-action="deal-action-email" class="v-center border-0 c-dark dropdown-item my-1" (click)="openSendEmail()">
+              <i class="i-icon i-message bgc-dark"></i>
+              <span class="ml-2 f-3 font-weight-bold" translate>Deal Email</span>
+            </button>
+            <button *enableByFeatures="USER_FEATURES.TEXT" data-action="deal-action-text" class="v-center border-0 c-dark dropdown-item my-1" (click)="openSendText()">
+              <i class="i-icon i-sms-sent bgc-dark"></i>
+              <span class="ml-2 f-3 font-weight-bold" translate>Deal Text</span>
+            </button>
+            <button *enableByFeatures="USER_FEATURES.DIALER" data-action="deal-action-call" class="v-center border-0 c-dark dropdown-item my-1" (click)="openCall()">
+              <i class="i-icon i-phone bgc-dark"></i>
+              <span class="ml-2 f-3 font-weight-bold" translate>New Call</span>
+            </button>
+            <button data-action="deal-action-task" class="v-center border-0 c-dark dropdown-item my-1" (click)="openTaskDlg()">
+              <i class="i-icon i-task bgc-dark"></i>
+              <span class="ml-2 f-3 font-weight-bold" translate>New Task</span>
+            </button>
+            <button data-action="deal-action-note" class="v-center border-0 c-dark dropdown-item my-1" (click)="openNoteDlg()">
+              <i class="i-icon i-notes bgc-dark"></i>
+              <span class="ml-2 f-3 font-weight-bold" translate>New Note</span>
+            </button>
+            <hr class="my-1" />
+            <button data-action="deal-action-delete" class="v-center border-0 dropdown-item my-1" (click)="removeDeal()">
+              <i class="i-icon i-trash bgc-red"></i>
+              <span class="ml-2 f-3 font-weight-bold c-red" translate>Delete</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="deal-stage mb-3">
+        <div class="v-center">
+          <div class="f-6 fw-600 op-40 mr-3">
+            {{ 'Stage' | translate }}
+          </div>
+          <div ngbDropdown>
+            <div class="v-center c-pointer" ngbDropdownToggle>
+              <span [attr.data-name]="'selected-deal-stage-title'" class="f-6 px-2 stage-title">
+                {{ selectedStage?.title }}
+              </span>
+              <i class="d-block i-icon i-triangle-down bgc-dark ml-2"></i>
+            </div>
+            <div ngbDropdownMenu class="light">
+              <button class="border-0 c-dark dropdown-item" *ngFor="let stage of stages; let position = index"
+                (click)="moveDeal(stage)" [attr.data-action]="'deal-stage-select-' + stage.title">
+                <span class="ml-1 f-6">{{ stage.title }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="v-center justify-content-between mt-3 stage-status-items" style="height: 6px"
+          [class.loaded]="selectedStageId">
+          <div class="stage-status stage-{{ index }} mr-1" *ngFor="let stage of stages; let index = index"
+            [class.active]="stage._id === selectedStageId"></div>
+        </div>
+      </div>
+      <mat-accordion multi class="general-panels">
+        <!-- Begin Additional Field -->
+        <ng-container *ngIf="deal.main && !isEmptyObject(deal.main.additional_field)">
+          <mat-expansion-panel class="mat-elevation-z" hideToggle [expanded]="true">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <div class="v-center w-100">
+                  <i class="i-icon i-triangle-right bgc-dark sm toggle-icon op-40"></i>
+                  <span class="f-6 font-weight-bold ml-2" translate>Additional information</span>
+                  <button class="btn border-0 border-primary f-2 font-weight-bold c-dark op-28 ml-auto btn-sm v-center"
+                    (click)="editAdditional($event)">
+                    <i class="i-icon i-edit d-block bgc-dark sm mr-1"></i>
+                    <span translate>Edit</span>
+                  </button>
+                </div>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <ng-container *ngFor="let item of deal.main.additional_field | keyvalue">
+              <div class="d-flex py-2">
+                <span class="f-6 fw-600 op-40 info-title">{{ item.key }}</span>
+                <span class="f-6">{{ item.value }}</span>
+              </div>
+            </ng-container>
+          </mat-expansion-panel>
+        </ng-container>
+        <div class="mt-3">
+          <button class="btn border-0 border-primary f-2 font-weight-bold btn-font-bold c-blue btn-sm v-center"
+            (click)="addAdditionalFields()">
+            <span translate>New Field</span>
+          </button>
+        </div>
+        <!-- End Additional Field -->
+
+        <!-- Begin Contacts Detail -->
+        <mat-expansion-panel class="mat-elevation-z" hideToggle [expanded]="contactsPanel">
+          <mat-expansion-panel-header (click)="contactsPanel = !contactsPanel">
+            <mat-panel-title>
+              <div class="v-center w-100">
+                <i class="i-icon i-triangle-right bgc-dark sm toggle-icon op-40"></i>
+                <span class="f-6 font-weight-bold ml-2">{{ 'Contacts' | translate }} ({{
+                  deal.contacts.length
+                  }})</span>
+                <button
+                  data-action="deal-record-add-contact"
+                  class="btn border-0 border-primary f-2 font-weight-bold btn-font-bold c-blue ml-auto btn-sm v-center rounded"
+                  (click)="addContact()">
+                  <i class="i-icon i-plus d-block bgc-dark sm mr-1"></i>
+                  <span translate>Add contact</span>
+                </button>
+              </div>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="contact-detail mt-2" *ngFor="let contact of deal.contacts.slice(0, sliceNum)">
+            <div class="contact p-3 position-relative">
+              <div class="v-center pb-2 avatar-wrapper c-pointer" (click)="contactDetail(contact)">
+                <div class="v-center justify-content-center f-6 font-weight-bold text-white avatar">
+                  {{ contact.avatarName }}
+                </div>
+                <div class="f-6 font-weight-bold name">
+                  {{ contact.fullName }}
+                </div>
+                <div class="f-3 font-weight-bold c-blue ml-3" *ngIf="isPrimaryContact(contact)">
+                  {{ 'Primary' | translate }}
+                </div>
+              </div>
+              <div class="v-center resubscribe mt-3" *ngIf="contact.unsubscribed?.text">
+                <i class="d-block i-icon i-warning-yellow mx-2"></i>
+                <span class="f-4 c-red" translate>This contact is text unsubscribed.</span>
+              </div>
+              <div class="v-center mt-2" *ngIf="contact.cell_phone">
+                <i class="d-block i-icon i-contact-phone bgc-dark mx-2"></i>
+                <span class="f-6">{{ contact.cell_phone }}</span>
+              </div>
+              <div class="v-center resubscribe mt-3" *ngIf="contact.unsubscribed?.email">
+                <i class="d-block i-icon i-warning-yellow"></i>
+                <span class="f-4 c-red ml-2" translate>This contact is email unsubscribed.</span>
+              </div>
+              <div class="v-center mt-2" *ngIf="contact.email">
+                <i class="d-block i-icon i-message bgc-dark mx-2"></i>
+                <span class="f-6">{{ contact.email }}</span>
+              </div>
+              <div ngbDropdown class="contact-more c-pointer" placement="bottom-right" *ngIf="
+                  !isPrimaryContact(contact) ||
+                  (this.deal.contacts.length > 1 && !isPrimaryContact(contact))
+                ">
+                <div class="c-pointer" ngbDropdownToggle>
+                  <i class="d-block i-icon i-menu-more bgc-dark"></i>
+                </div>
+                <div ngbDropdownMenu class="light py-1">
+                  <button data-action="deal-contact-set-primary" class="border-0 c-dark dropdown-item f-3 fw-600" (click)="setPrimaryContact(contact)"
+                    *ngIf="!isPrimaryContact(contact)">
+                    {{ 'Set Primary' | translate }}
+                  </button>
+                  <button data-action="deal-contact-remove" class="border-0 c-dark dropdown-item f-3 fw-600" (click)="removeContact(contact)" *ngIf="
+                      this.deal.contacts.length > 1 &&
+                      !isPrimaryContact(contact)
+                    ">
+                    {{ 'Remove contact' | translate }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="deal.contacts.length > 5" class="mt-2 expand-text c-pointer">
+            <a class="mr-2" (click)="clickExpand()" translate>{{ showText }}</a>
+          </div>
+        </mat-expansion-panel>
+        <!-- End Contacts Detail -->
+
+        <!-- Begin Contact Automation Information -->
+        <mat-expansion-panel *enableByFeatures="USER_FEATURES.AUTOMATION" class="mat-elevation-z" hideToggle
+          displayMode="flat" expanded="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <div class="v-center justify-content-between w-100">
+                <div class="v-center">
+                  <i class="i-icon i-triangle-right bgc-dark sm toggle-icon op-40"></i>
+                  <span class="f-6 font-weight-bold ml-2" translate>Automation</span>
+                </div>
+              </div>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="automation">
+            <div class="v-center">
+              <app-input-automation (automationChange)="selectAutomation($event)" [emptyInput]="automationUnAssigned"
+                [type]="'deal'">
+              </app-input-automation>
+              <div class="v-center automation-action ml-2">
+                <ng-container *ngIf="!assigning; else assigningTemplate">
+                  <i class="d-block i-icon i-automation-start bgc-green-weak c-pointer"
+                    (click)="assignAutomation()"></i>
+                </ng-container>
+                <ng-template #assigningTemplate>
+                  <i class="d-block assigning loader"></i>
+                </ng-template>
+                <ng-container *ngIf="!canceling; else cancelingTemplate">
+                  <i class="d-block i-icon i-automation-cancel bgc-blue ml-2 c-pointer" (click)="closeAutomation()"></i>
+                </ng-container>
+                <ng-template #cancelingTemplate>
+                  <i class="d-block canceling loader ml-2"></i>
+                </ng-template>
+              </div>
+            </div>
+            <div class="automation-detail mt-3" *ngIf="allDataSource.data?.length">
+              <mat-tree [dataSource]="dataSource" [treeControl]="treeControl"
+                class="timeline timeline-one-side time-line">
+                <mat-tree-node class="mat-tree" [class.first]="
+                    node['condition'] && node['condition']['answer'] == true
+                  " *matTreeNodeDef="let node" matTreeNodeToggle>
+                  <li class="mat-tree-node timeline-block {{ node.status }}">
+                    <div class="timeline w-100">
+                      <div class="v-center justify-content-between w-100 condition" *ngIf="
+                          node['condition'] &&
+                          node['condition']['answer'] == true
+                        ">
+                        <img [src]="sspaService.toAsset('img/automations/yes.svg')" />
+                        <span class="f-1 font-weight-bold text-center w-100" *ngIf="node['condition']">
+                          {{
+                          ActionName[node['condition']['case']] | translate
+                          }}?
+                        </span>
+                      </div>
+                      <div class="v-center justify-content-between w-100 condition" *ngIf="
+                          node['condition'] &&
+                          node['condition']['answer'] == false
+                        ">
+                        <img [src]="sspaService.toAsset('img/automations/no.svg')" />
+                      </div>
+                      <div class="v-center justify-content-between w-100 condition" *ngIf="isBranchNode(node)">
+                        <img [src]="sspaService.toAsset('img/automations/branch.svg')" />
+                      </div>
+                      <div class="bgc-green-weak line"></div>
+                      <div class="v-center c-pointer" #treeNode (click)="easyView(node, treeNode, treeOverlay)">
+                        <span class="timeline-step {{ node.action?.type }}">
+                          <img [attr.src]="ICONS[node.action?.type]" />
+                        </span>
+                        <div class="timeline-content ml-1">
+                          <div class="f-1 font-weight-bold title m-0">
+                            {{ ActionName[node.action?.type] | translate }}
+                          </div>
+                          <ng-container *ngIf="
+                                updatingTimeline &&
+                                  updatingTimeline._id == node._id &&
+                                  isUpdatingTimeline;
+                                else normalTimeline
+                              ">
+                            <i class="small-spinner"></i>
+                          </ng-container>
+                          <ng-template #normalTimeline>
+                            <div class="f-1 font-weight-bold text-left text-uppercase p-0 badge status {{
+                                  node.status
+                                }}">
+                              {{ node.status }}
+                            </div>
+                            <div class="f-1 c-dark text-left" *ngIf="node.status == 'active'">
+                              {{
+                              node.due_date | date: 'MMMM dd yyyy, hh:mm a'
+                              }}
+                            </div>
+                          </ng-template>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </mat-tree-node>
+                <mat-nested-tree-node class="mat-nested-tree" [class.first]="
+                    node['condition'] && node['condition']['answer'] == true
+                  " *matTreeNodeDef="let node; when: hasChild">
+                  <div class="timeline-condition" *ngIf="node['condition'] && node['condition']['case']">
+                    <div class="v-center justify-content-between w-100 condition" *ngIf="
+                        node['condition'] && node['condition']['answer'] == true
+                      ">
+                      <img [src]="sspaService.toAsset('img/automations/yes.svg')" />
+                      <span class="f-1 font-weight-bold text-center w-100" *ngIf="node['condition']">
+                        {{ ActionName[node['condition']['case']] | translate }}?
+                      </span>
+                    </div>
+                    <div class="v-center justify-content-between w-100 condition" *ngIf="
+                        node['condition'] &&
+                        node['condition']['answer'] == false
+                      ">
+                      <img [src]="sspaService.toAsset('img/automations/no.svg')" />
+                    </div>
+                    <div class="bgc-green-weak line"></div>
+                  </div>
+                  <ng-container *ngIf="isBranchNode(node)">
+                    <div class="v-center justify-content-between w-100 condition">
+                      <img [src]="sspaService.toAsset('img/automations/branch.svg')" />
+                    </div>
+                    <div class="bgc-green-weak line"></div>
+                  </ng-container>
+                  <li>
+                    <ng-container *ngIf="node['root']; else normalNode">
+                      <div class="d-flex mat-tree-node timeline-block" #nestedTreeNode>
+                        <span class="timeline-step root">
+                          <img [attr.src]="ICONS['root']" />
+                        </span>
+                        <div class="timeline-content ml-1">
+                          <div class="f-1 font-weight-bold title mt-2">
+                            {{ 'Start' | translate }}
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+                    <ng-template #normalNode>
+                      <div class="d-flex mat-tree-node timeline-block c-pointer" #nestedTreeNode
+                        (click)="easyView(node, nestedTreeNode, treeOverlay)">
+                        <span class="timeline-step {{ node.action?.type }}">
+                          <img [attr.src]="ICONS[node.action?.type]" />
+                        </span>
+                        <div class="timeline-content ml-1">
+                          <div class="f-1 font-weight-bold title m-0">
+                            {{ ActionName[node.action?.type] | translate }}
+                          </div>
+                          <ng-container *ngIf="
+                                updatingTimeline &&
+                                  updatingTimeline._id == node._id &&
+                                  isUpdatingTimeline;
+                                else normalTimeline
+                              ">
+                            <i class="small-spinner"></i>
+                          </ng-container>
+                          <ng-template #normalTimeline>
+                            <div class="f-1 font-weight-bold text-left text-uppercase p-0 badge status {{
+                                  node.status
+                                }}">
+                              {{ node.status }}
+                            </div>
+                            <div class="f-1 c-dark text-left" *ngIf="node.status == 'active'">
+                              {{
+                              node.due_date | date: 'MMMM dd yyyy, hh:mm a'
+                              }}
+                            </div>
+                          </ng-template>
+                        </div>
+                      </div>
+                    </ng-template>
+                    <div class="bgc-green-weak line"></div>
+                    <div class="d-flex p-0" [class.timeline-tree-invisible]="
+                        !treeControl.isExpanded(node)
+                      ">
+                      <ng-container matTreeNodeOutlet></ng-container>
+                    </div>
+                  </li>
+                </mat-nested-tree-node>
+                <ng-template #treeOverlay let-close="close" let-data>
+                  <app-automation-detail-overlay [fullDataSource]="data.data" [type]="'control'" [automationType]="'deal'">
+                  </app-automation-detail-overlay>
+                </ng-template>
+              </mat-tree>
+              <div class="v-center justify-content-center f-4 font-weight-bold c-blue mt-3"
+                *ngIf="activeActionsCount() > 1">
+                {{ activeActionsCount() }}
+                {{ 'active actions' | translate }}
+              </div>
+              <div class="v-center justify-content-center f-6 font-weight-bold c-blue c-pointer mt-4"
+                (click)="showFullAutomation()">
+                {{ 'Show full automation' | translate }}
+              </div>
+            </div>
+          </div>
+        </mat-expansion-panel>
+        <!-- Begin Contact Automation Information -->
+      </mat-accordion>
+    </div>
+    <div class="deal-action-panel flex-grow-1 position-relative">
+      <div class="history-panel pt-3 pl-3 mt-3">
+        <app-slide-tab [tabs]="tabs" [selected]="tab" (onChange)="changeTab($event)"
+          type="plain" class="border-bottom pl-0 rounded-0">
+        </app-slide-tab>
+        <div *enableByFeatures="tab.feature" class="history-list mt-3 position-relative">
+          <div class="history-list-header v-center justify-content-end">
+            <ng-container *ngIf="tab.id === 'all'">
+              <div ngbDropdown class="v-center" placement="bottom-right">
+                <div class="v-center" ngbDropdownToggle>
+                  <span class="f-3 font-weight-bold c-dark c-pointer mr-2">
+                    {{
+                    activityType.id == 'all' ? 'Filter by' : activityType.label | translate
+                    }}
+                  </span>
+                  <i class="d-block i-icon i-triangle-down bgc-dark"></i>
+                </div>
+                <div ngbDropdownMenu class="light">
+                  <ng-container *ngFor="let tabItem of tabs">
+                    <div class="v-center justify-content-between dropdown-item" (click)="changeActivityTypes(tabItem)" *enableByFeatures="tabItem.feature">
+                      <div class="f-3 c-dark" [ngClass]="{
+                          'font-weight-bold': tabItem.id == activityType.id
+                        }" *ngIf="tabItem.id == 'all'; else others">
+                        {{ 'All activity' | translate }}
+                      </div>
+                      <ng-template #others>
+                        <ng-container *ngIf="tabItem.id != 'tasks'">
+                          <div class="f-3 c-dark" [ngClass]="{
+                              'font-weight-bold': tabItem.id == activityType.id
+                            }">
+                            {{ tabItem.label | translate }}
+                          </div>
+                        </ng-container>
+                      </ng-template>
+                      <div *ngIf="tabItem.id == activityType.id">
+                        <i class="d-block i-icon i-check bgc-blue"></i>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="tab.id === 'follow_ups'">
+              <div ngbDropdown class="v-center">
+                <div class="v-center" ngbDropdownToggle>
+                  <span class="f-3 font-weight-bold c-dark c-pointer mr-2">
+                    {{ selectedTimeSort.label | translate }}
+                  </span>
+                  <i class="d-block i-icon i-triangle-down bgc-dark"></i>
+                </div>
+                <div ngbDropdownMenu class="light">
+                  <div class="v-center justify-content-between dropdown-item" *ngFor="let timeSort of timeSorts"
+                    (click)="changeSort(timeSort)">
+                    <div class="f-3 c-dark" [ngClass]="{
+                        'font-weight-bold': timeSort.id == selectedTimeSort.id
+                      }">
+                      {{ timeSort.label | translate }}
+                    </div>
+                    <div *ngIf="timeSort.id == selectedTimeSort.id">
+                      <i class="d-block i-icon i-check bgc-blue"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <div class="v-center justify-content-end c-pointer ml-auto" (click)="openNoteDlg()" *ngIf="tab.id === 'notes' ||
+              (tab.id === 'all' && activityType.id === 'notes')">
+              <span [attr.data-name]="'deal-tab-note-new'" class="f-3 font-weight-bold c-blue mr-2" translate>New Note</span>
+            </div>
+            <div class="v-center justify-content-end c-pointer ml-auto" (click)="openSendEmail()" *ngIf="
+                tab.id === 'emails' ||
+                (tab.id === 'all' && activityType.id === 'emails')
+              ">
+              <span [attr.data-name]="'deal-tab-email-new'" class="f-3 font-weight-bold c-blue mr-2" translate>Deal Email</span>
+            </div>
+            <div class="v-center justify-content-end c-pointer ml-auto" (click)="openSendText()" *ngIf="
+                tab.id === 'texts' ||
+                (tab.id === 'all' && activityType.id === 'texts')
+              ">
+              <span [attr.data-name]="'deal-tab-text-new'" class="f-3 font-weight-bold c-blue mr-2" translate>Deal Text</span>
+            </div>
+            <div class="v-center justify-content-end c-pointer ml-auto" (click)="openAppointmentDlg()" *ngIf="
+                tab.id === 'appointments' ||
+                (tab.id === 'all' && activityType.id === 'appointments')
+              ">
+              <span [attr.data-name]="'deal-tab-meeting-new'" class="f-3 font-weight-bold c-blue mr-2" translate>New Meeting</span>
+            </div>
+            <div class="v-center justify-content-end c-pointer ml-auto" (click)="openTaskDlg()" *ngIf="
+                tab.id === 'follow_ups' ||
+                (tab.id === 'all' && activityType.id === 'follow_ups')
+              ">
+              <span [attr.data-name]="'deal-tab-task-new'" class="f-3 font-weight-bold c-blue mr-2" translate>New Task</span>
+            </div>
+            <div class="v-center justify-content-end c-pointer ml-auto" (click)="openCall()" *ngIf="
+                tab.id === 'phone_logs' ||
+                (tab.id === 'all' && activityType.id === 'phone_logs')
+              ">
+              <span class="f-3 font-weight-bold c-blue mr-2" translate>New Call</span>
+            </div>
+          </div>
+          <ng-container *ngIf="tab.id === 'all'; else detailsTemplate">
+            <ng-container *ngIf="
+                activityType.id !== 'all' && !activityCounts[activityType.id]
+              ">
+              <div class="empty-list">
+                <div class="object-icon v-center">
+                  <i class="i-icon i-{{ activityType.id }} d-block bgc-dark"></i>
+                </div>
+                <h4 class="font-weight-bold mt-4 mb-3" translate [translateParams]="{
+                    label: activityType.label.toLowerCase()
+                  }">
+                  There are no label with this deal yet
+                </h4>
+              </div>
+            </ng-container>
+            <div class="cdk-scroll-viewport" *ngIf="activityCounts[activityType.id]">
+              <cdk-virtual-scroll-viewport [itemSize]="3" minBufferPx="200" maxBufferPx="400" class="scroll-viewport">
+                <ng-container *cdkVirtualFor="
+                    let activity of mainTimelines;
+                    let i = index
+                  ">
+                  <!-- deals -->
+                  <div *ngIf="activityType.id == 'all' && activity.type == 'deals'">
+                    <app-deal-timelines
+                      [lastActivity]="groupActions[groups[i].group][0]"
+                      [timelines]="groupActions[groups[i].group]" [deal]="deal">
+                    </app-deal-timelines>
+                  </div>
+                  <!-- contacts -->
+                  <div *ngIf="activityType.id == 'all' && activity.type == 'contacts'">
+                    <div class="history-detail {{ activity.type }}-detail p-3 mt-3">
+                      <div class="v-center justify-content-between">
+                        <div class="v-center">
+                          <div class="history-icon mr-3">
+                            <i class="act-icon act-{{ activity.type }}"></i>
+                          </div>
+                          <div class="f-6">
+                            <span>{{ activity.content }}</span>
+                          </div>
+                        </div>
+                        <div class="f-3 op-56 ml-auto mr-span">
+                          {{ activity.created_at | date: 'MMM d, hh:mm a' }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- follow ups -->
+                  <div *ngIf="
+                      (activityType.id == 'all' ||
+                        activityType.id == 'follow_ups') &&
+                      activity.type == 'follow_ups' &&
+                      getFollowUp(activity.follow_ups)
+                    ">
+                    <div class="history-detail {{ activity.type }}-detail p-3 mt-3">
+                      <div class="v-center justify-content-between mb-3">
+                        <div class="v-center">
+                          <div class="history-icon mr-3">
+                            <i class="act-icon act-follow_ups"></i>
+                          </div>
+                          <div class="f-6">
+                            <span>{{ activity.content }}</span>
+                          </div>
+                          <div class="v-center" *ngIf="
+                              activity.assigned_contacts &&
+                              activity.assigned_contacts.length > 0
+                            ">
+                            <div class="v-center">
+                              <div class="d-flex align-items-start flex-wrap ml-5">
+                                <div class="related-contact" *ngFor="
+                                    let contact of activity.assigned_contacts.slice(
+                                      0,
+                                      2
+                                    )
+                                  ">
+                                  <div class="contact" ngbDropdown>
+                                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                      ngbDropdownToggle>
+                                      {{ contact.avatarName }}
+                                    </div>
+                                    <div ngbDropdownMenu class="contact-list light px-2">
+                                      <a class="d-flex justify-content-between text-decoration-none c-pointer" [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                        <div class="v-center">
+                                          <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                            {{ contact.avatarName }}
+                                          </div>
+                                          <div class="ml-2">
+                                            <div class="f-2 font-weight-bold name">
+                                              {{ contact.fullName }}
+                                            </div>
+                                            <div class="f-1">
+                                              {{ contact.email }}
+                                            </div>
+                                            <div class="f-1">
+                                              {{ contact.cell_phone }}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+                                <ng-container *ngIf="activity.assigned_contacts.length > 2">
+                                  <div class="contact related-contact" ngbDropdown>
+                                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                      ngbDropdownToggle>
+                                      +{{ activity.assigned_contacts.length - 2 }}
+                                    </div>
+                                    <div ngbDropdownMenu class="contact-list light px-2">
+                                      <div class="v-center" *ngFor="
+                                          let contact of activity.assigned_contacts.slice(
+                                            2,
+                                            activity.assigned_contacts.length
+                                          )
+                                        ">
+                                        <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                                        [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                          <div class="v-center">
+                                            <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                              {{ contact.avatarName }}
+                                            </div>
+                                            <div class="ml-2">
+                                              <div class="f-2 font-weight-bold name">
+                                                {{ contact.fullName }}
+                                              </div>
+                                              <div class="f-1">
+                                                {{ contact.email }}
+                                              </div>
+                                              <div class="f-1">
+                                                {{ contact.cell_phone }}
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </ng-container>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="v-center">
+                          <span class="f-3 op-56 ml-auto">{{
+                            activity.created_at | date: 'MMM d, hh:mm a'
+                            }}</span>
+                          <div ngbDropdown class="button-more p-1 rounded" placement="bottom-right">
+                            <a class="d-flex c-pointer no-carot" ngbDropdownToggle>
+                              <i class="i-icon i-menu-more bg-dark" aria-hidden="true"></i>
+                            </a>
+                            <div ngbDropdownMenu class="light py-1">
+                              <ng-container *ngIf="
+                                  getFollowUp(activity.follow_ups);
+                                  else removedTaskAction
+                                ">
+                                <button class="v-center border-0 py-1 c-dark dropdown-item"
+                                  *ngIf="!getFollowUp(activity.follow_ups).status" (click)="
+                                    editTask(getFollowUp(activity.follow_ups))
+                                  ">
+                                  <i class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i>
+                                  <span class="ml-3 f-2 font-weight-bold" translate>Edit</span>
+                                </button>
+                                <button class="v-center border-0 py-1 c-dark dropdown-item"
+                                  *ngIf="!getFollowUp(activity.follow_ups).status" (click)="
+                                    completeTask(getFollowUp(activity.follow_ups))
+                                  ">
+                                  <i class="i-icon i-check bgc-dark ml-1" aria-hidden="true"></i>
+                                  <span class="ml-3 f-2 font-weight-bold" translate>Complete</span>
+                                </button>
+                                <button class="v-center border-0 py-1 c-dark dropdown-item" (click)="
+                                    archiveTask(getFollowUp(activity.follow_ups))
+                                  ">
+                                  <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+                                  <span class="ml-3 f-2 font-weight-bold" translate>Delete</span>
+                                </button>
+                              </ng-container>
+                              <ng-template #removedTaskAction>
+                                <button class="v-center border-0 py-1 c-dark dropdown-item"
+                                  (click)="removeActivity(activity)">
+                                  <i class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i>
+                                  <span class="ml-3 f-2 font-weight-bold" translate>Delete</span>
+                                </button>
+                              </ng-template>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <ng-container *ngIf="
+                          getFollowUp(activity.follow_ups);
+                          else removedTaskTemplate
+                        ">
+                        <div class="main-history-item" [class.completed]="
+                            getFollowUp(activity.follow_ups).status === 1
+                          ">
+                          <div class="v-center mb-2">
+                            <div class="v-center justify-content-center c-pointer task-status" (click)="
+                                completeTask(getFollowUp(activity.follow_ups))
+                              " *ngIf="
+                                getFollowUp(activity.follow_ups).status !== 1;
+                                else taskComplete
+                              ">
+                              <i class="i-icon i-check bgc-white"></i>
+                            </div>
+                            <ng-template #taskComplete>
+                              <div class="v-center justify-content-center task-status">
+                                <i class="i-icon i-check bgc-white"></i>
+                              </div>
+                            </ng-template>
+                            <div class="f-6 font-weight-bold ml-3 content">
+                              {{ replaceContent(getFollowUp(activity.follow_ups).content) }}
+                            </div>
+                          </div>
+                          <div class="v-center mt-3">
+                            <div class="time">
+                              <div class="f-4 fw-600 op-40">
+                                {{ 'Due date' | translate }}
+                              </div>
+                              <div class="v-center mt-1">
+                                <i class="d-block i-icon i-calendar bgc-dark mr-2"></i>
+                                <span class="f-4">
+                                  {{
+                                  getFollowUp(activity.follow_ups).due_date
+                                  | date: 'MMM/d/yyyy'
+                                  }}&nbsp; {{ 'at' | translate }}&nbsp;
+                                  {{
+                                  getFollowUp(activity.follow_ups).due_date
+                                  | date: 'hh:mm a'
+                                  }}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="type ml-5">
+                              <div class="f-4 fw-600 op-40">
+                                {{ 'Type' | translate }}
+                              </div>
+                              <div class="v-center mt-1">
+                                <ng-container [ngSwitch]="getFollowUp(activity.follow_ups).type">
+                                  <i class="d-block i-icon i-task bgc-dark mr-2" *ngSwitchCase="'task'"></i>
+                                  <i class="d-block i-icon i-phone bgc-dark mr-2" *ngSwitchCase="'call'"></i>
+                                  <i class="d-block i-icon i-lunch bgc-dark mr-2" *ngSwitchCase="'meeting'"></i>
+                                  <i class="d-block i-icon i-message bgc-dark mr-2" *ngSwitchCase="'email'"></i>
+                                  <i class="d-block i-icon i-sms-sent bgc-dark mr-2" *ngSwitchCase="'text'"></i>
+                                </ng-container>
+                                <span class="f-4 text-capitalize">{{
+                                  getFollowUp(activity.follow_ups).type
+                                  }}</span>
+                              </div>
+                            </div>
+                            <div class="ml-5" *ngIf="
+                                getFollowUp(activity.follow_ups).set_recurrence
+                              ">
+                              <div class="f-4 fw-600 op-40">
+                                {{ 'Recurrence' | translate }}
+                              </div>
+                              <div class="v-center mt-1">
+                                <span class="f-4">
+                                  {{
+                                  getFollowUp(activity.follow_ups).recurrence_mode
+                                  }}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </ng-container>
+                      <ng-template #removedTaskTemplate>
+                        <div class="d-flex">
+                          <mat-icon class="mr-2">warning</mat-icon>
+                          <span translate>Can't see the detail as it is deleted.</span>
+                        </div>
+                      </ng-template>
+                      <div class="related-history-item" *ngIf="groupActions[activity.group_id].length > 1">
+                        <app-accordion [showIndicator]="show" [hideIndicator]="hide">
+                          <ng-template #show>
+                            <div class="content">
+                              <div class="f-3 fw-600 c-blue mt-1">
+                                {{ 'See details' | translate }}
+                              </div>
+                            </div>
+                          </ng-template>
+                          <ng-template #hide>
+                            <div class="content w-100">
+                              <ng-container *ngFor="
+                                  let detailActivity of groupActions[
+                                    activity.group_id
+                                  ];
+                                  let i = index
+                                ">
+                                <div class="d-flex mb-1">
+                                  <div class="mr-2 font-weight-bold">
+                                    #
+                                    {{ groupActions[activity.group_id].length - i }}
+                                  </div>
+                                  <div class="mr-2 text-capitalize rounded-pill bgc-green-weak text-white px-3">
+                                    {{ detailActivity.content }}
+                                  </div>
+                                  <div class="ml-auto c-trans56">
+                                    {{
+                                    detailActivity.created_at
+                                    | date: 'MMM dd, hh:mm a'
+                                    }}
+                                  </div>
+                                </div>
+                              </ng-container>
+                              <div class="f-3 fw-600 c-blue mt-1">
+                                {{ 'Close' | translate }}
+                              </div>
+                            </div>
+                          </ng-template>
+                        </app-accordion>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- phone_logs -->
+                  <div *ngIf="
+                      (activityType.id == 'all' ||
+                        activityType.id == 'phone_logs') &&
+                      activity.type == 'phone_logs'
+                    ">
+                    <div class="history-detail {{ activity.type }}-detail p-3 mt-3">
+                      <div class="v-center justify-content-between mb-3">
+                        <div class="v-center">
+                          <div class="history-icon mr-3">
+                            <i class="act-icon act-follow_ups"></i>
+                          </div>
+                          <div class="f-6">
+                            <span>{{ activity.content }}</span>
+                          </div>
+                          <div class="v-center" *ngIf="
+                              activity.assigned_contacts &&
+                              activity.assigned_contacts.length > 0
+                            ">
+                            <div class="v-center">
+                              <div class="d-flex align-items-start flex-wrap ml-5">
+                                <div class="related-contact" *ngFor="
+                                    let contact of activity.assigned_contacts.slice(
+                                      0,
+                                      2
+                                    )
+                                  ">
+                                  <div class="contact" ngbDropdown>
+                                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                      ngbDropdownToggle>
+                                      {{ contact.avatarName }}
+                                    </div>
+                                    <div ngbDropdownMenu class="contact-list light px-2">
+                                      <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                                      [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                        <div class="v-center">
+                                          <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                            {{ contact.avatarName }}
+                                          </div>
+                                          <div class="ml-2">
+                                            <div class="f-2 font-weight-bold name">
+                                              {{ contact.fullName }}
+                                            </div>
+                                            <div class="f-1">
+                                              {{ contact.email }}
+                                            </div>
+                                            <div class="f-1">
+                                              {{ contact.cell_phone }}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+                                <ng-container *ngIf="activity.assigned_contacts.length > 2">
+                                  <div class="contact related-contact" ngbDropdown>
+                                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                      ngbDropdownToggle>
+                                      +{{ activity.assigned_contacts.length - 2 }}
+                                    </div>
+                                    <div ngbDropdownMenu class="contact-list light px-2">
+                                      <div class="v-center" *ngFor="
+                                          let contact of activity.assigned_contacts.slice(
+                                            2,
+                                            activity.assigned_contacts.length
+                                          )
+                                        ">
+                                        <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                                        [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                          <div class="v-center">
+                                            <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                              {{ contact.avatarName }}
+                                            </div>
+                                            <div class="ml-2">
+                                              <div class="f-2 font-weight-bold name">
+                                                {{ contact.fullName }}
+                                              </div>
+                                              <div class="f-1">
+                                                {{ contact.email }}
+                                              </div>
+                                              <div class="f-1">
+                                                {{ contact.cell_phone }}
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </ng-container>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="v-center" *ngIf="dataObj.phone_logs[activity.phone_logs]?.label">
+                            <span class="f-2 ml-2 badge badge-primary px-1 call-label">
+                              {{ dataObj.phone_logs[activity.phone_logs]?.label }}
+                            </span>
+                          </div>
+                        </div>
+                        <div class="v-center">
+                          <span class="f-3 op-56 ml-auto">{{
+                            activity.created_at | date: 'MMM d, hh:mm a'
+                            }}</span>
+                          <div ngbDropdown class="button-more p-1 rounded" placement="bottom-right">
+                            <a class="d-flex c-pointer no-carot" ngbDropdownToggle>
+                              <i class="i-icon i-menu-more bg-dark" aria-hidden="true"></i>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      <ng-container *ngIf="dataObj.phone_logs[activity.phone_logs]">
+                        <div class="main-history-item">
+                          <label class="f-4 fw-600 op-40 d-block" translate>Call note</label>
+                          <div class="f-3 mt-1 call-note-content">
+                            {{ dataObj.phone_logs[activity.phone_logs]?.content }}
+                          </div>
+                        </div>
+                      </ng-container>
+                      <div class="related-history-item" *ngIf="sub_calls[activity.phone_logs]?.length">
+                        <app-accordion [showIndicator]="show" [hideIndicator]="hide">
+                          <ng-template #show>
+                            <div class="content">
+                              <div class="f-3 fw-600 c-blue mt-1">
+                                {{ 'See details' | translate }}
+                              </div>
+                            </div>
+                          </ng-template>
+                          <ng-template #hide>
+                            <div class="content w-100">
+                              <ng-container *ngFor="
+                                  let log of sub_calls[activity.phone_logs];
+                                  let i = index
+                                ">
+                                <div class="f-6 v-center sub-log-header">
+                                  <div
+                                    class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer mr-2">
+                                    {{ contacts[log.contact[0]]?.avatarName }}
+                                  </div>
+                                  <ng-container *ngIf="log.answered; else disconnectedStatus">
+                                    <span *ngIf="log.duration" class="ml-2 op-75 fw-600 mr-1">
+                                      {{ log.duration * 1000 | timeDuration }}
+                                    </span>
+                                    <i class="i-icon i-call-connected d-block sm mx-2"></i>
+                                  </ng-container>
+                                  <ng-template #disconnectedStatus>
+                                    <i class="i-icon i-call-disconnected d-block sm mx-2"></i>
+                                  </ng-template>
+                                  <span class="op-75 fw-600 f-0">
+                                    {{ log.status }}
+                                  </span>
+                                  <span class="f-2 ml-2 badge badge-primary px-1 call-label" *ngIf="log.label">
+                                    {{ log.label }}
+                                  </span>
+                                  <span class="f-3 op-56 ml-auto">{{
+                                    log.created_at | date: 'MMM d, hh:mm a'
+                                    }}</span>
+                                </div>
+                                <div class="content mt-3" *ngIf="log.content">
+                                  <div class="f-4 fw-600 op-40">
+                                    {{ 'Call note' | translate }}
+                                  </div>
+                                  <div class="f-3 mt-1 call-note-content">
+                                    <span class="call-summary">
+                                      {{ log.content }}
+                                    </span>
+                                  </div>
+                                </div>
+                              </ng-container>
+                              <div class="f-3 fw-600 c-blue mt-1">
+                                {{ 'Close' | translate }}
+                              </div>
+                            </div>
+                          </ng-template>
+                        </app-accordion>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- notes -->
+                  <div *ngIf="
+                      (activityType.id == 'all' || activityType.id == 'notes') &&
+                      activity.type == 'notes'
+                    ">
+                    <div class="history-detail {{ activity.type }}-detail p-3 mt-3">
+                      <div class="v-center justify-content-between mb-3">
+                        <div class="v-center">
+                          <div class="history-icon mr-3">
+                            <i class="act-icon act-notes"></i>
+                          </div>
+                          <div class="f-6">
+                            <span>{{ activity.content }}</span>
+                          </div>
+                          <div class="v-center" *ngIf="
+                              activity.assigned_contacts &&
+                              activity.assigned_contacts.length > 0
+                            ">
+                            <div class="v-center">
+                              <div class="d-flex align-items-start flex-wrap ml-5">
+                                <div class="related-contact" *ngFor="
+                                    let contact of activity.assigned_contacts.slice(
+                                      0,
+                                      2
+                                    )
+                                  ">
+                                  <div class="contact" ngbDropdown>
+                                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                      ngbDropdownToggle>
+                                      {{ contact.avatarName }}
+                                    </div>
+                                    <div ngbDropdownMenu class="contact-list light px-2">
+                                      <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                                      [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                        <div class="v-center">
+                                          <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                            {{ contact.avatarName }}
+                                          </div>
+                                          <div class="ml-2">
+                                            <div class="f-2 font-weight-bold name">
+                                              {{ contact.fullName }}
+                                            </div>
+                                            <div class="f-1">
+                                              {{ contact.email }}
+                                            </div>
+                                            <div class="f-1">
+                                              {{ contact.cell_phone }}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+                                <ng-container *ngIf="activity.assigned_contacts.length > 2">
+                                  <div class="contact related-contact" ngbDropdown>
+                                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                      ngbDropdownToggle>
+                                      +{{ activity.assigned_contacts.length - 2 }}
+                                    </div>
+                                    <div ngbDropdownMenu class="contact-list light px-2">
+                                      <div class="v-center" *ngFor="
+                                          let contact of activity.assigned_contacts.slice(
+                                            2,
+                                            activity.assigned_contacts.length
+                                          )
+                                        ">
+                                        <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                                        [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                          <div class="v-center">
+                                            <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                              {{ contact.avatarName }}
+                                            </div>
+                                            <div class="ml-2">
+                                              <div class="f-2 font-weight-bold name">
+                                                {{ contact.fullName }}
+                                              </div>
+                                              <div class="f-1">
+                                                {{ contact.email }}
+                                              </div>
+                                              <div class="f-1">
+                                                {{ contact.cell_phone }}
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </ng-container>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="v-center">
+                          <span class="f-3 op-56 ml-auto">{{
+                            activity.created_at | date: 'MMM d, hh:mm a'
+                            }}</span>
+                          <div ngbDropdown class="button-more p-1 rounded" placement="bottom-right">
+                            <a class="d-flex c-pointer no-carot" ngbDropdownToggle>
+                              <i class="i-icon i-menu-more bg-dark" aria-hidden="true"></i>
+                            </a>
+                            <div ngbDropdownMenu class="light py-1">
+                              <ng-container *ngIf="
+                                  dataObj.notes[activity.notes];
+                                  else removedNoteAction
+                                ">
+                                <button class="v-center border-0 py-1 c-dark dropdown-item" (click)="
+                                    updateNoteDetail(dataObj.notes[activity.notes])
+                                  ">
+                                  <i class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i>
+                                  <span class="ml-3 f-2 font-weight-bold" translate>Edit</span>
+                                </button>
+                                <button class="v-center border-0 py-1 c-dark dropdown-item" (click)="
+                                    deleteNoteDetail(dataObj.notes[activity.notes])
+                                  ">
+                                  <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+                                  <span class="ml-3 f-2 font-weight-bold" translate>Delete</span>
+                                </button>
+                              </ng-container>
+                              <ng-template #removedNoteAction>
+                                <button class="v-center border-0 py-1 c-dark dropdown-item"
+                                  (click)="removeActivity(activity)">
+                                  <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+                                  <span class="ml-3 f-2 font-weight-bold" translate>Delete</span>
+                                </button>
+                              </ng-template>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <ng-container *ngIf="
+                          dataObj.notes[activity.notes];
+                          else removedNoteTemplate
+                        ">
+                        <div class="main-history-item">
+                          <div class="summary">
+                            <div class="note-content" [innerHTML]="
+                                dataObj.notes[activity.notes].content ||
+                                'No Content Note'
+                                | removeEntity
+                                | shorten: 300:'...'
+                              ">
+                            </div>
+                            <div class="gradient-bottom note-gradient"></div>
+                            <div class="c-blue mt-1 f-3 fw-600 c-pointer" (click)="showDetail($event)">
+                              {{ 'Expand' | translate }}
+                            </div>
+                          </div>
+                          <div class="detail">
+                            <div class="mt-2" *ngIf="dataObj.notes[activity.notes].audio">
+                              <audio controls class="flex-grow-1 w-100">
+                                <source [src]="
+                                    domSanitizer.bypassSecurityTrustUrl(
+                                      dataObj.notes[activity.notes].audio
+                                    )
+                                  " type="audio/wav" />
+                              </audio>
+                            </div>
+                            <div class="f-6 note-content opened" [innerHTML]="dataObj.notes[activity.notes].content">
+                            </div>
+                            <div class="c-blue mt-2 f-3 fw-600 c-pointer" (click)="hideDetail($event)">
+                              {{ 'Collapse' | translate }}
+                            </div>
+                          </div>
+                        </div>
+                      </ng-container>
+                      <ng-template #removedNoteTemplate>
+                        <div class="d-flex">
+                          <mat-icon class="mr-2">warning</mat-icon>
+                          <span translate>Can't see the detail as it is deleted.</span>
+                        </div>
+                      </ng-template>
+                    </div>
+                  </div>
+                  <!-- emails -->
+                  <div *ngIf="
+                      (activityType.id == 'all' || activityType.id == 'emails') &&
+                      groups[i].type == 'emails'
+                    ">
+                    <div class="history-detail {{ activity.type }}-detail p-3 mt-3">
+                      <div class="v-center justify-content-between mb-3">
+                        <div class="v-center">
+                          <div class="history-icon mr-3">
+                            <i class="act-icon act-{{
+                                getActivityIcon(groups[i].group, activity)
+                              }}"></i>
+                          </div>
+                          <div class="f-6">
+                            <span>{{
+                              getActivityLabel(groups[i].group, activity)
+                              }}</span>
+                          </div>
+                          <div class="v-center" *ngIf="
+                              activity.assigned_contacts &&
+                              activity.assigned_contacts.length > 0
+                            ">
+                            <div class="v-center">
+                              <div class="d-flex align-items-start flex-wrap ml-5">
+                                <div class="related-contact" *ngFor="
+                                    let contact of activity.assigned_contacts.slice(
+                                      0,
+                                      2
+                                    )
+                                  ">
+                                  <div class="contact" ngbDropdown>
+                                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                      ngbDropdownToggle>
+                                      {{ contact.avatarName }} wwww
+                                    </div>
+                                    <div ngbDropdownMenu class="contact-list light px-2">
+                                      <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                                      [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                        <div class="v-center">
+                                          <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                            {{ contact.avatarName }}
+                                          </div>
+                                          <div class="ml-2">
+                                            <div class="f-2 font-weight-bold name">
+                                              {{ contact.fullName }}
+                                            </div>
+                                            <div class="f-1">
+                                              {{ contact.email }}
+                                            </div>
+                                            <div class="f-1">
+                                              {{ contact.cell_phone }}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+                                <ng-container *ngIf="activity.assigned_contacts.length > 2">
+                                  <div class="contact related-contact" ngbDropdown>
+                                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                      ngbDropdownToggle>
+                                      +{{ activity.assigned_contacts.length - 2 }}
+                                    </div>
+                                    <div ngbDropdownMenu class="contact-list light px-2">
+                                      <div class="v-center" *ngFor="
+                                          let contact of activity.assigned_contacts.slice(
+                                            2,
+                                            activity.assigned_contacts.length
+                                          )
+                                        ">
+                                        <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                                        [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                          <div class="v-center">
+                                            <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                              {{ contact.avatarName }}
+                                            </div>
+                                            <div class="ml-2">
+                                              <div class="f-2 font-weight-bold name">
+                                                {{ contact.fullName }}
+                                              </div>
+                                              <div class="f-1">
+                                                {{ contact.email }}
+                                              </div>
+                                              <div class="f-1">
+                                                {{ contact.cell_phone }}
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </ng-container>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="v-center ml-auto mr-span">
+                          <span class="f-3 op-56">{{
+                            activity.updated_at | date: 'MMM d, hh:mm a'
+                            }}</span>
+                        </div>
+                      </div>
+                      <ng-container *ngIf="groups[i].type === 'emails'">
+                        <app-email-timelines [email]="dataObj.emails[groups[i].group]"
+                          [loading]="activity.loadingTracker" [timelines]="groupActions[groups[i].group]"
+                          [expanded]="dGroups.indexOf(groups[i].group) !== -1" [materials]="dataObj.materials"
+                          (onExpand)="showMoreDetail(groups[i].group, activity)"
+                          (onCollapse)="hideMoreDetail(groups[i].group)" [showContact]="true"
+                          [contacts]="deal?.contacts || []">
+                        </app-email-timelines>
+                      </ng-container>
+                    </div>
+                  </div>
+                  <!-- texts -->
+                  <ng-container *enableByFeatures="USER_FEATURES.TEXT">
+                    <div *ngIf="
+                        (activityType.id == 'all' || activityType.id == 'texts') &&
+                        (groups[i].type == 'texts' || groups[i].media == 'texts')
+                      ">
+                      <div class="history-detail {{ activity.type }}-detail p-3 mt-3">
+                        <div class="v-center justify-content-between mb-3">
+                          <div class="v-center">
+                            <div class="history-icon mr-3">
+                              <i class="act-icon act-{{ getActivityIcon(groups[i].group, activity) }}"></i>
+                            </div>
+                            <div class="f-6" style="display: contents;">
+                              <span>{{ getActivityLabel(groups[i].group, activity) }}</span>
+                              <ng-container *ngIf="activity.status !== 'completed'">
+                                <i class="d-block i-icon i-schedule-send bgc-dark ng-star-inserted ml-2 small" ngbTooltip="{{ 'Pending' | translate }}" (click)="showTextStatus(activity)"></i>
+                              </ng-container>
+                            </div>
+                            <div class="v-center" *ngIf="
+                                activity.assigned_contacts &&
+                                activity.assigned_contacts.length > 0
+                              ">
+                              <div class="v-center">
+                                <div class="d-flex align-items-start flex-wrap ml-5">
+                                  <div class="related-contact" *ngFor="
+                                      let contact of activity.assigned_contacts.slice(
+                                        0,
+                                        2
+                                      )
+                                    ">
+                                    <div class="contact" ngbDropdown>
+                                      <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                        ngbDropdownToggle>
+                                        {{ contact.avatarName }}
+                                      </div>
+                                      <div ngbDropdownMenu class="contact-list light px-2">
+                                        <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                                        [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                          <div class="v-center">
+                                            <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                              {{ contact.avatarName }}
+                                            </div>
+                                            <div class="ml-2">
+                                              <div class="f-2 font-weight-bold name">
+                                                {{ contact.fullName }}
+                                              </div>
+                                              <div class="f-1">
+                                                {{ contact.email }}
+                                              </div>
+                                              <div class="f-1">
+                                                {{ contact.cell_phone }}
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <ng-container *ngIf="activity.assigned_contacts.length > 2">
+                                    <div class="contact related-contact" ngbDropdown>
+                                      <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                        ngbDropdownToggle>
+                                        +{{ activity.assigned_contacts.length - 2 }}
+                                      </div>
+                                      <div ngbDropdownMenu class="contact-list light px-2">
+                                        <div class="v-center" *ngFor="
+                                            let contact of activity.assigned_contacts.slice(
+                                              2,
+                                              activity.assigned_contacts.length
+                                            )
+                                          ">
+                                          <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                                          [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                            <div class="v-center">
+                                              <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                                {{ contact.avatarName }}
+                                              </div>
+                                              <div class="ml-2">
+                                                <div class="f-2 font-weight-bold name">
+                                                  {{ contact.fullName }}
+                                                </div>
+                                                <div class="f-1">
+                                                  {{ contact.email }}
+                                                </div>
+                                                <div class="f-1">
+                                                  {{ contact.cell_phone }}
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                          </a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </ng-container>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="v-center ml-auto mr-span">
+                            <span class="f-3 op-56">{{
+                              activity.created_at | date: 'MMM d, hh:mm a'
+                              }}</span>
+                          </div>
+                        </div>
+                        <ng-container *ngIf="groups[i].type === 'texts'">
+                          <app-text-timelines [text]="dataObj.texts[groups[i].group]" [loading]="activity.loadingTracker"
+                            [timelines]="groupActions[groups[i].group]"
+                            [expanded]="dGroups.indexOf(groups[i].group) !== -1" [materials]="dataObj.materials"
+                            (onExpand)="showMoreDetail(groups[i].group, activity)"
+                            (onCollapse)="hideMoreDetail(groups[i].group)" [showContact]="true"
+                            [contacts]="deal?.contacts || []" [contactInfo]="contactMainInfo">
+                          </app-text-timelines>
+                        </ng-container>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <!-- appointments -->
+                  <div *ngIf="
+                      (activityType.id == 'all' ||
+                        activityType.id == 'appointments') &&
+                      activity.type == 'appointments'">
+                    <div class="history-detail {{ activity.type }}-detail p-3 mt-3">
+                      <div class="v-center justify-content-between mb-3">
+                        <div class="v-center">
+                          <div class="history-icon mr-3">
+                            <i class="act-icon act-appointments"></i>
+                          </div>
+                          <div class="f-6">
+                            <span>{{ activity.content }}</span>
+                          </div>
+                          <div class="v-center" *ngIf="
+                              activity.assigned_contacts &&
+                              activity.assigned_contacts.length > 0
+                            ">
+                            <div class="v-center">
+                              <div class="d-flex align-items-start flex-wrap ml-5">
+                                <div class="related-contact" *ngFor="
+                                    let contact of activity.assigned_contacts.slice(
+                                      0,
+                                      2
+                                    )
+                                  ">
+                                  <div class="contact" ngbDropdown>
+                                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                      ngbDropdownToggle>
+                                      {{ contact.avatarName }}
+                                    </div>
+                                    <div ngbDropdownMenu class="contact-list light px-2">
+                                      <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                                      [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                        <div class="v-center">
+                                          <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                            {{ contact.avatarName }}
+                                          </div>
+                                          <div class="ml-2">
+                                            <div class="f-2 font-weight-bold name">
+                                              {{ contact.fullName }}
+                                            </div>
+                                            <div class="f-1">
+                                              {{ contact.email }}
+                                            </div>
+                                            <div class="f-1">
+                                              {{ contact.cell_phone }}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+                                <ng-container *ngIf="activity.assigned_contacts.length > 2">
+                                  <div class="contact related-contact" ngbDropdown>
+                                    <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                      ngbDropdownToggle>
+                                      +{{ activity.assigned_contacts.length - 2 }}
+                                    </div>
+                                    <div ngbDropdownMenu class="contact-list light px-2">
+                                      <div class="v-center" *ngFor="
+                                          let contact of activity.assigned_contacts.slice(
+                                            2,
+                                            activity.assigned_contacts.length
+                                          )
+                                        ">
+                                        <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                                        [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                          <div class="v-center">
+                                            <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                              {{ contact.avatarName }}
+                                            </div>
+                                            <div class="ml-2">
+                                              <div class="f-2 font-weight-bold name">
+                                                {{ contact.fullName }}
+                                              </div>
+                                              <div class="f-1">
+                                                {{ contact.email }}
+                                              </div>
+                                              <div class="f-1">
+                                                {{ contact.cell_phone }}
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </ng-container>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="v-center">
+                          <span class="f-3 op-56 ml-auto">{{
+                            activity.created_at | date: 'MMM d, hh:mm a'
+                            }}</span>
+                          <div ngbDropdown class="button-more p-1 rounded" placement="bottom-right">
+                            <a class="d-flex c-pointer no-carot" ngbDropdownToggle>
+                              <i class="i-icon i-menu-more bg-dark" aria-hidden="true"></i>
+                            </a>
+                            <div ngbDropdownMenu class="light py-1">
+                              <button
+                                data-action="deal-activity-delete"
+                                class="v-center border-0 py-1 c-dark dropdown-item"
+                                (click)="removeAppointment(activity)">
+                                <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+                                <span class="ml-3 f-2 font-weight-bold" translate>Delete activity</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <ng-container *ngIf="
+                          dataObj.appointments[activity.appointments];
+                          else removedAppointmentTemplate
+                        ">
+                        <a class="font-weight-bold c-pointer ci-dark td-none appt-title" (click)="
+                            openDetailEvent(
+                              dataObj.appointments[activity.appointments],
+                              $event
+                            )
+                          ">
+                          {{ dataObj.appointments[activity.appointments].title }}
+                        </a>
+                        <div class="main-history-item">
+                          <div class="summary position-relative">
+                            <div class="f-6" [innerHTML]="
+                                dataObj.appointments[activity.appointments]
+                                  .description || ''
+                                  | stripTags
+                                  | removeEntity
+                                  | shorten: 300:'...'
+                                  | makeRedirect
+                              "></div>
+                            <div class="gradient-bottom"></div>
+                            <div class="f-3 fw-600 c-blue mt-1 c-pointer" (click)="showDetail($event)">
+                              {{ 'Expand' | translate }}
+                            </div>
+                          </div>
+                          <div class="detail">
+                            <div class="f-6" [innerHTML]="
+                                dataObj.appointments[activity.appointments]
+                                  .description || '' | makeRedirect
+                              "></div>
+                            <div class="f-3 fw-600 c-blue mt-1 c-pointer" (click)="hideDetail($event)">
+                              {{ 'Collapse' | translate }}
+                            </div>
+                          </div>
+                          <div class="v-center mt-3">
+                            <div class="date">
+                              <div class="f-4 fw-600 op-40">
+                                {{ 'Date' | translate }}
+                              </div>
+                              <div class="v-center mt-1">
+                                <i class="d-block i-icon i-calendar bgc-dark mr-2"></i>
+                                <span class="f-4">{{
+                                  dataObj.appointments[activity.appointments]
+                                  .due_start | date: 'MM/dd/yyyy'
+                                  }}</span>
+                              </div>
+                            </div>
+                            <div class="time ml-5">
+                              <div class="f-4 fw-600 op-40">
+                                {{ 'Time' | translate }}
+                              </div>
+                              <div class="v-center mt-1">
+                                <i class="d-block i-icon i-timer bgc-dark mr-2"></i>
+                                <span class="f-4">{{
+                                  getTime(
+                                  dataObj.appointments[activity.appointments]
+                                  .due_start,
+                                  dataObj.appointments[activity.appointments]
+                                  .due_end
+                                  )
+                                  }}</span>
+                              </div>
+                            </div>
+                            <div class="location ml-5" *ngIf="
+                                dataObj.appointments[activity.appointments].location
+                              ">
+                              <div class="f-4 fw-600 op-40">
+                                {{ 'Location' | translate }}
+                              </div>
+                              <div class="v-center mt-1">
+                                <i class="d-block i-icon i-location bgc-dark mr-2"></i>
+                                <span class="f-4">{{
+                                  dataObj.appointments[activity.appointments]
+                                  .location
+                                  }}</span>
+                              </div>
+                            </div>
+                            <div class="recurrence ml-5" *ngIf="
+                                dataObj.appointments[activity.appointments]
+                                  .recurrence
+                              ">
+                              <div class="f-3 fw-600 op-40">
+                                {{ 'Recurrence' | translate }}
+                              </div>
+                              <div class="v-center mt-1">
+                                <i class="d-block i-icon i-calendar-recurrence bgc-dark mr-2"></i>
+                                <span class="f-4">{{
+                                  dataObj.appointments[activity.appointments]
+                                  .recurrence
+                                  }}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="mt-4" *ngIf="
+                              dataObj.appointments[activity.appointments].zoom_link
+                            ">
+                            <div class="f-4 fw-600 op-40">
+                              {{ 'Zoom meeting' | translate }}
+                            </div>
+                            <div class="f-4 c-blue mt-1">
+                              {{
+                              dataObj.appointments[activity.appointments]
+                              .zoom_link
+                              }}
+                            </div>
+                          </div>
+                        </div>
+                      </ng-container>
+                      <ng-template #removedAppointmentTemplate>
+                        <div class="d-flex">
+                          <mat-icon class="mr-2">warning</mat-icon>
+                          <span translate>Can't see the detail as it is deleted.</span>
+                        </div>
+                      </ng-template>
+                    </div>
+                  </div>
+                  <!-- users -->
+                  <div *ngIf="activityType.id == 'all' && activity.type == 'users'">
+                    <div class="history-detail {{ activity.type }}-detail p-3 mt-3">
+                      <div class="v-center justify-content-between mb-3">
+                        <div class="v-center">
+                          <div class="history-icon mr-3">
+                            <i class="act-icon act-{{ activity.type }} {{
+                                activity.activity_detail?.type
+                              }}"></i>
+                          </div>
+                          <div class="f-6">
+                            <span>{{ activity.content }}</span>
+                          </div>
+                        </div>
+                        <div class="v-center">
+                          <span class="f-3 op-56 ml-auto mr-span">{{
+                            activity.created_at | date: 'MMM d, hh:mm a'
+                            }}</span>
+                        </div>
+                      </div>
+                      <ng-container *ngIf="activity.activity_detail; else canceledUserTemplate">
+                        <div class="main-history-item">
+                          <label class="mb-0 op-75 f-3 mt-" translate>Shared With</label>
+                          <div class="v-center mt-2">
+                            <img *ngIf="
+                                activity.activity_detail.picture_profile;
+                                else avatarNameTemplate
+                              " [src]="activity.activity_detail.picture_profile"
+                              (error)="sspaService.imgError($event,'img/user_avatar.svg')"
+                              class="form-avatar rounded-circle mr-1" />
+                            <ng-template #avatarNameTemplate>
+                              <div class="form-avatar rounded-circle bg-dark mr-1">
+                                {{ activity.activity_detail.user_name[0] }}
+                              </div>
+                            </ng-template>
+                            <div class="ml-2 font-weight-bold">
+                              {{ activity.activity_detail.user_name }}
+                            </div>
+                          </div>
+                        </div>
+                      </ng-container>
+                      <ng-template #canceledUserTemplate> </ng-template>
+                    </div>
+                  </div>
+                  <!-- automations -->
+                  <div *ngIf="
+                      (activityType.id == 'all' || activityType.id == 'automations') && activity.type == 'automations'
+                    ">
+                    <div class="history-detail {{ activity.type }}-detail p-3 mt-3">
+                      <div class="v-center justify-content-between mb-3">
+                        <div class="v-center">
+                          <div class="history-icon mr-3">
+                            <i class="act-icon act-{{ activity.type }}"></i>
+                          </div>
+                          <div class="f-6">
+                            <span>{{ activity.content }}</span>
+                          </div>
+                        </div>
+                        <div class="v-center">
+                          <span class="f-3 op-56 ml-auto mr-span">{{
+                            activity.updated_at | date: 'MMM d, hh:mm a'
+                            }}</span>
+                        </div>
+                      </div>
+                      <div class="main-history-item">
+                        <div class="f-6 font-weight-bold">
+                          {{ automationDetails[activity._id]?.automation?.title }}
+                        </div>
+                        <app-accordion [showIndicator]="show" [hideIndicator]="hide"
+                          *ngIf="automationDetails[activity._id]?.sub_activity">
+                          <ng-template #show>
+                            <div class="w-100 content f-6 position-relative">
+                              <div class="f-3 fw-600 c-blue mt-1" translate>
+                                Expand
+                              </div>
+                            </div>
+                          </ng-template>
+                          <ng-template #hide>
+                            <div class="w-100 content">
+                              <label class="session">Session</label>
+                              <div class="v-center justify-content-between">
+                                <div class="v-center">
+                                  <i class="act-icon act-automations sm"></i>
+                                  <div class="f-6 c-dark ml-2">
+                                    {{automationDetails[activity._id]?.sub_activity?.content}}</div>
+                                </div>
+                                <div class="f-3 op-56 c-dark">
+                                  {{automationDetails[activity._id]?.sub_activity?.created_at | datetimeFormat}}</div>
+                              </div>
+                              <div class="f-3 fw-600 c-blue mt-1" translate>
+                                Collapse
+                              </div>
+                            </div>
+                          </ng-template>
+                        </app-accordion>
+                        <div class="mt-2">
+                          <div class="content">
+                            <div class="f-3 fw-600 c-blue c-pointer" translate
+                              (click)="showDetailCompletedAutomation(activity)">
+                              See detail
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </cdk-virtual-scroll-viewport>
+            </div>
+
+            <ng-container *ngIf="
+                activityType.id === 'all' && !activityCounts[activityType.id]
+              ">
+              <div class="empty-list">
+                <div class="object-icon v-center">
+                  <i class="i-icon i-activity d-block bgc-dark"></i>
+                </div>
+                <h4 class="font-weight-bold mt-4 mb-3" [translateParams]="{ label: activityType.label | lowercase }"
+                  translate>
+                  There are no label with this deal yet
+                </h4>
+              </div>
+            </ng-container>
+          </ng-container>
+
+          <ng-template #detailsTemplate>
+            <ng-container *ngIf="tab.id === 'tasks'; else generalDetailList">
+              <div class="cdk-scroll-viewport">
+                <cdk-virtual-scroll-viewport [itemSize]="3" minBufferPx="200" maxBufferPx="400" class="scroll-viewport">
+                  <div *cdkVirtualFor="let activity of getTaskActivities()">
+                    <ng-container *ngIf="activity.activityType === 'task'; else timelineActivity">
+                      <div class="history-detail mt-3 p-3">
+                        <div class="task-summary task-automation v-center justify-content-between">
+                          <div class="v-center">
+                            <div class="d-flex align-items-center object-icon mr-2">
+                              <i class="act-icon act-{{
+                              activity.task_original_type || activity.type
+                            }}s d-block"></i>
+                            </div>
+                            <div class="task-type v-center c-pointer"
+                              [routerLink]="['/email-queue/' + activity.process]" translate>
+                              <span class="">{{
+                                activity.task_original_type || activity.type
+                                }}</span>
+                              <span class="ml-1 f-6 font-weight-bold c-dark" *ngIf="
+                              activity.task_original_type == 'email' ||
+                              activity.type == 'email'
+                            ">
+                                ({{ activity.action.subject }})
+                              </span>
+                            </div>
+                          </div>
+                          <div class="v-center">
+                            <span class="f-3 op-56 ml-auto">{{
+                              getFormattedDate(activity.action.created_at)
+                              }}</span>
+                          </div>
+                        </div>
+                        <div class="mt-1">
+                          <div class="task-info">
+                            <ng-container *ngIf="!mores[activity._id]; else fullContent">
+                              <div class="d-block">
+                                <span class="f-6 c-dark" [innerHTML]="
+                                replaceContent(activity.action.content) || ''
+                                  | stripTags
+                                  | shorten: 200:'...'
+                              "></span>
+                                <a class="more ml-2 mt-1 f-3 c-pointer" (click)="mores[activity._id] = true"
+                                  translate>More</a>
+                              </div>
+                            </ng-container>
+                            <ng-template #fullContent>
+                              <div class="d-block">
+                                <span class="f-6 c-dark" [innerHTML]="replaceContent(activity.action.content)"></span>
+                                <a class="more ml-2 mt-1 f-3 c-pointer fw-600" (click)="mores[activity._id] = false"
+                                  translate>Less</a>
+                              </div>
+                            </ng-template>
+                          </div>
+                          <div class="d-flex align-items-start mt-1">
+                            <div class="mr-2">
+                              <div class="f-4 font-weight-bold c-dark op-40" translate>
+                                Due date
+                              </div>
+                              <div class="v-center">
+                                <i class="d-block i-icon i-calendar bgc-dark mr-2"></i>
+                                <span class="f-4 c-dark">
+                                  {{ activity.due_date | date: 'MMM/d/y' }}
+                                  at
+                                  {{ activity.due_date | date: 'h:mm a' }}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="ml-2" *ngIf="activity.recurrence_mode">
+                              <div class="f-4 font-weight-bold c-dark op-40" translate>
+                                Recurrence
+                              </div>
+                              <div class="f-4 c-dark">
+                                {{ activity.recurrence_mode }}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+                    <ng-template #timelineActivity>
+                      <div class="history-detail mt-3 p-3">
+                        <div class="task-summary task-automation v-center">
+                          <div class="d-flex align-items-center mr-2">
+                            <i class="i-icon i-automation bgc-azure d-block"></i>
+                          </div>
+                          <div class="task-type c-pointer" (click)="showDetailTimeline(activity)">
+                            {{ activity.type }}
+                          </div>
+                        </div>
+                        <div class="task-summary d-flex align-items-start mt-3">
+                          <div class="d-flex align-items-start">
+                            <div class="f-6 font-weight-bold c-dark">
+                              Automation:
+                            </div>
+                            <div class="f-6 c-dark ml-3">
+                              {{
+                              activity.automation ? activity.automation.title : ''
+                              }}
+                            </div>
+                          </div>
+                          <div class="d-flex align-items-start ml-5">
+                            <div class="f-6 font-weight-bold c-dark">
+                              Action time:
+                            </div>
+                            <div class="ml-3" *ngIf="
+                                        activity.actions && activity.actions.length > 0
+                                      ">
+                              <div class="v-center" *ngFor="let action of activity.actions">
+                                <div class="action-name f-5 c-dark">
+                                  {{ action.label }}
+                                </div>
+                                <div class="action-time f-5 c-dark">
+                                  {{ action.time }}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+                  </div>
+                </cdk-virtual-scroll-viewport>
+              </div>
+            </ng-container>
+
+            <ng-template #generalDetailList>
+              <ng-container *ngIf="showingDetails.length == 0 &&
+                (tab.id == 'follow_ups' || tab.id == 'emails' || tab.id == 'notes')">
+                <div class="empty-list">
+                  <div class="object-icon v-center">
+                    <i class="i-icon i-{{ tab.id }} d-block bgc-dark"></i>
+                  </div>
+                  <h4 class="font-weight-bold mt-4 mb-3" [translateParams]="{ label: tab.id | lowercase }" translate>
+                    There are no label with this deal yet
+                  </h4>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="showingDetails.length &&
+                (tab.id == 'follow_ups' || tab.id == 'emails' || tab.id == 'notes'); else otherDetailList">
+                <ng-container [ngSwitch]="tab.id">
+                  <div class="cdk-scroll-viewport">
+                    <cdk-virtual-scroll-viewport [itemSize]="3" minBufferPx="200" maxBufferPx="400"
+                      class="scroll-viewport">
+                      <div *cdkVirtualFor="let activity of showingDetails; let i = index">
+                        <div class="history-detail follow_ups-detail p-3 mt-3" *ngSwitchCase="'follow_ups'">
+                          <div class="v-center justify-content-between mb-3">
+                            <div class="v-center">
+                              <div class="history-icon mr-3">
+                                <i class="act-icon act-follow_ups"></i>
+                              </div>
+                              <div class="f-6">
+                                <span translate>task</span>
+                              </div>
+                              <div class="v-center" *ngIf="
+                                  activity.assigned_contacts &&
+                                  activity.assigned_contacts.length > 0
+                                ">
+                                <div class="v-center">
+                                  <div class="d-flex align-items-start flex-wrap ml-5">
+                                    <div class="related-contact" *ngFor="
+                                        let contact of activity.assigned_contacts.slice(
+                                          0,
+                                          2
+                                        )
+                                      ">
+                                      <div class="contact" ngbDropdown>
+                                        <div
+                                          class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                          ngbDropdownToggle>
+                                          {{ contact.avatarName }}
+                                        </div>
+                                        <div ngbDropdownMenu class="contact-list light px-2">
+                                          <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                                          [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                            <div class="v-center">
+                                              <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                                {{ contact.avatarName }}
+                                              </div>
+                                              <div class="ml-2">
+                                                <div class="f-2 font-weight-bold name">
+                                                  {{ contact.fullName }}
+                                                </div>
+                                                <div class="f-1">
+                                                  {{ contact.email }}
+                                                </div>
+                                                <div class="f-1">
+                                                  {{ contact.cell_phone }}
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                          </a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <ng-container *ngIf="activity.assigned_contacts.length > 2">
+                                      <div class="contact related-contact" ngbDropdown>
+                                        <div
+                                          class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                          ngbDropdownToggle>
+                                          +{{ activity.assigned_contacts.length - 2 }}
+                                        </div>
+                                        <div ngbDropdownMenu class="contact-list light px-2">
+                                          <div class="v-center" *ngFor="
+                                              let contact of activity.assigned_contacts.slice(
+                                                2,
+                                                activity.assigned_contacts.length
+                                              )
+                                            ">
+                                            <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                                            [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                              <div class="v-center">
+                                                <div
+                                                  class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                                  {{ contact.avatarName }}
+                                                </div>
+                                                <div class="ml-2">
+                                                  <div class="f-2 font-weight-bold name">
+                                                    {{ contact.fullName }}
+                                                  </div>
+                                                  <div class="f-1">
+                                                    {{ contact.email }}
+                                                  </div>
+                                                  <div class="f-1">
+                                                    {{ contact.cell_phone }}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                            </a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </ng-container>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="v-center">
+                              <span class="f-3 op-56 ml-auto">{{
+                                activity.updated_at | date: 'MMM d, hh:mm a'
+                                }}</span>
+                              <div ngbDropdown class="button-more p-1 rounded" placement="bottom-right">
+                                <a class="d-flex c-pointer no-carot" ngbDropdownToggle>
+                                  <i class="i-icon i-menu-more bg-dark" aria-hidden="true"></i>
+                                </a>
+                                <div ngbDropdownMenu class="light py-1">
+                                  <button class="v-center border-0 py-1 c-dark dropdown-item"
+                                    *ngIf="activity.status !== 1" (click)="editTask(activity)">
+                                    <i class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i>
+                                    <span class="ml-3 f-2 font-weight-bold" translate>Edit</span>
+                                  </button>
+                                  <button class="v-center border-0 py-1 c-dark dropdown-item"
+                                    *ngIf="activity.status !== 1" (click)="completeTask(activity)">
+                                    <i class="i-icon i-check bgc-dark ml-1" aria-hidden="true"></i>
+                                    <span class="ml-3 f-2 font-weight-bold" translate>Complete</span>
+                                  </button>
+                                  <button class="v-center border-0 py-1 c-dark dropdown-item"
+                                    (click)="archiveTask(activity)">
+                                    <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+                                    <span class="ml-3 f-2 font-weight-bold" translate>Delete</span>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <ng-container *ngIf="activity._id; else removedTaskTemplate">
+                            <div class="main-history-item" [class.completed]="activity.status === 1">
+                              <div class="v-center mb-2">
+                                <div class="v-center justify-content-center c-pointer task-status"
+                                  (click)="completeTask(activity)" *ngIf="activity.status !== 1; else taskComplete">
+                                  <i class="i-icon i-check bgc-white"></i>
+                                </div>
+                                <ng-template #taskComplete>
+                                  <div class="v-center justify-content-center task-status">
+                                    <i class="i-icon i-check bgc-white"></i>
+                                  </div>
+                                </ng-template>
+                                <div class="f-6 font-weight-bold ml-3 content">
+                                  {{ replaceContent(activity.content) }}
+                                </div>
+                              </div>
+                              <div class="v-center mt-3">
+                                <div class="time">
+                                  <div class="f-4 fw-600 op-40">
+                                    {{ 'Due date' | translate }}
+                                  </div>
+                                  <div class="v-center mt-1">
+                                    <i class="d-block i-icon i-calendar bgc-dark mr-2"></i>
+                                    <span class="f-4">{{ activity.due_date | date: 'MMM/d/yyyy' }}
+                                      {{ 'at' | translate }}
+                                      {{ activity.due_date | date: 'hh:mm a' }}</span>
+                                  </div>
+                                </div>
+                                <div class="type ml-5">
+                                  <div class="f-4 fw-600 op-40">
+                                    {{ 'Type' | translate }}
+                                  </div>
+                                  <div class="v-center mt-1">
+                                    <ng-container [ngSwitch]="activity.type">
+                                      <i class="d-block i-icon i-task bgc-dark mr-2" *ngSwitchCase="'task'"></i>
+                                      <i class="d-block i-icon i-phone bgc-dark mr-2" *ngSwitchCase="'call'"></i>
+                                      <i class="d-block i-icon i-lunch bgc-dark mr-2" *ngSwitchCase="'meeting'"></i>
+                                      <i class="d-block i-icon i-message bgc-dark mr-2" *ngSwitchCase="'email'"></i>
+                                      <i class="d-block i-icon i-sms-sent bgc-dark mr-2" *ngSwitchCase="'text'"></i>
+                                    </ng-container>
+                                    <span class="f-4 text-capitalize">{{
+                                      activity.type
+                                      }}</span>
+                                  </div>
+                                </div>
+                                <div class="ml-5" *ngIf="activity.set_recurrence">
+                                  <div class="f-4 fw-600 op-40">
+                                    {{ 'Recurrence' | translate }}
+                                  </div>
+                                  <div class="v-center mt-1">
+                                    <span class="f-4">{{
+                                      activity.recurrence_mode
+                                      }}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </ng-container>
+                          <ng-template #removedTaskTemplate>
+                            <div class="d-flex">
+                              <mat-icon class="mr-2">warning</mat-icon>
+                              <span translate>Can't see the detail as it is deleted.</span>
+                            </div>
+                          </ng-template>
+                        </div>
+                        <div class="history-detail emails-detail p-3 mt-3" *ngSwitchCase="'emails'">
+                          <div class="v-center justify-content-between mb-3">
+                            <div class="v-center">
+                              <div class="history-icon mr-1">
+                                <i class="act-icon act-{{ activity.data_type }}"></i>
+                              </div>
+                              <div class="">
+                                <ng-container [ngSwitch]="activity.data_type">
+                                  <span *ngSwitchCase="'emails'" translate>email</span>
+                                  <span *ngSwitchCase="'videos'" translate>video</span>
+                                  <span *ngSwitchCase="'pdfs'" translate>pdf</span>
+                                  <span *ngSwitchCase="'images'" translate>image</span>
+                                </ng-container>
+                              </div>
+                              <div class="v-center" *ngIf="
+                                  activity.assigned_contacts &&
+                                  activity.assigned_contacts.length > 0
+                                ">
+                                <div class="v-center">
+                                  <div class="d-flex align-items-start flex-wrap ml-5">
+                                    <div class="related-contact" *ngFor="
+                                        let contact of activity.assigned_contacts.slice(
+                                          0,
+                                          2
+                                        )
+                                      ">
+                                      <div class="contact" ngbDropdown>
+                                        <div
+                                          class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                          ngbDropdownToggle>
+                                          {{ contact.avatarName }}
+                                        </div>
+                                        <div ngbDropdownMenu class="contact-list light px-2">
+                                          <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                                          [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                            <div class="v-center">
+                                              <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                                {{ contact.avatarName }}
+                                              </div>
+                                              <div class="ml-2">
+                                                <div class="f-2 font-weight-bold name">
+                                                  {{ contact.fullName }}
+                                                </div>
+                                                <div class="f-1">
+                                                  {{ contact.email }}
+                                                </div>
+                                                <div class="f-1">
+                                                  {{ contact.cell_phone }}
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                          </a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <ng-container *ngIf="activity.assigned_contacts.length > 2">
+                                      <div class="contact related-contact" ngbDropdown>
+                                        <div
+                                          class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                          ngbDropdownToggle>
+                                          +{{ activity.assigned_contacts.length - 2 }}
+                                        </div>
+                                        <div ngbDropdownMenu class="contact-list light px-2">
+                                          <div class="v-center" *ngFor="
+                                              let contact of activity.assigned_contacts.slice(
+                                                2,
+                                                activity.assigned_contacts.length
+                                              )
+                                            ">
+                                            <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                                            [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                              <div class="v-center">
+                                                <div
+                                                  class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                                  {{ contact.avatarName }}
+                                                </div>
+                                                <div class="ml-2">
+                                                  <div class="f-2 font-weight-bold name">
+                                                    {{ contact.fullName }}
+                                                  </div>
+                                                  <div class="f-1">
+                                                    {{ contact.email }}
+                                                  </div>
+                                                  <div class="f-1">
+                                                    {{ contact.cell_phone }}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                            </a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </ng-container>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="ml-auto f-3 op-56 mr-span">
+                              {{ activity.send_time | date: 'MMM d, hh:mm a' }}
+                            </div>
+                          </div>
+
+                          <ng-container *ngIf="activity.data_type === 'emails'">
+                            <app-email-timelines [email]="activity"
+                              [loading]="getActivityByGroup(activity._id, activity.data_type)?.loadingTracker"
+                              [timelines]="groupActions[activity._id]" [expanded]="dGroups.indexOf(activity._id) !== -1"
+                              [materials]="dataObj.materials"
+                              (onExpand)="showMoreDetail(activity._id, getActivityByGroup(activity._id, activity.data_type))"
+                              (onCollapse)="hideMoreDetail(activity._id)" [contacts]="deal?.contacts || []">
+                            </app-email-timelines>
+                          </ng-container>
+                          <ng-container *ngIf="activity.data_type !== 'emails'">
+                            <app-material-timelines [type]="activity.data_type"
+                              [material]="dataObj.materials[activity._id]"
+                              [timelines]="groupActions[activity.activity_id]" [expanded]="
+                                dGroups.indexOf(activity.activity_id) !== -1
+                              "
+                              (onExpand)="showMoreDetail(activity._id, getActivityByGroup(activity._id, activity.data_type))"
+                              (onCollapse)="hideMoreDetail(activity._id)">
+                            </app-material-timelines>
+                          </ng-container>
+                        </div>
+                        <div class="history-detail notes-detail p-3 mt-3" *ngSwitchCase="'notes'">
+                          <div class="v-center justify-content-between mb-3">
+                            <div class="v-center">
+                              <div class="history-icon mr-1">
+                                <i class="act-icon act-notes"></i>
+                              </div>
+                              <div class="">{{ 'note' | translate }}</div>
+                              <div class="v-center" *ngIf="
+                                  activity.assigned_contacts &&
+                                  activity.assigned_contacts.length > 0
+                                ">
+                                <div class="v-center">
+                                  <div class="d-flex align-items-start flex-wrap ml-5">
+                                    <div class="related-contact" *ngFor="
+                                        let contact of activity.assigned_contacts.slice(
+                                          0,
+                                          2
+                                        )
+                                      ">
+                                      <div class="contact" ngbDropdown>
+                                        <div
+                                          class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                          ngbDropdownToggle>
+                                          {{ contact.avatarName }}
+                                        </div>
+                                        <div ngbDropdownMenu class="contact-list light px-2">
+                                          <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                                          [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                            <div class="v-center">
+                                              <div class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                                {{ contact.avatarName }}
+                                              </div>
+                                              <div class="ml-2">
+                                                <div class="f-2 font-weight-bold name">
+                                                  {{ contact.fullName }}
+                                                </div>
+                                                <div class="f-1">
+                                                  {{ contact.email }}
+                                                </div>
+                                                <div class="f-1">
+                                                  {{ contact.cell_phone }}
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                          </a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <ng-container *ngIf="activity.assigned_contacts.length > 2">
+                                      <div class="contact related-contact" ngbDropdown>
+                                        <div
+                                          class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                          ngbDropdownToggle>
+                                          +{{ activity.assigned_contacts.length - 2 }}
+                                        </div>
+                                        <div ngbDropdownMenu class="contact-list light px-2">
+                                          <div class="v-center" *ngFor="
+                                              let contact of activity.assigned_contacts.slice(
+                                                2,
+                                                activity.assigned_contacts.length
+                                              )
+                                            ">
+                                            <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                                            [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                              <div class="v-center">
+                                                <div
+                                                  class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                                  {{ contact.avatarName }}
+                                                </div>
+                                                <div class="ml-2">
+                                                  <div class="f-2 font-weight-bold name">
+                                                    {{ contact.fullName }}
+                                                  </div>
+                                                  <div class="f-1">
+                                                    {{ contact.email }}
+                                                  </div>
+                                                  <div class="f-1">
+                                                    {{ contact.cell_phone }}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                            </a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </ng-container>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="ml-auto f-3 op-56">
+                              {{ activity.updated_at | date: 'MMM d, hh:mm a' }}
+                            </div>
+                            <div ngbDropdown class="button-more p-1 rounded" placement="bottom-right">
+                              <a class="d-flex c-pointer no-carot" ngbDropdownToggle>
+                                <i class="i-icon i-menu-more bg-dark" aria-hidden="true"></i>
+                              </a>
+                              <div ngbDropdownMenu class="light py-1">
+                                <button class="v-center border-0 py-1 c-dark dropdown-item"
+                                  (click)="updateNoteDetail(activity)">
+                                  <i class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i>
+                                  <span class="ml-3 f-2 font-weight-bold" translate>Edit</span>
+                                </button>
+                                <button class="v-center border-0 py-1 c-dark dropdown-item"
+                                  (click)="deleteNoteDetail(activity)">
+                                  <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+                                  <span class="ml-3 f-2 font-weight-bold" translate>Delete</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="main-history-item">
+                            <app-accordion [showIndicator]="show" [hideIndicator]="hide" #noteActivityItem>
+                              <ng-template #show>
+                                <div class="content f-6 position-relative w-100">
+                                  <!--                                  <div *ngIf="activity.audio">-->
+                                  <!--                                    <audio controls class="flex-grow-1 w-100">-->
+                                  <!--                                      <source-->
+                                  <!--                                        [src]="-->
+                                  <!--                                          domSanitizer.bypassSecurityTrustUrl(-->
+                                  <!--                                            activity.audio-->
+                                  <!--                                          )-->
+                                  <!--                                        "-->
+                                  <!--                                        type="audio/wav"-->
+                                  <!--                                      />-->
+                                  <!--                                    </audio>-->
+                                  <!--                                  </div>-->
+                                  <div class="note-content" [innerHTML]="
+                                      activity.content ||
+                                      ''
+                                      | removeEntity
+                                      | shorten: 300:'...'
+                                    ">
+                                  </div>
+                                  <div class="f-3 fw-600 c-blue mt-1" translate>
+                                    Expand
+                                  </div>
+                                </div>
+                              </ng-template>
+                              <ng-template #hide>
+                                <div class="content w-100">
+                                  <div *ngIf="activity.audio">
+                                    <audio controls preload="metadata" class="flex-grow-1 w-100">
+                                      <source [src]="
+                                          domSanitizer.bypassSecurityTrustUrl(
+                                            activity.audio
+                                          )
+                                        " type="audio/wav" />
+                                    </audio>
+                                  </div>
+                                  <div class="f-6 note-content opened" [innerHTML]="activity.content"></div>
+                                  <div class="f-3 fw-600 c-blue mt-1" translate>
+                                    Collapse
+                                  </div>
+                                </div>
+                              </ng-template>
+                            </app-accordion>
+                          </div>
+                        </div>
+                      </div>
+                    </cdk-virtual-scroll-viewport>
+                  </div>
+                </ng-container>
+              </ng-container>
+
+              <ng-template #otherDetailList>
+                <ng-container
+                  *ngIf="getMainTimelines(tab.id).length == 0 && !(tab.id == 'follow_ups' || tab.id == 'emails' || tab.id == 'notes')">
+                  <div class="empty-list">
+                    <div class="object-icon v-center">
+                      <i class="i-icon i-{{ tab.id }} d-block bgc-dark"></i>
+                    </div>
+                    <h4 class="font-weight-bold mt-4 mb-3" [translateParams]="{ label: tab.id | lowercase }" translate>
+                      There are no label with this deal yet
+                    </h4>
+                  </div>
+                </ng-container>
+                <div class="cdk-scroll-viewport" *ngIf="getMainTimelines(tab.id).length">
+                  <cdk-virtual-scroll-viewport [itemSize]="3" minBufferPx="200" maxBufferPx="400"
+                    class="scroll-viewport">
+                    <div *cdkVirtualFor="let activity of getMainTimelines(tab.id); let i = index">
+                      <ng-container [ngSwitch]="tab.id">
+                        <div *ngSwitchCase="'texts'">
+                          <div *ngIf="activity.type == 'texts'">
+                            <div class="history-detail {{
+                                activity.type
+                              }}-detail p-3 mt-3">
+                              <div class="v-center justify-content-between mb-3">
+                                <div class="v-center">
+                                  <div class="history-icon mr-3">
+                                    <i class="act-icon act-{{ activity.type }} {{
+                                        activity[activity.type]?.type
+                                      }}"></i>
+                                  </div>
+                                  <div class="f-6">
+                                    <span>{{ activity.content }}</span>
+                                  </div>
+                                  <div class="v-center" *ngIf="
+                                      activity.assigned_contacts &&
+                                      activity.assigned_contacts.length > 0
+                                    ">
+                                    <div class="v-center">
+                                      <div class="d-flex align-items-start flex-wrap ml-5">
+                                        <div class="related-contact" *ngFor="
+                                            let contact of activity.assigned_contacts.slice(
+                                              0,
+                                              2
+                                            )
+                                          ">
+                                          <div class="contact" ngbDropdown>
+                                            <div
+                                              class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                              ngbDropdownToggle>
+                                              {{ contact.avatarName }}
+                                            </div>
+                                            <div ngbDropdownMenu class="contact-list light px-2">
+                                              <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                                              [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                                <div class="v-center">
+                                                  <div
+                                                    class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                                    {{ contact.avatarName }}
+                                                  </div>
+                                                  <div class="ml-2">
+                                                    <div class="f-2 font-weight-bold name">
+                                                      {{ contact.fullName }}
+                                                    </div>
+                                                    <div class="f-1">
+                                                      {{ contact.email }}
+                                                    </div>
+                                                    <div class="f-1">
+                                                      {{ contact.cell_phone }}
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                                <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                              </a>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <ng-container *ngIf="
+                                            activity.assigned_contacts.length > 2
+                                          ">
+                                          <div class="contact related-contact" ngbDropdown>
+                                            <div
+                                              class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                              ngbDropdownToggle>
+                                              +{{
+                                              activity.assigned_contacts.length - 2
+                                              }}
+                                            </div>
+                                            <div ngbDropdownMenu class="contact-list light px-2">
+                                              <div class="v-center" *ngFor="
+                                                  let contact of activity.assigned_contacts.slice(
+                                                    2,
+                                                    activity.assigned_contacts.length
+                                                  )
+                                                ">
+                                                <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                                                [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                                  <div class="v-center">
+                                                    <div
+                                                      class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                                      {{ contact.avatarName }}
+                                                    </div>
+                                                    <div class="ml-2">
+                                                      <div class="f-2 font-weight-bold name">
+                                                        {{ contact.fullName }}
+                                                      </div>
+                                                      <div class="f-1">
+                                                        {{ contact.email }}
+                                                      </div>
+                                                      <div class="f-1">
+                                                        {{ contact.cell_phone }}
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                                </a>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </ng-container>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="v-center ml-auto mr-span">
+                                  <span class="f-3 op-56">{{
+                                    activity.created_at | date: 'MMM d, hh:mm a'
+                                    }}</span>
+                                </div>
+                              </div>
+                              <ng-container *ngIf="activity.type === 'texts'">
+                                <app-text-timelines [text]="dataObj.texts[activity.texts]"
+                                  [loading]="activity.loadingTracker"
+                                  [timelines]="groupActions[activity.texts]"
+                                  [expanded]="dGroups.indexOf(activity.texts) !== -1" [materials]="dataObj.materials"
+                                  (onExpand)="showMoreDetail(activity.texts, activity)"
+                                  (onCollapse)="hideMoreDetail(activity.texts)" [showContact]="true"
+                                  [contacts]="deal?.contacts || []" [contactInfo]="contactMainInfo">
+                                </app-text-timelines>
+                              </ng-container>
+                            </div>
+                          </div>
+                        </div>
+                        <div *ngSwitchCase="'appointments'">
+                          <div *ngIf="activity.type == 'appointments'">
+                            <div class="history-detail {{
+                                activity.type
+                              }}-detail p-3 mt-3">
+                              <div class="v-center justify-content-between mb-3">
+                                <div class="v-center">
+                                  <div class="history-icon mr-3">
+                                    <i class="act-icon act-appointments"></i>
+                                  </div>
+                                  <div class="f-6">
+                                    <span>{{ activity.content }}</span>
+                                  </div>
+                                  <div class="v-center" *ngIf="
+                                      activity.assigned_contacts &&
+                                      activity.assigned_contacts.length > 0
+                                    ">
+                                    <div class="v-center">
+                                      <div class="d-flex align-items-start flex-wrap ml-5">
+                                        <div class="related-contact" *ngFor="
+                                            let contact of activity.assigned_contacts.slice(
+                                              0,
+                                              2
+                                            )
+                                          ">
+                                          <div class="contact" ngbDropdown>
+                                            <div
+                                              class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                              ngbDropdownToggle>
+                                              {{ contact.avatarName }}
+                                            </div>
+                                            <div ngbDropdownMenu class="contact-list light px-2">
+                                              <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                                              [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                                <div class="v-center">
+                                                  <div
+                                                    class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                                    {{ contact.avatarName }}
+                                                  </div>
+                                                  <div class="ml-2">
+                                                    <div class="f-2 font-weight-bold name">
+                                                      {{ contact.fullName }}
+                                                    </div>
+                                                    <div class="f-1">
+                                                      {{ contact.email }}
+                                                    </div>
+                                                    <div class="f-1">
+                                                      {{ contact.cell_phone }}
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                                <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                              </a>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <ng-container *ngIf="
+                                            activity.assigned_contacts.length > 2
+                                          ">
+                                          <div class="contact related-contact" ngbDropdown>
+                                            <div
+                                              class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                              ngbDropdownToggle>
+                                              +{{
+                                              activity.assigned_contacts.length - 2
+                                              }}
+                                            </div>
+                                            <div ngbDropdownMenu class="contact-list light px-2">
+                                              <div class="v-center" *ngFor="
+                                                  let contact of activity.assigned_contacts.slice(
+                                                    2,
+                                                    activity.assigned_contacts.length
+                                                  )
+                                                ">
+                                                <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                                                [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                                  <div class="v-center">
+                                                    <div
+                                                      class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                                      {{ contact.avatarName }}
+                                                    </div>
+                                                    <div class="ml-2">
+                                                      <div class="f-2 font-weight-bold name">
+                                                        {{ contact.fullName }}
+                                                      </div>
+                                                      <div class="f-1">
+                                                        {{ contact.email }}
+                                                      </div>
+                                                      <div class="f-1">
+                                                        {{ contact.cell_phone }}
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                                </a>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </ng-container>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="v-center">
+                                  <span class="f-3 op-56 ml-auto">{{
+                                    activity.created_at | date: 'MMM d, hh:mm a'
+                                    }}</span>
+                                  <div ngbDropdown class="button-more p-1 rounded" placement="bottom-right">
+                                    <a class="d-flex c-pointer no-carot" ngbDropdownToggle>
+                                      <i class="i-icon i-menu-more bg-dark" aria-hidden="true"></i>
+                                    </a>
+                                    <div ngbDropdownMenu class="light py-1">
+                                      <button class="v-center border-0 py-1 c-dark dropdown-item"
+                                        (click)="removeAppointment(activity)">
+                                        <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+                                        <span class="ml-3 f-2 font-weight-bold" translate>Delete activity</span>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <ng-container *ngIf="
+                                  dataObj.appointments[activity.appointments];
+                                  else removedAppointmentTemplate
+                                ">
+                                <a class="font-weight-bold c-pointer ci-dark td-none appt-title" (click)="
+                                    openDetailEvent(
+                                      dataObj.appointments[activity.appointments],
+                                      $event
+                                    )
+                                  ">
+                                  {{
+                                  dataObj.appointments[activity.appointments].title
+                                  }}
+                                </a>
+                                <div class="main-history-item">
+                                  <div class="summary position-relative">
+                                    <div class="f-6" [innerHTML]="
+                                        dataObj.appointments[activity.appointments]
+                                          .description || ''
+                                          | stripTags
+                                          | removeEntity
+                                          | shorten: 300:'...'
+                                          | makeRedirect
+                                      "></div>
+                                    <div class="gradient-bottom"></div>
+                                    <div class="f-3 fw-600 c-blue mt-1 c-pointer" (click)="showDetail($event)">
+                                      {{ 'Expand' | translate }}
+                                    </div>
+                                  </div>
+                                  <div class="detail">
+                                    <div class="f-6" [innerHTML]="
+                                        dataObj.appointments[activity.appointments]
+                                          .description || '' | makeRedirect
+                                      "></div>
+                                    <div class="f-3 fw-600 c-blue mt-1 c-pointer" (click)="hideDetail($event)">
+                                      {{ 'Collapse' | translate }}
+                                    </div>
+                                  </div>
+                                  <div class="v-center mt-3">
+                                    <div class="date">
+                                      <div class="f-4 fw-600 op-40">
+                                        {{ 'Date' | translate }}
+                                      </div>
+                                      <div class="v-center mt-1">
+                                        <i class="d-block i-icon i-calendar bgc-dark mr-2"></i>
+                                        <span class="f-4">{{
+                                          dataObj.appointments[activity.appointments]
+                                          .due_start | date: 'MM/dd/yyyy'
+                                          }}</span>
+                                      </div>
+                                    </div>
+                                    <div class="time ml-5">
+                                      <div class="f-4 fw-600 op-40">
+                                        {{ 'Time' | translate }}
+                                      </div>
+                                      <div class="v-center mt-1">
+                                        <i class="d-block i-icon i-timer bgc-dark mr-2"></i>
+                                        <span class="f-4">{{
+                                          getTime(
+                                          dataObj.appointments[
+                                          activity.appointments
+                                          ].due_start,
+                                          dataObj.appointments[
+                                          activity.appointments
+                                          ].due_end
+                                          )
+                                          }}</span>
+                                      </div>
+                                    </div>
+                                    <div class="location ml-5" *ngIf="
+                                        dataObj.appointments[activity.appointments]
+                                          .location
+                                      ">
+                                      <div class="f-4 fw-600 op-40">
+                                        {{ 'Location' | translate }}
+                                      </div>
+                                      <div class="v-center mt-1">
+                                        <i class="d-block i-icon i-location bgc-dark mr-2"></i>
+                                        <span class="f-4">{{
+                                          dataObj.appointments[activity.appointments]
+                                          .location
+                                          }}</span>
+                                      </div>
+                                    </div>
+                                    <div class="recurrence ml-5" *ngIf="
+                                        dataObj.appointments[activity.appointments]
+                                          .recurrence
+                                      ">
+                                      <div class="f-3 fw-600 op-40">
+                                        {{ 'Recurrence' | translate }}
+                                      </div>
+                                      <div class="v-center mt-1">
+                                        <i class="d-block i-icon i-calendar-recurrence bgc-dark mr-2"></i>
+                                        <span class="f-3">{{
+                                          dataObj.appointments[activity.appointments]
+                                          .recurrence
+                                          }}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="mt-4" *ngIf="
+                                      dataObj.appointments[activity.appointments]
+                                        .zoom_link
+                                    ">
+                                    <div class="f-4 fw-600 op-40">
+                                      {{ 'Zoom meeting' | translate }}
+                                    </div>
+                                    <div class="f-4 c-blue mt-1">
+                                      {{
+                                      dataObj.appointments[activity.appointments]
+                                      .zoom_link
+                                      }}
+                                    </div>
+                                  </div>
+                                </div>
+                              </ng-container>
+                              <ng-template #removedAppointmentTemplate>
+                                <div class="d-flex">
+                                  <mat-icon class="mr-2">warning</mat-icon>
+                                  <span translate>Can't see the detail as it is deleted.</span>
+                                </div>
+                              </ng-template>
+                            </div>
+                          </div>
+                        </div>
+                        <div *ngSwitchCase="'phone_logs'">
+                          <div *ngIf="activity.type == 'phone_logs'">
+                            <div class="history-detail {{
+                                activity.type
+                              }}-detail p-3 mt-3">
+                              <div class="v-center justify-content-between mb-3">
+                                <div class="v-center">
+                                  <div class="history-icon mr-3">
+                                    <i class="act-icon act-follow_ups"></i>
+                                  </div>
+                                  <div class="f-6">
+                                    <span>{{ activity.content }}</span>
+                                  </div>
+                                  <div class="v-center" *ngIf="
+                                      activity.assigned_contacts &&
+                                      activity.assigned_contacts.length > 0
+                                    ">
+                                    <div class="v-center">
+                                      <div class="d-flex align-items-start flex-wrap ml-5">
+                                        <div class="related-contact" *ngFor="
+                                            let contact of activity.assigned_contacts.slice(
+                                              0,
+                                              2
+                                            )
+                                          ">
+                                          <div class="contact" ngbDropdown>
+                                            <div
+                                              class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                              ngbDropdownToggle>
+                                              {{ contact.avatarName }}
+                                            </div>
+                                            <div ngbDropdownMenu class="contact-list light px-2">
+                                              <a class="d-flex justify-content-between c-dark text-decoration-none c-pointer"
+                                              [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                                <div class="v-center">
+                                                  <div
+                                                    class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                                    {{ contact.avatarName }}
+                                                  </div>
+                                                  <div class="ml-2">
+                                                    <div class="f-2 font-weight-bold name">
+                                                      {{ contact.fullName }}
+                                                    </div>
+                                                    <div class="f-1">
+                                                      {{ contact.email }}
+                                                    </div>
+                                                    <div class="f-1">
+                                                      {{ contact.cell_phone }}
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                                <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                              </a>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <ng-container *ngIf="
+                                            activity.assigned_contacts.length > 2
+                                          ">
+                                          <div class="contact related-contact" ngbDropdown>
+                                            <div
+                                              class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer"
+                                              ngbDropdownToggle>
+                                              +{{
+                                              activity.assigned_contacts.length - 2
+                                              }}
+                                            </div>
+                                            <div ngbDropdownMenu class="contact-list light px-2">
+                                              <div class="v-center" *ngFor="
+                                                  let contact of activity.assigned_contacts.slice(
+                                                    2,
+                                                    activity.assigned_contacts.length
+                                                  )
+                                                ">
+                                                <a class="d-flex justify-content-between w-100 c-dark text-decoration-none c-pointer"
+                                                [routerLink]="['/contacts/' + contact._id]" target="_blank">
+                                                  <div class="v-center">
+                                                    <div
+                                                      class="avatar bd bgc-dark text-white f-2 text-center rounded-circle">
+                                                      {{ contact.avatarName }}
+                                                    </div>
+                                                    <div class="ml-2">
+                                                      <div class="f-2 font-weight-bold name">
+                                                        {{ contact.fullName }}
+                                                      </div>
+                                                      <div class="f-1">
+                                                        {{ contact.email }}
+                                                      </div>
+                                                      <div class="f-1">
+                                                        {{ contact.cell_phone }}
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                                                </a>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </ng-container>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="v-center" *ngIf="dataObj.phone_logs[activity.phone_logs]?.label">
+                                    <span class="f-2 ml-2 badge badge-primary px-1 call-label">
+                                      {{ dataObj.phone_logs[activity.phone_logs]?.label }}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div class="v-center">
+                                  <span class="f-3 op-56 ml-auto">{{
+                                    activity.created_at | date: 'MMM d, hh:mm a'
+                                    }}</span>
+                                </div>
+                              </div>
+                              <ng-container *ngIf="dataObj.phone_logs[activity.phone_logs]">
+                                <div class="main-history-item">
+                                  <label class="f-4 fw-600 op-40 d-block" translate>Call note</label>
+                                  <div class="f-3 mt-1 call-note-content">
+                                    {{
+                                    dataObj.phone_logs[activity.phone_logs]?.content
+                                    }}
+                                  </div>
+                                </div>
+                              </ng-container>
+                              <div class="related-history-item" *ngIf="sub_calls[activity.phone_logs]?.length">
+                                <app-accordion [showIndicator]="show" [hideIndicator]="hide">
+                                  <ng-template #show>
+                                    <div class="content">
+                                      <div class="f-3 fw-600 c-blue mt-1">
+                                        {{ 'See details' | translate }}
+                                      </div>
+                                    </div>
+                                  </ng-template>
+                                  <ng-template #hide>
+                                    <div class="content w-100">
+                                      <ng-container *ngFor="
+                                          let log of sub_calls[activity.phone_logs];
+                                          let i = index
+                                        ">
+                                        <div class="f-6 v-center sub-log-header">
+                                          <div
+                                            class="avatar bd bgc-dark text-white f-2 text-center rounded-circle c-pointer mr-2">
+                                            {{ contacts[log.contact[0]]?.avatarName }}
+                                          </div>
+                                          <ng-container *ngIf="
+                                              log.answered;
+                                              else disconnectedStatus
+                                            ">
+                                            <span class="op-75">connected</span>
+                                            <span *ngIf="log.duration" class="ml-2 op-75 fw-600">
+                                              {{ log.duration * 1000 | timeDuration }}
+                                            </span>
+                                            <i class="i-icon i-call-connected d-block sm mx-2"></i>
+                                          </ng-container>
+                                          <ng-template #disconnectedStatus>
+                                            <span class="op-75">disconnected</span>
+                                            <i class="i-icon i-call-disconnected d-block sm mx-2"></i>
+                                          </ng-template>
+                                          <span class="op-75 fw-600 f-0">
+                                            {{ log.status }}
+                                          </span>
+                                          <span class="f-2 ml-2 badge badge-primary px-1 call-label" *ngIf="log.label">
+                                            {{ log.label }}
+                                          </span>
+                                          <span class="f-3 op-56 ml-auto">{{
+                                            log.created_at | date: 'MMM d, hh:mm a'
+                                            }}</span>
+                                        </div>
+                                        <div class="content mt-3" *ngIf="log.content">
+                                          <div class="f-4 fw-600 op-40">
+                                            {{ 'Call note' | translate }}
+                                          </div>
+                                          <div class="f-3 mt-1 call-note-content">
+                                            <span class="call-summary">
+                                              {{ log.content }}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </ng-container>
+                                      <div class="f-3 fw-600 c-blue mt-1">
+                                        {{ 'Close' | translate }}
+                                      </div>
+                                    </div>
+                                  </ng-template>
+                                </app-accordion>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div *ngSwitchCase="'automations'">
+                          <div class="history-detail {{ activity.type }}-detail p-3 mt-3"
+                            *ngIf="activity.type == 'automations'">
+                            <div class="v-center justify-content-between mb-3">
+                              <div class="v-center">
+                                <div class="history-icon mr-3">
+                                  <i class="act-icon act-{{ activity.type }}"></i>
+                                </div>
+                                <div class="f-6">
+                                  <span>{{ activity.content }}</span>
+                                </div>
+                              </div>
+                              <div class="v-center">
+                                <span class="f-3 op-56 ml-auto mr-span">{{
+                                  activity.updated_at | date: 'MMM d, hh:mm a'
+                                  }}</span>
+                              </div>
+                            </div>
+                            <div class="main-history-item">
+                              <div class="f-6 font-weight-bold">
+                                {{ automationDetails[activity._id]?.automation?.title }}
+                              </div>
+                              <app-accordion [showIndicator]="show" [hideIndicator]="hide"
+                                *ngIf="automationDetails[activity._id]?.sub_activity">
+                                <ng-template #show>
+                                  <div class="w-100 content f-6 position-relative">
+                                    <div class="f-3 fw-600 c-blue mt-1" translate>
+                                      Expand
+                                    </div>
+                                  </div>
+                                </ng-template>
+                                <ng-template #hide>
+                                  <div class="w-100 content">
+                                    <label class="session">Session</label>
+                                    <div class="v-center justify-content-between">
+                                      <div class="v-center">
+                                        <i class="act-icon act-automations sm"></i>
+                                        <div class="f-6 c-dark ml-2">
+                                          {{automationDetails[activity._id]?.sub_activity?.content}}</div>
+                                      </div>
+                                      <div class="f-3 op-56 c-dark">
+                                        {{automationDetails[activity._id]?.sub_activity?.created_at | datetimeFormat}}
+                                      </div>
+                                    </div>
+                                    <div class="f-3 fw-600 c-blue mt-1" translate>
+                                      Collapse
+                                    </div>
+                                  </div>
+                                </ng-template>
+                              </app-accordion>
+                              <div class="mt-2">
+                                <div class="content">
+                                  <div class="f-3 fw-600 c-blue c-pointer" translate
+                                    (click)="showDetailCompletedAutomation(activity)">
+                                    See detail
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </cdk-virtual-scroll-viewport>
+                </div>
+              </ng-template>
+            </ng-template>
+
+            <!--            <ng-container *ngIf="showingDetails.length == 0">-->
+            <!--              <div class="empty-list">-->
+            <!--                <div class="object-icon v-center">-->
+            <!--                  <i class="i-icon i-{{tab.id}} d-block bgc-dark"></i>-->
+            <!--                </div>-->
+            <!--                <h4 class="font-weight-bold mt-4 mb-3">-->
+            <!--                  <ng-container *ngIf="tab.id === 'follow_ups'; else anotherEmptyText">-->
+            <!--                    <ng-container [ngSwitch]="selectedTimeSort.id">-->
+            <!--                      <span *ngSwitchCase="'all'" translate>There are no tasks with this deal yet.</span>-->
+            <!--                      <span *ngSwitchCase="'overdue'" translate>There are no overdue tasks.</span>-->
+            <!--                      <span *ngSwitchCase="'today'" translate>There are no tasks today.</span>-->
+            <!--                      <span *ngSwitchCase="'tomorrow'" translate>There are no tasks tomorrow.</span>-->
+            <!--                      <span *ngSwitchCase="'this_week'" translate>There are no tasks for this week.</span>-->
+            <!--                      <span *ngSwitchCase="'next_week'" translate>There are no tasks for next week.</span>-->
+            <!--                    </ng-container>-->
+            <!--                  </ng-container>-->
+            <!--                  <ng-template #anotherEmptyText>-->
+            <!--                    <span [translateParams]="{label: activityType.label | lowercase}" translate>-->
+            <!--                      There are no label with this deal yet-->
+            <!--                    </span>-->
+            <!--                  </ng-template>-->
+            <!--                </h4>-->
+            <!--              </div>-->
+            <!--            </ng-container>-->
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="reload c-pointer" (click)="reloadLatest()">
+  <i class="i-icon i-refresh d-block bgc-white" [class.progressing]="loading"></i>
+</div>
+
+<ng-template #appointmentPortalContent>
+  <div [class.d-none]="loadingAppointment" class="w-100">
+    <app-calendar-event [event]="selectedAppointment" (onClose)="closeOverlay($event)" class="w-100" [hasLink]="true">
+    </app-calendar-event>
+  </div>
+  <div *ngIf="loadingAppointment" class="loading-panel">
+    <div class="loader my-0"></div>
+    <div class="status-text">Loading Appointment...</div>
+  </div>
+</ng-template>

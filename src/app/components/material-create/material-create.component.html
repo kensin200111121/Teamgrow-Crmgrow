@@ -1,0 +1,238 @@
+<div class="v-center ml-4 justify-content-between">
+    <h1 mat-dialog-title translate>
+      Create
+    </h1>
+    <button class="v-center border-0 bgc-trans" mat-dialog-close>
+        <i class="d-block i-icon i-close bgc-dark"></i>
+    </button>
+</div>
+<mat-dialog-content>
+    <div class="px-3" *ngIf="isStep == 1">
+        <div class="v-center justify-content-between mb-4">
+            <app-slide-tab [tabs]="tabs" [selected]="selectedTab" (onChange)="changeTab($event)" [onlyEmit]="true">
+            </app-slide-tab>
+        </div>
+        <ng-container *ngIf="selectedTab.id === 'video'">
+            <div class="d-sm-flex d-block upload-step">
+                <div class="step-body-1" >
+                    <div class="local-video text-center mt-4"
+                        [ngClass]="{'file-over': overFile}"
+                        ng2FileDrop [uploader]="videoUploader"
+                        (dragover)="activeFileZone($event)"
+                        (dragenter)="activeFileZone($event)"
+                        (dragend)="disableFileZone($event)"
+                        (dragleave)="disableFileZone($event)"
+                        (drop)="disableFileZone($event)"
+                        (click)="openFileDialog('video')"
+                        (fileOver)="fileDrop($event, 'video')"
+                    >
+                        <input [attr.data-name]="'video-upload-input'" type="file" style="display: none;" ng2FileSelect [uploader]="videoUploader" accept=".mp4, .mov"
+                            (change)="fileChange($event, 'video')" #videoFile />
+                        <div class="v-center" data-name="material-upload-video">
+                          <i class="i-icon i-upload-video sm d-block bgc-dark"></i>
+                          <div class="f-6 font-weight-bold c-dark ml-2" translate>
+                            Upload your video
+                          </div>
+                        </div>
+                        <p class="f-4 description-text mx-auto my-3" translate>Drag and drop your video in the area or click to select it from your local device</p>
+                    </div>
+                    <span class="f-4 description-text d-block mt-2" translate>You can upload only MP4 and MOV file types!</span>
+                    <div class="f-4 font-weight-bold text-c-dark" translate>or</div>
+                    <span class="f-4 font-weight-bold text-c-dark" translate>Copy a YouTube or Vimeo link and paste below to bring that video into crmgrow.</span>
+                    <div class="web-video my-3">
+                        <img [src]="sspaService.toAsset('img/youtube.svg')">
+                        <span class="f-4 font-weight-bold text-c-dark mx-4" translate>or</span>
+                        <img [src]="sspaService.toAsset('img/vimeo.svg')">
+                    </div>
+                    <div class="form-group has-feedback mb-4 position-relative">
+                        <input class="f-2 form-control pr-4" type="text"
+                            id="step-1-link" name="video_link"
+                            placeholder="eg. https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                            required [(ngModel)]="video.url" #video_link="ngModel"
+                            (ngModelChange)="checkVideoUrl()"
+                        >
+                        <img class="check-spinner" [src]="sspaService.toAsset('img/spinner.gif')" alt="" *ngIf="socialVideoLoading">
+                    </div>
+                    <span class="f-4 description-text d-block mt-2" translate>Maximum file size 1024MB.</span>
+                </div>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="selectedTab.id === 'pdf'">
+            <div class="d-sm-flex d-block upload-step">
+                <div class="step-body-1 mb-40" >
+                    <div class="local-video text-center mt-4"
+                        [ngClass]="{'file-over': overFile}"
+                        (dragover)="activeFileZone($event)"
+                        (dragenter)="activeFileZone($event)"
+                        (dragend)="disableFileZone($event)"
+                        (dragleave)="disableFileZone($event)"
+                        (drop)="disableFileZone($event)"
+                        ng2FileDrop [uploader]="pdfUploader"
+                        (click)="openFileDialog('pdf')"
+                        (fileOver)="fileDrop($event, 'pdf')"
+                    >
+                        <input [attr.data-name]="'pdf-upload-input'" type="file" style="display: none;" ng2FileSelect [uploader]="pdfUploader" accept=".pdf"
+                            (change)="fileChange($event, 'pdf')" #pdfFile />
+                        <div class="v-center">
+                          <i class="i-icon i-upload-video sm d-block bgc-dark"></i>
+                          <div class="f-6 font-weight-bold c-dark ml-2" translate>
+                            Upload your .PDF file
+                          </div>
+                        </div>
+                        <p class="f-4 description-text mx-auto my-4" translate>Drag and drop your pdf in the area or click to select it from your local device</p>
+                    </div>
+                    <span class="f-4 description-text d-block mt-2" translate>You can upload only PDF file types!</span>
+                </div>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="selectedTab.id === 'image'">
+            <div class="d-sm-flex d-block upload-step">
+                <div class="step-body-1">
+                    <div class="local-video text-center mt-4"
+                        [ngClass]="{'file-over': overFile}"
+                        (dragover)="activeFileZone($event)"
+                        (dragenter)="activeFileZone($event)"
+                        (dragend)="disableFileZone($event)"
+                        (dragleave)="disableFileZone($event)"
+                        (drop)="disableFileZone($event)"
+                        ng2FileDrop [uploader]="imageUploader"
+                        (click)="openFileDialog('image')"
+                        (fileOver)="fileDrop($event, 'image')"
+                    >
+                        <input [attr.data-name]="'image-upload-input'" type="file" style="display: none;" ng2FileSelect [uploader]="imageUploader" accept="image/*"
+                            (change)="fileChange($event, 'image')" #imageFile multiple />
+                        <div class="v-center">
+                          <i class="i-icon i-upload-video sm d-block bgc-dark"></i>
+                          <div class="f-6 font-weight-bold c-dark ml-2" translate>
+                            Upload your image
+                          </div>
+                        </div>
+                        <p class="f-4 description-text mx-auto my-3" translate>Drag and drop your images in the area or click to select it from your local device</p>
+                    </div>
+                    <span class="f-4 description-text d-block mt-2" translate>You can select more than one images so can show slide view for several images!</span>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+    <div class="px-3" *ngIf="isStep == 2">
+        <div class="d-sm-flex d-block upload-step">
+            <ng-container *ngIf="selectedTab.id === 'video'">
+                <div class="step-body-2">
+                    <form
+                        #detailForm="ngForm"
+                        (ngSubmit)="submitted = true; detailForm.form.valid ? finishUpload('video') : false"
+                        [class.was-validated]="submitted"
+                        id="upload-form"
+                    >
+                        <div class="form-group has-feedback mb-4" *ngIf="videoType == 'web'">
+                            <label class="f-1 font-weight-bold text-uppercase small-label" for="step-2-link" translate>video link</label>
+                            <input class="f-2 form-control" type="text" id="step-2-link" name="video_link"
+                                disabled [(ngModel)]="video.url" #video_link="ngModel"
+                            >
+                        </div>
+                        <div class="video-default mb-4">
+                            <span class="f-1 font-weight-bold text-uppercase small-label" *ngIf="videoType == 'web'" translate>original title</span>
+                            <span class="d-flex f-6 font-weight-bold text-c-dark mb-4" *ngIf="videoType == 'web'">{{video.title}}</span>
+                            <div class="thumbnail">
+                                <img [src]="video.thumbnail">
+                                <a class="v-center justify-content-center bgc-blue c-pointer edit-thumbnail" (click)="openPreviewDialog('video')"><i class="d-block i-icon i-edit bgc-white"></i></a>
+                            </div>
+                        </div>
+                        <div class="form-group has-feedback mb-4">
+                            <label class="f-1 font-weight-bold text-uppercase small-label" for="title" translate>name</label>
+                            <input class="f-2 form-control" type="text" id="title" name="video_title"
+                                [placeholder]="'Type a title for this video' | translate"
+                                [(ngModel)]="video.title" #video_title="ngModel"
+                                [required]="videoType != 'web'"
+                            >
+                        </div>
+                    </form>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="selectedTab.id === 'pdf'">
+                <div class="step-body-2">
+                    <form
+                        #detailForm="ngForm"
+                        (ngSubmit)="submitted = true; detailForm.form.valid ? finishUpload('pdf') : false"
+                        [class.was-validated]="submitted"
+                        id="upload-form"
+                    >
+                        <div class="video-default mb-4">
+                            <div class="thumbnail" id="pdf-selector">
+                                <div class="loader" *ngIf="thumbnail_loading"></div>
+                                <img class="image" src="{{pdf.preview}}">
+                                <a class="v-center justify-content-center bgc-blue c-pointer edit-thumbnail" (click)="openPreviewDialog('pdf')" *ngIf="pdf.preview">
+                                    <i class="d-block i-icon i-edit bgc-white"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group has-feedback mb-4">
+                            <label class="f-1 font-weight-bold text-uppercase small-label" for="title" translate>name</label>
+                            <input class="f-2 form-control" type="text" id="title" name="pdf_title"
+                                [placeholder]="'Type a title for this pdf' | translate"
+                                [(ngModel)]="pdf.title" #pdf_title="ngModel"
+                                required
+                            >
+                        </div>
+                        <span class="f-3 font-weight-bold text-c-dark" translate>Select PDF View Mode</span>
+                        <div class="row mx-0 mt-2 themes">
+                            <div class="select-view-mode">
+                                <div class="mode-item" [class.selected-mode]="pdf.view_mode==='scroll'" (click)="pdf.view_mode = 'scroll'">
+                                    <img [src]="sspaService.toAsset('img/layout_scroll.svg')">
+                                    <div class="mt-2">
+                                        <span class="f-3 fw-600 d-block">Scroll View Mode</span>
+                                        <span class="f-3 mt-1">Visitors can read the pdf by scrolling.</span>
+                                    </div>
+                                </div>
+                                <div class="mode-item" [class.selected-mode]="pdf.view_mode==='bookfold'" (click)="pdf.view_mode = 'bookfold'">
+                                    <img [src]="sspaService.toAsset('img/layout_page.svg')">
+                                    <div class="mt-2">
+                                        <span class="f-3 fw-600 d-block">Bookfold View Mode</span>
+                                        <span class="f-3 mt-1">Visitors can read the pdf page by page by clicking buttons.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="selectedTab.id === 'image'">
+                <div class="step-body-2" [class.active]="isStep == 2">
+                    <form
+                        #detailForm="ngForm"
+                        (ngSubmit)="submitted = true; detailForm.form.valid ? finishUpload('image') : false"
+                        [class.was-validated]="submitted"
+                        id="upload-form"
+                    >
+                        <div class="video-default mb-4">
+                            <div class="thumbnail" id="image-selector">
+                                <img class="image" src="{{image.preview}}">
+                                <a class="v-center justify-content-center bgc-blue c-pointer edit-thumbnail" (click)="openPreviewDialog('image')"><i class="d-block i-icon i-edit bgc-white"></i></a>
+                            </div>
+                        </div>
+                        <div class="form-group has-feedback mb-4">
+                            <label class="f-1 font-weight-bold text-uppercase small-label" for="title" translate>name</label>
+                            <input class="f-2 form-control" type="text" id="title" name="image_title"
+                                [placeholder]="'Type a title for this image' | translate"
+                                [(ngModel)]="image.title" #image_title="ngModel"
+                                required
+                            >
+                        </div>
+                        <div class="video-description">
+                        </div>
+                    </form>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <div class="v-center justify-content-end w-100" *ngIf="isStep === 2">
+        <a class="btn f-6 font-weight-bold text-primary px-4 py-2 mr-3" (click)="backUpload()" translate>
+            Cancel
+        </a>
+        <button form="upload-form" [attr.data-action]="selectedTab.id + '-upload-next-btn'" class="btn btn-blue f-6 font-weight-bold text-white px-4 py-2" [class.loading]="uploading || uploadingChunks || mergingChunks || savingData" translate>
+            Upload
+        </button>
+    </div>
+</mat-dialog-actions>

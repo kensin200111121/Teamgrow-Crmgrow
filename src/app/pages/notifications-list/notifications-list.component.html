@@ -1,0 +1,624 @@
+<div class="page-content">
+  <div class="notifications-list">
+    <div *ngIf="notifications.length; else emptyTemplate">
+      <table class="w-100 page-table" mat-table multiTemplateDataRows
+        [dataSource]="notifications | paginate: {id: 'notifications', itemsPerPage: 15, currentPage: page, totalItems: total}">
+
+        <ng-container matColumnDef="loader-cell">
+          <th mat-header-cell *matHeaderCellDef colspan="9" class="loader-cell">
+            <div class="updating-status" *ngIf="loading || deleting || updating">
+              {{loading ? 'Loading' : (deleting ? 'Deleting' : (updating ? 'Marking as read' : ''))}}
+            </div>
+          </th>
+        </ng-container>
+
+        <ng-container matColumnDef="select">
+          <ng-container *matHeaderCellDef>
+            <!-- <th mat-header-cell
+              *ngIf="!selectedIds.length; else selectBox" class="border-bottom-0 empty-header select-cell">
+            </th>
+            <ng-template #selectBox>
+              <th mat-header-cell
+                class="pl-1 select-cell">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox"
+                    class="custom-control-input"
+                    id="selectAllNotifications"
+                    (change)="$event ? masterToggle() : null"
+                    [checked]="isAllSelected()" />
+                  <label class="custom-control-label"
+                    for="selectAllNotifications"></label>
+                </div>
+              </th>
+            </ng-template> -->
+            <th mat-header-cell class="pl-1 select-cell header-row">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="selectAllNotifications"
+                  (change)="$event ? masterToggle() : null" [checked]="isAllSelected_Page()" />
+                <label class="custom-control-label" for="selectAllNotifications"></label>
+              </div>
+            </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let item" class="pl-1 select-cell pt-3">
+            <div class="custom-control custom-checkbox mt-0">
+              <input type="checkbox" class="custom-control-input" id="notification-{{item._id}}" (change)="toggle(item)"
+                [checked]="isSelected(item)" />
+              <label class="custom-control-label" for="notification-{{item._id}}"></label>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="icon">
+          <ng-container *matHeaderCellDef>
+            <!-- <th mat-header-cell
+              *ngIf="!selectedIds.length; else toolHeader" class="border-bottom-0 empty-header icon-cell">
+            </th>
+            <ng-template #toolHeader>
+              <th mat-header-cell [colSpan]="9">
+                <div class="v-center">
+                  <span class="c-dark f-3 text-lowercase font-weight-bold">{{selectedIds.length}} selected</span>
+                  <app-actions-header
+                    [actions]="ACTIONS"
+                    (doCommand)="doAction($event)"
+                  ></app-actions-header>
+                </div>
+              </th>
+            </ng-template> -->
+            <th mat-header-cell [colSpan]="9" [class.disabled]="!selectedIds.length" class="header-row">
+              <div class="v-center">
+                <span class="c-dark f-3 text-lowercase font-weight-bold select-status">{{selectedIds.length}}
+                  selected</span>
+                <ng-containter *ngIf="isAllSelected()">
+                  <app-actions-header [actions]="SELECTALL_ACTIONS" (doCommand)="doAction($event)"></app-actions-header>
+                </ng-containter>
+                <ng-containter *ngIf="!selectedIds.length">
+                  <app-actions-header [actions]="DESELECT_ACTIONS" (doCommand)="doAction($event)"></app-actions-header>
+                </ng-containter>
+                <ng-container *ngIf="!isAllSelected() && selectedIds.length">
+                  <app-actions-header [actions]="ACTIONS" (doCommand)="doAction($event)"></app-actions-header>
+                </ng-container>
+              </div>
+            </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let item" class="icon-cell pt-2">
+            <div class="creator" *ngIf="item.creator && item.creator._id; else notificationIcon">
+              <img *ngIf="item.creator.picture_profile" [src]="item.creator.picture_profile">
+              <img *ngIf="!item.creator.picture_profile" [src]="sspaService.toAsset('img/avatar.svg')">
+            </div>
+            <ng-template #notificationIcon>
+              <div class="icon mr-2 n-icon mt-1">
+                <i class="i-icon lg d-block {{'n_' + (item.criteria || 'information')}}"></i>
+              </div>
+            </ng-template>
+          </td>
+        </ng-container>
+
+        <!-- Country Column -->
+        <ng-container matColumnDef="content">
+          <ng-container *matHeaderCellDef>
+            <!-- <th mat-header-cell class="notification-col border-bottom-0 empty-header" *ngIf="!selectedIds.length"></th> -->
+          </ng-container>
+          <td mat-cell *matCellDef="let item" class="notification-col pt-2">
+            <div class="content">
+              <div>
+                <div [innerHTML]="getTemplateTxt(item) | translate : {who: getCreator(item), team : getTeam(item), detail:getDetail(item), material : getMaterial(item), count : getContactCount(item), creator : getCreator(item), failed: getFailCount(item), all : getTotalCount(item), title : item.detail?.title || '', contact:getFullName(item)  }">
+                </div>
+                <span *ngIf='item.criteria=="team_invited"'>.<a
+                    [routerLink]="['/community']" class='ml-2' translate>Click here to
+                    review</a></span>
+                <span *ngIf='item.criteria=="share_template"'>.<a
+                    [routerLink]="['/community/' + item.team?._id+'/templates/root']" class='ml-2' translate>Click here to
+                    review</a></span>
+                <span *ngIf='item.criteria=="share_automation"'>.<a
+                    [routerLink]="['/community/' + item.team?._id+'/automations/root']" class='ml-2' translate>Click here to
+                    review</a></span>
+                <span *ngIf='item.criteria=="share_material"'>.<a
+                    [routerLink]="['/community/' + item.team?._id+'/materials/root']" class='ml-2' translate>Click here to
+                    review</a></span>
+
+                <span *ngIf="showingDetails.indexOf(item._id) == -1" class="more ml-3 f-2 fw-600 c-blue c-pointer td-underline" (click)="showDetails(item)" translate>Show Details</span>
+                <span *ngIf="showingDetails.indexOf(item._id) != -1" class="more ml-3 f-2 fw-600 c-blue c-pointer td-underline" (click)="showDetails(item)" translate>Hide Details</span>
+              </div>
+              <!-- <div *ngIf="item.description" [innerHTML]="item.description" class="description"></div> -->
+              <div class="time">{{item.created_at | timeago:live}}</div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Column -->
+        <ng-container matColumnDef="action">
+          <ng-container *matHeaderCellDef>
+            <!-- <th mat-header-cell
+          *ngIf="!selectedIds.length" class="border-bottom-0 empty-header"></th> -->
+          </ng-container>
+          <td mat-cell *matCellDef="let item">
+            <div ngbDropdown placement="bottom-right" class="ml-auto actions-groups bottom-right"
+              *ngIf="item.type === 'personal'">
+              <a class="notification-action no-carot c-pointer" ngbDropdownToggle>
+                <i class="i-icon i-menu-more bgc-blue d-block"></i>
+              </a>
+              <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
+                <ng-container *ngIf="!item.is_read; else unreadMark">
+                  <a class="dropdown-item f-3" (click)="setAsRead(item)" translate>Set as read</a>
+                </ng-container>
+                <ng-template #unreadMark>
+                  <!-- <a class="dropdown-item f-3" (click)="setAsUnread(item)">Set as unread</a> -->
+                </ng-template>
+                <a class="dropdown-item f-3" (click)="delete(item)" translate>Delete notification</a>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="DISPLAY_COLUMNS.length">
+            <div class="notification-detail" *ngIf="showingDetails.indexOf(element._id) !== -1">
+              <ng-container *ngIf="element.criteria === 'share_contact' || element.criteria === 'clone_contact' || element.criteria === 'transfer_contact'">
+                <div class="info-item">
+                  <span class="info-title" *ngIf="element.criteria === 'share_contact'" translate>
+                    Shared contact:
+                  </span>
+                  <span class="info-title" *ngIf="element.criteria === 'clone_contact'" translate>
+                    Cloned contact:
+                  </span>
+                  <span class="info-title" *ngIf="element.criteria === 'transfer_contact'" translate>
+                    Transferred contact:
+                  </span>
+                  <ng-container *ngFor="let contact of element.contact ">
+                    <div class="info-content">
+                      <span class="name">{{contact.first_name}} {{contact.last_name}}</span>
+                      <span class="email d-block">{{contact.email}}</span>
+                      <span class="phone">{{contact.cell_phone}}</span>
+                    </div>
+                  </ng-container>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="element.criteria === 'bulk_email'">
+                <ng-container *ngIf="element.deliver_status">
+                  <div class="d-flex">
+                    <div class="info-item mr-2">
+                      <span class="info-title" translate>
+                        Requested:
+                      </span>
+                      <div class="info-content">
+                        {{element.contact.length}} {{'Contacts' | translate}}
+                      </div>
+                    </div>
+                    <div class="info-item mr-2">
+                      <span class="info-title">
+                        Failed:
+                      </span>
+                      <div class="info-content">
+                        {{element.deliver_status.failed.length}} {{'Contacts' | translate}}
+                      </div>
+                    </div>
+                    <div class="info-item mr-2">
+                      <span class="info-title" translate>
+                        Succeed:
+                      </span>
+                      <div class="info-content">
+                        {{element.deliver_status.succeed.length}} {{'Contacts' | translate}}
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="element.detail">
+                  <div class="info-item">
+                    <span class="info-title" translate>
+                      Subject:
+                    </span>
+                    <div class="info-content">
+                      {{element.detail?.subject}}
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-title" translate>
+                      Content:
+                    </span>
+                    <div class="info-content" [innerHTML]="element.detail?.content | stripTags | removeEntity | shorten: 200: '...'">
+                    </div>
+                  </div>
+                  <div class="d-flex">
+                    <div class="info-item mr-2" *ngIf="element.detail.video_ids?.length">
+                      <span class="info-title" translate>
+                        Videos:
+                      </span>
+                      <div class="info-content">
+                        {{element.detail?.video_ids?.length}}
+                      </div>
+                    </div>
+                    <div class="info-item mr-2" *ngIf="element.detail.pdf_ids?.length">
+                      <span class="info-title">
+                        PDFs:
+                      </span>
+                      <div class="info-content">
+                        {{element.detail?.pdf_ids?.length}}
+                      </div>
+                    </div>
+                    <div class="info-item mr-2" *ngIf="element.detail.image_ids?.length">
+                      <span class="info-title" translate>
+                        Images:
+                      </span>
+                      <div class="info-content">
+                        {{element.detail?.image_ids?.length}}
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+                <a *ngIf="element.detail && element.process" [routerLink]="['/email-queue/' + element.process]"
+                  class="c-blue" translate>Go to more detail</a>
+              </ng-container>
+              <ng-container *ngIf="element.criteria === 'send_email'">
+                <ng-container *ngIf="element.detail">
+                  <div class="info-item">
+                    <span class="info-title" translate>
+                      Subject:
+                    </span>
+                    <div class="info-content">
+                      {{element.detail?.subject}}
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-title" translate>
+                      Content:
+                    </span>
+                    <div class="info-content" [innerHTML]="element.detail?.content | stripTags | removeEntity | shorten: 200: '...'">
+                    </div>
+                  </div>
+                  <div class="d-flex">
+                    <div class="info-item mr-2" *ngIf="element.detail.video_ids?.length">
+                      <span class="info-title" translate>
+                        Videos:
+                      </span>
+                      <div class="info-content">
+                        {{element.detail?.video_ids?.length}}
+                      </div>
+                    </div>
+                    <div class="info-item mr-2" *ngIf="element.detail.pdf_ids?.length">
+                      <span class="info-title">
+                        PDFs:
+                      </span>
+                      <div class="info-content">
+                        {{element.detail?.pdf_ids?.length}}
+                      </div>
+                    </div>
+                    <div class="info-item mr-2" *ngIf="element.detail.image_ids?.length">
+                      <span class="info-title" translate>
+                        Images:
+                      </span>
+                      <div class="info-content">
+                        {{element.detail?.image_ids?.length}}
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+                <a *ngIf="element.detail && element.process" [routerLink]="['/email-queue/' + element.process]"
+                  class="c-blue" translate>Go to more detail</a>
+              </ng-container>
+              <ng-container *ngIf="element.criteria === 'bulk_text' || element.criteria === 'bulk_sms'">
+                <ng-container *ngIf="element.deliver_status">
+                  <div class="d-flex">
+                    <div class="info-item mr-2">
+                      <span class="info-title" translate>
+                        Requested:
+                      </span>
+                      <div class="info-content">
+                        {{element.contact.length}} {{'Contacts' | translate}}
+                      </div>
+                    </div>
+                    <div class="info-item mr-2">
+                      <span class="info-title">
+                        Failed:
+                      </span>
+                      <div class="info-content">
+                        {{element.deliver_status.failed?.length || 0}} {{'Contacts' | translate}}
+                      </div>
+                    </div>
+                    <div class="info-item mr-2">
+                      <span class="info-title">
+                        Succeed:
+                      </span>
+                      <div class="info-content">
+                        {{element.deliver_status.succeed?.length || 0}} {{'Contacts' | translate}}
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="element.detail">
+                  <div class="info-item">
+                    <span class="info-title" translate>
+                      Content:
+                    </span>
+                    <div class="info-content">
+                      {{element.detail?.content}}
+                    </div>
+                  </div>
+                  <div class="d-flex">
+                    <div class="info-item mr-2" *ngIf="element.detail.video_ids?.length">
+                      <span class="info-title" translate>
+                        Videos:
+                      </span>
+                      <div class="info-content">
+                        {{element.detail?.video_ids?.length}}
+                      </div>
+                    </div>
+                    <div class="info-item mr-2" *ngIf="element.detail.pdf_ids?.length">
+                      <span class="info-title">
+                        PDFs:
+                      </span>
+                      <div class="info-content">
+                        {{element.detail?.pdf_ids?.length}}
+                      </div>
+                    </div>
+                    <div class="info-item mr-2" *ngIf="element.detail.image_ids?.length">
+                      <span class="info-title" translate>
+                        Images:
+                      </span>
+                      <div class="info-content">
+                        {{element.detail?.image_ids?.length}}
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+                <a *ngIf="element.detail && element.process" [routerLink]="['/text-queue/' + element.process]"
+                  class="c-blue" translate>Go to more detail</a>
+              </ng-container>
+              <ng-container *ngIf="element.criteria === 'send_text'">
+                <ng-container *ngIf="element.detail">
+                  <div class="info-item">
+                    <span class="info-title" translate>
+                      Content:
+                    </span>
+                    <div class="info-content">
+                      {{element.detail?.content}}
+                    </div>
+                  </div>
+                </ng-container>
+                <a *ngIf="element.detail && element.process" [routerLink]="['/text-queue/' + element.process]"
+                  class="c-blue" translate>Go to more detail</a>
+              </ng-container>
+              <ng-container *ngIf="element.criteria === 'assign_automation'">
+                <ng-container *ngIf="element.deliver_status">
+                  <div class="d-flex">
+                    <div class="info-item mr-2">
+                      <span class="info-title" translate>
+                        Requested:
+                      </span>
+                      <div class="info-content">
+                        {{element.contact.length}} {{'Contacts' | translate}}
+                      </div>
+                    </div>
+                    <div class="info-item mr-2">
+                      <span class="info-title">
+                        Failed:
+                      </span>
+                      <div class="info-content">
+                        {{element.deliver_status.failed?.length || 0}} {{'Contacts' | translate}}
+                      </div>
+                    </div>
+                    <div class="info-item mr-2">
+                      <span class="info-title">
+                        Succeed:
+                      </span>
+                      <div class="info-content">
+                        {{element.deliver_status.succeed?.length || 0}} {{'Contacts' | translate}}
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="element.detail">
+                  <div class="info-item">
+                    <span class="info-title" translate>
+                      Automation:
+                    </span>
+                    <div class="info-content">
+                      {{element.detail?.title}}
+                    </div>
+                  </div>
+                </ng-container>
+                <a *ngIf="element.process" [routerLink]="['/automation-queue/' + element.process]" class="c-blue" translate>Go to more detail</a>
+              </ng-container>
+              <ng-container *ngIf="element.criteria === 'automation_completed'">
+                <ng-container *ngIf="element.mainContact">
+                  <div class="info-item">
+                    <span class="info-title" translate>
+                      Assigned contact:
+                    </span>
+                    <div class="info-content">
+                      <a class="name"
+                        [routerLink]="['/contacts/' + element.mainContact?._id]">{{element.mainContact?.fullName}}</a>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="element.deal && element.deal.length">
+                  <div class="info-item">
+                    <span class="info-title" translate>
+                      Assigned deal:
+                    </span>
+                    <div class="info-content">
+                      <a class="name" [routerLink]="['/pipeline']" [queryParams]="{ deals: element.deal[0]?._id }">{{element.deal[0]?.title}}</a>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="element.detail?._id">
+                  <div class="info-item">
+                    <span class="info-title" translate>
+                      Assigned automation:
+                    </span>
+                    <div class="info-content">
+                      <a class="name"
+                        [routerLink]="['/autoflow/edit/' + element.detail?._id]">{{element.detail?.title}}</a>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="element.detail?.actions?.length">
+                  <a (click)="seeAutomationResult(element)" class="c-pointer" translate>See automation result</a>
+                </ng-container>
+              </ng-container>
+              <ng-container *ngIf="element.criteria === 'material_track'">
+                <div class="info-item">
+                  <span class="info-title" translate>
+                    Recipient:
+                  </span>
+                  <div class="info-content">
+                    <a class="name"
+                      [routerLink]="['/contacts/' + element.mainContact?._id]">{{element.mainContact?.fullName}}</a>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <span class="info-title">
+                    {{element.action?.object || Material}}:
+                  </span>
+                  <div class="info-content material">
+                    <div class="material-thumbnail">
+                      <img [src]="element.material?.preview" alt="element.material?.title">
+                    </div>
+                    <div class="material-title">{{element.material?.title}}</div>
+                    <div class="info-item" *ngIf="element.action?.object === 'video' && element.video_tracker">
+                      <app-play-timelines [data]="element.video_tracker" [duration]="element.material?.duration">
+                      </app-play-timelines>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="TEAM_NOTIFICATION_CRITERIAS.indexOf(element.criteria) !== -1">
+                <div class="info-item">
+                  <span class="info-title">
+                    {{getCreatorTitle(element.criteria) | translate}}
+                  </span>
+                  <div class="info-content">
+                    <span class="name">{{element.creator?.user_name}}</span>
+                    <span class="email d-block">{{element.creator?.email}}</span>
+                    <span class="phone">{{element.creator?.cell_phone}}</span>
+                  </div>
+                </div>
+                <div class="info-item" *ngIf="element.contact">
+                  <span class="info-title" translate>Contact:</span>
+                  <div class="info-content" *ngFor="let contact of element.contact">
+                    <span class="name" *ngIf="contact.first_name || contact.last_name; else unnamed">
+                      {{contact.first_name}} {{ contact.last_name }}
+                    </span>
+                    <ng-template #unnamed>
+                      <span class="name">Unnamed Contact</span>
+                    </ng-template>
+                    <span class="email d-block">{{contact.email}}</span>
+                    <span class="phone">{{contact.cell_phone}}</span>
+                  </div>
+                </div>
+                <div class="info-item" *ngIf="element.team">
+                  <span class="info-title" translate>Team:</span>
+                  <div class="info-content">
+                    <a [routerLink]="['/community/' + element.team?._id]">{{element.team?.name}}</a>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="EMAIL_NOTIFICATION_CRITERIAS.indexOf(element.criteria) !== -1">
+                <div class="info-item">
+                  <span class="info-title" translate>
+                    Recipient:
+                  </span>
+                  <div class="info-content">
+                    <a class="name"
+                      [routerLink]="['/contacts/' + element.mainContact?._id]">{{element.mainContact?.fullName}}</a>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <span class="info-title" translate>
+                    Subject:
+                  </span>
+                  <div class="info-content">
+                    {{element.action?.email?.subject}}
+                  </div>
+                </div>
+                <div class="info-item">
+                  <span class="info-title" translate>
+                    Content:
+                  </span>
+                  <div class="info-content" [innerHTML]="element.action?.email?.content"></div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="element.criteria === 'dialer_call'">
+                <ul class="pl-0 dialer_notifications"
+                  *ngIf="element.detail && element.detail.data && element.detail.data.length">
+                  <li *ngFor="let contact of element.detail?.data">
+                    <div class="v-center mt-2">
+                      <a class="font-weight-bold" [routerLink]="['/contacts/' + contact.contactId]">{{contact.name}}</a>
+                      <span class="center-dot mx-1"></span>
+                      <ng-container *ngIf="contact.human; else disconnectedStatus;">
+                        <span class="op-75" translate>connected</span>
+                        <i class="i-icon i-call-connected d-block sm mx-2"></i>
+                      </ng-container>
+                      <ng-template #disconnectedStatus>
+                        <span class="op-75" translate>disconnected</span>
+                        <i class="i-icon i-call-disconnected d-block sm mx-2"></i>
+                      </ng-template>
+                      <span *ngIf="contact.duration" class="op-75 f-3 fw-600">{{contact.duration * 1000 |
+                        timeDuration}}</span>
+                      <span class="op-75 fw-600 f-0 mt-1 ml-1">{{contact.outcome}}</span>
+                    </div>
+
+                    <div class="form-group rate-form mt-2" *ngIf="contact.label">
+                      <label class="d-block mb-0" translate>Call status</label>
+                      <span class="op-75 f-3">{{contact.label}}</span>
+                    </div>
+
+                    <div class="content" *ngIf="contact.content">
+                      <div class="f-4 fw-600 op-75 mt-2" translate>
+                        Call note
+                      </div>
+                      <div class="f-3 mt-1 call-note-content">
+                        <span class="call-summary">{{contact.content | shorten: 100: '...'}}</span>
+                        <ng-container *ngIf="contact.content.length > 100">
+                          <span class="call-full-desc">{{contact.content}}</span>
+                          <a class="c-blue ml-2 fw-600 c-pointer expand-action" (click)="expandCallNote($event)" translate>View more</a>
+                          <a class="c-blue ml-2 fw-600 c-pointer collapse-action"
+                            (click)="collapseCallNote($event)" translate>Close</a>
+                        </ng-container>
+                      </div>
+                    </div>
+
+                    <div class="spliter v-center mt-auto">
+                      <hr class="flex-grow-1 my-1" /> <span class="mx-3 f-3 op-75 fw-600" translate>AND</span>
+                      <hr class="flex-grow-1 my-1" />
+                    </div>
+                  </li>
+                </ul>
+              </ng-container>
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="DISPLAY_COLUMNS" [class.selected]="selectedIds.length"
+          class="table-header"></tr>
+        <tr mat-header-row *matHeaderRowDef="['loader-cell']" class="loader-row"></tr>
+        <tr mat-row *matRowDef="let row; columns: DISPLAY_COLUMNS;" class="notification-item"
+          [class.readed]="row.is_read" [class.show-detail]="showingDetails.indexOf(row._id) !== -1" id="nl_{{row._id}}">
+        </tr>
+        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="showing-detail-row"></tr>
+      </table>
+    </div>
+    <div class="my-2 table-control mode-1 py-3" *ngIf="total">
+      <div class="pagination-wrapper m-auto" [hidden]="total <= 10">
+        <pagination-controls (pageChange)="loadPage($event)" (pageBoundsCorrection)="loadPage($event)"
+          id="notifications" maxSize="5" previousLabel="" nextLabel="">
+        </pagination-controls>
+      </div>
+    </div>
+    <ng-template #emptyTemplate>
+      <div *ngIf="!loading; else loadTemplate" class="empty-list">
+        <div class="object-icon v-center mt-5">
+          <i class="i-icon i-notification d-block bgc-dark"></i>
+        </div>
+        <h4 class="font-weight-bold mt-4 mb-3" translate>
+          There are no notifications yet.
+        </h4>
+      </div>
+      <ng-template #loadTemplate>
+        <div class="text-center">
+          <div class="loader mt-5 lg"></div>
+          <h4 class="fw-600 mt-2" translate>Loading notifications...</h4>
+        </div>
+      </ng-template>
+    </ng-template>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="18.5" height="23" viewBox="0 0 18.5 23">
+  <g id="组件_405_1" data-name="组件 405 – 1" transform="translate(0 1)">
+    <path id="Path_Copy" data-name="Path Copy" d="M8.965,1.876,8.14.652A.835.835,0,0,0,7.782.308,8.875,8.875,0,0,0,4.8,0,18.477,18.477,0,0,0,2.3.142,1.9,1.9,0,0,0,.7,1.554,14.969,14.969,0,0,0,0,6.389a17.415,17.415,0,0,0,.468,4.248A2.657,2.657,0,0,0,2.8,12.7,39.08,39.08,0,0,0,8,13a41.346,41.346,0,0,0,5.367-.31,2.628,2.628,0,0,0,2.365-2.11A13.207,13.207,0,0,0,16,7.722a10.481,10.481,0,0,0-.3-2.8A1.806,1.806,0,0,0,13.81,3.611H12.382A4.109,4.109,0,0,1,8.965,1.876Z" transform="translate(1)" fill="rgba(16,19,55,0.1)" stroke="#101337" stroke-miterlimit="10" stroke-width="2"/>
+    <path id="Path_15" data-name="Path 15" d="M.5,0V6.229" transform="translate(9 14)" fill="none" stroke="#101337" stroke-miterlimit="10" stroke-width="2"/>
+    <path id="Path_15_Copy" data-name="Path 15 Copy" d="M.5,1h16" transform="translate(1 19)" fill="none" stroke="#101337" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>
+    <circle id="Oval" cx="2" cy="2" r="2" transform="translate(0 18)" fill="#101337"/>
+    <circle id="Oval_Copy" data-name="Oval Copy" cx="2" cy="2" r="2" transform="translate(14 18)" fill="#101337"/>
+    <circle id="Oval_Copy_3" data-name="Oval Copy 3" cx="2" cy="2" r="2" transform="translate(7 18)" fill="#101337"/>
+  </g>
+</svg>

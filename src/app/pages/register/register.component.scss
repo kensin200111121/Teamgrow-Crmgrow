@@ -1,0 +1,54 @@
+.card {
+  box-shadow: -8px 0 24px -5px rgba(16,19,54,0.24);
+  .password-type {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+  }
+  .card-detail {
+    line-height: 14px;
+    margin-bottom: 10px;
+    margin-left: 7px;
+  }
+  .stripe-card {
+    padding-top: 10px;
+  }
+}
+.check-spinner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 34px;
+  right: 8px;
+}
+
+.phone-form, .email-form {
+  position: relative;
+}
+
+:host ::ng-deep {
+  mat-form-field {
+    width: 100%;
+    .mat-form-field-wrapper {
+      padding: 0;
+      .mat-form-field-infix {
+        width: 100%;
+        padding: 0;
+        border: none;
+        .mat-select-trigger {
+          padding-top: 4px;
+        }
+      }
+      .mat-form-field-underline {
+        height: 0;
+        span {
+          height: 0 !important;
+        }
+      }
+    }
+  }
+}
+
+.promo-wrapper {
+  max-width: 140px;
+}

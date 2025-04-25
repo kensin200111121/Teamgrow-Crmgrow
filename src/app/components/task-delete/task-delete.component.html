@@ -1,0 +1,31 @@
+<div class="v-center justify-content-between">
+  <h1 class="m-0" mat-dialog-title translate>
+    Delete task
+  </h1>
+  <i class="d-block i-icon i-close bgc-dark" mat-dialog-close></i>
+</div>
+<mat-dialog-content>
+  <div class="text-center f-3 c-dark mt-3">
+    {{ 'Are you sure you want to delete this task(s)?' | translate }}
+  </div>
+  <ng-container *ngIf="includeRecurrence">
+    <div class="f-4 mt-3" translate>recurrence_task_delete</div>
+    <mat-radio-group name="recurranceEvent" [(ngModel)]="actionType">
+      <ng-container *ngFor="let option of selectOptions;let i = index">
+        <div class="form-check mt-2">
+          <mat-radio-button [color]="'primary'" [value]="option.value">
+            {{ option.name | translate }}
+          </mat-radio-button>
+        </div>
+      </ng-container>
+    </mat-radio-group>
+  </ng-container>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button class="btn btn-white f-6 font-weight-bold btn-font-bold c-blue mr-2" mat-dialog-close>
+    {{ 'Cancel' | translate }}
+  </button>
+  <button data-action="task-delete-confirm" class="btn btn-red f-6 font-weight-bold btn-font-bold text-white" (click)="delete()" [class.loading]="deleting">
+    {{ 'Yes, Delete' | translate }}
+  </button>
+</mat-dialog-actions>

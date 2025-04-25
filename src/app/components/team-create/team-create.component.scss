@@ -1,0 +1,54 @@
+@import "variables";
+
+.avatar-button {
+  cursor: pointer;
+  padding: 5px 15px;
+  display: flex;
+  align-items: center;
+  border: 1px solid $color-blue;
+  border-radius: 8px;
+  width: fit-content;
+
+  &.selected {
+    border: 1px solid $color-dark;
+  }
+
+  .avatar {
+    min-width: 16px;
+    min-height: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .rectangle {
+    border-radius: 3px;
+  }
+
+  &.empty {
+    border: 1px dashed #101336;
+    opacity: 0.64;
+    padding: 30px 12px;
+    text-align: center;
+  }
+
+  .btn-icon {
+    bottom: -14px;
+    right: -14px;
+  }
+}
+
+.description {
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  &:hover {
+    background-color: #ebebff;
+  }
+
+  @media screen and (max-width: 576px) {
+    padding: 0;
+  }
+}
+
+.share-option {
+  height: 24px;
+}

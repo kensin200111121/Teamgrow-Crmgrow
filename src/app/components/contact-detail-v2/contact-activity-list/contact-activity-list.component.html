@@ -1,0 +1,73 @@
+<div class="history-list mb-0">
+  <div class="history-list-header v-center justify-content-start mt-2 mb-1 mx-3 px-2">
+    <div ngbDropdown class="v-center mr-auto" placement="bottom-end">
+      <div class="v-center" ngbDropdownToggle>
+        <i class="d-block i-icon i-filter bgc-dark sm"></i>
+        <span class="f-4 c-dark c-pointer ml-2 fw-600">
+          {{
+          activityType?.id == 'all' ? 'Filters' : activityType?.label | translate
+          }}
+        </span>
+      </div>
+      <div ngbDropdownMenu class="light">
+        <ng-container *ngFor="let tabItem of filterTypes">
+          <div class="v-center justify-content-between dropdown-item" *enableByFeatures="tabItem.feature" (click)="changeActivityTypes(tabItem)">
+              <div class="f-3 c-dark" [ngClass]="{
+                'font-weight-bold': tabItem.id == activityType?.id
+              }" *ngIf="tabItem.id == 'all'; else others" translate>
+                All activity
+              </div>
+              <ng-template #others>
+                <ng-container *ngIf="tabItem.id != 'tasks'">
+                  <div class="f-3 c-dark" [ngClass]="{
+                    'font-weight-bold': tabItem.id == activityType?.id
+                  }">
+                    {{ tabItem.label }}
+                  </div>
+                </ng-container>
+              </ng-template>
+              <div *ngIf="tabItem.id == activityType?.id">
+                <i class="d-block i-icon i-check bgc-blue"></i>
+              </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+  <ng-container *ngIf="!!dataSource.firstLoading; else firstLoaded">
+    <div class="empty-list">
+      <div class="v-center justify-content-center">
+        <div class="list-loading v-center">
+          <div class="loader md"></div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #firstLoaded>
+    <ng-container *ngIf="!!dataSource.isEmptyData  ; else listview">
+      <div class="empty-list mt-5">
+        <div class="object-icon v-center">
+          <i class="i-icon i-activity d-block bgc-dark"></i>
+        </div>
+        <h4 class="font-weight-bold mt-4 mb-3" translate>
+          {{ 'no_contact_activity_' + activityType.id }}
+        </h4>
+      </div>
+    </ng-container>
+    <ng-template #listview>
+      <div class="cdk-scroll-viewport">
+        <ng-scrollbar visibility="hover" cdkVirtualScrollViewport externalViewport>
+          <cdk-virtual-scroll-viewport
+           class="scroll-viewport virtual-viewport" [itemSize]="70"
+            [minBufferPx]="500" [maxBufferPx]="1000"
+            (scrolledIndexChange)="onScrolledIndexChange()" #viewport scrollViewport>
+            <ng-container *cdkVirtualFor="let item of dataSource;let i = index;  trackBy: trackByIdx">
+              <app-contact-activity-super-item [contactId]="contactId" [prospectId]="prospectId"
+                [activity]="item"></app-contact-activity-super-item>
+            </ng-container>
+          </cdk-virtual-scroll-viewport>
+        </ng-scrollbar>
+      </div>
+    </ng-template>
+  </ng-template>
+</div>

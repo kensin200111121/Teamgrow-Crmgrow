@@ -1,0 +1,99 @@
+<div class="contact-automation-status">
+  <div class="v-center justify-content-between title">
+    <h5 class="m-0 font-weight-bold" translate>Assigned Contact Status</h5>
+    <button type="button" class="v-center border-0 bgc-trans close-button" (click)="close()">
+        <i class="i-icon i-close bgc-black ml-1" aria-hidden="true"></i>
+    </button>
+  </div>
+  <div class="card-body">
+    <div class="flows-container" #wrapper>
+      <div class="zoom-button-wrapper">
+        <button class="v-center justify-content-center btn btn-white font-weight-bold mb-2" [class.disabled]="zoomLevel > 3" (click)="zoomIn()">
+          <i class="bgc-blue i-icon i-plus"></i>
+        </button>
+        <button class="v-center justify-content-center btn btn-white font-weight-bold" [class.disabled]="zoomLevel === 0" (click)="zoomOut()">
+          <i class="bgc-blue i-icon i-remove"></i>
+        </button>
+      </div>
+
+      <ng-container *ngIf="loading">
+        <div style="padding: 60px;">
+          <div class="loader"></div>
+          <p class="text-center font-weight-bold" translate>Loading current automation status...</p>
+        </div>
+      </ng-container>
+
+      <ng-container>
+        <ngx-graph class="chart-container" [links]="edges" [nodes]="nodes" [layoutSettings]="layoutSettings"
+                    [autoCenter]="true" [layout]="layout" [curve]="curve" [center$]="center$" [draggingEnabled]="false"
+                    [autoZoom]="autoZoom" [zoomLevel]="zoomLevel" [enableZoom]="true" [showMiniMap]="true" #graphWrapper>
+          <ng-template #defsTemplate>
+            <svg:marker id="arrow" viewBox="0 0 20 20" refX="20" refY="10" markerWidth="8" markerHeight="8"
+                        orient="auto">
+              <circle cx="10" cy="10" r="10" stroke="green" stroke-width="0" fill="gray" />
+            </svg:marker>
+            <svg:pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+              <svg:path d="M-1,1 l2,-2
+                      M0,4 l4,-4
+                      M3,5 l2,-2" style="stroke:#eee; stroke-width:1" />
+            </svg:pattern>
+          </ng-template>
+
+          <ng-template #nodeTemplate let-node>
+            <svg:g class="node" *ngIf="node.category === 'NORMAL'">
+              <svg:rect [attr.width]="node.dimension.width" [attr.height]="node.leaf ? 200 : 110"
+                        fill="transparent" />
+              <svg:foreignObject width="200" [attr.height]="node.leaf ? 200 : 110">
+                <xhtml:div class="cardContainer"
+                            style="text-align: center;"
+                            xmlns="http://www.w3.org/1999/xhtml">
+                  <img [attr.src]="ICONS[node.type]" x="75" y="0" height="50px" width="50px" />
+                </xhtml:div>
+                <xhtml:div class="cardContainer"
+                            style="background-color: transparent; padding: 5px 8px 20px 8px; margin-bottom: 15px; text-align: center;"
+                            xmlns="http://www.w3.org/1999/xhtml">
+                  <label class="name" style="margin: 0; font-size: 14px; font-weight: bold;">{{node.label}}</label>
+                  <label class="name {{node.status}} text-uppercase" style="margin: 0; font-size: 11px; display: block;">{{node.status}}</label>
+                </xhtml:div>
+              </svg:foreignObject>
+            </svg:g>
+            <svg:g class="node" *ngIf="node.category === 'CONDITION'">
+              <svg:rect [attr.width]="node.dimension.width" [attr.height]="40"
+                        fill="transparent" />
+              <svg:foreignObject width="140" [attr.height]="40" style="overflow: visible">
+                <xhtml:div [class.trueCase]="node.condition.answer" [class.falseCase]="!node.condition.answer"
+                            xmlns="http://www.w3.org/1999/xhtml">
+                  <ng-container *ngIf="node.label == 'YES'; else falseCase">
+                    <label class="name" style="margin: 0; font-size: 12px; font-weight: bold;">{{'YES' | translate}}</label>
+                  </ng-container>
+                  <ng-template #falseCase>
+                    <label class="name" style="margin: 0; font-size: 12px; font-weight: bold;">{{'NO' | translate}}</label>
+                  </ng-template>
+                </xhtml:div>
+              </svg:foreignObject>
+            </svg:g>
+          </ng-template>
+          <ng-template #linkTemplate let-link>
+            <svg:g class="edge">
+              <svg:path class="line {{link.status}}" stroke="#aaa" stroke-width="2" marker-start="url(#arrow)">
+              </svg:path>
+            </svg:g>
+            <svg:g class="label" *ngIf="link.hasLabel && link.points && link.points[0]" [attr.transform]="'translate(' + (link.points[0].x - 40) + ',' + (link.points[0].y + 40) + ')'">
+              <svg:rect [attr.width]="90" [attr.height]="60"
+                        fill="transparent" />
+              <svg:foreignObject width="90" [attr.height]="60">
+                <xhtml:div class="caseLabel"
+                            style="background-color: transparent; text-align: center;"
+                            xmlns="http://www.w3.org/1999/xhtml">
+                  <label class="name" style="margin-top: 20px; margin-bottom: 0px; font-size: 14px;">{{CASE_ACTIONS[link.type]}}</label>
+                </xhtml:div>
+              </svg:foreignObject>
+            </svg:g>
+          </ng-template>
+        </ngx-graph>
+      </ng-container>
+
+      <!--  -->
+    </div>
+  </div>
+</div>

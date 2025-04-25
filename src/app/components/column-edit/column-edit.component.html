@@ -1,0 +1,117 @@
+<div class="v-center justify-content-between">
+  <h1 mat-dialog-title class="m-0" translate>Edit Columns</h1>
+  <button
+    type="button"
+    class="v-center border-0 bgc-trans close-button"
+    mat-dialog-close
+  >
+    <i class="i-icon i-close bgc-black ml-1" aria-hidden="true"></i>
+  </button>
+</div>
+
+<div class="row">
+  <div class="col-md-6 col-sm-12 p-3">
+    <div class="form-group mb-0 search-form">
+      <div class="input-group-prepend">
+        <i class="i-icon i-search d-block bgc-dark"></i>
+      </div>
+      <input
+        type="text"
+        class="form-control"
+        [placeholder]="'Search properties' | translate"
+        aria-label="search"
+        aria-describedby="search-addon"
+        [(ngModel)]="searchStr"
+        (ngModelChange)="changeSearchStr()"
+        cdkFocusInitial
+      />
+      <ng-container *ngIf="searchStr">
+        <div class="cancel-action c-pointer" (click)="clearSearchStr()">
+          <i class="i-icon i-close d-block bgc-dark"></i>
+        </div>
+      </ng-container>
+    </div>
+
+    <!---All columns--->
+    <div class="d-flex flex-column pt-3">
+      <h6 class="font-weight-bold" translate>Properties</h6>
+      <div class="column-items-list overflow-auto">
+        <div
+          class="custom-checkbox column-item"
+          *ngFor="let item of filteredColumns"
+          style="height: unset; line-height: unset"
+          [attr.data-name]="'column-item-' + item.name"
+        >
+          <ng-container *enableByFeatures="item.feature">
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              id="column-{{ item.id }}"
+              name="column-{{ item.id }}"
+              (change)="toggleColumn($event, item)"
+              [ngModel]="selectedColumns.includes(item.id)"
+              [disabled]="item.name == 'Contact Name'"
+            />
+            <label class="custom-control-label" for="column-{{ item.id }}" id="column-item-select-{{i}}">
+              <div class="f-4" translate>{{ item.name }}</div>
+            </label>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-sm-12 p-4">
+    <h6 class="mt-2 font-weight-bold" translate>Selected Columns</h6>
+    <div
+      class="selected-column-list overflow-auto"
+      cdkDropList
+      [cdkDropListData]="selectedColumns"
+      (cdkDropListDropped)="drop($event)"
+    >
+      <div
+        cdkDrag
+        *ngFor="let item of selectedColumns; let i = index;"
+        style="height: unset; line-height: unset"
+        [attr.data-name]="'task-column-item-' + item"
+        id="task-column-item-{{i}}"
+      >
+        <ng-container *enableByFeatures="COLUMN_DIC[item].feature">
+          <div
+            *ngIf="COLUMN_DIC[item].name == 'Contact Name'; else otherColumns"
+            class="d-flex justify-content-between m-2 selected-column"
+          >
+            <div class="d-flex justify-content-start">
+              <i class="i-icon i-lock d-block bgc-dark"></i>
+              <div class="f-4 column-name ml-3" translate>{{ COLUMN_DIC[item].name }}</div>
+            </div>
+          </div>
+          <ng-template #otherColumns>
+            <div
+              class="d-flex justify-content-between m-2 selected-column"
+            >
+              <div class="d-flex justify-content-start">
+                <i
+                  cdkDragHandle
+                  class="d-block i-icon i-list-circle bgc-dark c-pointer"
+                ></i>
+                <div class="f-4 column-name ml-3" translate>{{ COLUMN_DIC[item].name }}</div>
+              </div>
+              <i
+                class="i-icon i-close d-block bgc-dark c-pointer"
+                (click)="removeSelectedColumn(item)"
+              ></i>
+            </div>
+          </ng-template>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="d-flex justify-content-end">
+  <button type="button" class="btn btn-default mr-3 btn-font-bold" mat-dialog-close translate>
+    Close
+  </button>
+  <button type="button" data-action="edit-column-apply" class="btn btn-primary btn-font-bold" (click)="save()" translate>
+    Apply
+  </button>
+</div>

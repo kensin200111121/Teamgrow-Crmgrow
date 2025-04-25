@@ -1,0 +1,37 @@
+<div class="bucket-item p-3">
+  <div class="d-flex mb-3">
+    <h5 class="mr-auto">{{ title }}</h5>
+
+    <ng-container *ngIf="bucket._id">
+      <a data-action="save" class="ml-3 btn c-blue" (click)="onSave()" [class.loading]="saving" [class.disabled]="removing || !isChanged">Save</a>
+      <a data-action="remove" class="ml-3 btn c-blue remove" (click)="onRemove()" [class.loading]="removing" [class.disabled]="saving">Remove</a>
+    </ng-container>
+  </div>
+
+  <form [formGroup]="form">
+    <div class="row">
+      <div class="form-group flex-grow-1 mb-2 col-8">
+        <label for="name">Name</label>
+        <input id="name" formControlName="name" type="text" class="form-control"/>
+      </div>
+      <div class="col-4 form-group mb-2">
+        <label for="duration">Frequency</label>
+        <div class="d-flex v-center">
+          <input id="duration" formControlName="duration" type="number" class="form-control"/>
+          <div class="f-4 ml-1">days</div>
+        </div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="!bucket._id">
+      <button
+        class="v-center btn btn-blue f-6 fw-600 text-white rounded shadow mr-2 px-3 mt-3 ml-auto"
+        type="button"
+        (click)="onSave()"
+        [class.loading]="saving"
+      >
+        <span class="normal" translate>Create</span>
+      </button>
+    </ng-container>
+  </form>
+</div>

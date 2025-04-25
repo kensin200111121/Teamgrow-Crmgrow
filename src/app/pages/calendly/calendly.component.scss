@@ -1,0 +1,10 @@
+:host ::ng-deep {
+  app-slide-tab {
+    .tab-container {
+      .tab {
+        text-transform: capitalize !important;
+        letter-spacing: normal !important;
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+.page-content {
+    padding: 10px 20px;
+}
+
+.contacts-wrapper {
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+    white-space: nowrap;
+
+    .contacts-table-wrapper {
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .deal-contacts-table {
+        width: 100%;
+        max-height: 420px;
+        overflow: auto;
+
+        .sticky-action-col {
+            position: sticky;
+            width: 40px;
+            left: 0;
+            border-right: 1px solid #e9ecef;
+            padding: 12px 7px;
+            background: white;
+            z-index: 1;
+        }
+
+        .name-col {
+            width: 200px;
+        }
+
+        .email-col {
+            width: 120px;
+        }
+
+        .primary-col {
+            width: 80px;
+        }
+
+        .action-col {
+            width: 40px;
+        }
+
+        td,
+        th {
+            padding: 15px 10px;
+            height: 50px;
+        }
+    }
+}

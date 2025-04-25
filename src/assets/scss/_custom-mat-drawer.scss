@@ -1,0 +1,85 @@
+@import 'variables';
+
+.page {
+  .mat-drawer-container {
+    z-index: $drawer-layer-index;
+    margin-top: 1px;
+    background-color: #fff;
+
+    &.label-container {
+      z-index: $drawer-layer-index1;
+    }
+
+    .mat-drawer-backdrop.mat-drawer-shown {
+      background-color: #0002;
+    }
+
+    .mat-drawer {
+      position: fixed;
+      top: 0px;
+      height: 100%;
+      border-radius: 8px 0px 0px 8px;
+
+      .mat-drawer-inner-container {
+        overflow-y: auto;
+      }
+    }
+
+    .mat-drawer-backdrop{
+      position: fixed;
+      left: $side-width;
+      top: $nav-height;
+    }
+
+    &.automation .mat-drawer-backdrop {
+      position: inherit;
+    }
+  }
+
+  &.dialog-mode {
+    .mat-drawer-container {
+      z-index: $drawer-layer-index;
+    }
+  }
+
+  &.has-topbar {
+    .mat-drawer-container .mat-drawer-backdrop{
+      position: fixed;
+      left: 160px;
+      top: 113px;
+    }
+  }
+  &.has-stormbar {
+    .mat-drawer-container .mat-drawer-backdrop{
+      position: fixed;
+      left: 160px;
+      top: 118px;
+    }
+  }
+  &.has-topbar.has-stormbar {
+    .mat-drawer-container .mat-drawer-backdrop{
+      position: fixed;
+      left: 160px;
+      top: 168px;
+    }
+  }
+
+  @media screen and (max-width: 992px) {
+    .mat-drawer-container .mat-drawer-backdrop {
+      left: 65px;
+    }
+  }
+
+  @media screen and (max-width: 680px) {
+    .mat-drawer-container .mat-drawer-backdrop {
+      top: 0px;
+      left: 0px;
+    }
+
+    &.has-topbar {
+      .mat-drawer-container .mat-drawer-backdrop {
+        top: 151px;
+      }
+    }
+  }
+}

@@ -1,0 +1,57 @@
+<div class="v-center justify-content-between">
+    <h1 class="m-0" mat-dialog-title translate>
+        Calendar Setting
+    </h1>
+</div>
+<form #actionForm="ngForm" (ngSubmit)="submitted = true; actionForm.form.valid ? setSetting() : false"
+  [class.was-validated]="submitted">
+    <mat-dialog-content>
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="working-hour" name="hourState"
+                        #hourState="ngModel" [(ngModel)]="is_enabled" (ngModelChange)="changeState($event)">
+                    <label class="custom-control-label" for="working-hour" translate>Enable working hours</label>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-sm-6 col-12">
+                <div class="form-group has-feedback" [class.has-error]="!start_time && submitted">
+                    <label class="theme-label" translate>Start Time</label>
+                    <select class="form-control" [(ngModel)]="start_time"
+                          [class.disabled]="!is_enabled"
+                        name="startTime" #startTime="ngModel" (ngModelChange)="changeStart()">
+                        <option value="" disabled translate>Due Time</option>
+                        <option *ngFor="let time of times" value="{{time.id}}">{{time.text}}</option>
+                    </select>
+                    <span class="invalid-feedback"
+                        *ngIf="startTime.errors && (startTime.touched||startTime.dirty||submitted)&&submitted" translate>
+                        Start time is required.
+                    </span>
+                </div>
+            </div>
+            <div class="col-sm-6 col-12">
+                <div class="form-group has-feedback" [class.has-error]="!end_time && submitted">
+                    <label class="theme-label" translate>End Time</label>
+                    <select class="form-control" [(ngModel)]="end_time"
+                            [class.disabled]="!is_enabled"
+                            name="endTime" #endTime="ngModel">
+                        <option value="" disabled translate>Due Time</option>
+                        <ng-container *ngFor="let time of times; let index=index">
+                            <option value="{{time.id}}" [disabled]="index <= startIndex">{{time.text}}</option>
+                        </ng-container>
+                    </select>
+                    <span class="invalid-feedback"
+                        *ngIf="endTime.errors && (endTime.touched||endTime.dirty||submitted)&&submitted" translate>
+                        End time is required.
+                    </span>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" class="v-center mx-0">
+        <button class="btn c-gray ml-1 mr-0" type="button" mat-dialog-close translate>Close</button>
+        <button class="btn btn-primary ml-1 mr-0" type="submit" [class.loading]="saving" translate>Save</button>
+    </mat-dialog-actions>
+</form>

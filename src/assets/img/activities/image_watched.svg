@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="22px" height="20px" viewBox="0 0 22 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>870038ED-BE57-4609-A8A9-A4056DBBF20C</title>
+    <g id="Main" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Timeline-Actions-Icons" transform="translate(-235.000000, -75.000000)">
+            <g id="Icons-/-Image-Watched" transform="translate(236.000000, 75.000000)">
+                <g id="Image-watched" transform="translate(1.000000, 1.000000)">
+                    <path d="M0,9 C0,10.58517 0.124092,12.04623 0.284841,13.27401 C0.593397,15.63048 2.359845,17.44893 4.718259,17.7426 C5.900715,17.88984 7.340148,18 9,18 C10.75257,18 12.25935,17.87715 13.47741,17.71758 C15.72444,17.42319 17.42319,15.72444 17.71758,13.47741 C17.87715,12.25935 18,10.75257 18,9" id="Path" stroke="#9000FB" stroke-width="2" stroke-linecap="round"></path>
+                    <path d="M0.30803,13.6191 C0.13394,12.2895 0,10.7101 0,9 C0,7.28986 0.13394,5.71048 0.30803,4.38095 C0.59396,2.19718 2.21443,0.54631 4.36608,0.27838 C5.64193,0.11951 7.19996,0 9,0 C10.9006,0 12.5313,0.13324 13.845,0.30535 C15.8925,0.57361 17.4264,2.10749 17.6946,4.15498 C17.8668,5.46866 18,7.09943 18,9 C18,10.9006 17.8668,12.5313 17.6946,13.845 C17.4264,15.8925 15.8925,17.4264 13.845,17.6946 C12.5313,17.8668 10.9006,18 9,18 C7.19996,18 5.64193,17.8805 4.36608,17.7216 C2.21443,17.4537 0.59396,15.8028 0.30803,13.6191 Z" id="Path" fill-opacity="0.1" fill="#9000FB"></path>
+                    <polyline id="Path" stroke="#9000FB" stroke-width="2" stroke-linejoin="round" points="0 14.95 5 11 12 18"></polyline>
+                    <polyline id="Path" stroke="#9000FB" stroke-width="2" stroke-linejoin="round" points="9 14.875 12.6975 12 16.5 15.5"></polyline>
+                    <path d="M8.99999424,8 C4.92759108,8 1.54531231,6.30191 4.00000008e-05,4 C1.54531231,1.69806 4.92759108,0 8.99999424,0 C13.0765616,0 16.4550537,1.69791 18.00004,4 C16.4550537,6.30206 13.0765616,8 8.99999424,8 Z" id="Path" stroke="#9000FB" stroke-width="2"></path>
+                    <circle id="Oval" fill="#9000FB" fill-rule="nonzero" cx="9" cy="4" r="2"></circle>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

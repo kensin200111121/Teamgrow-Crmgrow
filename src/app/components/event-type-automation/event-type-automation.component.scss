@@ -1,0 +1,31 @@
+@import "variables";
+
+textarea {
+    background-color: $color-wheat;
+    resize: none;
+    &.form-control {
+        &:focus {
+            background-color: $color-wheat;
+            color: $color-dark;
+        }
+    }
+}
+
+::ng-deep {
+    .mat-radio-label,
+    .mat-checkbox-layout {
+      margin-bottom: 0px;
+    }
+    .mat-select-trigger {
+      display: flex !important;
+      align-items: center;
+      width: 100%;
+    }
+    .mat-select-value {
+      max-width: none !important;
+    }
+
+    .cdk-overlay-pane {
+      margin: 30px 0px !important;
+    }
+  }

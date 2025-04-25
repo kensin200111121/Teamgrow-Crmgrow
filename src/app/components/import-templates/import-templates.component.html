@@ -1,0 +1,29 @@
+<mat-dialog-content>
+  <div class="loader" *ngIf="loading && !templates.length"></div>
+  <div class="templates" *ngIf="templates.length">
+    <ng-container *ngFor="let template of templates">
+      <div class="template">
+        <div class="thumbnail">
+          <img [src]="template.previewUrl || 'assets/img/image_not_supported.svg'"/>
+          <div class="title">
+            {{ template.name }}
+          </div>
+        </div>
+        <div class="overlay">
+          <div class="title">
+            {{ template.name }}
+          </div>
+          <div class="action">
+            <button class="btn btn-primary" (click)="start(template)" translate>Start from here</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <div *ngIf="!loading && !templates.length" translate>
+    There are no standard templates to import. Please contact support team.
+  </div>
+  <div *ngIf="!loading && hasMore" class="d-flex mt-3">
+    <button class="btn btn-primary mx-auto" (click)="loadMore()" [class.d-none]="loading" translate>LOAD MORE</button>
+  </div>
+</mat-dialog-content>

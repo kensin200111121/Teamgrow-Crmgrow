@@ -1,0 +1,64 @@
+<div class="source-select">
+  <div class="row pt-2">
+    <div class="col-6">
+      <mat-checkbox name="check-start-date" [color]="'primary'" (change)="toggleDateInput($event.checked, 'start')" id="task-filter-starttime-check"
+        [checked]="showStartDate">
+        <span class="f-3" translate>filter_by_start</span>
+      </mat-checkbox>
+    </div>
+    <div class="col-6">
+      <mat-checkbox name="check-end-date" [color]="'primary'" (change)="toggleDateInput($event.checked, 'end')" id="task-filter-endtime-check"
+        [checked]="showEndDate">
+        <span class="f-3" translate>filter_by_end</span>
+      </mat-checkbox>
+    </div>
+  </div>
+  <div class="row" [class.disable]="!showStartDate">
+    <div class="col-6">
+      <div class="form-group">
+        <label translate>start date</label>
+        <div class="start-date rounded" tabindex="0">
+          <app-date-input type="prepend" [clearable]="false" [(value)]="startDate"
+            (valueChange)="changeDate('start')">
+          </app-date-input>
+        </div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="form-group">
+        <label translate>time</label>
+        <select class="form-control" name="start_time" #start_time="ngModel" [(ngModel)]="startTime"
+          (ngModelChange)="changeTime('start')">
+          <option *ngFor="let time of TIMES" [value]="time.id">
+            {{time.text}}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="row" [class.disable]="!showEndDate">
+    <div class="col-6">
+      <div class="form-group">
+        <label translate>end date</label>
+        <app-date-input type="prepend" [clearable]="false" [(value)]="endDate" (valueChange)="changeDate('end')">
+        </app-date-input>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="form-group">
+        <label translate>time</label>
+        <select class="form-control" name="end_time" #end_time="ngModel" [(ngModel)]="endTime"
+          (ngModelChange)="changeTime('end')">
+          <option *ngFor="let time of TIMES" [value]="time.id">
+            {{time.text}}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex align-items-end">
+    <button type="submit" data-action="task-filter-datetime-apply" class="btn btn-primary" (click)="save()" translate>
+      Apply
+    </button>
+  </div>
+</div>

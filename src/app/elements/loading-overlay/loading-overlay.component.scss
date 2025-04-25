@@ -1,0 +1,287 @@
+.bar-loader,
+.bar-loader:before,
+.bar-loader:after {
+  background: #ffffff;
+  -webkit-animation: load1 1s infinite ease-in-out;
+  animation: load1 1s infinite ease-in-out;
+  width: 1em;
+  height: 4em;
+}
+
+.bar-loader {
+  color: #ffffff;
+  text-indent: -9999em;
+  margin: 88px auto;
+  position: relative;
+  font-size: 11px;
+  -webkit-transform: translate3d(0, -100px, 0);
+  -ms-transform: translate3d(0, -100px, 0);
+  transform: translate3d(0, -100px, 0);
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: 35px auto;
+}
+
+.bar-loader:before,
+.bar-loader:after {
+  position: absolute;
+  top: 0;
+  content: '';
+}
+
+.bar-loader:before {
+  left: -1.5em;
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+
+.bar-loader:after {
+  left: 1.5em;
+}
+
+@-webkit-keyframes load1 {
+  0%,
+  80%,
+  100% {
+    box-shadow: 0 0;
+    height: 4em;
+  }
+
+  40% {
+    box-shadow: 0 -2em;
+    height: 5em;
+  }
+}
+
+@keyframes load1 {
+  0%,
+  80%,
+  100% {
+    box-shadow: 0 0;
+    height: 4em;
+  }
+
+  40% {
+    box-shadow: 0 -2em;
+    height: 5em;
+  }
+}
+.overlay-wrapper {
+    background-color: rgba(0, 0, 0, .4);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.overlay-wrapper.screen{
+    z-index: 1001;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+.loading-status {
+    color: white;
+    font-weight: bold;
+    font-size: 22px;
+    margin-top: 100px;
+}
+
+.rect-bar {
+  padding: 15px;
+}
+.gbselq .rowHeaderLoader {
+  display: block;
+  width: 100%;
+  height: 24px;
+  margin-bottom: 5px;
+
+  &.h-1{
+    height: 12px;
+  }
+  &.h-2{
+    height: 24px;
+  }
+  &.h-3{
+    height: 30px;
+  }
+  &.h-6{
+    height: 72px;
+  }
+}
+
+.material-loading {
+  .row {
+    margin-left: 0px!important;
+    margin-right: 0px!important;
+    margin-bottom: 10px;
+    padding: 5px 15px;
+  }
+  .thumb {
+    width: 102px;
+    margin-right: 15px;
+    .rowHeaderLoader {
+      height: 57px;
+      width: 100%;
+    }
+  }
+  .content {
+    flex: 1;
+    .title {
+      .rowHeaderLoader {
+        height: 20px;
+        width: 60%;
+      }
+    }
+    .desc {
+      .rowHeaderLoader {
+        height: 12px;
+        width: 90%;
+      }
+    }
+  }
+
+  @media screen and (max-width: 575px) {
+
+    .row {
+      flex-direction: column;
+    }
+
+    .thumb {
+      width: 160px;
+      margin-bottom: 10px;
+      .rowHeaderLoader {
+        height: 90px;
+        width: 100%;
+      }
+    }
+    .content {
+      .title {
+        .rowHeaderLoader {
+          height: 20px;
+        }
+      }
+      .desc {
+        .rowHeaderLoader {
+          height: 12px;
+        }
+      }
+    }
+  }
+}
+
+
+
+
+
+// Page Row
+
+.trow{
+  display: flex;
+  padding: 8px;
+}
+
+.tbody {
+  .trow {
+    border-top: 1px solid #f8f8f8;
+    & > div {
+      filter: blur(3px);
+      opacity: .4;
+    }
+  }
+}
+
+.page-image {
+  width: 130px;
+
+  img {
+    width: 100%;
+  }
+}
+
+.page-title {
+  flex: 1;
+  padding: 0px 8px;
+
+  .page-main-title {
+    font-weight: 600;
+  }
+  .meta-title {
+    font-size: 15px;
+    color: gray;
+  }
+  .meta-description {
+    font-size: 14px;
+    color: gray;
+  }
+}
+
+.share-action {
+  width: 100px;
+  display: flex;
+  align-self: flex-start;
+}
+
+.edit-action {
+  width: 100px;
+  display: flex;
+  align-self: flex-start;
+}
+
+.icon-button {
+  border: none;
+  background: transparent;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  transition: all .3s;
+
+  &:hover {
+    background: gainsboro; 
+    border-radius: 50%;
+    transition: all .3s;
+  }
+}
+
+.actions-wrapper {
+  display: flex;
+}
+
+@media screen and (max-width: 480px) {
+	.page-image {
+    width: 200px;
+  }
+	.page-title {
+    width: 100%;
+    flex: unset;
+    padding: 0px;
+  }	
+}
+
+@media screen and (max-width: 768px) {
+	.trow {
+		flex-wrap: wrap;
+	}
+	.actions-wrapper {
+		display: flex;
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media screen and (max-width: 992px) and (min-width: 768px) {
+	.actions-wrapper {
+		flex-direction: column;
+	}
+}

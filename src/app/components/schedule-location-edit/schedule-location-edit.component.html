@@ -1,0 +1,57 @@
+<form #form="ngForm" (ngSubmit)="form.form.valid ? save() : false;">
+  <div mat-dialog-title class="title">
+    <div class="v-center justify-content-between">
+      <h2 class="mb-0" translate>Edit Location</h2>
+    </div>
+  </div>
+  <mat-dialog-content>
+    <div class="row">
+      <div class="col-12 form-group"
+        [ngClass]="{invalid: form.submitted && location.invalid && (location.dirty || location.touched || form.submitted)}">
+        <mat-select id="location_cc" class="form-control" [(ngModel)]="locationType" name="location"
+          #location="ngModel">
+          <mat-option *ngFor="let location of Locations" [value]="location.value">
+            {{ location.name | translate }}
+          </mat-option>
+        </mat-select>
+      </div>
+      <ng-container *ngIf="locationType == 'in_person'">
+        <div class="col-12 form-group"
+          [ngClass]="{invalid: form.submitted && address.invalid && (address.dirty || address.touched || form.submitted)}">
+          <label for="address_cc" translate>Meeting address</label>
+          <input id="address_cc" name="address" class="form-control" type="text" placeholder="{{ 'Enter a Location' | translate }}"
+            [(ngModel)]="meetingAddress" #address="ngModel" ngx-google-places-autocomplete required
+            (onAddressChange)="handleAddressChange($event)" />
+        </div>
+      </ng-container>
+      <ng-container *ngIf="locationType == 'phone'">
+        <div class="col-12 form-group position-relative">
+          <label for="meeting_phone_cc" translate>Phone Number</label>
+          <app-phone-input id="meeting_phone_cc"
+            [cssClass]="phoneControl && meetingPhone && !phoneControl.valid ? 'form-control c-red font-weight-bold' : 'form-control'"
+            [onlyCountries]="countries" [selectedCountryISO]="CountryISO.UnitedStates" [(ngModel)]="meetingPhone"
+            name="phone" required #phoneControl>
+          </app-phone-input>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="locationType == 'webinar'">
+        <div class="col-12 form-group position-relative"
+          [ngClass]="{invalid: form.submitted && email.invalid && (email.dirty || email.touched || form.submitted)}">
+          <label for="email_cc" translate>Email</label>
+          <input type="email" id="email_cc" class="form-control" name="email" required autocomplete="off"
+            pattern="^[a-zA-Z0-9'._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{1,}$" [(ngModel)]="meetingEmail" #email="ngModel" />
+        </div>
+      </ng-container>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <div class="ml-auto">
+      <button type="button" mat-dialog-close class="btn c-blue">
+        {{ 'Cancel' | translate }}
+      </button>
+      <button type="submit" class="btn btn-primary">
+        {{ 'Save' | translate }}
+      </button>
+    </div>
+  </mat-dialog-actions>
+</form>

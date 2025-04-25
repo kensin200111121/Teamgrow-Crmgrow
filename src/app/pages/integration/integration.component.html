@@ -1,0 +1,437 @@
+<div style="max-width: 680px;">
+  <div class="email-wrapper">
+    <span class="f-6 font-weight-bold" translate>Email</span>
+    <div class="d-flex email-alert p-2 my-3" *ngIf="!isLoading && !user.primary_connected">
+      <i class="d-block i-icon i-alert"></i>
+      <div class="f-4 ml-2">
+        <div>
+          <strong translate>Free</strong>
+          <span [innerHTML]="'integration_free_plan' | translate: {amount: 200}"></span>
+        </div>
+        <div>
+          <strong translate>Paid</strong>
+          <span [innerHTML]="'integration_paid_plan' | translate: {amount: 2000}"></span>
+        </div>
+      </div>
+    </div>
+    <div class="integration-account">
+      <div class="icon">
+        <img [src]="sspaService.toAsset('img/google_email.png')">
+      </div>
+      <div class="content">
+        <div class="title f-6 c-black font-weight-bold mb-1">Google Mail</div>
+        <div class="desc f-4 c-dark" translate>
+          integration_gmail_desc
+        </div>
+      </div>
+      <ng-container *ngIf="(user.connected_email_type=='gmail' || user.connected_email_type=='gsuit') && user.primary_connected; else disconnectGoogle">
+        <button class="btn bg-white c-blue border-primary f-4 font-weight-bold connect" (click)="disconnectMail('gmail')" translate>
+          integration_disconnect
+        </button>
+      </ng-container>
+      <ng-template #disconnectGoogle>
+        <button class="btn bg-white c-blue border-primary f-4 font-weight-bold connect" (click)="connectMail('gmail')" translate>
+          integration_connect_mail
+        </button>
+      </ng-template>
+      <div class="accounts">
+        <ng-container *ngIf="(user.connected_email_type=='gmail' || user.connected_email_type=='gsuit') && user.primary_connected">
+          <div class="f-4 c-dark font-weight-bold mt-3 mb-2" translate>integration_authorized_label</div>
+          <div class="f-4 c-dark">
+            <span class="font-weight-bold mr-2">{{user.connected_email}}</span>
+            <span class="f-2 c-dark" translate>integration_connected_label</span>
+          </div>
+
+          <div *ngIf="aliasList.length > 1" class="mt-2">
+            <div class="v-center" *ngFor="let alias of aliasList">
+              <span class="f-4 c-dark font-weight-bold">{{alias.email}}</span>
+              <span class="f-4 c-dark font-weight-bold mx-2">{{alias.name}}</span>
+              <ng-container *ngIf="alias.primary; else setAsDefault">
+                <span class="f-4 c-dark ml-auto" translate>Default</span>
+              </ng-container>
+              <ng-template #setAsDefault>
+                <a class="f-4 c-blue ml-auto c-pointer" translate (click)="setPrimaryAlias(alias)">integration_alias_primary</a>
+              </ng-template>
+              <a class="f-4 c-blue ml-2 c-pointer" translate (click)="editAlias(alias)" [class.invisible]="alias.is_default">integration_alias_edit</a>
+              <a class="f-4 c-blue ml-2 c-pointer" translate (click)="removeAlias(alias)" [class.invisible]="alias.primary || alias.is_default">integration_alias_remove</a>
+            </div>
+          </div>
+          <div class="">
+            <a class="f-4 font-weight-bold c-pointer" (click)="createAlias()" translate>integration_new_alias</a>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="integration-account">
+      <div class="icon">
+        <img [src]="sspaService.toAsset('img/365_mail.svg')">
+      </div>
+      <div class="content">
+        <div class="title f-6 c-black font-weight-bold mb-1">Microsoft 365 Mail</div>
+        <div class="desc f-4 c-dark" translate>
+          integration_outlook_desc
+        </div>
+      </div>
+      <ng-container *ngIf="(user.connected_email_type=='outlook' || user.connected_email_type=='microsoft') && user.primary_connected; else disconnectOutlook">
+        <button class="btn bg-white c-blue f-4 border-primary font-weight-bold connect" (click)="disconnectMail('outlook')" translate>integration_disconnect</button>
+      </ng-container>
+      <ng-template #disconnectOutlook>
+        <button class="btn bg-white c-blue f-4 border-primary font-weight-bold connect" (click)="connectMail('outlook')" translate>integration_connect_mail</button>
+      </ng-template>
+      <div class="accounts">
+        <ng-container *ngIf="(user.connected_email_type=='outlook' || user.connected_email_type=='microsoft') && user.primary_connected">
+          <div class="f-4 c-dark font-weight-bold mt-3 mb-2" translate>integration_authorized_label</div>
+          <div class="f-4 c-dark">
+            <span class="font-weight-bold mr-2">{{user.connected_email}}</span>
+            <span class="f-2" translate>integration_connected_label</span>
+          </div>
+
+          <div *ngIf="aliasList.length > 1" class="mt-2">
+            <div class="v-center" *ngFor="let alias of aliasList">
+              <span class="f-4 c-dark font-weight-bold">{{alias.email}}</span>
+              <span class="f-4 c-dark font-weight-bold mx-2">{{alias.name}}</span>
+              <ng-container *ngIf="alias.primary; else setAsDefault">
+                <span class="f-4 c-dark ml-auto" translate>Default</span>
+              </ng-container>
+              <ng-template #setAsDefault>
+                <a class="f-4 c-blue ml-auto c-pointer" translate (click)="setPrimaryAlias(alias)">integration_alias_primary</a>
+              </ng-template>
+              <a class="f-4 c-blue ml-2 c-pointer" translate (click)="editAlias(alias)" [class.invisible]="alias.is_default">integration_alias_edit</a>
+              <a class="f-4 c-blue ml-2 c-pointer" translate (click)="removeAlias(alias)" [class.invisible]="alias.primary || alias.is_default">integration_alias_remove</a>
+            </div>
+          </div>
+          <div class="">
+            <a class="f-4 font-weight-bold c-pointer" (click)="createAlias()" translate>integration_new_alias</a>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="integration-account">
+      <div class="icon">
+        <img [src]="sspaService.toAsset('img/smtp.png')">
+      </div>
+      <div class="content">
+        <div class="title f-6 c-black font-weight-bold mb-1">SMTP Mail</div>
+        <div class="desc f-4 c-dark" translate>
+          integration_smtp_desc
+        </div>
+      </div>
+      <ng-container *ngIf="user.connected_email_type=='smtp' && user.primary_connected; else disconnectSmtp">
+        <button class="btn bg-white c-blue f-4 font-weight-bold connect" (click)="disconnectMail('smtp')" translate>
+          integration_disconnect
+        </button>
+      </ng-container>
+      <ng-template #disconnectSmtp>
+        <button class="btn bg-white c-blue f-4 border-primary font-weight-bold connect" (click)="connectMail('smtp')" translate>
+          integration_connect_mail
+        </button>
+      </ng-template>
+      <div class="accounts">
+        <ng-container *ngIf="user.connected_email_type=='smtp' && user.primary_connected">
+          <div class="f-4 c-dark font-weight-bold mt-3 mb-2" translate>integration_authorized_label</div>
+          <div class="f-4">
+            <span class="font-weight-bold mr-2">{{user.connected_email}}</span>
+            <span class="f-2" translate>integration_connected_label</span>
+          </div>
+
+          <div *ngIf="aliasList.length > 1" class="mt-2">
+            <div class="v-center" *ngFor="let alias of aliasList">
+              <span class="f-4 c-dark font-weight-bold">{{alias.email}}</span>
+              <span class="f-4 c-dark font-weight-bold mx-2">{{alias.name}}</span>
+              <ng-container *ngIf="alias.primary; else setAsDefault">
+                <span class="f-4 ml-auto" translate>Default</span>
+              </ng-container>
+              <ng-template #setAsDefault>
+                <a class="f-4 c-blue ml-auto c-pointer" translate (click)="setPrimaryAlias(alias)">integration_alias_primary</a>
+              </ng-template>
+              <a class="f-4 c-blue ml-2 c-pointer" translate (click)="editAlias(alias)" [class.invisible]="alias.is_default">integration_alias_edit</a>
+              <a class="f-4 c-blue ml-2 c-pointer" translate (click)="removeAlias(alias)" [class.invisible]="alias.primary || alias.is_default">integration_alias_remove</a>
+            </div>
+          </div>
+          <div class="v-center justify-content-between">
+            <a class="f-4 c-dark font-weight-bold c-pointer" (click)="createAlias()" translate>integration_new_alias</a>
+            <i class="d-block i-icon i-setting bgc-dark c-pointer" (click)="settingSmtp()"></i>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <div class="calendar-wrapper mt-3" id="calendars">
+    <ng-container *ngIf="isPackageCalendar">
+      <span class="f-6 c-black font-weight-bold" translate>Calendar apps</span>
+      <div class="integration-account">
+        <div class="icon">
+          <img [src]="sspaService.toAsset('img/google_calendar.svg')">
+        </div>
+        <div class="content">
+          <div class="title f-6 c-black font-weight-bold mb-1">Google Calendar</div>
+          <div class="desc f-4 c-dark" translate>
+            integration_google_calendar
+          </div>
+        </div>
+        <ng-container *ngIf="googleCalendars.length; else connectGoogleCalendar">
+          <button class="btn bg-white c-blue border-primary f-4 font-weight-bold connect" (click)="connectCalendar('gmail')" translate>
+            integration_add_calendar
+          </button>
+        </ng-container>
+        <ng-template #connectGoogleCalendar>
+          <button class="btn bg-white c-blue border-primary f-4 font-weight-bold connect" (click)="connectCalendar('gmail')" translate>
+            integration_connect_calendar
+          </button>
+        </ng-template>
+        <div class="accounts">
+          <ng-container *ngIf="googleCalendars.length">
+            <div class="f-4 c-dark font-weight-bold mt-3 mb-2" translate>integration_authorized_label</div>
+            <ng-container *ngFor="let calendar of googleCalendars">
+              <div class="v-center mb-1">
+                <div class="f-4 c-dark font-weight-bold mr-1">{{calendar.connected_email}}</div>
+                <span class="f-2" translate>integration_connected_label</span>
+                <button type="button" class="cal-disconnect btn border-dark w-100 f-4 font-weight-bold sm p-2 ml-auto" (click)="disconnectCalendar(calendar.connected_email, 'gmail', calendar?.id)">
+                  <div class="f-4 c-dark" translate>integration_disconnect</div>
+                </button>
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="integration-account">
+        <div class="icon">
+          <img [src]="sspaService.toAsset('img/outlook_calendar.svg')">
+        </div>
+        <div class="content">
+          <div class="title f-6 c-black font-weight-bold mb-1">Outlook Calendar</div>
+          <div class="desc f-4 c-dark" translate>
+            integration_outlook_calendar
+          </div>
+        </div>
+        <ng-container *ngIf="outlookCalendars.length; else connectOutlookCalendar">
+          <button class="btn bg-white c-blue border-primary f-4 font-weight-bold connect" (click)="connectCalendar('outlook')" translate>
+            integration_add_calendar
+          </button>
+        </ng-container>
+        <ng-template #connectOutlookCalendar>
+          <button class="btn bg-white c-blue border-primary f-4 font-weight-bold connect" (click)="connectCalendar('outlook')" translate>
+            integration_connect_calendar
+          </button>
+        </ng-template>
+        <div class="accounts">
+          <ng-container *ngIf="outlookCalendars.length">
+            <div class="f-4 c-dark font-weight-bold mt-3 mb-2" translate>integration_authorized_label</div>
+            <ng-container *ngFor="let calendar of outlookCalendars">
+              <div class="v-center mb-1">
+                <div class="f-4 c-dark font-weight-bold mr-1">{{calendar.connected_email}}</div>
+                <span class="f-2" translate>integration_connected_label</span>
+                <button type="button" class="cal-disconnect btn border-dark w-100 font-weight-bold sm px-1 py-1 ml-auto" (click)="disconnectCalendar(calendar.connected_email, 'outlook', calendar?.id)">
+                  <div class="f-4" translate>integration_disconnect</div>
+                </button>
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="other-wrapper" id="others">
+    <h6 class="f-6 c-black font-weight-bold" translate>Other apps</h6>
+    <ng-container *ngIf="!isSspa">
+      <div class="integration-account">
+        <div class="icon">
+          <img [src]="sspaService.toAsset('img/dialer.svg')">
+        </div>
+        <div class="content">
+          <div class="title f-6 c-black font-weight-bold mb-1">Dialer</div>
+          <div class="desc f-4 c-dark" translate>
+            integration_dialer
+          </div>
+        </div>
+        <button class="btn bg-white c-blue border-primary f-4 font-weight-bold connect" (click)="buyDial()" [class.loading]="callingBuy" translate>
+          integration_free_trial
+        </button>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="integration-account zapier" *ngIf="!isSspa">
+    <div class="integration-body mt-3">
+      <div class="icon">
+        <img [src]="sspaService.toAsset('img/zapier.svg')">
+      </div>
+      <div class="content">
+        <div class="title f-6 c-black font-weight-bold mb-1">Zapier</div>
+        <div class="desc f-4 c-dark" translate>
+          integration_zapier
+        </div>
+      </div>
+      <button class="btn bg-white c-blue border-primary f-4 font-weight-bold connect" (click)="connectZapier()" translate>
+        integration_see_template
+      </button>
+    </div>
+    <div class="integration-header mt-2">
+      <p class="f-4 font-weight-bold m-0 key-label" translate>integration_api_key</p>
+      <div class="v-center mt-1">
+        <div class="v-center key-container">
+          <input class="form-control f-4 w-100 p-1" [type]="!keyVisible?'password':'text'" [ngModel]="garbage?.access_token" readonly>
+          <i class="i-icon i-visible d-block eye ml-1" [class.i-invisible]="keyVisible" (click)="setKeyVisible()"></i>
+        </div>
+        <div class="header-button ml-3">
+          <ng-container *ngIf="isCopied; else copyButton">
+            <button class="v-center bg-white border-dark my-auto f-4 font-weight-bold key-copy">
+              <span translate>integration_copied</span>
+            </button>
+          </ng-container>
+          <ng-template #copyButton>
+            <button type="button" class="v-center cal-disconnect btn border-dark w-100 f-4 font-weight-bold sm p-2 ml-auto" (click)="copyKey()">
+              <i class="i-icon i-copy bgc-dark sm d-block"></i>
+              <div class="f-4 c-dark ml-2" translate>integration_copy_key</div>
+            </button>
+          </ng-template>
+          <button class="v-center bg-white border-0 my-auto ml-2 f-4 font-weight-bold key-regenerate" (click)="getToken()">
+            <i class="i-icon i-reload s-14 bgc-dark d-block" [class.spinner]="isRegenerated"></i>
+            <span class="f-4 c-dark ml-2" translate>integration_regenerate_key</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="integration-account agentfire" *ngIf="!isSspa && (!isProduction || features['agentfire'])">
+    <div class="integration-body mt-3">
+      <div class="icon">
+        <img [src]="sspaService.toAsset('img/agentfire.png')">
+      </div>
+      <div class="content">
+        <div class="title f-6 c-black font-weight-bold mb-1">Agent Fire</div>
+        <div class="desc f-4 c-dark" translate>
+          integration_agentfire
+        </div>
+      </div>
+      <a class="btn bg-white c-blue border-primary f-4 font-weight-bold connect" target="_blank" href="{{agentFirePage}}" translate>
+        integration_agentfire_action
+      </a>
+    </div>
+    <div class="integration-header mt-2">
+      <p class="f-4 font-weight-bold m-0 key-label" translate>integration_api_key</p>
+      <div class="v-center mt-1">
+        <div class="v-center key-container">
+          <input class="form-control f-4 w-100 p-1" [type]="!apiKeyVisible?'password':'text'" [ngModel]="garbage?.api_key" readonly>
+          <i class="i-icon i-visible d-block eye ml-1" [class.i-invisible]="apiKeyVisible" (click)="setApiKeyVisible()"></i>
+        </div>
+        <div class="header-button ml-3">
+          <ng-container *ngIf="isApiKeyCopied; else copyButton">
+            <button class="v-center bg-white border-dark my-auto f-4 font-weight-bold key-copy">
+              <span translate>integration_copied</span>
+            </button>
+          </ng-container>
+          <ng-template #copyButton>
+            <button type="button" class="v-center cal-disconnect btn border-dark w-100 f-4 font-weight-bold sm p-2 ml-auto" (click)="copyApiKey()">
+              <i class="i-icon i-copy bgc-dark sm d-block"></i>
+              <div class="f-4 c-dark ml-2" translate>integration_copy_key</div>
+            </button>
+          </ng-template>
+          <button class="v-center bg-white border-0 my-auto ml-2 f-4 font-weight-bold key-regenerate" (click)="getApiKey()">
+            <i class="i-icon i-reload s-14 bgc-dark d-block" [class.spinner]="generatingApiKey"></i>
+            <span class="f-4 c-dark ml-2" translate>integration_regenerate_key</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="integration-account">
+    <div class="icon">
+      <img [src]="sspaService.toAsset('img/calendly.svg')">
+    </div>
+    <div class="content">
+      <div class="title f-6 c-black font-weight-bold mb-1">Calendly</div>
+      <div class="desc f-4 c-dark" translate>
+        integration_calendly
+      </div>
+    </div>
+    <ng-container *ngIf="garbage?.calendly && garbage.calendly?.email && garbage.calendly?.token; else connectEvent">
+      <button class="v-center btn bg-white c-blue border-primary f-4 font-weight-bold connect" (click)="selectCalendly()">
+        <i class="i-icon i-warning-yellow d-block" *ngIf="calendlyLength > 1 && (!garbage.calendly?.link || !garbage.calendly?.id)"></i>
+        <span class="w-100" *ngIf="!garbage.calendly?.link || !garbage.calendly?.id" translate>integration_select_event</span>
+        <span class="w-100" *ngIf="garbage.calendly?.link && garbage.calendly?.id" translate>integration_change_event</span>
+      </button>
+    </ng-container>
+    <ng-template #connectEvent>
+      <button class="btn bg-white c-blue border-primary f-4 font-weight-bold connect" (click)="connectCalendly()" translate>
+        integration_connect_mail
+      </button>
+    </ng-template>
+    <div class="accounts">
+      <ng-container *ngIf="garbage?.calendly && garbage.calendly?.email && garbage.calendly?.token">
+        <div class="f-4 font-weight-bold mt-3 mb-2" translate>integration_authorized_label</div>
+        <div class="v-center mb-1">
+          <div class="f-4 font-weight-bold mr-1">{{garbage.calendly?.email}}</div>
+          <span class="f-2" translate>integration_connected_label</span>
+          <button type="button" class="cal-disconnect btn border-dark w-100 font-weight-bold sm p-2 ml-auto" (click)="disconnectCalendly()">
+            <div class="f-4 c-dark" translate>integration_disconnect</div>
+          </button>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div *ngIf="!isSspa" class="integration-account">
+    <div class="icon">
+      <img [src]="sspaService.toAsset('img/zoom.svg')">
+    </div>
+    <div class="content">
+      <div class="title f-6 c-black font-weight-bold mb-1">Zoom</div>
+      <div class="desc f-4 c-dark" translate>
+        integration_zoom
+      </div>
+    </div>
+    <ng-container *ngIf="garbage.zoom?.email; else connect">
+      <button class="btn bg-white c-blue border-primary f-4 font-weight-bold connect" (click)="disconnectZoom()" translate>
+        integration_disconnect
+      </button>
+      <div class="accounts">
+        <div class="f-4 c-dark font-weight-bold mt-3 mb-2" translate>integration_authorized_label</div>
+          <div class="v-center mb-1">
+            <div class="f-4 c-dark font-weight-bold mr-1">{{garbage.zoom?.email}}</div>
+            <span class="f-2 c-dark" translate>integration_connected_label</span>
+          </div>
+      </div>
+    </ng-container>
+    <ng-template #connect>
+      <button class="btn bg-white c-blue border-primary f-4 font-weight-bold connect" (click)="connectZoom()" translate>
+        integration_connect_mail
+      </button>
+    </ng-template>
+  </div>
+
+  <div class="integration-account" *ngIf="!isSspa">
+    <div class="icon">
+      <img [src]="sspaService.toAsset('img/download_crmgrow.svg')">
+    </div>
+    <div class="content">
+      <div class="title f-6 c-black font-weight-bold mb-1">Download crmgrow</div>
+      <div class="desc f-4 c-dark" translate>
+        Create HD recordings using your camera, screen, or a combination of camera and screen. This gives you the freedom to record and create content anywhere and stored within your crmgrow account.
+      </div>
+    </div>
+    <a class="v-center justify-content-center btn bg-white c-blue border-primary f-4 font-weight-bold connect" [href]="downloadLink" target="_blank" translate>
+      Download Application
+    </a>
+  </div>
+
+  <div class="integration-account" *ngIf="!isSspa">
+    <div class="icon">
+      <img [src]="sspaService.toAsset('img/chrome_extension.svg')">
+    </div>
+    <div class="content">
+      <div class="title f-6 c-black font-weight-bold mb-1">Chrome Extension</div>
+      <div class="desc f-4 c-dark" translate>
+        integration_extension
+      </div>
+    </div>
+    <a class="v-center justify-content-center btn bg-white c-blue border-primary f-4 font-weight-bold connect" href="https://chrome.google.com/webstore/detail/crmgrow-video-webcam-scre/bcbcnnookeieadihaekplblbfmjaodbb?hl=en-US" target="_blank" translate>
+      integration_install_ext
+    </a>
+  </div>
+</div>

@@ -1,0 +1,70 @@
+@import 'variables';
+
+.sms-template {
+  .dropdown-toggle {
+    .i-triangle-up {
+      display: none !important;
+    }
+    .i-triangle-down, .i-triangle-up {
+      width: 8px;
+      height: 8px;
+      min-width: 8px;
+    }
+  }
+  &.show {
+    .dropdown-toggle {
+      .i-triangle-down {
+        display: none !important;
+      }
+      .i-triangle-up {
+        display: block !important;
+      }
+    }
+  }
+  .menu-item:hover {
+    background-color: gainsboro;
+  }
+  .menu-item:active {
+    background-color: blue;
+    color: white;
+  }
+  .template-container {
+    background: white;
+    border: 1px solid gainsboro;
+    padding: 0px 0px;
+    border-radius: 4px;
+    box-shadow: 0px 0px 6px #bbb8;
+    width: 280px;
+    max-height: 250px;
+    overflow: auto;
+    z-index: 1000;
+
+    .closeButton {
+      position: absolute;
+      right: 0px;
+      height: 30px;
+    }
+
+    .template {
+      padding: 4px 6px;
+      border-top: 1px solid gainsboro;
+      cursor: pointer;
+      min-height: 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      i {
+        width: 14px;
+        height: 14px;
+        min-width: 14px;
+      }
+    }
+
+    .c-badge {
+      padding: 2px 4px;
+      font-size: 10px!important;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+  }
+}

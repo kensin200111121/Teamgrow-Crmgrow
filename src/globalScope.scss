@@ -1,0 +1,462 @@
+@import 'variables';
+@import 'bootstrap/scss/bootstrap.scss';
+@import '../node_modules/angular-calendar/css/angular-calendar.css';
+
+body {
+  // Custom variable values only support SassScript inside `#{}`.
+  @each $color, $value in $colors {
+    --#{$color}: #{$value};
+  }
+
+  @each $color, $value in $theme-colors {
+    --#{$color}: #{$value};
+  }
+
+  @each $bp, $value in $grid-breakpoints {
+    --breakpoint-#{$bp}: #{$value};
+  }
+
+  // Use `inspect` for lists so that quoted items keep the quotes.
+  // See https://github.com/sass/sass/issues/2383#issuecomment-336349172
+  --font-family-sans-serif: #{inspect($font-family-sans-serif)};
+  --font-family-monospace: #{inspect($font-family-monospace)};
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.business-date-time-container,
+.business-date-time-wrapper {
+  .calendar-wrapper {
+    // width: 400px;
+    // min-width: 320px;
+    height: 100%;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    .list-loading {
+      z-index: 1;
+    }
+    .calendar-time {
+      padding-top: 10px;
+      z-index: 3;
+      background: white;
+      .btn-disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      .btn {
+        i {
+          width: 12px;
+          height: 12px;
+          min-width: 12px;
+        }
+        &.btn-blue {
+          box-shadow: 0 5px 16px -5px rgba(16, 19, 54, 0.35);
+        }
+      }
+      .date {
+        font-size: 16px;
+        font-weight: 500;
+        height: 36px;
+      }
+
+      .btn i {
+        display: none;
+      }
+      @media screen and (max-width: 576px) {
+        .btn {
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          margin-left: 10px !important;
+          margin-right: 6px !important;
+          span {
+            display: none;
+          }
+          i {
+            display: block;
+          }
+        }
+        .date {
+          // width: 140px;
+          font-size: 16px;
+          font-weight: bold;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+  .time-wrapper {
+    max-height: 400px;
+    display: flex;
+    flex-flow: column;
+    margin-bottom: 10px;
+    // margin-left: 20px;
+    width: 100%;
+    .time-selector {
+      width: 100%;
+      display: flex;
+      flex-flow: column;
+      flex: 1 1 100px;
+      // padding-right: 10px;
+      overflow: auto;
+
+      .btn {
+        transition: all 0.3s ease;
+        padding: 1px;
+        // transition-property: width, transform;
+      }
+    }
+  }
+
+  mwl-calendar-month-view-header {
+    .cal-header-cell {
+      float: left;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      font-weight: 500;
+      font-size: 12px;
+      &.mobile {
+        display: none;
+      }
+      @media screen and (max-width: 576px) {
+        &.desktop {
+          display: none;
+        }
+        &.mobile {
+          display: block;
+        }
+      }
+    }
+  }
+
+  mwl-calendar-month-view {
+    .cal-month-view {
+      padding-bottom: 16px;
+    }
+    .cal-days {
+      border: none;
+      height: auto;
+      .cal-cell-row {
+        border: none;
+        height: auto;
+        &:hover {
+          background-color: #ffffff;
+        }
+      }
+    }
+    mwl-calendar-month-cell {
+      &:focus {
+        outline: none;
+      }
+      &.cal-out-month .cal-cell-top {
+        display: none;
+      }
+      &.cal-cell.cal-day-cell {
+        align-items: center;
+        border: none;
+        aspect-ratio: 1/1;
+        min-width: unset;
+        min-height: unset;
+        max-width: unset;
+        max-height: 70px;
+        margin: 3px;
+        background-color: #ffffff;
+        &:hover {
+          background-color: #ffffff;
+        }
+        &.cal-today .cal-cell-top {
+          &.cal-day-selected {
+            .cal-day-number::after {
+              background-color: $color-blue;
+            }
+          }
+          & .cal-day-number {
+            font-size: 16px;
+            font-weight: 300;
+            position: relative;
+            &::after {
+              width: 4px;
+              height: 4px;
+              content: '';
+              background-color: $color-blue;
+              position: absolute;
+              border-radius: 50%;
+              bottom: 0;
+              left: 35%;
+              margin-bottom: -3px;
+            }
+          }
+        }
+        &.cal-weekend .cal-day-number {
+          color: inherit;
+        }
+
+        &.cal-in-month {
+          // color: #0000ff;
+          // background-color: rgba(0, 0, 200, 0.09);
+          // border-radius: 50%;
+          // &:hover {
+          //   cursor: pointer;
+          // }
+        }
+        &.disabled-date {
+          pointer-events: none;
+          color: rgba(0, 0, 0, 0.6);
+          .cal-cell-top {
+            opacity: 0.6;
+            pointer-events: none;
+            background-color: #ffffff;
+            color: rgba(0, 0, 0, 0.6);
+          }
+        }
+      }
+      .cal-cell-top {
+        aspect-ratio: 1/1;
+        min-width: unset;
+        min-height: unset;
+        max-width: 45px;
+        max-height: 45px;
+        color: $color-blue;
+        // background-color: rgba(0, 0, 255, 0.18);
+        background-color: rgba(0, 105, 255, 0.065);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        &:hover {
+          cursor: pointer;
+          background-color: rgba(0, 105, 255, 0.15);
+        }
+        &.cal-day-selected {
+          background-color: $color-blue;
+          color: #ffffff;
+        }
+        .cal-day-number {
+          margin: 0;
+          opacity: 1;
+          font-size: 16px;
+        }
+      }
+      .cal-month-cell {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
+}
+
+.status {
+  color: #ffffff;
+  width: 60px;
+  text-align: center;
+  font-size: 10px;
+  cursor: pointer;
+
+  .pending {
+    background-color: #0000ff;
+    border-radius: 5px;
+    padding: 3px 5px;
+    text-align: center;
+    font-size: 10px;
+  }
+
+  .canceled {
+    background-color: #d92121;
+    border-radius: 5px;
+    padding: 3px 5px;
+    text-align: center;
+    font-size: 10px;
+  }
+
+  .planned {
+    background-color: #f28422;
+    border-radius: 5px;
+    padding: 3px 5px;
+    text-align: center;
+    font-size: 10px;
+  }
+
+  .finished,
+  .SENT {
+    background-color: #04b800;
+    border-radius: 5px;
+    padding: 3px 5px;
+    text-align: center;
+    font-size: 10px;
+  }
+}
+
+/** ==== Avatar Style === */
+//* Profile Avatar
+.avatar-wrapper {
+  width: 94px;
+  height: 94px;
+  min-width: 94px;
+  position: relative;
+  .avatar {
+    width: 94px;
+    height: 94px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  .btn-icon {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+
+    i {
+      min-width: 14px;
+    }
+  }
+}
+//* General Avatars
+.team-avatar {
+  width: 48px;
+  height: 48px;
+
+  &.md {
+    width: 36px;
+    height: 36px;
+  }
+
+  &.sm {
+    width: 26px;
+    height: 26px;
+  }
+}
+.form-avatar {
+  width: 26px;
+  min-width: 26px;
+  height: 26px;
+  color: white;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 0px 0px;
+  font-size: 14px;
+  line-height: 26px;
+  overflow: hidden;
+  border: none;
+
+  img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+
+  &.sm {
+    font-size: 12px;
+  }
+}
+.shadow-avatar {
+  box-shadow: -2px 2px 4px #ccc;
+}
+
+.name-avatar {
+  background: $color-avatar;
+  width: 32px;
+  height: 32px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 32px;
+  font-weight: 600;
+  color: white;
+  border-radius: 50%;
+
+  &.sm {
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 24px;
+  }
+
+  &.lg {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+    line-height: 48px;
+  }
+}
+.contact-avatar {
+  background-color: $color-avatar;
+  color: $color-white;
+  line-height: 32px !important;
+  text-align: center;
+  font-size: 14px;
+  border: none;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+
+  &.lg {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    line-height: 48px !important;
+    font-size: 20px;
+  }
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  line-height: 32px;
+
+  &.shadow {
+    box-shadow: -2px 2px 4px #ccc;
+  }
+  &.bd {
+    border: 2px solid white;
+  }
+  &.sm {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+  }
+}
+
+/**
+*  Vortex Container Style
+*/
+.vortex-app .px-4 {
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+body.wavv-calling a.nav-menu__item:not([href^="/crm/crm-"]) {
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+body.wavv-calling a.top-navbar__app-link:not([href^="/crm"]) {
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+body.wavv-calling .vortex-menu__floaty-bit .vortex-list-item--clickable {
+  pointer-events: none;
+  cursor: not-allowed;
+}
+.drag_head {
+  background-size: contain;
+  background: #001828 url(./assets/img/drag-handle.svg) no-repeat center center;
+  height: 31px !important;
+  width: 40px !important;
+  position: relative !important;
+  border-top-left-radius: 6px !important;
+  border-top-right-radius: 6px !important;
+}
+.wavv-frame-mini {
+  position: relative !important;
+  top: -6px;
+  height: 40px !important;
+}

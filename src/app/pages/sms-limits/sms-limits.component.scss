@@ -1,0 +1,17 @@
+.page-content {
+    width: 100%;
+
+  .add-phone {
+    width: 10px;
+    height: 10px;
+    min-width: 10px;
+  }
+}
+
+:host ::ng-deep {
+    circle-progress {
+        position: absolute;
+        right: -10px;
+        bottom: -10px;
+    }
+}

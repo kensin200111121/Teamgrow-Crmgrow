@@ -1,0 +1,41 @@
+.mat-datepicker-content .mat-calendar {
+  width: 220px;
+  height: 220px;
+  .mat-calendar-header {
+    padding: 0px;
+  }
+  .mat-calendar-controls {
+    margin: 0px;
+    display: grid;
+    grid-template-columns: 50px auto 50px;
+    .mat-calendar-period-button {
+      grid-column: 2/3;
+    }
+    .mat-calendar-previous-button {
+      grid-column: 1/2;
+      grid-row: 1/2;
+    }
+    .mat-calendar-next-button {
+      grid-column: 3/4;
+      grid-row: 1/2;
+    }
+    .mat-calendar-spacer {
+      display: none;
+    }
+  }
+  .mat-calendar-body-label {
+    opacity: 0;
+  }
+  .mat-calendar-table-header .mat-calendar-table-header-divider{
+    display: none;
+  }
+  .mat-calendar-body-cell-content{
+    border-radius: 4px;
+  }
+  .mat-calendar-body-selected {
+    background-color: $color-blue;
+  }
+  .mat-calendar-body tr:first-child {
+    display: none;
+  }
+}

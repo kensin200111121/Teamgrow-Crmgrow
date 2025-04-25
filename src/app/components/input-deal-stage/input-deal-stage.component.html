@@ -1,0 +1,39 @@
+<div class="custom-mat-field mat-select-wrapper">
+  <mat-form-field style="display: block;" appearance="outline">
+    <mat-select [formControl]="formControl" placeholder={{placeholder}}
+      #selector [disableOptionCentering]="true">
+      <mat-select-trigger>
+        <ng-container *ngIf="formControl.value">
+          <ng-container *ngIf="resultItemTemplate; else defaultResult"
+            [ngTemplateOutlet]="resultItemTemplate"
+            [ngTemplateOutletContext]="{ $implicit: formControl.value }">
+          </ng-container>
+          <ng-template #defaultResult>
+            <div class="v-center">
+              <div class="v-center selected-value">
+                <div class="f-3 font-weight-bold deal-stage-name"
+                  title="{{formControl.value.title}}">
+                  {{formControl.value.title}}</div>
+              </div>
+              <div class="icon-close ml-auto" (click)="remove()"></div>
+            </div>
+          </ng-template>
+        </ng-container>
+      </mat-select-trigger>
+      <mat-option>
+        <ngx-mat-select-search [formControl]="inputControl"
+          [searching]="searching" [placeholderLabel]="formPlaceholder"
+          noEntriesFoundLabel="There is no searched results."
+          preventHomeEndKeyPropagation="true">
+        </ngx-mat-select-search>
+      </mat-option>
+      <mat-option *ngFor="let item of filteredResults | async" [value]="item"
+        style="height: unset; line-height: unset;">
+        <div class="v-center py-3 justify-content-between">
+          <div class="f-3 font-weight-bold deal-stage-name"
+            title="{{item.title}}">{{item.title}}</div>
+        </div>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

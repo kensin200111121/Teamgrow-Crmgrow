@@ -1,0 +1,107 @@
+<app-overview-top></app-overview-top>
+<div class="row mt-3">
+  <div [ngClass]="isSspa ? 'col-md-6' : 'col-md-4'" class="mb-2">
+    <app-overview-task></app-overview-task>
+  </div>
+  <div [ngClass]="isSspa ? 'col-md-6' : 'col-md-4'" class="mb-2">
+    <app-overview-calendar></app-overview-calendar>
+  </div>
+  <div class="col-md-4 mb-2" *ngIf="!isSspa">
+    <app-overview-report
+      (onChangeTab)="onChangeTab($event)"
+    ></app-overview-report>
+  </div>
+</div>
+<ng-container *ngIf="!isSspa">
+  <div class="row mt-3">
+    <div class="col-md-12 mb-2">
+      <app-overview-marketing></app-overview-marketing>
+    </div>
+  </div>
+</ng-container>
+<div class="row mt-5">
+  <div class="col-md-12 mb-2" *ngIf="isSspa">
+    <app-overview-courses></app-overview-courses>
+  </div>
+</div>
+<!-- <ng-template #vortexTemplate>
+  <div class="row mt-3 ml-0">
+    <div class="col-md-12 d-flex justify-content-between align-items-center">
+      <span class="card-header pl-0" translate>Courses</span>
+      <div>
+        <a class="c-pointer v-center text-decoration-none" translate>
+          Go to University
+          <i class="d-block i-icon bgc-blue i-expand ml-2"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 mb-2">
+      <div class="card card-body-height card-padding">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="text-gray-50 font-weight-bold" translate>
+            Mindset, Habits and Time Management
+            <div class="d-flex">
+              <i class="i-stars d-block" [class]="'five'"></i><span class="pl-2 text-gray">5.0</span>
+            </div>
+          </div>
+          <div class="align-items-center"><a class="mt-auto btn btn-free c-pointer" translate>Free</a></div>
+        </div>  
+        <div class="text-gray text-overflow" translate>
+          Marzipan sesame snaps powder bear claw chocolate bar gummi bears cake marzipan muffin sweet cookiegingerbread dessert tootsie roll cotton candy chocolate
+        </div>
+        <div class="d-flex justify-content-between align-items-center" style="align-self: end;">
+          <a class="c-pointer v-center text-decoration-none" translate>
+            Learn More
+            <i class="d-block i-icon bgc-blue i-chev-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-2">
+      <div class="card card-body-height card-padding">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="text-gray-50 font-weight-bold" translate>
+            Mindset, Habits and Time Management
+            <div class="d-flex">
+              <i class="i-stars d-block" [class]="'five'"></i><span class="pl-2 text-gray">5.0</span>
+            </div>
+          </div>
+          <div class="align-items-center"><a class="mt-auto btn btn-free c-pointer" translate>Free</a></div>
+        </div>  
+        <div class="text-gray text-overflow" translate>
+          Marzipan sesame snaps powder bear claw chocolate bar gummi bears cake marzipan muffin sweet cookiegingerbread dessert tootsie roll cotton candy chocolate
+        </div>
+        <div class="d-flex justify-content-between align-items-center" style="align-self: end;">
+          <a class="c-pointer v-center text-decoration-none" translate>
+            Learn More
+            <i class="d-block i-icon bgc-blue i-chev-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-2">
+      <div class="card card-body-height card-padding">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="text-gray-50 font-weight-bold" translate>
+            Mindset, Habits and Time Management
+            <div class="d-flex">
+              <i class="i-stars d-block" [class]="'five'"></i><span class="pl-2 text-gray">5.0</span>
+            </div>
+          </div>
+          <div class="align-items-center"><a class="mt-auto btn btn-free c-pointer" translate>Free</a></div>
+        </div>  
+        <div class="text-gray text-overflow" translate>
+          Marzipan sesame snaps powder bear claw chocolate bar gummi bears cake marzipan muffin sweet cookiegingerbread dessert tootsie roll cotton candy chocolate
+        </div>
+        <div class="d-flex justify-content-between align-items-center" style="align-self: end;">
+          <a class="c-pointer v-center text-decoration-none" translate>
+            Learn More
+            <i class="d-block i-icon bgc-blue i-chev-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template> -->

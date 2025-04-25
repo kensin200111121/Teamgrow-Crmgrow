@@ -1,0 +1,37 @@
+<div class="v-center justify-content-between">
+    <h1 class="m-0" mat-dialog-title translate>
+        Calendly
+    </h1>
+</div>
+<mat-dialog-content>
+    <div class="d-flex mt-4 px-2 py-4 container-wrapper">
+        <div class="d-flex flex-column justify-content-center w-100 calendly-left">
+            <div class="d-flex justify-content-around mx-auto center-image">
+                <div class="bg-white text-center mr-3 icon-crmgrow">
+                    <img [src]="sspaService.toAsset('icons/icon-512x512.png')">
+                </div>
+                <i class="d-block i-icon i-plus mr-3" aria-hidden="true"></i>
+                <div class="bg-white text-center icon-calendly">
+                    <img [src]="sspaService.toAsset('img/calendly.svg')">
+                </div>
+            </div>
+        </div>
+        <div class="bgc-white p-4 w-100 calendly-right">
+            <h2 translate>Ways to use crmgrow + Calendly</h2>
+            <p class="f-6 fw-300 m-0 c-dark" translate>Automatically add Calendly calendars to your landing page.</p>
+            <!-- <a class="f-6 fw-400 c-dark" translate>How to find your Calendar API key</a> -->
+            <div class="form-group mb-0">
+                <label for="calendly_api_key" class="f-2 fw-400 m-0" translate>API Key</label>
+                <input class="form-control" name="calendlyApiKey" placeholder="{{'API Key' | translate}}" [(ngModel)]="calendlyApiKey" />
+            </div>
+            <div class="v-center justify-content-end mt-2">
+                <button class="btn c-blue font-weight-bold mr-2" mat-dialog-close translate>
+                    Close
+                </button>
+                <button class="btn btn-blue" [class.loading]="isConfirm" (click)="authCalendly()" translate>
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>

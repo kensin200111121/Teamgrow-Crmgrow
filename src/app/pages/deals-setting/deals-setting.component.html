@@ -1,0 +1,31 @@
+<div *ngIf="isSspa" class="mb-2 back-bar p-2 pl-4">
+  <div class="v-center c-pointer back-button" (click)="back()">
+    <i class="d-block i-icon i-allow bgc-dark mr-2 s-8"></i>
+    <span class="f-4 font-weight-bold">Back</span>
+  </div>
+</div>
+<div class="page-content">
+  <h1 class="page-title mb-3" translate>
+    Pipeline Manager
+  </h1>
+  <div class="content">
+    <app-slide-tab
+      [tabs]="tabs"
+      [selected]="selectedTab"
+      (onChange)="changeTab($event)"
+      type="plain"
+      class="border-bottom pl-0 rounded-0"
+    >
+    </app-slide-tab>
+    <div class="sub-container pl-0 flex-grow-1">
+      <ng-container [ngSwitch]="selectedTab.id">
+        <app-custom-fields [type]="'pipeline'"
+          *ngSwitchCase="'custom-fields'"
+        ></app-custom-fields>
+        <app-deals-preference
+          *ngSwitchCase="'preference'"
+        ></app-deals-preference>
+      </ng-container>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,141 @@
+<div
+  class="page-content py-0 px-0"
+  [class.pending]="isPending"
+  [class.shared]="isShared"
+>
+  <div class="contact-detail-panel d-flex">
+    <div class="contact-main-info">
+      <!-- Contact Main Info (Left panel) -->
+      <app-contact-main-info-v2 [setContactId]="_id"></app-contact-main-info-v2>
+    </div>
+    <div class="contact-activity-container">
+      <!-- Contact Activity Info (Center panel) -->
+      <div class="mx-3 mt-3 mb-0" [class.d-none]="isPending">
+        <app-contact-detail-action-header
+          *ngIf="
+            (contactService.readingDetail$ | async) === 'success';
+            else loadingStatus
+          "
+          [setContactId]="_id"
+          [class]="'d-flex flex-column flex-grow-1 min-0'"
+        ></app-contact-detail-action-header>
+
+        <ng-template #loadingStatus>
+          <app-skeleton-loader
+            width="100%"
+            height="80px"
+            class="mb-3"
+          ></app-skeleton-loader>
+          <div class="d-flex justify-content-end" class="mb-3">
+            <app-skeleton-loader
+              width="100px"
+              height="30px"
+            ></app-skeleton-loader>
+          </div>
+        </ng-template>
+      </div>
+      <div class="history-panel">
+        <app-contact-activity-list-container
+          *ngIf="
+            (contactService.readingDetail$ | async) === 'success';
+            else loadingActivityStatus
+          "
+          [setContactId]="_id"
+          [prospectId]="contactMainInfo?.prospect_id"
+          [focusActivityTab]="focusActivityTab"
+          [class]="'d-flex flex-column flex-grow-1 min-0'"
+          (changeTab)="changeActivityTab($event)"
+        ></app-contact-activity-list-container>
+
+        <ng-template #loadingActivityStatus>
+          <div class="m-3 w-100">
+            <div class="d-flex mb-2">
+              <app-skeleton-loader
+                width="60px"
+                height="32px"
+                class="mr-2"
+                *ngFor="let i of [0, 1, 2, 3, 4]"
+              ></app-skeleton-loader>
+            </div>
+            <app-skeleton-loader
+              width="100%"
+              height="80px"
+              *ngFor="let i of [0, 1]"
+            ></app-skeleton-loader>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+    <div class="contact-data-list" [class.opened]="!!expandedDataListName">
+      <app-contact-data-list-container
+        *ngIf="
+          (contactService.readingDetail$ | async) === 'success';
+          else loadingDataStatus
+        "
+        [setContactId]="_id"
+        [dataSection]="expandedDataListName"
+        class="d-block h-100"
+        (closeDataList)="clostDataList()"
+        (changeDataSection)="changeDataList($event)"
+        (changeSections)="setDataSectionItems($event)"
+      ></app-contact-data-list-container>
+    </div>
+    <div
+      class="contact-detail-footer"
+      [class]="'d-flex flex-column flex-grow-1 min-0'"
+    >
+      <app-contact-detail-footer
+        [setContactId]="_id"
+        [setActivityTab]="focusActivityTab"
+        (refreshContact)="refreshContact()"
+        (changeContact)="changeContact($event)"
+      ></app-contact-detail-footer>
+    </div>
+
+    <div
+      class="shortcuts py-3 px-2"
+      *ngIf="
+        (contactService.readingDetail$ | async) === 'success';
+        else loadingDataShortcuts
+      "
+    >
+      <div
+        *ngFor="let object of dataSectionItems"
+        (click)="expandDataList(object.name, $event)"
+      >
+        <ng-container *enableByFeatures="object.feature">
+          <div class="p-3 mb-3 accordion-item" *ngIf="enabledSectionTypes.includes(object.type)">
+            <div class="d-flex justify-content-between">
+              <div class="d-flex items-center p-relative">
+                <i class="bgc-dark d-block i-icon" [ngClass]="object.icon"></i>
+                <div class="badge" *ngIf="totalActionCount[object.type]">{{ totalActionCount[object.type] }}</div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingDataStatus>
+  <div class="p-3 w-100">
+    <app-skeleton-loader
+      width="100%"
+      height="50px"
+      class="mb-3 d-block"
+      *ngFor="let i of [0, 1, 2, 3, 4]"
+    ></app-skeleton-loader>
+  </div>
+</ng-template>
+
+<ng-template #loadingDataShortcuts>
+  <div class="shortcuts py-3 px-2">
+    <app-skeleton-loader
+      width="50px"
+      height="50px"
+      class="mb-3 d-block"
+      *ngFor="let i of [0, 1, 2, 3, 4]"
+    ></app-skeleton-loader>
+  </div>
+</ng-template>

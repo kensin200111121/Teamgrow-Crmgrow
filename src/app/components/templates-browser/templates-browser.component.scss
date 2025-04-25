@@ -1,0 +1,68 @@
+.template-table th {
+  position: sticky;
+  top: 0px;
+}
+.template-table tr {
+  cursor: pointer;
+}
+.template-table tr td{
+  height: 65px;
+  padding: 10px 0px;
+}
+.template-table tr.selected {
+  background-color: #0207ff20 !important;
+}
+.title-inner {
+  width: 150px;
+  display: block;
+  padding-left: 10px;
+}
+.template-thumbnail-wrapper {
+  width: 90px;
+  height: 90px;
+  overflow: hidden;
+  box-shadow: 0px 0px 10px #0000004d;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+.template-thumbnail {
+  width: 90px;
+
+  &:hover {
+    animation: scrollDisplay 0.6s;
+  }
+}
+.newsletter {
+  display: flex;
+  flex-direction: row-reverse;
+  padding-left: 0px;
+  margin-left: 0px;
+  width: fit-content;
+
+  h5 {
+    margin-left: 10px;
+  }
+}
+.template-material {
+  .item-title {
+    width: 45px;
+    display: inline-block;
+    margin-right: 8px;
+    font-weight: 600;
+    opacity: 0.75;
+  }
+}
+.fixed-action-group {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 600px;
+  background: white;
+  padding: 20px 20px 20px 0px;
+  flex-direction: row-reverse;
+  z-index: 1;
+}
+.m-text-overflow-ellipsis{
+  overflow:hidden;
+  text-overflow: ellipsis;
+}

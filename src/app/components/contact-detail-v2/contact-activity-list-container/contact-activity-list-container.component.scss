@@ -1,0 +1,31 @@
+@import 'variables';
+.container {
+  flex: 1;
+  flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.contact-activity-list-container {
+  margin-left: -16px;
+  margin-right: -16px;
+}
+
+:host ::ng-deep {
+  .contact-activity-list .mat-tab-label {
+    height: 32px;
+    font-size: 14px;
+  }
+
+
+  .cdk-virtual-scroll-content-wrapper {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+@media screen and (max-width: 960px) {
+  .contact-activity-list-container {
+    height: 90vh;
+  }
+}

@@ -1,0 +1,43 @@
+@import 'variables';
+
+.panel-container {
+  background-color: $color-white;
+  flex: 1;
+  flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.shadow {
+  box-shadow: 0 0.3rem 0.5rem rgba(0, 0, 0, 0.1) !important;
+}
+
+:host ::ng-deep {
+  .tab-container {
+    height: 40px!important;
+
+    .tab {
+      font-size: 14px!important;
+      height: 32px!important;
+    }
+  }
+}
+
+.toggle-btn {
+  position: absolute;
+  right: 16px;
+  top: 12px;
+  transform: rotate(-180deg);
+  opacity: 0.25;
+  transition: all .2s;
+  z-index: 10;
+  cursor: pointer;
+
+  &.is-expanded {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+}

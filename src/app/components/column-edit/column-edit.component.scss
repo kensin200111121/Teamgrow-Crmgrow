@@ -1,0 +1,33 @@
+.column-items-list {
+  height: 320px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.column-item {
+  position: relative;
+  padding-left: 2rem;
+  margin-bottom: 15px;
+}
+
+.custom-control-label {
+  font-weight: 700;
+}
+
+.custom-control-label div {
+  margin-top: 0.05rem;
+}
+
+.selected-column-list {
+  height: 380px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+.selected-column {
+  border: 1px solid #c6c7cf;
+  border-radius: 3px;
+  padding: 10px 6px;
+}
+.column-name {
+  font-weight: 700;
+}

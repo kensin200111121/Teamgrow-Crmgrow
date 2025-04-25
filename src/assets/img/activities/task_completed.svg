@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>F27ED38A-AABD-42C2-85FB-9264ED99FCA8</title>
+    <g id="Main" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Timeline-Actions-Icons" transform="translate(-651.000000, -73.000000)">
+            <g id="Icons-/-Follow" transform="translate(651.000000, 73.000000)">
+                <g id="Group-42" transform="translate(6.000000, 9.000000)"></g>
+                <path d="M2.27380444,14.8624833 C2.11905778,13.60675 2,12.1150944 2,10.5 C2,8.88486778 2.11905778,7.39323111 2.27380444,6.13756389 C2.52796444,4.07511444 3.96838222,2.51595944 5.88096,2.26291444 C7.01504889,2.11287056 8.39996444,2 10,2 C11.6894222,2 13.1389333,2.12583778 14.3066667,2.28838611 C16.1266667,2.54174278 17.4901333,3.99040722 17.7285333,5.92414778 C17.8816,7.16484556 18,8.70501722 18,10.5 C18,12.2950111 17.8816,13.8351167 17.7285333,15.0758333 C17.4901333,17.0095833 16.1266667,18.4582667 14.3066667,18.7115667 C13.1389333,18.8742 11.6894222,19 10,19 C8.39996444,19 7.01504889,18.8871389 5.88096,18.7370667 C3.96838222,18.48405 2.52796444,16.9248667 2.27380444,14.8624833 Z" id="Path" stroke="#46D3A9" stroke-width="2" fill="#EBFAF6" fill-rule="nonzero"></path>
+                <rect id="Rectangle" stroke="#46D3A9" stroke-width="2" fill="#ECFAF6" x="5" y="1" width="10" height="3" rx="1.5"></rect>
+                <g id="Group-3" transform="translate(7.000000, 9.000000)" stroke="#46D3A9" stroke-linecap="round" stroke-width="2">
+                    <polyline id="Path" points="2.5039209 4 4.46958792 2.0276542 6.5039209 0"></polyline>
+                    <line x1="2.42427003" y1="3.99783307" x2="-2.21533902e-12" y2="2" id="Path"></line>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

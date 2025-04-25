@@ -1,0 +1,25 @@
+.mat-select {
+    border: 1px solid #aaa;
+    padding: 10px 12px;
+    border-radius: 5px;
+    background-color: white;
+}
+
+.round-check {
+    background-color: #00916E;
+}
+
+table tbody tr td {
+    line-height: 15px;
+    height: 40px;
+}
+
+table {
+    .merge-field-col {
+        min-width: 150px;
+    }
+}
+
+.conflict-table {
+    grid-template-columns: auto 200px 200px;
+}

@@ -1,0 +1,168 @@
+.page-content{
+  padding: 0px 0rem 0rem 2rem;
+
+  .page-content-inner {
+    padding: 2rem 2rem 2rem 0rem;
+  }
+
+  .tasks-list{
+    display: grid;
+    grid-gap: 16px;
+    width: 100%;
+    max-width: 600px;
+
+    .task-type{
+      border: 1px solid;
+      border-radius: 6px;
+      padding: 12px 16px;
+      cursor: pointer;
+
+      &.email-task {
+        background-color: #f19d5022;
+        border-color: #f19d5055;
+
+        .i-icon {
+          background-color: #f19d50;
+        }
+
+        &:hover {
+          background-color: #f19d5033;
+        }
+      }
+
+      &.text-task {
+        background-color: #00a3ff22;
+        border-color: #00a3ff55;
+
+        .i-icon {
+          background-color: #00a3ff;
+        }
+
+        &:hover {
+          background-color: #00a3ff33;
+        }
+      }
+
+      &.campaign-task {
+        background-color: #ff886d22;
+        border-color: #ff886d55;
+
+        .i-icon {
+          background-color: #ff886d;
+        }
+
+        &:hover {
+          background-color: #ff886d33;
+        }
+      }
+
+      &.automation-task {
+        background-color: #0000ff22;
+        border-color: #0000ff55;
+
+        .i-icon {
+          background-color: #0000ff;
+        }
+
+        &:hover {
+          background-color: #0000ff33;
+        }
+      }
+
+      .type-name{
+        align-self: flex-end;
+      }
+
+      .task-count {
+        font-size: 32px;
+        font-weight: 600;
+        margin-top: 8px;
+      }
+
+      .task-desc {
+        color: gray;
+      }
+
+      .email-subject {
+        .i-trash {
+          background-color: gray!important;
+        }
+        .detail-type {
+          background-color: gray;
+        }
+      }
+
+      .value {
+        margin-left: 6px;
+      }
+    }
+  }
+}
+
+.sidebar-panel {
+  width: 100vw;
+  max-width: 500px;
+}
+
+.action-col {
+  width: 40px!important;
+  padding-right: 0px!important;
+}
+
+thead{
+  border-bottom: 1px solid #d9d9df;
+}
+
+td{
+  width: 150px;
+  overflow: hidden;
+}
+
+th{
+  width: 150px;
+  overflow: hidden;
+}
+
+tr:hover{
+  background-color: #e9e9ef;
+}
+
+.avatar{
+  background-color: black;
+}
+
+.detail-panel{
+  padding: 5px;
+  .process-item{
+    padding-bottom: 5px;
+    padding-top: 5px;
+    padding-right: 15px;
+    padding-left: 15px;
+    border-bottom: solid 3px white;
+    border-radius: 5px;
+    background-color: aliceblue;
+  }
+
+  .process-item:hover{
+    background-color: rgb(219, 225, 231);
+  }
+
+  .no-task{
+    padding: 20px;
+  }
+}
+
+:host ::ng-deep {
+  .page-content .mat-drawer-container .mat-drawer {
+    position: absolute!important;
+    top: 0px;
+    border-radius: 0px!important;
+  }
+  .page-content .mat-drawer-container {
+    z-index: 1!important;
+  }
+}
+
+.pagination-wrapper {
+  grid-column: 1/5 !important;
+}

@@ -1,0 +1,19 @@
+.pipeline-dropdown {
+  border-radius: 7px;
+  border: 1px solid #989898;
+  background-color: #fff;
+}
+.dropdown-toggle {
+  cursor: pointer;
+  text-align: left;
+  align-items: center;
+  .label-in-dropdown{
+    display: -webkit-inline-box;
+    width: 95%;
+  }
+}
+.dropdown-height {
+  width: 100%;
+  border: 1px solid #989898;
+  border-radius: 0px;
+}

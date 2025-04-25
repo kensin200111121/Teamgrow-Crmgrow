@@ -1,0 +1,20 @@
+<div class="page-content">
+    <div class="mb-4" *ngIf="isSspa">
+        <app-back-button defaultTitle="Contacts" defaultRoute="/contacts" directMove="true"></app-back-button>
+    </div>
+    <h1 class="page-title mb-3 mb-sm-4" translate>Contact Preferences</h1>
+    <div class="sub-sidebar-mobile mb-2">
+    </div>
+    <div class='content'>
+        <app-slide-tab [tabs]="tabs" [selected]="selectedTab" (onChange)="changeTab($event)" type="plain"
+            class="border-bottom pl-0 rounded-0">
+        </app-slide-tab>
+        <div class="sub-container pl-0 pl-sm-4 flex-grow-1">
+            <ng-container [ngSwitch]="selectedTab.id">
+                <app-custom-fields *ngSwitchCase="'custom-contact-fields'"></app-custom-fields>
+                <app-tag-manager *ngSwitchCase="'tag-manager'"></app-tag-manager>
+                <app-label-manager *ngSwitchCase="'status'"></app-label-manager>
+            </ng-container>
+        </div>
+    </div>
+</div>

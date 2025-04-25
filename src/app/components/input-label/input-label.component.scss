@@ -1,0 +1,25 @@
+@import 'variables';
+.custom-mat-field {
+  position: relative;
+  &:not(.label_form) {
+    width: 152px;
+  }
+  &.label_form {
+    &:after {
+      content: "";
+      position: absolute;
+      top: 17px;
+      right: 16px;
+      color: $color-blue;
+      border-top: 6px solid;
+      border-right: 6px solid transparent;
+      border-bottom: 0;
+      border-left: 6px solid transparent;
+    }
+  }
+}
+
+.manage-label {
+  border-color: $color-dark;
+  background-color: #eee;
+}

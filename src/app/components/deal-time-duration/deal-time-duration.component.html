@@ -1,0 +1,41 @@
+<div class="v-center justify-content-between">
+    <h1 mat-dialog-title class="m-0" translate>
+        Set Time Duration
+    </h1>
+    <button class="v-center border-0 bgc-trans" (click)="closeDialog()">
+        <i class="d-block i-icon i-close bgc-dark"></i>
+    </button>
+</div>
+<form #dealForm="ngForm" (ngSubmit)="submitted = true; dealForm.form.valid ? setTimeDuration() : false">
+    <mat-dialog-content>
+        <div class="form-group mt-2">
+            <div class="v-center">
+                <label class="theme-label">
+                    <span translate>Time Duration</span>
+                    <span class="description ml-2" translate>(IN DAYS)</span>
+                </label>
+                <span
+                    class="invalid-error f-3 c-red ml-auto"
+                    *ngIf="timeduration <= 0 && submitted"
+                    translate
+                >
+                    Required!
+                </span>
+            </div>
+            <input
+                class="form-control"
+                type="number"
+                name="timeDuration"
+                #timeDuration="ngModel"
+                [(ngModel)]="timeduration"
+                [min]="0"
+                required
+            >
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button class="btn btn-white f-6 font-weight-bold mr-2" type="button" (click)="closeDialog()" translate>Cancel</button>
+        <button class="btn c-blue btn-white f-6 font-weight-bold mr-2" type="button" [class.loading]="moving" (click)="removeDuration()" translate>Remove</button>
+        <button [attr.data-action]="'edit-stage-update-duration'" class="btn btn-primary f-6 font-weight-bold btn-font-bold" type="submit" [class.loading]="saving" translate>Update</button>
+    </mat-dialog-actions>
+</form>

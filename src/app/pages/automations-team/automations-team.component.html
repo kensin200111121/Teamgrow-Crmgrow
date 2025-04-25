@@ -1,0 +1,446 @@
+<div class="custom-mat-table">
+    <div class="custom-header pt-0 v-center">
+        <app-folder-tree
+            [setFolder]="currentFolder"
+            [teamId]="teamId"
+            [baseRoute] = "BASE_URL" >
+        </app-folder-tree>
+        <div class="ml-auto form-group mb-0 search-form">
+            <div class="input-group-prepend">
+                <i class="i-icon i-search d-block bgc-dark"></i>
+            </div>
+            <input
+                type="text"
+                class="form-control"
+                [placeholder]="'Search' | translate"
+                aria-label="search"
+                aria-describedby="search-addon"
+                [(ngModel)]="filterParam.search"
+                (ngModelChange)="this.onChangeKeyword.next($event)"
+            >
+            <ng-container *ngIf="filterParam.search">
+                <div class="cancel-action c-pointer" (click)="this.onChangeKeyword.next('')">
+                <i class="i-icon i-close d-block bgc-dark"></i>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+    <div class="my-2 position-relative">
+        <div class="mat-table-wrapper" [class.empty]="!filteredItems.length">
+            <table mat-table class="w-100 automation-table page-table" multiTemplateDataRows
+                [dataSource]="filteredItems | paginate: {itemsPerPage: pageSize.id, currentPage: page, id: 'libraryTable', total: filteredItems.length}">
+                <ng-container matColumnDef="selection_info">
+                    <th mat-header-cell *matHeaderCellDef colspan="12" class="text-center">
+                        <span *ngIf="!isAllSelected(); else deselectTemplate" [translateParams]="{length: selectedFiles.length}" translate>
+                            automation_trans.automation_selected
+                            <span class="c-blue font-weight-bold c-pointer ml-2" (click)="toggleAllItems()"
+                                [translateParams]="{length: fileCount}" translate>
+                                automation_trans.select_automation
+                            </span>
+                        </span>
+                        <ng-template #deselectTemplate>
+                            <span [translateParams]="{length: selectedFiles.length}" translate>automation_trans.selected_all</span>
+                            <span class="c-blue c-pointer font-weight-bold ml-2"
+                                (click)="toggleAllItems()" translate>Clear selection</span>
+                        </ng-template>
+                    </th>
+                </ng-container>
+
+                <ng-container matColumnDef="select">
+                    <th mat-header-cell *matHeaderCellDef class="pl-0 checkbox-col">
+                        <div
+                            class="custom-control custom-checkbox"
+                            [class.indeterminate]="selectedCount && !isAllSelected()"
+                        >
+                            <input
+                                type="checkbox"
+                                class="custom-control-input"
+                                id="selectAllLibMaterials"
+                                (change)="$event ? togglePageItems() : null"
+                                [checked]="isPageSelected()"
+                            />
+                            <label class="custom-control-label" for="selectAllLibMaterials"></label>
+                        </div>
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="pl-0 checkbox-col">
+                        <div class="custom-control custom-checkbox" *ngIf="element.hasTeamAction">
+                            <input
+                                type="checkbox"
+                                class="custom-control-input"
+                                id="automation-{{element._id}}"
+                                (change)="toggleItem(element)"
+                                [checked]="isSelected(element)"
+                            />
+                            <label class="custom-control-label" for="automation-{{element._id}}"></label>
+                        </div>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="title">
+                    <ng-container *matHeaderCellDef>
+                        <th mat-header-cell *ngIf="!(selectedFiles.length + selectedFolders.length); else toolHeader" class="title">
+                            <div class="v-center c-pointer head-sort" (click)="changeSort('title')">
+                                <span [class]="selectedSort == 'title' ? 'font-weight-bold c-dark' : ''" translate>Title</span>
+                                <i class="i-icon d-block bgc-black ml-2" [class]="filterParam.title ? 'i-sort-down' : 'i-sort-up'"
+                                    *ngIf="selectedSort == 'title'"></i>
+                            </div>
+                        </th>
+                        <ng-template #toolHeader>
+                            <th mat-header-cell colspan="12">
+                                <div class="v-center">
+                                    <ng-container *ngIf="selectedFiles.length; else folderSelectedStatus">
+                                        <span class="c-dark f-4 text-lowercase font-weight-bold" [translateParams]="{length: selectedFiles.length}" translate>
+                                            autoflow.selectedCount
+                                        </span>
+                                        <app-actions-header [actions]="BULK_ACTIONS" (doCommand)="doAction($event)"></app-actions-header>
+                                    </ng-container>
+                                    <ng-template #folderSelectedStatus>
+                                        <span class="c-dark f-4 text-lowercase font-weight-bold" [translateParams]="{length: selectedFolders.length}" translate>
+                                            autoflow.selectedCount
+                                        </span>
+                                        <app-actions-header [actions]="FOLDER_ACTIONS" (doCommand)="doFolderAction($event)">
+                                        </app-actions-header>
+                                    </ng-template>
+                                </div>
+                            </th>
+                        </ng-template>
+                    </ng-container>
+                    <td mat-cell *matCellDef="let element" class="title">
+                        <div class="d-flex">
+                            <ng-container *ngIf="element.item_type !== 'folder'">
+                                <ng-container *ngIf="element?.meta?.images.length + element?.meta?.pdfs.length + element?.meta?.videos.length else noChildIcon">
+                                    <a (click)="handleSelect(element)" class="td-none c-pointer">
+                                        <span *ngIf="!selectedRows.includes(element._id); else downIcon" class="mr-1 mt-1">►</span>
+                                        <ng-template #downIcon>
+                                            <span class="mr-1 mt-1">▼</span>
+                                        </ng-template>
+                                    </a>
+                                </ng-container>
+                                <ng-template #noChildIcon>
+                                    <div class="empty-icon d-inline-block"></div>
+                                </ng-template>
+                            </ng-container>
+                            <a [routerLink]="['/autoflow/edit/' + element._id + '/' + teamId]" class="c-dark td-none flex"
+                                *ngIf="element.item_type !== 'folder'; else folderTitle">
+                                <span class="f-4 c-dark font-weight-bold">{{element.title}}</span>
+                            </a>
+                        </div>
+                        <ng-template #folderTitle>
+                            <a [routerLink]="['/community/' + teamId + '/automations/' + element._id]" class="c-dark td-none"
+                                [state]="{folderId: element._id, folderName: element.title, isOwn: false}">
+                                <div class="v-center c-pointer">
+                                    <i class="i-icon bgc-dark i-folder mr-1"></i>
+                                    <span class="f-4 font-weight-bold">{{element.title}}</span>
+                                </div>
+                            </a>
+                        </ng-template>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="owner">
+                    <ng-container *matHeaderCellDef>
+                        <th mat-header-cell class="auth" *ngIf='!(selectedFiles.length + selectedFolders.length)'>
+                            <div class="v-center c-pointer head-sort" (click)="changeSort('role')">
+                                <span [class]="selectedSort == 'role' ? 'font-weight-bold c-dark' : ''" translate>Owner</span>
+                                <i class="i-icon d-block bgc-black ml-2" [class]="filterParam.role ? 'i-sort-down' : 'i-sort-up'"
+                                    *ngIf="selectedSort == 'role'"></i>
+                            </div>
+                        </th>
+                    </ng-container>
+                    <td mat-cell *matCellDef="let element" class="auth">
+                        <div class="role" [class.admin]="element.role == 'admin'"
+                            [class.team]="element.role === 'team' && element.user === userId"
+                            [class.shared]="element.role === 'team' && element.user !== userId"></div>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="type">
+                    <ng-container *matHeaderCellDef>
+                        <th mat-header-cell class="type" *ngIf='!(selectedFiles.length + selectedFolders.length)'>
+                            <div class="v-center c-pointer head-sort" (click)="changeSort('type')">
+                                <span [class]="selectedSort == 'type' ? 'font-weight-bold c-dark' : ''" translate>TYPE</span>
+                                <i class="i-icon d-block bgc-black ml-2"
+                                    [class]="filterParam.type ? 'i-sort-down' : 'i-sort-up'" *ngIf="selectedSort == 'type'"></i>
+                            </div>
+                        </th>
+                    </ng-container>
+                    <td mat-cell *matCellDef="let element" class="type">
+                        <ng-container *ngIf="element.item_type !== 'folder'">
+                            <ng-container *ngIf="element.item_type == 'deal'; else contactType">
+                                <div class="v-center">
+                                    <i class="i-icon i-deals d-block bgc-black"></i>
+                                    <div class="f-4 c-dark ml-1" translate>Pipeline</div>
+                                </div>
+                            </ng-container>
+                            <ng-template #contactType>
+                                <div class="v-center">
+                                    <i class="i-icon i-contact d-block bgc-black"></i>
+                                    <div class="f-4 c-dark ml-1" translate>Contact</div>
+                                </div>
+                            </ng-template>
+                        </ng-container>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="label">
+                    <ng-container *matHeaderCellDef>
+                        <th mat-header-cell class="label" *ngIf='!(selectedFiles.length + selectedFolders.length)'>
+                            <div class="v-center c-pointer head-sort" (click)="changeSort('resource')">
+                                <span [class]="selectedSort == 'type' ? 'font-weight-bold c-dark' : ''" translate>Resources</span>
+                                <i class="i-icon d-block bgc-black ml-2"
+                                    [class]="filterParam.label ? 'i-sort-down' : 'i-sort-up'" *ngIf="selectedSort == 'label'"></i>
+                            </div>
+                        </th>
+                    </ng-container>
+                    <td mat-cell *matCellDef="let element" class="label" (click)="handleSelect(element)">
+                        <ng-container>
+                            <div class="v-center">
+                                <ng-container *ngIf="element.item_type !== 'folder'">
+                                    <div class="w-full">
+                                        <div class="f-4 c-dark ml-1 resource-count"
+                                        [class] = "selectedRow === element._id ? 'bg-grey':''">
+                                        {{element?.meta?.images.length + element?.meta?.pdfs.length + element?.meta?.videos.length}}</div>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ng-container>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="action-count">
+                    <ng-container *matHeaderCellDef>
+                        <th mat-header-cell class="action-count" *ngIf='!(selectedFiles.length + selectedFolders.length)' translate>
+                            Actions
+                        </th>
+                    </ng-container>
+                    <td mat-cell *matCellDef="let element" class="action-count">
+                        <div class="f-4 c-dark" *ngIf="element.item_type !== 'folder'">
+                            {{element?.meta?.action_count}}
+                        </div>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="created">
+                    <ng-container *matHeaderCellDef>
+                        <th mat-header-cell class="created" *ngIf='!(selectedFiles.length + selectedFolders.length)'>
+                            <div class="v-center justify-content-end c-pointer head-sort" (click)="changeSort('created_at')">
+                                <span [class]="selectedSort == 'created_at' ? 'font-weight-bold c-dark' : ''" translate>Added</span>
+                                <i class="i-icon d-block bgc-black ml-2"
+                                    [class]="filterParam.created_at ? 'i-sort-down' : 'i-sort-up'"
+                                    *ngIf="selectedSort == 'created_at'"></i>
+                            </div>
+                        </th>
+                    </ng-container>
+                    <td mat-cell *matCellDef="let element" class="created">
+                        <div class="f-4 c-dark">{{element.created_at | date: 'MM/dd/yyyy'}}</div>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="downloads">
+                    <ng-container *matHeaderCellDef>
+                        <th mat-header-cell class="downloads-col" *ngIf='!(selectedFiles.length + selectedFolders.length)'>
+                            <div class="justify-content-end c-pointer head-sort text-center" (click)="changeSort('downloads')">
+                                <span [class]="selectedSort == 'downloads' ? 'fw-600 c-dark' : ''" translate>Download</span>
+                                <i class="i-icon d-block bgc-black ml-2"
+                                    [class]="filterParam.downloads ? 'i-sort-down' : 'i-sort-up'"
+                                    *ngIf="selectedSort == 'downloads'"></i>
+                            </div>
+                        </th>
+                    </ng-container>
+                    <td mat-cell *matCellDef="let element" class="downloads-col {{element.downloads}}">
+                      <div class="f-4 c-dark">{{element.downloads}}</div>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                    <ng-container *matHeaderCellDef>
+                        <th mat-header-cell class="assign-action" *ngIf='!(selectedFiles.length + selectedFolders.length)'></th>
+                    </ng-container>
+                    <td mat-cell *matCellDef="let element; let index=dataIndex;" class="assign-action">
+                        <div class="v-center download-action items pr-3"
+                            [class.first-send]="(index == 0 && !user.onboard.automation_download) || d_status.includes(element._id)">
+                            <ng-container *ngIf="element.user !== userId; else unshareAction">
+                                <span class="c-dark font-weight-bold" *ngIf="d_status.includes(element._id)">
+                                    <i class="small-spinner"></i>
+                                </span>
+                                <button class="v-center btn p-1 c-dark" *ngIf="!d_status.includes(element._id)"
+                                    (click)="download(element)" placement="bottom" ngbTooltip="{{'Download To Own List' | translate}}">
+                                    <i class="i-icon i-download template-download bgc-dark" aria-hidden="true"></i>
+                                </button>
+                            </ng-container>
+                            <ng-template #unshareAction>
+                                <ng-container *ngIf="element.user === userId">
+                                    <div class="v-center download-action items pr-3">
+                                        <button class="v-center btn p-1 c-dark" (click)="stopShare(element, teamId)" placement="bottom"
+                                            ngbTooltip="{{'Stop Share' | translate}}">
+                                            <i class="i-icon i-share-off template-download bgc-dark" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </ng-container>
+                            </ng-template>
+                        </div>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="expandedDetail">
+                    <td mat-cell *matCellDef="let element" [attr.colspan]="DISPLAY_COLUMNS.length">
+                        <div class="automation-detail"
+                            [@detailExpand]="element._id == selectedAutomation ? 'expanded' : 'collapsed'">
+                            <ng-container *ngIf="detailLoading; else contactsList">
+                                <div class="loader"></div>
+                                <div class="text-center f-8 font-weight-bold" translate>
+                                    Loading the assigned contacts
+                                </div>
+                            </ng-container>
+                            <ng-template #contactsList>
+                                <h5 class="font-weight-bold border-bottom pb-2" translate>Assigned Contacts</h5>
+                                <div class="chip d-flex p-1 contact-chip c-pointer" *ngFor="let contact of contacts">
+                                    <div class="form-avatar rounded-circle bg-dark mr-1">{{contact.avatarName}}</div>
+                                    <div class="info">
+                                        <div class="f-5 font-weight-bold">{{contact.fullName}}</div>
+                                        <div class="f-2">{{contact.email}}</div>
+                                        <div class="f-2">{{contact.cell_phone}}</div>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="expandedResource">
+                    <td mat-cell *matCellDef="let element" [attr.colspan]="DISPLAY_COLUMNS.length">
+                        <div
+                            [@detailExpand]="selectedRows.includes(element._id) ? 'expanded' : 'collapsed'">
+                            <ng-container *ngIf="resourceLoading.get(element._id); else resourcesList">
+                                <div class="loader" style="height: 50px;"></div>
+                                <div class="text-center f-8 font-weight-bold" translate>
+                                    Loading the related resources
+                                </div>
+                            </ng-container>
+                            <ng-template #resourcesList>
+                                <table class="w-full c-dark" style="background-color: #eee;">
+                                    <thead>
+                                        <tr class="font-weight-bold border-bottom c-dark">
+                                            <td class="w-15p" translate>Thumbnail/Icon</td>
+                                            <td class="w-40p" translate>Title</td>
+                                            <td translate>Type</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody *ngFor="let item of data.get(element._id); let index = index">
+                                        <ng-container *ngIf="item.type !== 'Automation'; else automationIcon">
+                                            <tr>
+                                                <td class="pl-17px">
+                                                    {{index + 1}}
+                                                    <img 
+                                                        src="{{item.preview}}" 
+                                                        class="mr-2 mt-1" 
+                                                        style="height: 36px; width: auto;" 
+                                                        (error)="sspaService.imgError($event,'img/video_thumb.jpg')"
+                                                    >
+                                                </td>
+                                                <td>{{item.title | translate}}</td>
+                                                <td>{{item.type}}</td>
+                                            </tr>
+                                        </ng-container>
+                                        <ng-template #automationIcon>
+                                            <tr class="cursor-pointer" (click)="handleClick(item)">
+                                                <td class="pl-17px">
+                                                    <div class="d-flex">
+                                                        {{index + 1}}
+                                                        <span
+                                                            *ngIf="!selectedAutomationResource.includes(item._id); else downIcon"
+                                                            class="mx-2 mt-1"
+                                                            >►</span
+                                                        >
+                                                        <ng-template #downIcon>
+                                                            <span class="mx-2 mt-1">▼</span>
+                                                        </ng-template >
+                                                        <i class="bgc-blue d-block mx-2 i-automation i-icon mt-1"></i>
+                                                    </div>
+                                                </td>
+                                                <td>{{item.title | translate}}</td>
+                                                <td>{{item.type}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td *ngIf="selectedAutomationResource.includes(item._id)" [attr.colspan]="DISPLAY_COLUMNS.length-1">
+                                                  <app-automation-resources
+                                                    [item]="item"
+                                                    [displayColumns]="DISPLAY_COLUMNS.length - 1"
+                                                    [level]="1"
+                                                  ></app-automation-resources>
+                                                </td>
+                                              </tr>
+                                        </ng-template>
+                                    </tbody>                                    
+                                </table>
+                            </ng-template>
+                        </div>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="DISPLAY_COLUMNS"
+                    [class.selected]="selectedFiles.length + selectedFolders.length" class="table-header"></tr>
+                <tr mat-header-row *matHeaderRowDef="['selection_info']" [class.d-none]="!(selectedFiles.length)"
+                    class='selection-info'></tr>
+                <tr mat-row *matRowDef="let element; let index=index;  columns: DISPLAY_COLUMNS;" class="example-element-row"
+                [class.example-expanded-row]="selectedAutomation === element._id" (mouseleave)="rowHover(index)">
+                </tr>
+                <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="automation-detail-row"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['expandedResource']" class="automation-detail-row"></tr>
+            </table>
+
+            <div class="my-2 table-control mode-1">
+                <div class="pagination-wrapper m-auto" [class.invisible]="filteredItems.length < pageSize.id">
+                    <pagination-controls
+                        id="libraryTable"
+                        maxSize="5"
+                        previousLabel=""
+                        nextLabel=""
+                        (pageChange)="changePage($event)"
+                        (pageBoundsCorrection)="changePage($event)"
+                    >
+                    </pagination-controls>
+                </div>
+                <div
+                    *ngIf="filteredItems.length > PAGE_COUNTS[0].id"
+                    class="shadow-dropdown ml-auto page-size-control"
+                    ngbDropdown
+                    placement="top-right"
+                >
+                    <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+                        <span class="pr-2 c-blue" translate [translateParams]="{count: pageSize.id}">
+                        pagination
+                        </span>
+                    </div>
+                    <div ngbDropdownMenu aria-labelledby="contactPageSize">
+                        <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS" (click)="changePageSize(type)">
+                            <span class="f-3 v-center" [class.font-weight-bold]="type.id === pageSize.id">
+                                <span translate [translateParams]="{count: type.label}">
+                                    pagination
+                                </span>
+                                <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1" *ngIf="type.id === pageSize.id"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty & Loading View -->
+        <ng-container *ngIf="!filteredItems.length">
+            <div class="empty-list py-5" *ngIf="!isLoading else loadingTemplate">
+                <div class="object-icon v-center">
+                    <i class="i-icon i-material d-block bgc-dark"></i>
+                </div>
+                <h4 class="font-weight-bold mt-4 mb-3" translate>
+                    There is no automations for shared yet.
+                </h4>
+            </div>
+            <ng-template #loadingTemplate>
+                <div class="list-loading text-center">
+                    <div class="loader mt-5 lg"></div>
+                    <h4 class="fw-600 mt-2" translate>Loading automations...</h4>
+                </div>
+            </ng-template>
+        </ng-container>
+    </div>
+</div>

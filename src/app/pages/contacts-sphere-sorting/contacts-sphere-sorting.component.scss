@@ -1,0 +1,129 @@
+@import 'variables';
+.back-menu {
+    i {
+        width: 10px;
+        height: 10px;
+        min-width: 10px;
+    }
+}
+.page-title {
+    font-size: 24px!important;
+    height: unset!important;
+}
+
+.contact-list-wrapper {
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+
+    .card {
+        flex: 1;
+    }
+}
+
+.contact-sorter-wrapper {
+    flex: 1;
+}
+
+.contacts-list {
+    padding: 0.7rem;
+    overflow-y: auto;
+    height: 100%;
+}
+
+.selected-contact{
+    border: 1px solid #E6E6E6;
+    background: #D8E8F9;
+}
+
+.contact-card {
+    background-color: #FAFAFA;
+    min-height: 540px;
+    padding: 3rem;
+}
+
+.action-score {
+    padding: 2px 6px;
+    background-color: #E6E6E6;
+    border-radius: 8px;
+    margin-left: 0px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.bucket-el {
+    padding: 2px 6px;
+    background-color: #00CC7E;
+    border-radius: 8px;
+    margin-left: 4px;
+    margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-block;
+    color: #FFF;
+    
+    &.bgc-red {
+        background-color: $color-red;
+    }
+}
+
+.score {
+    color: #383838 !important;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-weight: 600;
+    margin-right: 0px;
+  }
+  
+  .score-1 {
+    background-color: $color-orange-weak;
+  }
+  
+  .score-2 {
+    background-color: $color-green-light;
+  }
+  
+  .score-3 {
+    background-color: $color-yellow-light;
+  }
+  
+  .score-4 {
+    background-color: $color-azure-light;
+  }
+  
+  .score-5 {
+    background-color: $color-red-pink;
+  }
+
+:host ::ng-deep {
+    .custom-progress {
+        &.mat-progress-bar {
+            height: 10px;
+            border-radius: 3px;
+        
+            .mat-progress-bar-fill::after {
+                background-color: #00CC7E !important;
+            }
+          
+            .mat-progress-bar-buffer {
+                background: #F5F5F5;
+            }
+        }
+    }
+}
+
+.sphere-spinner {
+    position: absolute;
+    background: #ffffffd9;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+}
+
+.list-container {
+    position: relative;
+}

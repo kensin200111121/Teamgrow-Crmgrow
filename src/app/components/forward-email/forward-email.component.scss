@@ -1,0 +1,42 @@
+.sub-sidebar {
+    width: 140px;
+    min-width: 140px;
+    @media screen and (max-width: 576px) {
+        display: none;
+    }
+}
+.smtp-container {
+    max-width: 360px;
+    width: 100%;
+  
+    @media screen and (max-width: 576px) {
+      display: block;
+      max-width: 100%;
+    }
+}
+  
+  
+form div.form-group.disabled input {
+    pointer-events: none !important;
+    opacity: 0.4 !important;
+}
+form.disabled .custom-toggle {
+    pointer-events: none !important;
+    opacity: 0.4 !important;
+}
+  
+.info-section {
+    border: 1.6px solid #0000ff70;
+    border-radius: 4.8px;
+    background-color: #f5f5ff50;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+  
+.hidden {
+    visibility: hidden;
+}
+
+form .custom-control-label {
+    font-size: 14px;
+}

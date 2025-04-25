@@ -1,0 +1,43 @@
+<h1 mat-dialog-title class="my-0" translate>
+  Add SMS message credits
+</h1>
+<mat-dialog-content>
+  <ng-container *ngIf="user?.text_info?.count + (user?.text_info?.subaccount_used_count || 0) >= user?.text_info?.max_count && !user?.text_info?.additional_credit?.amount">
+    <div class="f-3 font-weight-bold text-center w-75 mt-3 c-red mx-auto">
+      {{ 'Your account is out of SMS credits, please purchase more message credits to send out additional SMS messages' | translate }}
+    </div>
+  </ng-container>
+  <div class="row my-4">
+    <div class="col-md-4 col-sm-12 mb-md-0 mb-sm-2 p-1" *ngFor="let plan of plans" (click)="selectPlan(plan)">
+      <div class="text-center p-2 plan position-relative" [class.selected]="currentType.type == plan.type">
+        <i class="i-icon i-check bgc-blue sm d-block check-icon" *ngIf="currentType.type == plan.type"></i>
+        <div class="mt-3 text-center">
+          <span class="f-4 c-dark font-weight-bold">{{plan.sms}}</span> {{ 'messages' | translate }}
+        </div>
+        <div class="my-2 text-center">
+          <span class="f-6 c-dark font-weight-bold">${{plan.price}}.00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="f-4 c-dark">
+    <span [translateParams]="{amount: currentType.price}" translate>You will be charged amount. You can add more credits at any time</span>
+    <br/>
+    <span translate>This is a one time purchase, you're not opting into this for a monthly reoccuring fee</span>
+  </div>
+  <div class="form-group mt-4">
+    <re-captcha id="recaptcha" name="recaptcha" #recaptcha="ngModel" [(ngModel)]="captchaToken"></re-captcha>
+    <span class="error mt-1" [class.d-block]="submitted">
+      <ng-container *ngIf="!captchaToken">
+        {{ 'Please check if you are not a robot.' | translate }}
+      </ng-container>
+    </span>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions class="mt-4" align="end">
+  <button [attr.data-action]="'sms-purchase-message-cancel'" type="button" class="btn c-dark" mat-dialog-close translate>Cancel</button>
+  <button [attr.data-action]="'sms-purchase-message-complete'" class="btn btn-primary f-6 font-weight-bold px-3 ml-3" [class.loading]="saving" (click)="purchase()">
+    {{ 'Complete purchase' | translate }}
+  </button>
+</mat-dialog-actions>
+

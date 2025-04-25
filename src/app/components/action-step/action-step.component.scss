@@ -1,0 +1,301 @@
+@import "variables";
+
+.action {
+  width: 150px;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  box-shadow: 0px 3px 10px #f8f8f8;
+  text-align: center;
+  padding: 5px;
+  position: relative;
+  background-color: white;
+
+  label {
+      font-weight: 400;
+      margin-bottom: 0px;
+      width: calc(100% - 60px);
+      height: 30px;
+  }
+  .add-button {
+    width: 100%;
+  }
+  button {
+      width: 100%;
+      line-height: 24px;
+  }
+}
+
+.condition-action {
+  position: relative;
+  background: white;
+  padding: 5px;
+  border: 1px solid #ececec;
+  border-radius: 3px;
+
+  .condition {
+      position: absolute;
+      top: 0px;
+      left: 50%;
+      width: 50px;
+      height: 50px;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: white;
+      z-index: 2;
+
+      &::before {
+          background: $color-border;
+          content: "";
+          width: 100%;
+          height: 100%;
+          top: 0px;
+          left: 0px;
+          position: absolute;
+          transform: rotate(45deg) skew(-30deg, -30deg)
+      }
+
+      .name {
+          position: relative;
+          font-size: 12px;
+          width: 200%;
+          transform: translateX(-25%);
+          margin-top: 16px;
+          z-index: 2;
+      }
+
+      .period {
+          color: #f28422;
+          z-index: 5;
+          position: relative;
+          margin-top: 5px;
+      }
+  }
+
+  .sub-actions {
+      display: flex;
+
+      .action:first-child {
+          margin-right: 15px;
+          height: 135px!important;
+      }
+      .action:last-child {
+          margin-left: 15px;
+          height: 135px!important;
+      }
+
+      .set-button {
+          height: 100%;
+          display: flex;
+      }
+
+      .action label {
+          margin-top: 10px;
+          margin-bottom: 0px;
+      }
+
+      .action.right-action::before {
+          content: "Y";
+          position: absolute;
+          top: 0px;
+          left: 50%;
+          width: 20px;
+          height: 20px;
+          background: #1ca57a;
+          border-radius: 10px;
+          transform: translate(-50%, -50%);
+          font-weight: bold;
+          color: white;
+      }
+
+      .action.wrong-action::before {
+          content: "N";
+          position: absolute;
+          top: 0px;
+          left: 50%;
+          width: 20px;
+          height: 20px;
+          background: #f28422;
+          border-radius: 10px;
+          transform: translate(-50%, -50%);
+          font-weight: bold;
+          color: white;
+      }
+  }
+}
+
+.child-connector {
+  position: absolute;
+  width: 3px;
+  height: 28px;
+  background: #545454;
+  bottom: 0px;
+  left: calc(50% - 1px);
+  transform: translateY(100%);
+}
+
+.connector {
+  min-width: 3px;
+  position: absolute;
+  left: 50%;
+  bottom: 0px;
+  transform: translateY(100%);
+  z-index: 3;
+}
+
+.connector::after {
+  content: "";
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #8c59d0;
+  position: absolute;
+  bottom: 0px;
+  transform: translate(-50%, 0%);
+}
+.connector::before {
+  content: "";
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #8c59d0;
+  position: absolute;
+  top: 0px;
+}
+
+.connector button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: unset;
+  height: unset;
+  background: white;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+}
+
+
+.action.has-left {
+  .connector {
+      &:after {
+          right: unset;
+          left: 0px;
+          transform: translate(-50%, 50%);
+      }
+
+      &:before {
+          left: unset;
+          right: 0px;
+          transform: translate(50%, -50%);
+      }
+  }
+}
+.action.has-right {
+  .connector {
+      &:after {
+          right: 0px;
+          left: unset;
+          transform: translate(50%, 50%);
+      }
+
+      &:before {
+          left: 0px;
+          right: unset;
+          transform: translate(-50%, -50%);
+      }
+  }
+}
+.action.vertical {
+  .connector {
+      width: 3px!important;
+      background: black!important;
+
+      &:after {
+          left: 1px!important;
+          right: unset!important;
+          transform: translate(-50%, 50%);
+      }
+
+      &:before {
+          right: 1px!important;
+          left: unset!important;
+          transform: translate(50%, -50%);
+      }
+  }
+}
+
+.yellow-color {
+  color: #f28422 !important;
+}
+.action-detail {
+  text-align: left;
+  font-size: 13px;
+}
+.action .action-edit {
+  width: 30px;
+  position: absolute;
+  left: 10px;
+  bottom: 3px;
+  height: 30px;
+  background: #f8f8f8;
+  z-index: 2;
+}
+.action .action-remove{
+  width: 30px;
+  position: absolute;
+  right: 10px;
+  bottom: 3px;
+  height: 30px;
+  background: #f8f8f8;
+  z-index: 2;
+}
+.condition-action-remove {
+  width: 24px;
+  position: absolute;
+  right: -5px;
+  top: -5px;
+  height: 24px;
+  background: gray;
+  z-index: 2;
+  color: white;
+  font-size: 24px;
+  line-height: 24px;
+}
+
+// .connector.vertical {
+//     &:after {
+//         right: 0px;
+//         left: unset;
+//     }
+
+//     &:before {
+//         left: 0px;
+//         right: unset;
+//     }
+// }
+
+.add-child {
+    width: 30px!important;
+    height: 30px;
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: unset;
+    padding: 0px;
+    border-radius: 50%;
+}
+
+.condition-action-edit {
+  width: 24px;
+  position: absolute;
+  left: -5px;
+  top: -5px;
+  height: 24px;
+  background: gray;
+  z-index: 2;
+  color: white;
+
+  i{
+    margin-top: -16px;
+  }
+}

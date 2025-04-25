@@ -1,0 +1,70 @@
+@import 'variables';
+.custom-mat-field {
+  position: relative;
+  &:not(.label_form) {
+    width: 152px;
+  }
+  &.label_form {
+    &:after {
+      content: "";
+      position: absolute;
+      top: 17px;
+      right: 10px;
+      color: $color-blue;
+      border-top: 6px solid;
+      border-right: 6px solid transparent;
+      border-bottom: 0;
+      border-left: 6px solid transparent;
+      cursor: pointer;
+      pointer-events: none;
+    }
+  }
+}
+
+.value-label span {
+  white-space: nowrap;
+  padding: 2px 0px;
+}
+
+.manage-label {
+  border-color: $color-dark;
+  background-color: #eee;
+}
+
+.assignee {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.profile-wrapper {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.contact-avatar {
+  width: 20px;
+  height: 20px;
+  line-height: 20px !important;
+  min-width: 20px;
+  font-size: 12px;
+}
+
+.emplty-avatar-list {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items:
+  center;
+  justify-content: center;
+}
+
+.assignee-select-text {
+  padding-right: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.assignee-container {
+  overflow: hidden;
+}

@@ -1,0 +1,77 @@
+<div class="dialog-container">
+  <div class="v-center justify-content-between mx-0">
+    <div class="f-22 fw-600 c-black" translate>Import Contacts</div>
+  </div>
+  <mat-dialog-content class="mt-3">
+    <div class="row mx-1 my-2">
+      <div
+        class="col-12 text-center upload-container d-flex justify-content-center"
+      >
+        <div
+          class="upload-input-area v-center justify-content-center"
+          [class.no-cvs]="!isCSVFile"
+        >
+          <input type="file" accept=".csv" #file (change)="readFile($event)" />
+          <ng-container *ngIf="isCSVFile; else noneCSVFile">
+            <div class="notification v-center">
+              <i class="i-icon i-folder bgc-blue" aria-hidden="true"></i>
+              <div class="f-3 c-blue fw-600 ml-3">{{ fileName }}</div>
+              <i
+                class="i-icon i-close bgc-blue ml-3"
+                aria-hidden="true"
+                (click)="initImport($event)"
+              ></i>
+            </div>
+          </ng-container>
+          <ng-template #noneCSVFile>
+            <div class="notification w-100">
+              <div class="f-3 fw-600 c-black center mx-auto" translate>
+                <i class="i-icon sm i-upload d-block bgc-black mr-2"></i>
+                Upload CSV File
+              </div>
+              <div class="description text-center f-1 mt-3 px-5" translate>
+                Drag and Drop CSV File
+              </div>
+            </div>
+          </ng-template>
+        </div>
+        <div class="v-center c-blue fw-600 f-3 mt-5" *ngIf="isCSVFile">
+          {{ fileSize }}
+        </div>
+      </div>
+      <div class="mt-3 mx-auto w-100">
+        <div class="f-3 c-black fw-600" translate>
+          Need help getting started?
+        </div>
+        <a
+          class="v-center download-button f-3 border-0 c-blue fw-600 text-decoration-none mt-3"
+          (click)="downloadTemplate('csv_template')"
+          style="cursor: pointer;"
+        >
+          <i class="i-icon sm i-download bgc-blue" aria-hidden="true"></i>
+          <span class="ml-2" translate>Download Template</span>
+        </a>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <div class="d-flex justify-content-end w-100">
+      <button
+        [attr.data-action]="'contact-upload-cancel'"
+        class="btn btn-white c-dark fw-600"
+        type="button"
+        (click)="close($event)"
+      >
+        Cancel
+      </button>
+      <button
+        [attr.data-action]="'contact-upload-next'"
+        class="btn btn-primary"
+        type="button"
+        (click)="next($event)"
+      >
+        Next
+      </button>
+    </div>
+  </mat-dialog-actions>
+</div>

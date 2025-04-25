@@ -1,0 +1,287 @@
+<div mat-dialog-title class="v-center justify-content-between mx-0">
+  <h4 class="f-22 font-weight-bold c-black" translate>Add Contacts</h4>
+</div>
+<form #actionForm="ngForm" class="dialog-container form-group pt-0 px-0" (ngSubmit)="addContacts()">
+  <mat-dialog-content class="content-section">
+    <div class="pt-2">
+      <div class="f-6 font-weight-bold op-64 mb-2 contact-count desktop mt-0 pt-0 pb-0 mb-0"
+      >
+        {{total}} <span translate>contacts</span>
+      </div>
+      <div class="v-center contact-list-controls">
+        <div class="form-group mb-0 search-form">
+          <div class="input-group-prepend">
+            <i class="i-icon i-search d-block bgc-dark"></i>
+          </div>
+          <input type="text" class="form-control" [(ngModel)]="searchOption.searchStr" placeholder="{{'Search' | translate}}" name="contactSearchDialog"
+            #contactSearchDialog="ngModel" (ngModelChange)="changeSearchStr($event)" />
+          <ng-container *ngIf="searchOption?.searchStr">
+            <div class="cancel-action c-pointer" (click)="clearSearchStr()">
+              <i class="i-icon i-close d-block bgc-dark"></i>
+            </div>
+          </ng-container>
+        </div>
+        <div class="ml-auto" ngbDropdown placement="bottom-right">
+          <div class="v-center c-pointer f-3 p-3 mr-2 font-weight-bold" ngbDropdownToggle>
+            <span class="pr-2">{{sortType.id == 'alpha_down' ? 'Sort by' : sortType.label}}</span>
+          </div>
+          <div ngbDropdownMenu aria-labelledby="taskSortTypes">
+            <div class="py-2" ngbDropdownItem *ngFor="let type of SORT_TYPES" (click)="changeSort(type)">
+              <span class="f-3 v-center" [class.font-weight-bold]="type.id === sortType.id">
+                {{type.label}}
+                <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1" *ngIf="type.id === sortType.id"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="border-left pl-3 pr-0 py-1 text-center ml-3 mr-2">
+          <a class="ml-3 f-3 font-weight-bold c-dark td-none c-pointer v-center" (click)="drawer.toggle()">
+            <img class="mr-1" [src]="sspaService.toAsset('img/filter.svg')" alt="filter-icon" style="width: 16px; height: 16px;" />
+            <span translate>Filter</span>
+            <span *ngIf="!searchOption.isEmpty()" class="badge badge-primary ml-2 f-1">{{searchOption.getActiveOptions()}}</span>
+          </a>
+        </div>
+      </div>
+      <div class="custom-mat-table position-relative">
+        <div class="mat-table-wrapper" [class.empty]="!contacts.length">
+          <table class="w-100 page-table" mat-table
+            [dataSource]="contacts | paginate: {id: 'campaignContactPage', itemsPerPage: pageSize.id, currentPage: page, totalItems: total}">
+
+            <ng-container matColumnDef="loader-cell">
+              <th mat-header-cell *matHeaderCellDef colspan="12" class="loader-cell">
+                <div class="updating-status" *ngIf="contacts.length && loadingContacts === STATUS.REQUEST" translate>
+                  LOADING
+                </div>
+              </th>
+            </ng-container>
+
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef class="pl-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="selectAllContactsDialog" (change)="$event ? masterToggle() : null"
+                    [checked]="pageContacts.length && isAllSelected()" />
+                  <label class="custom-control-label" for="selectAllContactsDialog"></label>
+                </div>
+              </th>
+              <td mat-cell *matCellDef="let element" class="pl-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="contact-dialog-{{element._id}}" (change)="toggle(element)"
+                    [checked]="isSelected(element)" />
+                  <label class="custom-control-label" for="contact-dialog-{{element._id}}"></label>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="contact_name">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell *ngIf="!selection.length; else toolHeader" translate>contact name</th>
+                <ng-template #toolHeader>
+                  <th mat-header-cell [colSpan]="9">
+                    <div class="v-center">
+                      <span class="c-dark f-3 text-lowercase font-weight-bold"
+                        [translateParams]="{count: selection.length}" translate
+                      >select all n contacts</span>
+                      <app-actions-header [actions]="ACTIONS" (doCommand)="doAction($event)"></app-actions-header>
+                    </div>
+                  </th>
+                </ng-template>
+              </ng-container>
+              <td mat-cell *matCellDef="let element" (click)="openContact(element)">
+                <div class="v-center c-pointer">
+                  <div class="contact-avatar f-3 mr-2">
+                    {{element.avatarName}}
+                    <ng-container *ngIf="element.shared_members && element.shared_members.length">
+                      <ng-container *ngIf="userId && userId !== element.user && userId !== element.user[0]; else sharedBy">
+                        <span class="shared-with">
+                          <i class="i-icon i-shared-with d-block bgc-green"></i>
+                        </span>
+                      </ng-container>
+                      <ng-template #sharedBy>
+                        <span class="shared-by">
+                          <i class="i-icon i-shared-by d-block bgc-red"></i>
+                        </span>
+                      </ng-template>
+                    </ng-container>
+                  </div>
+                  <span class="fw-600 name-cell-inner">{{element.fullName}}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Country Column -->
+            <ng-container matColumnDef="contact_address">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell class="address-col" *ngIf="!selection.length" translate>address</th>
+              </ng-container>
+              <td mat-cell *matCellDef="let element" class="address-col">
+                <a class="c-pointer undecoration c-dark d-block" [routerLink]="['/contacts/' + element._id]">
+                  <span class="c-dark">{{element.shortAddress}}</span>
+                </a>
+              </td>
+            </ng-container>
+
+            <!-- Label Column -->
+            <ng-container matColumnDef="contact_label">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell *ngIf="!selection.length" translate>Status</th>
+              </ng-container>
+              <td mat-cell *matCellDef="let element">
+                <app-label-display [value]="element.label"></app-label-display>
+              </td>
+            </ng-container>
+
+
+
+            <!-- Activity Column -->
+            <ng-container matColumnDef="activity">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell *ngIf="!selection.length" translate>last activity</th>
+              </ng-container>
+              <td mat-cell *matCellDef="let element" (click)="openContact(element)">
+                <div class="v-center">
+                  <i class="act-icon normal {{'act-'+element.last_activity?.type}} d-block mr-2"></i>
+                  <span>{{element.last_activity?.content}}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Activity Added Column -->
+            <ng-container matColumnDef="activity_added">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell *ngIf="!selection.length" translate>activity added</th>
+              </ng-container>
+              <td mat-cell *matCellDef="let element" (click)="openContact(element)">
+                <div class="v-center">
+                  <span>{{element.last_activity?.created_at | datetimeFormat : 'hh:mm a, dd MMM'}}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Tags Column -->
+            <ng-container matColumnDef="contact_tags">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell *ngIf="!selection.length" translate>tags</th>
+              </ng-container>
+              <td mat-cell *matCellDef="let element">
+                <span class="tag rounded mr-2" *ngIf="element.tags?.length">{{element.tags[0]}}</span>
+                <span class="f-2 op-56">{{element.moreTag}}</span>
+              </td>
+            </ng-container>
+
+            <!-- Email Column -->
+            <ng-container matColumnDef="contact_email">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell *ngIf="!selection.length" translate>email address</th>
+              </ng-container>
+              <td mat-cell *matCellDef="let element" (click)="openContact(element)">
+                <span class="email-cell-inner">{{element.email}}</span>
+              </td>
+            </ng-container>
+
+            <!-- Phone Column -->
+            <ng-container matColumnDef="contact_phone">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell *ngIf="!selection.length" translate>phone number</th>
+              </ng-container>
+              <td mat-cell *matCellDef="let element" (click)="openContact(element)">
+                <span class="c-blue font-weight-bold">{{element.cell_phone | phone_format}}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="selection_info">
+              <th mat-header-cell *matHeaderCellDef colspan="9" class="text-center">
+                <span *ngIf="selection.length !== total; else deselectTemplate"
+
+                >
+                  {{selection.length}} {{'contacts are selected.' | translate}}
+                  <span class="c-blue font-weight-bold" *ngIf="selecting && selectSource === 'page'">
+                    <i class="small-spinner"></i>
+                    <span class="ml-1" translate>Selecting all. . .</span>
+                  </span>
+                  <span class="c-blue font-weight-bold c-pointer" *ngIf="!selecting" (click)="selectAll()"
+                    [translateParams]="{count: total}" translate
+                  >
+                  all n contacts selected
+                  </span>
+                </span>
+                <ng-template #deselectTemplate>
+                  <span [translateParams]="{count: total}" translate>all n contacts selected</span>
+                  <span class="c-blue c-pointer font-weight-bold"
+                    (click)="deselectAll()" translate>Clear selection</span>
+                </ng-template>
+              </th>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="['loader-cell']" class="loader-row"></tr>
+            <tr mat-header-row *matHeaderRowDef="DISPLAY_COLUMNS" [class.selected]="selection.length" class="table-header"></tr>
+            <tr mat-header-row *matHeaderRowDef="['selection_info']" [class.d-none]="!selection.length" class='selection-info'></tr>
+            <tr mat-row *matRowDef="let row; columns: DISPLAY_COLUMNS;"></tr>
+
+          </table>
+        </div>
+        <ng-container *ngIf="total > MIN_ROW_COUNT">
+          <div class="my-2 table-control mode-1">
+            <div class="pagination-wrapper m-auto">
+              <pagination-controls (pageChange)="changeContactPage($event)" (pageBoundsCorrection)="changeContactPage($event)"
+                id="campaignContactPage" maxSize="5" previousLabel="" nextLabel="">
+              </pagination-controls>
+            </div>
+            <div class="shadow-dropdown ml-auto page-size-control" ngbDropdown placement="top-right">
+              <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+                <span class="pr-2 c-blue" [translateParams]="{pageSize: pageSize.id}" translate>autoflow.perPage</span>
+              </div>
+              <div ngbDropdownMenu aria-labelledby="contactPageSize">
+                <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS" (click)="changePageSize(type)">
+                  <span class="f-3 v-center" [class.font-weight-bold]="type.id === pageSize.id"
+                    [translateParams]="{pageSize: type.label}" translate
+                  >
+                    autoflow.perPage
+                    <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1" *ngIf="type.id === pageSize.id"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="!contacts.length">
+          <ng-container [ngSwitch]="loadingContacts">
+            <div class="empty-list" *ngSwitchCase="STATUS.SUCCESS">
+              <div class="object-icon v-center">
+                <i class="i-icon i-lunch d-block bgc-dark"></i>
+              </div>
+              <h4 class="font-weight-bold mt-3 mb-3" translate>
+                There is no contact
+                <ng-container *ngIf="searchOption.isEmpty(); else searchConditionTemplate">
+                  <span translate> in your account.</span>
+                </ng-container>
+                <ng-template #searchConditionTemplate>
+                  <span translate> to match your filter conditions.</span>
+                </ng-template>
+              </h4>
+            </div>
+            <div class="list-loading text-center" *ngSwitchCase="STATUS.REQUEST">
+              <div class="loader mt-5 lg"></div>
+              <h4 class="fw-600 mt-2" translate>Loading contacts...</h4>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+
+  </mat-dialog-content>
+  <mat-dialog-actions class="justify-content-end mx-0 mt-0 pt-0">
+    <button type="button" mat-dialog-close class="btn btn-white f-6 font-weight-bold ml-2">
+      Cancel
+    </button>
+    <button [attr.data-action]="'bulk-email-contact-add'" type="submit" class="btn btn-primary font-weight-bold f-6" [class.loading]="adding">
+      Add
+    </button>
+  </mat-dialog-actions>
+</form>
+
+<mat-drawer-container [hasBackdrop]="true">
+  <mat-drawer #drawer position="end">
+    <app-advanced-filter #filterPanel [isInline]="true" [searchStr]="searchOption.searchStr" (onClose)="drawer.close()"
+      (onChangeSearchOption)="changeSearchOption($event)"></app-advanced-filter>
+  </mat-drawer>
+</mat-drawer-container>

@@ -1,0 +1,42 @@
+<mat-select [(ngModel)]="label" name="label" (ngModelChange)="changeLabel()">
+  <mat-select-trigger>
+    <div class="v-center" *ngIf="label; else emptyLabel">
+      <i class="i-icon i-label d-block mr-2" [style.backgroundColor]="label.color === '#FFF' ? '#000' : label.color"></i>
+      <span class="f-3 fw-600">{{label.name}}</span>
+    </div>
+    <ng-template #emptyLabel>
+      <div class="v-center">
+        <i class="i-icon i-label d-block mr-2" [style.backgroundColor]="'#000'"></i>
+        <span class="f-3 fw-600">{{defaultLabel}}</span>
+      </div>
+    </ng-template>
+  </mat-select-trigger>
+  <mat-option [value]="sourceLabelId ? sourceLabel : null"  style="height: unset; line-height: unset;">
+    <ng-container *ngIf="sourceLabelId; else emptyLabel">
+      <div class="v-center py-1 f-3 fw-600">
+          <i class="i-icon i-label d-block mr-2" [style.backgroundColor]="sourceLabel.color === '#FFF' ? '#000' : sourceLabel.color"></i>
+          <span>{{sourceLabel.name}}</span>
+      </div>
+    </ng-container>
+    <ng-template #emptyLabel>
+        <div class="v-center py-1">
+          <i class="i-icon i-label d-block mr-2" [style.backgroundColor]="'#000'"></i>
+          <span class="f-3 fw-600">{{defaultLabel}}</span>
+        </div>
+    </ng-template>
+  </mat-option>
+  <mat-option style="height: unset; line-height: unset;" *ngIf="mergeLabelId && sourceLabelId != mergeLabelId" [value]="mergeLabelId ? mergeLabel : null">
+    <ng-container *ngIf="mergeLabelId; else emptyLabel">
+        <div class="v-center py-1 f-3 fw-600">
+            <i class="i-icon i-label d-block mr-2" [style.backgroundColor]="mergeLabel.color === '#FFF' ? '#000' : mergeLabel.color"></i>
+            <span>{{mergeLabel.name}}</span>
+        </div>
+    </ng-container>
+    <ng-template #emptyLabel>
+        <div class="v-center py-1">
+          <i class="i-icon i-label d-block mr-2" [style.backgroundColor]="'#000'"></i>
+          <span class="f-3 fw-600">{{defaultLabel}}</span>
+        </div>
+    </ng-template>
+</mat-option>
+</mat-select>

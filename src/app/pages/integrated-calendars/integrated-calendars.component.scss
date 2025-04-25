@@ -1,0 +1,41 @@
+.page_calendar-types {
+  margin-top: 0px;
+}
+
+.calendar-types {
+  .calendar-type {
+    position: relative;
+    border: 1px solid #d9d9df;
+    border-radius: 5px;
+    box-shadow: 5px 5px 20px 1px rgb(0 0 0 / 5%);
+    height: auto;
+  }
+
+  .updating-status {
+    padding: 10px 20px;
+    top: 50%;
+  }
+}
+
+:host ::ng-deep {
+  .show.dropdown {
+    position: unset;
+  }
+}
+
+.email-for-calendars {
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 22px;
+  letter-spacing: -0.015em;
+  color: #101336;
+}
+
+.calendars-container {
+  margin-left: 25px;
+}
+.calendar-icons {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}

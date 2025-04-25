@@ -1,0 +1,31 @@
+<div class="d-flex v-center" *ngIf="members.length && isInited">
+  <span *ngIf="isSplit" class="c-secondary pl-1 pr-1 f-4">|</span>
+  <div *ngFor="let member of members.slice(0, maxCount)">
+    <div class="account" *ngIf="memberDics?.[member]" [ngbTooltip]="memberDics?.[member]?.user_name" container="body">
+      <img
+        *ngIf="memberDics?.[member]?.picture_profile; else avatarNameTemplate"
+        [src]="memberDics?.[member]?.picture_profile"
+        (error)="sspaService.imgError($event, 'img/user_avatar.svg')"
+        [style.width.px]="width"
+        [style.height.px]="height"
+        [style.line-height.px]="height"
+        [style.margin-right.px]="space"
+        class="avatar rounded-circle"
+      />
+      <ng-template #avatarNameTemplate>
+        <div
+          class="avatar bgc-secondary text-white f-2 text-center rounded-circle c-pointer"
+          [style.width.px]="width"
+          [style.height.px]="height"
+          [style.line-height.px]="height"
+          [style.margin-right.px]="space"
+        >
+          {{ memberDics?.[member]?.avatarName }}
+        </div>
+      </ng-template>
+    </div>
+  </div>
+  <div *ngIf="members.length > 2" class="f-4">
+    +{{ members.length - maxCount }}
+  </div>
+</div>

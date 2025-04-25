@@ -1,0 +1,127 @@
+<form #form="ngForm" (ngSubmit)="form.form.valid ? submit() : false">
+  <div class="row justify-content-between align-items-end mx-0">
+    <h2 mat-dialog-title class="mb-0" translate>Edit Fields</h2>
+    <button class="btn c-blue" type="button" translate (click)="gotoPipelineManager()">Manage Custom Fields</button>
+  </div>
+  <mat-dialog-content>
+    <div
+      class="general-panels w-100 mr-0 border-top pt-3"
+      *ngIf="fields.length"
+    >
+      <div class="contact-additional f-3">
+        <div class="additional-fields">
+          <ng-container *ngFor="let field of fields; let i = index">
+            <div class="form-group position-relative">
+              <label for="first_name_cc" translate>{{ field.name }}</label>
+              <div
+                class="form-group flex-grow-1 mb-0"
+                [ngSwitch]="field.type"
+                #wrapper
+              >
+                <input
+                  type="text"
+                  class="form-control"
+                  *ngSwitchCase="'text'"
+                  name="{{ 'additional-field-value-' + i }}"
+                  [placeholder]="
+                    field.placeholder
+                      ? field.placeholder
+                      : 'Field value | translate'
+                  "
+                  [(ngModel)]="additional_fields[field.name]"
+                />
+                <input
+                  type="email"
+                  class="form-control"
+                  *ngSwitchCase="'email'"
+                  name="{{ 'additional-field-value-' + i }}"
+                  placeholder="{{ field.placeholder }}"
+                  [(ngModel)]="additional_fields[field.name]"
+                  pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$"
+                />
+                <span
+                  class="error mt-1"
+                  *ngIf="field.type === 'email'"
+                  translate
+                >
+                  Email is invalid!
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  *ngSwitchCase="'link'"
+                  name="{{ 'additional-field-value-' + i }}"
+                  placeholder="{{ field.placeholder }}"
+                  [(ngModel)]="additional_fields[field.name]"
+                />
+                <app-phone-input
+                  [cssClass]="'form-control'"
+                  *ngSwitchCase="'phone'"
+                  name="{{ 'additional-field-value-' + i }}"
+                  [onlyCountries]="countries"
+                  [selectedCountryISO]="CountryISO.UnitedStates"
+                  [(ngModel)]="additional_fields[field.name]"
+                  (ngModelChange)="changeValue($event, field.name, 'phone')"
+                  [placeholder]="field.placeholder"
+                  #additionalPhoneControl
+                >
+                </app-phone-input>
+                <span
+                  class="error mt-1"
+                  *ngIf="field.type === 'phone'"
+                  translate
+                >
+                  Phone is invalid!
+                </span>
+                <app-date-input
+                  *ngSwitchCase="'date'"
+                  type="prepend"
+                  [(value)]="additional_fields[field.name]"
+                  [minDate]="field?.minDate"
+                  [maxDate]="field?.maxDate"
+                  [placeholder]="field.placeholder"
+                  [required]="false"
+                  outFormat="date"
+                  (valueChange)="changeDate(field.name)"
+                >
+                </app-date-input>
+                <select
+                  class="form-control"
+                  *ngSwitchCase="'dropdown'"
+                  [(ngModel)]="additional_fields[field.name]"
+                  name="{{ 'additional-field-value-' + i }}"
+                  #option="ngModel"
+                >
+                  <option value="" translate>None</option>
+                  <option
+                    *ngFor="let option of field.options"
+                    value="{{ option.value }}"
+                  >
+                    {{ option.value }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <!-- End Contact Additional Information -->
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <div class="ml-auto">
+      <button type="button" mat-dialog-close class="btn c-dark" translate>
+        Cancel
+      </button>
+      <button
+        type="submit"
+        data-action="create-contact-add-btn"
+        class="btn btn-primary"
+        [class.loading]="isSubmitting"
+        translate
+      >
+        {{ isCreate ? 'Add' : 'Update' }}
+      </button>
+    </div>
+  </mat-dialog-actions>
+</form>

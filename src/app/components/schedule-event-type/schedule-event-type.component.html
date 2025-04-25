@@ -1,0 +1,188 @@
+<form #form="ngForm" (ngSubmit)="form.form.valid ? save() : false;">
+  <div mat-dialog-title class="title">
+    <div class="v-center justify-content-between">
+      <h1 class="mb-0">{{ (isNew? 'Create' : 'Edit') | translate }} {{ 'Event Type' | translate }}</h1>
+    </div>
+  </div>
+  <mat-dialog-content>
+    <!-- Meeting Type -->
+    <div class="row">
+      <div class="col-12 form-group"
+        [ngClass]="{invalid: form.submitted && meetingType.invalid && (meetingType.dirty || meetingType.touched || form.submitted)}">
+        <label for="meeting-type_cc" translate>Meeting Type</label>
+        <mat-select id="meeting-type_cc" class="form-control" [(ngModel)]="eventType.type" name="meeting-type"
+          #meetingType="ngModel" required>
+          <mat-option *ngFor="let meetingType of MeetingTypes" [value]="meetingType.value">
+            {{ meetingType.name | translate }} ({{ meetingType.description | translate }})
+          </mat-option>
+        </mat-select>
+      </div>
+    </div>
+
+    <!-- Main information -->
+    <div class="row">
+      <div class="col-sm-6 col-12 form-group"
+        [ngClass]="{invalid: form.submitted && title.invalid && (title.dirty || title.touched || form.submitted)}">
+        <label for="title_cc" translate>Title</label>
+        <input type="text" id="title_cc" class="form-control" required name="title" #title="ngModel"
+          [(ngModel)]="eventType.title"/>
+        <span class="error" *ngIf="title.errors">
+          <ng-container *ngIf="title.errors.required">{{ 'Title is required!' | translate }}</ng-container>
+        </span>
+      </div>
+      <div class="col-sm-6 col-12 form-group"
+        [ngClass]="{invalid: form.submitted && location.invalid && (location.dirty || location.touched || form.submitted)}">
+        <label for="location_cc" translate>Location</label>
+        <mat-select id="location_cc" class="form-control" [(ngModel)]="eventType.location" name="location"
+          #location="ngModel">
+          <mat-option *ngFor="let location of Locations" [value]="location.value">{{ location.name | translate }}</mat-option>
+        </mat-select>
+      </div>
+      <div class="col-12 form-group">
+        <label for="description_cc" translate>Description</label>
+        <textarea id="description_cc" class="form-control" [(ngModel)]="eventType.description" name="description"
+          rows="3"></textarea>
+      </div>
+      <div class="col-12 form-group">
+        <label for="link_cc" translate>Link</label>
+        <input type="text" id="link_cc" class="form-control" name="link" [(ngModel)]="eventType.link" />
+      </div>
+    </div>
+
+    <!-- Date Range -->
+    <div class="row">
+      <div class="col-12 form-group date-range">
+        <label for="date-range_cc" translate>Date range</label>
+        <div class="form-check v-center">
+          <input class="form-check-input" type="radio" name="date-range" id="date-range-days" value="days"
+            [(ngModel)]="dateRange.type">
+          <div class="row align-items-ceter">
+            <div class="col-auto days-value pr-0">
+              <label class="d-none" for="days-value" translate>Days</label>
+              <input id="days-value" type="text" class="form-control" name="days"
+                [(ngModel)]="dateRange.data.days.value" />
+            </div>
+            <div class="col-auto days-type pl-0">
+              <label class="d-none" for="days-type" translate>Days</label>
+              <mat-select id="days-type" class="form-control" [(ngModel)]="dateRange.data.days.type" name="days-type">
+                <mat-option *ngFor="let daysType of DaysTypes" [value]="daysType.value">
+                  {{ daysType.name | translate }}
+                </mat-option>
+              </mat-select>
+            </div>
+            <div class="col-auto v-center">
+              <label class="form-check-label text-lowercase" for="date-range-days" translate>
+                into the future
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="form-check v-center mt-2">
+          <input class="form-check-input" type="radio" name="date-range" id="date-range-range" value="range"
+            [(ngModel)]="dateRange.type">
+          <label class="form-check-label mr-2 text-lowercase" for="date-range-range" translate>
+            Within a date range
+          </label>
+          <div class="v-center" [class.d-none]="dateRange.type !== 'range'">
+            <app-date-input type="prepend" [clearable]="true" [(value)]="dateRange.data.range.start" [markToday]="true">
+            </app-date-input>
+            <div class="mx-2">-</div>
+            <app-date-input type="prepend" [clearable]="true" [(value)]="dateRange.data.range.end" [markToday]="true">
+            </app-date-input>
+          </div>
+        </div>
+        <div class="form-check v-center mt-2">
+          <input class="form-check-input" type="radio" name="date-range" id="date-range-infinite" value="infinite"
+            [(ngModel)]="dateRange.type">
+          <label class="form-check-label text-lowercase" for="date-range-infinite" translate>
+            Indefinitely into the future
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Duration -->
+    <div class="row">
+      <div class="col-auto form-group"
+        [ngClass]="{invalid: form.submitted && duration.invalid && (duration.dirty || duration.touched || form.submitted)}">
+        <label for="duration_cc" translate>Duration</label>
+        <mat-select id="duration_cc" class="form-control" [(ngModel)]="eventType.duration" name="duration"
+          #duration="ngModel">
+          <mat-option *ngFor="let duration of Durations" [value]="duration.value">{{duration.name}}</mat-option>
+        </mat-select>
+      </div>
+      <div class="col-auto v-center">
+        <span translate>Define how long your event will be</span>
+      </div>
+    </div>
+
+    <!-- Weekly Hours -->
+    <div class="row">
+      <div class="col-12 form-group date-range">
+        <label translate>How do you want to offer your availability for this event type</label>
+        <ng-container *ngFor="let weekday of WeekDays">
+          <div class="weekday row mt-2">
+            <div class="col-2">
+              <div class="form-check v-center">
+                <input class="form-check-input" type="checkbox" name="weekday-availability-{{weekday}}"
+                  id="weekday-availability-{{weekday}}" [(ngModel)]="weeklyHours[weekday].available"
+                  (change)="onWeekdayAvailabilityChange(weekday)" />
+                <label class="form-check-label mr-2" for="weekday-availability-{{weekday}}">
+                  {{ weekday | translate }}
+                </label>
+              </div>
+            </div>
+            <div class="col-8 weekly-hours" *ngIf="weeklyHours[weekday].available">
+              <div class="row weekly-hour mb-2" *ngFor="let hour of weeklyHours[weekday].hours; let index=index">
+                <div class="form-group col-auto mb-0">
+                  <select class="form-control theme-control" name="{{weekday}}-hors-start-{{index}}"
+                    [(ngModel)]="hour.start">
+                    <ng-container *ngFor="let time of TIMES">
+                      <option value="{{time.id}}">{{time.text}}</option>
+                    </ng-container>
+                  </select>
+                </div>
+                <div class="col-auto mx-2">-</div>
+                <div class="form-group col-auto mb-0">
+                  <select class="form-control theme-control" name="{{weekday}}-hors-end-{{index}}"
+                    [(ngModel)]="hour.end">
+                    <ng-container *ngFor="let time of TIMES">
+                      <option value="{{time.id}}">{{time.text}}</option>
+                    </ng-container>
+                  </select>
+                </div>
+                <div class="col-auto mx-2">
+                  <div class="p-2 v-center ml-3 c-pointer" (click)="removeWeeklyHour(weekday, index)">
+                    <i class="d-block i-icon i-trash bgc-red"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-8 weekly-hours" *ngIf="!weeklyHours[weekday].available">
+              <div class="no-hours v-center mb-2">
+                <label class="text-capitalize mb-0" translate>Unavailable</label>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="row weekday-actions v-center ml-2">
+                <div class="p-2 v-center ml-3 c-pointer" (click)="addNewHour(weekday)">
+                  <i class="d-block i-icon i-plus bgc-blue"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <div class="ml-auto">
+      <button type="button" mat-dialog-close class="btn c-blue">
+        {{ 'Cancel' | translate }}
+      </button>
+      <button type="submit" class="btn btn-primary" [class.loading]="saving">
+        {{ (isNew? 'Add' : 'Save') | translate }}
+      </button>
+    </div>
+  </mat-dialog-actions>
+</form>

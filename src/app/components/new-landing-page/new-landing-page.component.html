@@ -1,0 +1,74 @@
+<div class="v-center mb-3">
+  <h5 class="mb-0" mat-dialog-title>Create your website</h5>
+  <a class="ml-auto" mat-dialog-close>
+    <i class="i-icon i-close bgc-dark d-block"></i>
+  </a>
+</div>
+<mat-dialog-content>
+  <div class="form-group" [class.invalid]="submitted && !siteNameInput.valid">
+    <div class="d-flex">
+      <label for="site-name">Name</label>
+      <span
+        class="error f-3 ml-auto"
+        *ngIf="submitted && siteNameInput.errors?.required"
+      >
+        Required!
+      </span>
+      <span
+        class="error f-3 ml-auto"
+        *ngIf="submitted && siteNameInput.errors?.pattern"
+      >
+        Invalid!
+      </span>
+    </div>
+    <input
+      data-field="site-name"
+      class="form-control"
+      type="text"
+      [(ngModel)]="siteName"
+      id="site-name"
+      placeholder="Please input the site name. Your site would be name.crmgrow.cloud."
+      #siteNameInput="ngModel"
+      required
+      pattern="^[a-z0-9][a-z0-9-_]{1,20}[a-z0-9]$"
+    />
+    <span
+      class="error f-3 ml-auto"
+      *ngIf="submitted && siteNameInput.errors?.pattern"
+    >
+      Site name should includes only lowercase and dash & its length should be
+      less than 22.
+    </span>
+  </div>
+  <div class="d-flex">
+    <label class="f-3 mb-0">Templates</label>
+    <span
+      class="error f-3 c-red ml-auto"
+      *ngIf="submitted && !selectedTemplate"
+    >
+      Required!
+    </span>
+  </div>
+  <div class="template-list">
+    <ng-container *ngFor="let template of templates; let i = index">
+      <div
+        class="template"
+        [data-field]="'site-template-' + i"
+        [class.selected]="selectedTemplate === template.id"
+        (click)="selectTemplate(template)"
+      >
+        <img [src]="template.image" />
+        <span>{{ template.name }}</span>
+      </div>
+    </ng-container>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button
+    data-action="create-site"
+    class="btn btn-primary"
+    (click)="siteNameInput.valid ? createSite() : (submitted = true)"
+  >
+    Create
+  </button>
+</mat-dialog-actions>

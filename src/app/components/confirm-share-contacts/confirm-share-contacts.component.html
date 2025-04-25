@@ -1,0 +1,60 @@
+<div class="v-center justify-content-between">
+  <h1 mat-dialog-title class="m-0" translate>
+    {{data.title}}
+  </h1>
+  <button class="v-center border-0 bgc-trans" mat-dialog-close>
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</div>
+<mat-dialog-content>
+  <div class="link-panel mt-2">
+    <div class="ml-2 c-dark" translate>
+      {{data.message}}
+    </div>
+    <div class="additional f-3 fw-600 mt-3" *ngIf="permissionContacts.length">      
+      <ng-container *ngFor="let error of permissionContacts;">
+        <label translate>{{ error.error }}</label>
+        <ng-container *ngFor="let contact of error.contacts;">
+          <a class="v-center c-pointer ml-3 mb-2 fw-600 undecoration" [routerLink]="['/contacts/' + contact._id]"
+            target="_blank">
+            <div class="contact-avatar f-3 mr-2">
+              {{avatarName(contact)}}
+            </div>
+            <span class="f-4">{{fullName(contact)}}</span>
+          </a>
+        </ng-container>
+      </ng-container>
+    </div>
+    <div class="additional f-3 fw-600 mt-3" *ngIf="runningContacts.length">
+      <label translate>Contacts with the active running jobs</label>
+      <ng-container *ngFor="let contact of runningContacts;">
+        <div class="v-center justify-content-between mb-2">
+          <a class="v-center c-pointer ml-3 fw-600 undecoration" [routerLink]="['/contacts/' + contact._id]"
+            target="_blank">
+            <div class="contact-avatar f-3 mr-2">
+              {{avatarName(contact)}}
+            </div>
+            <span class="f-4 mr-2">{{fullName(contact)}}</span>
+          </a>
+          <div class="v-center">
+            <i *ngIf="contact.reasons.includes('active_pending')" class="i-icon i-contact bgc-dark ml-2"
+              placement="bottom" ngbTooltip="{{'Routing' | translate}}"></i>
+            <i *ngIf="contact.reasons.includes('active_followup')" class="i-icon i-task bgc-dark ml-2"
+              placement="bottom" ngbTooltip="{{ 'Task' | translate }}"></i>
+            <i *ngIf="contact.reasons.includes('active_deal')" class="i-icon i-deals bgc-dark ml-2" placement="bottom"
+              ngbTooltip="{{ 'Deal' | translate }}"></i>
+            <i *ngIf="contact.reasons.includes('active_task')" class="i-icon i-hour-glass bgc-dark ml-2"
+              placement="bottom" ngbTooltip="{{ 'To-Do' | translate }}"></i>
+            <i *ngIf="contact.reasons.includes('active_automation')" class="i-icon i-automation bgc-dark  ml-2"
+              placement="bottom" ngbTooltip="{{ 'Automation' | translate }}"></i>
+            <i *ngIf="contact.reasons.includes('active_campaign')" class="i-icon i-broadcasts bgc-dark  ml-2"
+              placement="bottom" ngbTooltip="{{ 'Campaign' | translate }}"></i>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button type="button" class="btn btn-primary" (click)="closeDialog()" translate>OK</button>
+</mat-dialog-actions>

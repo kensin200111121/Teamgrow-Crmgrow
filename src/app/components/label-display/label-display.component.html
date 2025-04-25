@@ -1,0 +1,14 @@
+<div class="label-display">
+  <ng-container *ngIf="labelObj; else emptyLabel">
+    <div class="v-center py-1">
+      <i class="i-icon i-label d-block mr-2" [style.backgroundColor]="labelObj.color === '#FFF' ? '#000' : labelObj.color"></i>
+      <span class="f-3 fw-600">{{labelObj.name}}</span>
+    </div>
+  </ng-container>
+  <ng-template #emptyLabel>
+    <div class="v-center py-1">
+      <i class="i-icon i-label d-block mr-2" [style.backgroundColor]="'#000'"></i>
+      <span class="f-3 fw-600">{{defaultLabel}}</span>
+    </div>
+  </ng-template>
+</div>

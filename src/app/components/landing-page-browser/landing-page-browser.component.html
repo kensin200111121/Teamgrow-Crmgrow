@@ -1,0 +1,79 @@
+<div class="browser-container">
+  <!-- selection section -->
+
+  <div class="v-center title-file-selected" [class.invisible]="selection.length === 0">
+    <div class="custom-control custom-checkbox" [class.indeterminate]="selection.length > 0 && !isAllSelected()">
+      <ng-container *ngIf="multiple">
+        <input type="checkbox" class="custom-control-input form-control" id="selectAllMaterialsB"
+          (change)="$event ? masterToggle() : null" [checked]="isAllSelected()" data-name="toggle-all-select" />
+        <label class="custom-control-label" for="selectAllMaterialsB"></label>
+      </ng-container>
+    </div>
+    <div class="v-center">
+      <span class="c-dark f-3 text-lowercase font-weight-bold">{{selection.length}} {{'selected' |
+        translate}}</span>
+      <div class="px-3 border-left ml-3">
+        <a class="c-blue c-pointer" data-action="clear-all-selection" (click)="clearSelection()" translate>Clear
+          selection</a>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="custom-mat-table position-relative">
+        <div *ngIf="landingPages.length; else emptyFolders">
+          <div class="material-list">
+            <div  *ngFor="let page of landingPages">
+              <div class="file-item"  [class.selected]="!multiple && isSelected(page)">
+                <div class="file-thumbnail c-pointer" data-action="view-preview">
+                  <div class="v-center link-wrapper thumb-prev-wrapper">
+                    <img
+                      [ngClass]="{
+                        'card-img-not-supported': !page.material?.thumbnail && !page.material?.preview
+                      }"
+                      [src]="page.material?.thumbnail || page.material?.preview || sspaService.toAsset('img/image_not_supported.svg')"
+                      alt="" class="card-img"
+                    />
+                  </div>
+                </div>
+                <div class="mt-1 title-info" data-action="toggle-selected-material">
+                  <div class="custom-control custom-checkbox">
+                    <ng-container *ngIf="multiple">
+                      <input type="checkbox" class="custom-control-input c-pointer" id="i-material-{{page._id}}"
+                        [checked]="isSelected(page)"
+                        (change)="$event ? toggleElement(page) : null" />
+                      <label class="custom-control-label" for="i-material-{{page._id}}"></label>
+                    </ng-container>
+                    <span class="file-title-label " [ngbTooltip]="page.name || ''">
+                      {{(page.name || '') | shorten: 10: '...'}}
+                    </span>
+                  </div>
+                  <div class="mt-1 file-info-title">
+                    {{ page?.material_type ?? '' }} .
+                    {{ page.created_at | datetimeFormat : 'mediumDate' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ng-template #emptyFolders>
+          <div class="empty-list py-5" *ngIf="!isLoading else loadingTemplate">
+            <div class="object-icon v-center">
+              <i class="i-icon i-material d-block bgc-dark"></i>
+            </div>
+            <h4 class="font-weight-bold mt-4 mb-3" translate>
+              There are no landing pages  in your account.
+            </h4>
+          </div>
+          <ng-template #loadingTemplate>
+            <div class="list-loading text-center">
+              <div class="loader mt-5 lg"></div>
+              <h4 class="fw-600 mt-2" translate>Loading landing pages...</h4>
+            </div>
+          </ng-template>
+        </ng-template>
+      </div>
+  </div>
+</div>
+

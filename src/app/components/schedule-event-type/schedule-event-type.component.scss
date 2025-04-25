@@ -1,0 +1,27 @@
+.date-range {
+  .form-check {
+    min-height: 40px;
+  
+    .days-type {
+      width: 210px;
+    }
+
+    .days-value {
+      width: 60px;
+    }
+  }
+
+  .weekday {
+    .weekly-hours {
+      .no-hours {
+        min-height: 40px;
+      }
+    }
+
+    .weekday-actions {
+      display: flex;
+      flex-direction: row;
+      min-height: 40px;
+    }
+  }
+}

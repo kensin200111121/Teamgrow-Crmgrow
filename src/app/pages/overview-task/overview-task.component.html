@@ -1,0 +1,63 @@
+<div class="card">
+  <div class="card-header" translate>
+    Today's Tasks
+  </div>
+  <div class="card-body">
+    <div class="list-loading text-center" *ngIf="loading; else taskList">
+      <div class="loader mt-5 lg"></div>
+      <h4 class="fw-600 mt-2" translate>Loading tasks...</h4>
+    </div>
+    <ng-template #taskList>
+      <div class="d-flex flex-column justify-content-between" style="height: 100%;">
+        <div *ngIf="todayTasks.length; else emptytask;" style="height: calc(100% - 50px);margin-bottom: 16px;"
+          class="d-flex flex-column overflow-y">
+          <table class="table table-borded">
+            <thead>
+              <tr>
+                <th translate>Title</th>
+                <th translate>Due Date</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let task of todayTasks">
+                <td>
+                  <div class="v-center">
+                    <i class="i-icon {{TASK_ICONS[task.type] || 'i-task'}} d-block bgc-dark mr-2"></i>
+                    <span class="c-dark task-content" [innerHTML]="
+                      replaceContent(task.contact, task.content) || ''
+                        | stripTags
+                        | shorten: 200:'...'
+                    "></span>
+                  </div>
+                </td>
+                <td class="v-center">
+                  <div class="contact-avatar f-3 mr-2 c-pointer" title="{{task.contact?.fullName}}">
+                    {{task.contact?.avatarName}}</div>
+                  <span class="c-dark fw-600">{{task.due_date | datetimeFormat: task.is_full? 'MMM d, y':'MMM d, y, h:mm a'}}</span>
+                </td>
+                <td>
+                  <a class="c-pointer" (click)="task.status !== 1 ? openEdit(task) : false;">
+                    <i class="d-block i-icon bgc-blue i-chev-right"></i>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+        <a class="btn btn-outline-primary w-100 c-pointer" [routerLink]="['/tasks']" translate>All Tasks</a>
+        <ng-template #emptytask>
+          <div class="empty-list">
+            <div class="object-icon v-center">
+              <i class="i-icon i-information d-block bgc-dark"></i>
+            </div>
+            <h4 class="text-center font-weight-bold mt-4 mb-3">
+              {{'There are no Tasks' | translate}}.
+            </h4>
+          </div>
+        </ng-template>
+      </div>
+    </ng-template>
+  </div>
+</div>

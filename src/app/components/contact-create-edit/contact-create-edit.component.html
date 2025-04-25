@@ -1,0 +1,760 @@
+<form #form="ngForm" (ngSubmit)="form.form.valid ? submit() : false">
+  <div mat-dialog-title class="title">
+    <h1 class="mb-0" translate>
+      {{ isCreate ? 'Create New Contact' : 'Edit Contact' }}
+    </h1>
+    <span class="error mb-1" *ngIf="form.submitted" translate>
+      Please input another contact information or edit the existing contact.
+    </span>
+  </div>
+  <mat-dialog-content cdkScrollable>
+    <div class="row name-box">
+      <div
+        class="col-sm-4 col-12 form-group"
+        [ngClass]="{
+          invalid:
+            form.submitted &&
+            first_name.invalid &&
+            (first_name.dirty || first_name.touched || form.submitted)
+        }"
+      >
+        <label for="first_name_cc" translate>first name</label>
+        <input
+          data-name="contact-create-firstname"
+          type="text"
+          id="first_name_cc"
+          class="form-control"
+          required
+          name="first_name"
+          #first_name="ngModel"
+          [(ngModel)]="contact.first_name"
+        />
+        <span class="error" *ngIf="first_name.errors" translate>
+          <ng-container *ngIf="first_name.errors.required"
+            >First name is required</ng-container
+          >
+        </span>
+      </div>
+      <div class="col-sm-4 col-12 form-group">
+        <label for="last_name_cc" translate>last name</label>
+        <input
+          data-name="contact-create-lastname"
+          type="text"
+          id="last_name_cc"
+          class="form-control"
+          name="last_name"
+          #last_name="ngModel"
+          [(ngModel)]="contact.last_name"
+        />
+      </div>
+      <div class="col-sm-4 col-12 form-group">
+        <label for="status_cc" translate>status</label>
+        <app-label-select
+          [value]="contact.label"
+          (valueChange)="updateLabel($event)"
+          type="form"
+        ></app-label-select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12 form-group">
+        <app-contact-input-tag
+          [selectedTags]="contact.tags"
+          [isDefaultOpen]="isEditTag"
+        ></app-contact-input-tag>
+      </div>
+    </div>
+
+    <div class="form-group position-relative">
+      <div class="d-flex">
+        <label class="v-center" translate>emails</label>
+        <div class="v-center ml-auto c-pointer" (click)="addEmail()">
+          <i class="d-block i-icon bgc-blue v-center i-plus mr-2"></i>
+          <span class="f-3 font-weight-bold c-blue mr-2 my-1" translate>
+            Add
+          </span>
+        </div>
+      </div>
+      <div class="mb-3" *ngFor="let emailObj of emails; let i = index">
+        <div
+          class="d-flex align-items-center value-input-wrapper"
+          [ngClass]="{
+            invalid:
+              form.submitted &&
+              (emailObj.errors.required || emailObj.errors.pattern)
+          }"
+        >
+          <div
+            *ngIf="emails.length > 1"
+            class="custom-radio-container"
+            ngbTooltip="Set as a Primary"
+            placement="right"
+          >
+            <input
+              type="radio"
+              name="primaryEmail"
+              class="custom-radio"
+              (change)="onChangedEmailPrimary(i)"
+              [checked]="emailObj.isPrimary"
+              [value]="true"
+              [ngModelOptions]="{ standalone: true }"
+              [disabled]="emails.length === 1"
+              id="email-priority-{{ i }}"
+            />
+            <label for="email-priority-{{ i }}"></label>
+          </div>
+          <input
+            data-name="contact-create-email"
+            type="email"
+            id="email_cc_{{ i }}"
+            class="form-control value-input mr-3"
+            name="email_{{ i }}"
+            [(ngModel)]="emailObj.value"
+            pattern="^[a-zA-Z0-9'._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$"
+            #emailControl="ngModel"
+            oninput="this.value = this.value.toLowerCase()"
+            autocomplete="off"
+            [required]="true"
+            [ngModelOptions]="{ standalone: true }"
+          />
+          <input
+            type="text"
+            placeholder="Label"
+            [(ngModel)]="emailObj.type"
+            class="form-selector form-control label-picker"
+            [ngModelOptions]="{ standalone: true }"
+          />
+          <div
+            class="v-center justify-content-center c-pointer ml-2"
+            (click)="removeEmail(i)"
+          >
+            <i
+              class="d-block i-icon bgc-red"
+              [ngClass]="{ 'i-circle-minus': true }"
+            ></i>
+          </div>
+        </div>
+        <span
+          class="error d-flex align-items-center"
+          *ngIf="emailObj.errors.required || emailObj.errors.pattern"
+          translate
+        >
+          <ng-container *ngIf="emailObj.errors.pattern"
+            >Email is invalid</ng-container
+          >
+          <ng-container *ngIf="emailObj.errors.required">
+            Email is required
+          </ng-container>
+        </span>
+      </div>
+    </div>
+
+    <div class="form-group position-relative">
+      <div class="v-center">
+        <label class="mb-0" translate>phone numbers</label>
+        <div class="v-center ml-auto c-pointer" (click)="addPhoneNumber()">
+          <i class="d-block i-icon bgc-blue v-center i-plus mr-2"></i>
+          <span class="f-3 font-weight-bold c-blue mr-2 my-1" translate>
+            Add
+          </span>
+        </div>
+      </div>
+      <div class="mb-3" *ngFor="let phoneObj of phones; let i = index">
+        <div
+          class="d-flex align-items-center value-input-wrapper"
+          [ngClass]="{
+            invalid:
+              form.submitted &&
+              (phoneObj.errors.required || phoneObj.errors.pattern)
+          }"
+        >
+          <div
+            *ngIf="phones.length > 1"
+            class="custom-radio-container"
+            ngbTooltip="Set as a Primary"
+            placement="right"
+          >
+            <input
+              type="radio"
+              name="primaryPhoneNumber"
+              class="custom-radio"
+              (change)="onChangedPhoneNumberPrimary(i)"
+              [checked]="phoneObj.isPrimary"
+              [value]="true"
+              [ngModelOptions]="{ standalone: true }"
+              [disabled]="phones.length === 1"
+              id="phone-priority-{{ i }}"
+            />
+            <label for="phone-priority-{{ i }}"></label>
+          </div>
+
+          <app-phone-input
+            class="value-input mr-3"
+            [cssClass]="
+              phoneObj.errors.required || phoneObj.errors.pattern
+                ? 'form-control phone-form c-red font-weight-bold'
+                : 'form-control phone-form'
+            "
+            [onlyCountries]="countries"
+            [selectedCountryISO]="CountryISO.UnitedStates"
+            [(ngModel)]="phoneObj.value"
+            name="phone_{{ i }}"
+            #phoneControl="ngModel"
+            [ngModelOptions]="{ standalone: true }"
+          >
+          </app-phone-input>
+          <input
+            type="text"
+            placeholder="Label"
+            [(ngModel)]="phoneObj.type"
+            class="form-selector form-control label-picker"
+            [ngModelOptions]="{ standalone: true }"
+          />
+          <div
+            class="v-center justify-content-center c-pointer ml-2"
+            (click)="removePhoneNumber(i)"
+          >
+            <i class="d-block i-icon bgc-red i-circle-minus"></i>
+          </div>
+        </div>
+        <span
+          class="error d-flex align-items-center"
+          *ngIf="phoneObj.errors.required || phoneObj.errors.pattern"
+          translate
+        >
+          <ng-container *ngIf="phoneObj.errors.required">
+            Phone number is required
+          </ng-container>
+          <ng-container *ngIf="phoneObj.errors.pattern">
+            Wrong phone number
+          </ng-container>
+        </span>
+      </div>
+    </div>
+
+    <div class="form-group position-relative">
+      <div class="v-center">
+        <ng-container *ngIf="addresses.length; else emptyAddressAction">
+          <label class="mb-0" translate>Address</label>
+          <div class="v-center ml-auto c-pointer" (click)="addAddress()">
+            <i class="d-block i-icon bgc-blue v-center i-plus mr-2"></i>
+            <span class="f-3 font-weight-bold c-blue mr-2 my-1" translate>
+              Add
+            </span>
+          </div>
+        </ng-container>
+        <ng-template #emptyAddressAction>
+          <a class="td-none c-pointer v-center" (click)="addAddress()">
+            <i class="d-block i-icon bgc-blue v-center i-plus mr-2"></i>
+            <span class="f-3 font-weight-bold c-blue mr-2 my-1" translate>
+              Address
+            </span>
+          </a>
+        </ng-template>
+      </div>
+      <div
+        *ngFor="let addressObj of addresses; let i = index"
+        class="form-group"
+      >
+        <div class="v-center mb-3 justify-content-between">
+          <div class="d-flex align-items-center value-input-wrapper">
+            <div
+              *ngIf="addresses.length > 1"
+              class="custom-radio-container"
+              ngbTooltip="Set as a Primary"
+              placement="right"
+            >
+              <input
+                type="radio"
+                name="primaryAddress"
+                class="custom-radio"
+                (change)="onChangedAddressPrimary(i)"
+                [checked]="addressObj.isPrimary"
+                [value]="true"
+                [ngModelOptions]="{ standalone: true }"
+                [disabled]="addresses.length === 1"
+                id="address-priority-{{ i }}"
+              />
+              <label for="address-priority-{{ i }}"></label>
+            </div>
+            <input
+              type="text"
+              placeholder="Label"
+              [(ngModel)]="addressObj.type"
+              class="form-selector form-control label-picker"
+              [ngModelOptions]="{ standalone: true }"
+            />
+          </div>
+          <div class="v-center ml-2" (click)="removeAddress(i)">
+            <i class="d-block i-icon bgc-red i-circle-minus"></i>
+          </div>
+        </div>
+        <div [class.multiple-addresses]="addresses.length > 1">
+          <app-address-input [address]="addressObj"></app-address-input>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group position-relative" *ngIf="addWebSite">
+      <label for="website_cc">Website</label>
+      <div class="d-flex align-items-center value-input-wrapper">
+        <input
+          type="text"
+          placeholder=""
+          id="website_cc"
+          class="form-control"
+          [(ngModel)]="contact.website"
+          name="website_cc"
+          #website="ngModel"
+        />
+        <div class="v-center ml-2" (click)="removeWebsite()">
+          <i class="d-block i-icon bgc-red i-circle-minus"></i>
+        </div>
+      </div>
+    </div>
+    <div
+      class="v-center mb-3 c-pointer"
+      *ngIf="!addWebSite"
+      (click)="addWebSite = true"
+    >
+      <i class="d-block i-icon bgc-blue v-center i-plus mr-2"></i>
+      <span
+        class="f-3 font-weight-bold c-blue mr-2 my-1 mr-2 v-center"
+        translate
+      >
+        Website
+      </span>
+    </div>
+    <!-- add company -->
+    <div class="form-group position-relative" *ngIf="addCompany">
+      <label for="company">Company</label>
+      <div class="d-flex align-items-center value-input-wrapper">
+        <input
+          type="text"
+          placeholder=""
+          id="company_cc"
+          class="form-control"
+          [(ngModel)]="contact.brokerage"
+          data-name="company"
+          name="company_cc"
+          #website="ngModel"
+        />
+        <div class="v-center ml-2" (click)="removeCompany()">
+          <i class="d-block i-icon bgc-red i-circle-minus"></i>
+        </div>
+      </div>
+    </div>
+    <div
+      class="v-center mb-3 c-pointer"
+      *ngIf="!addCompany"
+      (click)="addCompany = true"
+    >
+      <i class="d-block i-icon bgc-blue v-center i-plus mr-2"></i>
+      <span
+        class="f-3 font-weight-bold c-blue mr-2 my-1 mr-2 v-center"
+        translate
+      >
+        Company
+      </span>
+    </div>
+
+    <!-- add source -->
+    <div class="form-group position-relative" *ngIf="addSource">
+      <label for="source_cc" translate>Source</label>
+      <div class="d-flex align-items-center value-input-wrapper">
+        <input
+          data-name="source"
+          type="text"
+          id="source_cc"
+          class="form-control"
+          name="source"
+          #source="ngModel"
+          [(ngModel)]="contact.source"
+        />
+        <div class="v-center ml-2" (click)="removeSource()">
+          <i class="d-block i-icon bgc-red i-circle-minus"></i>
+        </div>
+      </div>
+    </div>
+    <div
+      class="v-center mb-3 c-pointer"
+      *ngIf="!addSource"
+      (click)="addSource = true"
+    >
+      <i class="d-block i-icon bgc-blue v-center i-plus mr-2"></i>
+      <span
+        class="f-3 font-weight-bold c-blue mr-2 my-1 mr-2 v-center"
+        translate
+      >
+        Source
+      </span>
+    </div>
+    <div class="row mb-3" *ngIf="relatedPerson && !disableExtra">
+      <div class="col-sm-6 col-12 form-group d-flex align-items-center">
+        <label for="person" translate>Person</label>
+        <input
+          type="text"
+          placeholder=""
+          id="person_cc"
+          class="form-control ml-2"
+          [(ngModel)]="contact.person"
+          data-name="person"
+          name="person"
+          #person="ngModel"
+        />
+      </div>
+      <div class="col-sm-6 col-12 form-group d-flex align-items-center">
+        <label for="label_cc" translate>Status</label>
+        <input
+          data-name="label"
+          type="text"
+          id="label_cc"
+          class="form-control ml-2"
+          name="label"
+          #label="ngModel"
+          [(ngModel)]="contact.label"
+        />
+        <div class="v-center ml-2" (click)="relatedPerson = false">
+          <i class="d-block i-icon bgc-red i-circle-minus"></i>
+        </div>
+      </div>
+    </div>
+    <div
+      class="v-center mb-3 c-pointer"
+      *ngIf="!relatedPerson && !disableExtra"
+      (click)="relatedPerson = true"
+    >
+      <i class="d-block i-icon bgc-blue v-center i-plus mr-2"></i>
+      <span
+        class="f-3 font-weight-bold c-blue mr-2 my-1 mr-2 v-center"
+        translate
+      >
+      Assign To
+      </span>
+    </div>
+    <!-- Birthday -->
+    <div class="row mb-3" *ngIf="showBirthday">
+      <div
+        class="col-sm-4 col-12 form-group"
+        [ngClass]="{
+          invalid: form.submitted && isInvalidBirthday
+        }"
+      >
+        <label for="year" translate>Year</label>
+        <div class="d-flex align-items-center justify-content-between">
+          <input
+            data-name="year"
+            type="number"
+            id="year_cc"
+            class="form-control"
+            name="year"
+            #day="ngModel"
+            [(ngModel)]="birthday.year"
+            min="1970"
+            [max]="currentYear"
+          />
+        </div>
+      </div>
+
+      <div
+        class="col-sm-4 col-12 form-group"
+        [ngClass]="{
+          invalid: form.submitted && isInvalidBirthday
+        }"
+      >
+        <label for="month" translate>Month</label>
+        <select
+          id="month_cc"
+          class="form-control"
+          [(ngModel)]="birthday.month"
+          data-name="month"
+          name="month"
+          #month="ngModel"
+          placeholder="Select the month"
+        >
+          <option value="">Select the month</option>
+          <option value="1">Jan</option>
+          <option value="2">Feb</option>
+          <option value="3">Mar</option>
+          <option value="4">Apr</option>
+          <option value="5">May</option>
+          <option value="6">Jun</option>
+          <option value="7">Jul</option>
+          <option value="8">Aug</option>
+          <option value="9">Sep</option>
+          <option value="10">Oct</option>
+          <option value="11">Nov</option>
+          <option value="12">Dec</option>
+        </select>
+        <div class="error" *ngIf="isInvalidBirthday">
+          Please input a valid birthday.
+        </div>
+      </div>
+
+      <div
+        class="col-sm-4 col-12 form-group"
+        [ngClass]="{
+          invalid: form.submitted && isInvalidBirthday
+        }"
+      >
+        <label for="day_cc" translate>Day</label>
+        <div class="d-flex align-items-center justify-content-between">
+          <input
+            data-name="day"
+            type="number"
+            id="day_cc"
+            class="form-control"
+            name="day"
+            #day="ngModel"
+            [(ngModel)]="birthday.day"
+            min="1"
+            max="31"
+          />
+          <div class="v-center ml-2" (click)="showBirthday = false">
+            <i class="d-block i-icon bgc-red i-circle-minus"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="v-center mb-3 c-pointer"
+      *ngIf="!showBirthday"
+      (click)="showBirthday = true"
+    >
+      <i class="d-block i-icon bgc-blue v-center i-plus mr-2"></i>
+      <span
+        class="f-3 font-weight-bold c-blue mr-2 my-1 mr-2 v-center"
+        translate
+      >
+        Birthday
+      </span>
+    </div>
+
+    <ng-container *ngIf="isCreate">
+      <ng-container *enableByFeatures="USER_FEATURES.AUTOMATION">
+        <div class="form-group position-relative" *ngIf="showAutomation">
+          <label translate>automation</label>
+          <div class="d-flex align-items-center mb-2 value-input-wrapper">
+            <app-input-automation
+              class="flex-grow-1"
+              (automationChange)="selectAutomation($event)"
+            ></app-input-automation>
+            <div class="v-center ml-2" (click)="removeAutomation()">
+              <i class="d-block i-icon bgc-red i-circle-minus"></i>
+            </div>
+          </div>
+        </div>
+        <div
+          class="v-center mb-3 c-pointer"
+          *ngIf="!showAutomation"
+          (click)="showAutomation = true"
+        >
+          <i class="d-block i-icon bgc-blue v-center i-plus mr-2"></i>
+          <span
+            class="f-3 font-weight-bold c-blue mr-2 my-1 mr-2 v-center"
+            translate
+          >
+            Add Automation
+          </span>
+        </div>
+      </ng-container>
+      <ng-container *enableByFeatures="USER_FEATURES.PIPELINE">
+        <div class="form-group position-relative" *ngIf="showDeal">
+          <div class="mb-3" *ngIf="showDeal">
+            <div>
+              <label translate>deal stage</label>
+            </div>
+            <div class="d-flex align-items-center mb-2 value-input-wrapper">
+              <app-select-stage
+                class="w-100"
+                [pipeline]="defaultPipeline"
+                [stage]="contact.deal_stage"
+                (onChange)="onChangeDealStage($event)"
+                [viewMode]="'row'"
+              ></app-select-stage>
+              <div class="v-center ml-2" (click)="removeDealState()">
+                <i class="d-block i-icon bgc-red i-circle-minus"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="v-center mb-3 c-pointer"
+          *ngIf="!showDeal"
+          (click)="showDeal = true"
+        >
+          <i class="d-block i-icon bgc-blue v-center i-plus mr-2"></i>
+          <span
+            class="f-3 font-weight-bold c-blue mr-2 my-1 mr-2 v-center"
+            translate
+          >
+            Add Stage
+          </span>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <ng-container *enableByFeatures="USER_FEATURES.ASSIGNEE_EDIT">
+      <div class="form-group" *ngIf="relatedPerson; else addRelatedPersonTemplate">
+        <div class="v-center">
+          <label class="mb-0" translate>Assign to</label>
+        </div>
+        <div class="d-flex align-items-center mb-2 value-input-wrapper justify-content-between">
+          <app-assignee-select
+            #assigneeSelect
+            class="w-50"
+            [disabled]="false"
+            [value]="contact?.owner"
+            type="form"
+            (valueChange)="changeAssignee($event)"
+          >
+          </app-assignee-select>
+          <div class="v-center ml-2" (click)="removeRelatedPerson()">
+            <i class="d-block i-icon bgc-red i-circle-minus"></i>
+          </div>
+        </div>
+      </div>
+      <ng-template #addRelatedPersonTemplate>
+        <div
+          class="v-center mb-3 c-pointer"
+          (click)="relatedPerson = true"
+        >
+          <i class="d-block i-icon bgc-blue v-center i-plus mr-2"></i>
+          <span
+            class="f-3 font-weight-bold c-blue mr-2 my-1 mr-2 v-center"
+            translate
+          >
+          Assign To
+          </span>
+        </div>
+      </ng-template>
+    </ng-container>
+
+    <div
+      class="general-panels w-100 mr-0 border-top pt-3"
+    >
+      <!-- Begin Contact Additional Information -->
+      <div class="v-center w-100 mb-3">
+        <span class="mr-auto f-5 fw-600" translate>Custom Contact Fields</span>
+        <div
+          class="f-2 fw-600 c-blue c-pointer contact-action-btn"
+          (click)="manageField($event)"
+        >
+          <span translate>Manage Fields</span>
+        </div>
+      </div>
+      <ng-container  *ngIf="additional_fields.length else emptyAdditionalInfo">
+        <div class="contact-additional f-3">
+          <div class="additional-fields">
+            <ng-container *ngFor="let field of additional_fields; let i = index">
+              <div class="form-group position-relative">
+                <label for="first_name_cc" translate>{{ field.name }}</label>
+                <div
+                  class="form-group flex-grow-1 mb-0"
+                  [ngSwitch]="field.type"
+                  #wrapper
+                >
+                  <input
+                    type="text"
+                    class="form-control"
+                    *ngSwitchCase="'text'"
+                    name="{{ 'additional-field-value-' + i }}"
+                    [(ngModel)]="field.value"
+                  />
+                  <input
+                    type="email"
+                    class="form-control"
+                    *ngSwitchCase="'email'"
+                    name="{{ 'additional-field-value-' + i }}"
+                    [(ngModel)]="field.value"
+                    pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$"
+                  />
+                  <span
+                    class="error mt-1"
+                    *ngIf="field.type === 'email'"
+                    translate
+                  >
+                    Email is invalid!
+                  </span>
+                  <input
+                    type="text"
+                    class="form-control"
+                    *ngSwitchCase="'link'"
+                    name="{{ 'additional-field-value-' + i }}"
+                    [(ngModel)]="field.value"
+                  />
+                  <app-phone-input
+                    [cssClass]="'form-control'"
+                    *ngSwitchCase="'phone'"
+                    name="{{ 'additional-field-value-' + i }}"
+                    [onlyCountries]="countries"
+                    [selectedCountryISO]="CountryISO.UnitedStates"
+                    [(ngModel)]="field.value"
+                    [placeholderVisible]="false"
+                    #additionalPhoneControl
+                  >
+                  </app-phone-input>
+                  <span
+                    class="error mt-1"
+                    *ngIf="field.type === 'phone'"
+                    translate
+                  >
+                    Phone is invalid!
+                  </span>
+                  <app-date-input
+                    *ngSwitchCase="'date'"
+                    type="prepend"
+                    [(value)]="field.value"
+                    [minDate]="field?.minDate"
+                    [maxDate]="field?.maxDate"
+                    [placeholder]="''"
+                    [required]="false"
+                  >
+                  </app-date-input>
+                  <select
+                    class="form-control"
+                    *ngSwitchCase="'dropdown'"
+                    [(ngModel)]="field.value"
+                    name="{{ 'additional-field-value-' + i }}"
+                    #option="ngModel"
+                  >
+                    <option value="" translate>None</option>
+                    <option
+                      *ngFor="let option of field.options"
+                      value="{{ option.value }}"
+                    >
+                      {{ option.value }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #emptyAdditionalInfo>
+        <p class="empty-additional-info-placeholder">
+          To create or delete your custom fields, click on "Manage Fields." You can also navigate to "Contacts/Preferences" and select the Custom Contact Fields tab.
+        </p>
+      </ng-template>
+      <!-- End Contact Additional Information -->
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <div class="ml-auto">
+      <button type="button" mat-dialog-close class="btn c-dark" translate>
+        Cancel
+      </button>
+      <button
+        type="submit"
+        data-action="create-contact-add-btn"
+        class="btn btn-primary"
+        [class.loading]="isSubmitting"
+        translate
+      >
+        {{ isCreate ? 'Add' : 'Update' }}
+      </button>
+    </div>
+  </mat-dialog-actions>
+</form>

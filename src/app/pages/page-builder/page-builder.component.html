@@ -1,0 +1,166 @@
+<div class="page-content">
+  <div class="v-center justify-content-between">
+    <h1 class="page-title" translate>Websites</h1>
+    <a
+      *ngIf="isReadyTemplates"
+      class="btn btn-primary f-6 font-weight-bold"
+      (click)="openNewPageDlg()"
+      translate
+    >
+      New Website
+    </a>
+  </div>
+  <div class="mt-3 position-relative">
+    <ng-container *ngIf="pages.length">
+      <div class="updating-status" *ngIf="pages.length && isLoading">
+        LOADING
+      </div>
+      <div class="v-center pages">
+        <!-- <div class="notify" *ngIf="hasConvrrt">
+          We will remove the convrrt landing pages in the near future. So you can create the new landing page using ucraft again...
+        </div> -->
+        <ng-container *ngFor="let page of pages">
+          <div class="page-item" *ngIf="page.name">
+            <div class="page-thumbnail" *ngIf="page.site; else convrrt">
+              <img [src]="'https://' + page.site + '/p/websiteScreenshot'" />
+              <div class="page-actions" [disabled]="callStatus[page?.id]">
+                <a
+                  class="btn btn-primary f-6 font-weight-bold"
+                  translate
+                  (click)="editSite(page)"
+                  >Edit</a
+                >
+                <a
+                  class="btn border border-primary c-blue f-6 font-weight-bold"
+                  [href]="'https://' + page.site"
+                  target="_blank"
+                  translate
+                  >Preview</a
+                >
+                <a
+                  class="btn border border-primary c-blue f-6 font-weight-bold"
+                  (click)="copySite({ site: 'https://' + page.site })"
+                  translate
+                  >Copy Link</a>
+                <div
+                  ngbDropdown
+                  #mainDrop="ngbDropdown"
+                  placement="bottom-right"
+                  class="ml-auto more-action"
+                >
+                  <a
+                    ngbDropdownToggle
+                    class="v-center btn c-dark f-3 no-carot px-0"
+                  >
+                    <i class="d-block i-icon i-menu-more bgc-dark mx-auto"></i>
+                  </a>
+                  <div ngbDropdownMenu class="light">
+                    <a
+                      class="v-center border-0 py-2 c-dark dropdown-item"
+                      (click)="copySite({ site: 'https://' + page.site })"
+                      translate
+                    >
+                      <i class="i-icon i-link i- bgc-dark ml-1" aria-hidden="true"></i>
+                      <span class="ml-3 f-3 font-weight-bold" translate
+                        >Copy Link</span
+                      >
+                    </a>
+                    <a
+                      class="v-center border-0 py-2 c-dark dropdown-item"
+                      (click)="editSite(page)"
+                    >
+                      <i
+                        class="i-icon i-edit bgc-dark ml-1"
+                        aria-hidden="true"
+                      ></i>
+                      <span class="ml-3 f-3 font-weight-bold" translate
+                        >Edit site</span
+                      >
+                    </a>
+                    <a
+                      class="v-center border-0 py-2 c-dark dropdown-item"
+                      (click)="deleteSite(page)"
+                    >
+                      <i
+                        class="i-icon i-trash bgc-dark ml-1"
+                        aria-hidden="true"
+                      ></i>
+                      <span class="ml-3 f-3 font-weight-bold" translate
+                        >Delete site</span
+                      >
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <ng-container *ngIf="callStatus[page?.id]">
+                <div class="call-status">
+                  {{ callStatus[page?.id] }}
+                </div>
+              </ng-container>
+            </div>
+            <ng-template #convrrt>
+              <div class="page-thumbnail" >
+                <img [src]="page.thumbnail">
+                <div class="page-actions" [disabled]="callStatus[page?.id]">
+                    <a class="btn btn-primary f-6 font-weight-bold" [href]="page.editorUrl" target="_blank" translate>Edit</a>
+                    <a class="btn border border-primary c-blue f-6 font-weight-bold" [href]="page.previewUrl" target="_blank" translate>Preview</a>
+                    <ng-container *ngIf="page?.state === 'published'; else publishAction">
+                        <a class="btn border border-primary c-blue f-6 font-weight-bold" (click)="copySite(page)" translate>Copy Link</a>
+                    </ng-container>
+                    <ng-template #publishAction>
+                        <a class="btn border border-primary c-blue f-6 font-weight-bold" (click)="publishSite(page)" translate>Publish</a>
+                    </ng-template>
+                    <div ngbDropdown #mainDrop="ngbDropdown" placement="bottom-right" class="ml-auto more-action">
+                        <a ngbDropdownToggle class="v-center btn c-dark f-3 no-carot px-0">
+                        <i class="d-block i-icon i-menu-more bgc-dark mx-auto"></i>
+                        </a>
+                        <div ngbDropdownMenu class="light">
+                            <a class="v-center border-0 py-2 c-dark dropdown-item" *ngIf="page?.state === 'published'; else publishDropAction;" (click)="copySite(page)">
+                                <i class="i-icon i-link i- bgc-dark ml-1" aria-hidden="true"></i>
+                                <span class="ml-3 f-3 font-weight-bold" translate>Copy link</span>
+                            </a>
+                            <ng-template #publishDropAction>
+                                <a class="v-center border-0 py-2 c-dark dropdown-item" (click)="publishSite(page)">
+                                    <i class="i-icon i-upload bgc-dark ml-1" aria-hidden="true"></i>
+                                    <span class="ml-3 f-3 font-weight-bold" translate>Publish site</span>
+                                </a>
+                            </ng-template>
+                            <a class="v-center border-0 py-2 c-dark dropdown-item" (click)="deleteSite(page)">
+                                <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+                                <span class="ml-3 f-3 font-weight-bold" translate>Delete site</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <ng-container *ngIf="callStatus[page?.id]">
+                    <div class="call-status">
+                        {{callStatus[page?.id]}}
+                    </div>
+                </ng-container>
+              </div>
+            </ng-template>
+            <div class="text-center f-6 font-weight-bold mt-1">
+              {{ page.name }}
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="!pages.length">
+      <ng-container [ngSwitch]="isLoading">
+        <div class="empty-list" *ngSwitchCase="false">
+          <div class="object-icon v-center">
+            <i class="i-icon i-page-builder d-block bgc-dark"></i>
+          </div>
+          <h4 class="font-weight-bold mt-4 mb-3" translate>
+            There are no websites yet.
+          </h4>
+        </div>
+        <div class="list-loading text-center" *ngSwitchCase="true">
+          <div class="loader mt-5 lg"></div>
+          <h4 class="fw-600 mt-2" translate>Loading websites...</h4>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>

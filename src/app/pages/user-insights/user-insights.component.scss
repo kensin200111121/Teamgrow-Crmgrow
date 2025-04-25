@@ -1,0 +1,92 @@
+.insight-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding-top: 63px;
+    .insight-body {
+        width: 100%;
+        max-width: 900px;
+        height: calc(100% - 63px);
+        margin: 0 auto;
+        padding: 2rem 0;
+        .type-list {
+            .type {
+                display: inline-block;
+                width: 49%;
+                border: 1px solid #DEE2E6;
+                &:nth-child(even) {
+                    margin-left: 2%;
+                }    
+                &.active {
+                    border: 1px solid #0000FF;
+                }
+            }
+        }
+        .other-type {
+            textarea {
+                resize: none;
+            }
+        }
+        .profile-wrapper {
+            margin-left: 100px;
+        }
+        .industry, .user-role {
+            display: inline-block;
+            height: 40px;
+            border: 1px solid #EEEEEE;
+            border-radius: 54px;
+            padding: 8px 10px;
+            font-size: 14px;
+            line-height: 24px;
+            background: #fff;
+            &.active {
+                background: #0000FF;
+                color: #fff;
+            }
+            &:not(:first-child) {
+                margin-left: 8px;
+            }
+        }
+    }
+
+    .insight-footer {
+        position: sticky;
+        bottom: 0px;
+        height: 63px;
+        border-top: 1px solid #DEE2E6;
+        background: white;
+        z-index: 1;
+        .footer-wrapper {
+            width: 100%;
+            max-width: 900px;
+            height: 100%;
+            margin: 0 auto;
+        }
+    }
+}
+
+:host ::ng-deep {
+    mat-form-field {
+      width: 100%;
+      .mat-form-field-wrapper {
+        padding: 0;
+        .mat-form-field-infix {
+          width: 100%;
+          padding: 0;
+          border: none;
+          .mat-select-trigger {
+            padding-top: 4px;
+            .mat-select-value {
+                color: #0000FF;
+            }
+          }
+        }
+        .mat-form-field-underline {
+          height: 0;
+          span {
+            height: 0 !important;
+          }
+        }
+      }
+    }
+}

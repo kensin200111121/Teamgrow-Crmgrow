@@ -1,0 +1,60 @@
+.company-card {
+    max-width: 355px;
+    width: 100%;
+    margin: auto;
+    .company-card-header {
+        margin-bottom: 17px;
+        .user-info {
+            margin-bottom: 12px;
+            .step-group {
+                width: 20px;
+                height: 8px;
+                .step {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background-color: rgba(0,0,255,0.19);
+                    &.active {
+                        background-color: #0000FF;
+                    }
+                }
+            }
+        }
+    }
+    .company-card-body {
+        background-color: white;
+        border: 1px solid #E2E2EF;
+        border-radius: 4px;
+        .company-list {
+            .company {
+                display: inline-block;
+                margin: 0px 6px 6px 0px;
+                padding: 6px 14px;
+                border-radius: 3px;
+                background-color: #0000ff;
+                &:last-child {
+                    margin-left: 0;
+                }
+            }
+            .form-group {
+                margin-bottom: 6px;
+                .form-control {
+                    height: 30px;
+                    padding-right: 80px;
+                }
+                .return-btn {
+                    position: absolute;
+                    top: 5px;
+                    right: 5px;
+                    height: 20px;
+                    font-size: 9px;
+                    font-weight: 900;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    text-transform: uppercase;
+                    background-color: #E2E2EF;
+                }
+            }
+        }
+    }
+}

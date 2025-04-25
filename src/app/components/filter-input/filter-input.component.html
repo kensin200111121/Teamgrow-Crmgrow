@@ -1,0 +1,36 @@
+<div class="custom-mat-field mat-select-wrapper">
+  <mat-form-field style="display: block;" appearance="outline">
+    <mat-select [formControl]="formControl" placeholder={{placeholder}} #selector [disableOptionCentering]="true">
+      <mat-select-trigger>
+        <ng-container *ngIf="formControl.value">
+          <ng-container *ngIf="resultItemTemplate; else defaultResult" [ngTemplateOutlet]="resultItemTemplate" [ngTemplateOutletContext]="{ $implicit: formControl.value }">
+          </ng-container>
+          <ng-template #defaultResult>
+            <div class="chip d-flex justify-content-between align-items-center">
+              <div class="mr-1">{{formControl.value.title || 'Unnamed Filter'}}</div>
+              <div (click)="cancelSelect()">
+                <i class="d-block i-icon i-close bgc-dark"></i>
+              </div>
+            </div>
+          </ng-template>
+        </ng-container>
+      </mat-select-trigger>
+      <mat-option>
+        <ngx-mat-select-search
+          [formControl]="inputControl"
+          [searching]="searching"
+          [placeholderLabel]="formPlaceholder"
+          noEntriesFoundLabel="There is no searched results."
+          preventHomeEndKeyPropagation="true">
+        </ngx-mat-select-search>
+      </mat-option>
+      <mat-option *ngFor="let item of filteredResults | async" [value]="item" style="height: unset; line-height: unset;">
+        <div class="d-flex chip py-3">
+          <div class="info">
+            <div class="f-5 fw-600">{{item.title || 'Unnamed Filter'}}</div>
+          </div>
+        </div>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

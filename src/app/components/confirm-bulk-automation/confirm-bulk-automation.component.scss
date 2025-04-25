@@ -1,0 +1,21 @@
+label {
+  opacity: 0.7;
+}
+
+.header-row {
+  width: 100%;
+  border-bottom: 1px solid #aaa;
+}
+
+.check-col {
+  width: 48px;
+}
+
+.contact-col {
+  width: 250px;
+}
+
+.contact-list {
+  max-height: 350px;
+  overflow-y: auto;
+}

@@ -1,0 +1,93 @@
+<!-- Added by Sylla -->
+<div class="page-content">
+  <div class="status-header v-center mt-3">
+    <h1 class="page-title" translate>
+      Update Contact
+    </h1>
+    <div class="f-6 font-weight-bold op-64 contact-count mobile">
+      {{ 'Update Contact' | translate }}
+    </div>
+    <div class="ml-auto v-center create-actions">
+      <button
+        class="v-center btn btn-white border border-primary f-6 font-weight-bold rounded mr-2 px-3"
+        (click)="onCancel()">
+        <span class="normal" translate>Cancel</span>
+        <span class="mobile" translate>Cancel</span>
+      </button>
+      <button
+        class="btn btn-primary f-6 font-weight-bold rounded px-3 text-white shadow"
+        [class.loading]="isUpdating"
+        (click)="onUpdateContact()">
+        {{ 'Update' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="f-6 font-weight-bold op-64 my-2 contact-count desktop">
+    {{ 'Select the information you want to keep for this contact' | translate }}
+  </div>
+
+  <div class="update-contact-page mt-2">
+    <div class="contact-form">
+      <div class="row">
+        <div class="col-12 form-group">
+          <label class="f-2" for="merge-contact" translate>
+            Contact Information
+          </label>
+          <br>
+          <small translate>Switch the value to update information</small>
+        </div>
+        <ng-container *ngFor="let item of pcMatching | keyvalue : contactHeaderOrder">
+          <div class="col-12 form-group">
+            <label for="{{item.value}}">{{properties[item.value]}}</label>
+            <ng-container *ngIf="item.value == 'tags' || item.value == 'notes'; else normalField">
+              <ng-container *ngIf="isSingleValue(item.value)">
+                <input type="text" class="form-control disabled" [(ngModel)]="result[item.value]" />
+              </ng-container>
+              <ng-container *ngIf="!isSingleValue(item.value)">
+                <mat-select [(ngModel)]="result[item.value]" multiple>
+                  <mat-option *ngFor="let value of fieldValues[item.value]" value="{{value}}">
+                    <div class="f-3 c-black" [class.selected-option-text]="result[item.value].includes(value)">
+                      {{value}}
+                    </div>
+                  </mat-option>
+                </mat-select>
+              </ng-container>
+            </ng-container>
+            <ng-template #normalField>
+              <ng-container *ngIf="isSingleValue(item.value) && result[item.value] && result[item.value] != ''; else valueDropdown">
+                <input type="text" class="form-control disabled" value="{{formatValue(result[item.value])}}" />
+              </ng-container>
+              <ng-template #valueDropdown>
+                <mat-select [(ngModel)]="result[item.value]">
+                  <mat-option *ngFor="let value of fieldValues[item.value]" [value]="value">
+                    <div class="f-3 c-black" [class.selected-option-text]="isSelectedOption(result[item.value], value, item.value)">
+                      {{ formatValue(value) }}
+                    </div>
+                  </mat-option>
+                </mat-select>
+              </ng-template>
+            </ng-template>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="group?.result?.automation_id">
+          <div class="col-12 form-group">
+            <label for="automation" translate>Automation</label>
+            <mat-select [(ngModel)]="result['automation_id']">
+              <ng-container *ngFor="let item of automations">
+                <ng-container *ngIf="contactAutomation(item)">
+                  <mat-option [value]="item._id" style="height: unset; line-height: unset;">
+                    <div class="v-center py-3 justify-content-between">
+                      <div class="f-3 font-weight-bold automation-name" title="{{item.title}}">{{item.title}}</div>
+                    </div>
+                  </mat-option>
+                </ng-container>
+              </ng-container>
+            </mat-select>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End by Sylla -->

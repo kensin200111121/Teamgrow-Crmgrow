@@ -1,0 +1,8 @@
+.case {
+  border: 2px solid #aaa;
+  border-radius: 5px;
+
+  &.selected {
+    border: 2px solid #0000ff;
+  }
+}

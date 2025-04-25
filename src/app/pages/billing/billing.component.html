@@ -1,0 +1,194 @@
+<!-- <div class="page-header">
+    <app-slide-tab [tabs]="tabs" [method]="'billing'" [selected]="selectedTab" (onChange)="changeTab($event)" type="plain" class="border-bottom pl-0 rounded-0">
+    </app-slide-tab>
+</div> -->
+<div class="f-22 fw-600 header">
+    Payment Methods
+    <div class="v-center main-actions">
+        <button data-action="add-new-payment" class="btn btn-primary td-none fw-600 text-white" (click)="addCard()">New Payment</button>
+    </div>
+</div>
+<div class="payment-container">
+    <ng-container *ngIf="loadingPayment">
+        <div class="list-loading text-center">
+            <div class="loader my-5 lg"></div>
+            <h4 class="fw-600 mt-2" translate>Loading payment informations...</h4>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="!loadingPayment; else emptyPayment">
+        <ng-container *ngIf="!cards.length; else showTable">
+            <div class="empty-list my-5">
+                <div class="object-icon v-center">
+                  <i class="i-icon i-information d-block bgc-dark"></i>
+                </div>
+                <h4 class="font-weight-bold mt-3 mb-3" translate>
+                    There are no credit cards associated with your account.
+                </h4>
+                <div class="v-center justify-content-between">
+                    <a data-action="add-credit-card" class="btn btn-primary mr-2" (click)="addCard()">
+                      <span class="font-weight-bold f-3" translate>Add a  Credit Card</span>
+                    </a>
+                    <button class="btn btn-white border border-primary" data-action="account-cancel" (click)="cancelAccount()" translate>Cancel</button>
+                </div>
+            </div>
+        </ng-container>
+        <ng-template #showTable>
+            <table class="table my-5">
+                <thead>
+                    <tr>
+                        <th class="f-2 card-col" translate>credit or debit card</th>
+                        <th class="f-2 date-col" translate>expiration date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let card of cards">
+                        <tr>
+                            <td class="card-col pt-3 pb-0">
+                                <div class="v-center">
+                                    <div class="card-img">
+                                        <ng-container [ngSwitch]="card.card_brand">
+                                            <img [src]="sspaService.toAsset('img/card_visa.svg')" *ngSwitchCase="'Visa'">
+                                            <img [src]="sspaService.toAsset('img/card_amex.svg')" *ngSwitchCase="'American Express'">
+                                            <img [src]="sspaService.toAsset('img/card_master.svg')" *ngSwitchCase="'MasterCard'">
+                                            <img [src]="sspaService.toAsset('img/card_jcb.svg')" *ngSwitchCase="'JCB'">
+                                            <img [src]="sspaService.toAsset('img/card_discover.svg')" *ngSwitchCase="'Discover'">
+                                            <img [src]="sspaService.toAsset('img/card_diners.svg')" *ngSwitchCase="'Diners'">
+                                            <img [src]="sspaService.toAsset('img/card_visa.svg')" *ngSwitchDefault>
+                                        </ng-container>
+                                    </div>
+                                    <div class="f-4 ml-3">
+                                        '•••• •••• •••• ' {{card.last4}}
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="f-4 expire-col pt-3 pb-0">
+                                {{card.exp_month}} / {{card.exp_year}}
+                            </td>
+                            <td class="pt-3 pb-0">
+                                <div class="d-flex justify-content-end">
+                                    <button *ngIf="!card.is_primary; else primaryMark" class="v-center btn p-1 c-dark" (click)="setPrimary(card)" placement="bottom" ngbTooltip="Set primary">
+                                        <i class="i-icon i-check bgc-blue" aria-hidden="true"></i>
+                                    </button>
+
+                                    <button class="v-center btn p-1 c-dark" data-action="billing-pencil" (click)="updateCard(card)" placement="bottom" ngbTooltip="Update card">
+                                        <i class="i-icon i-edit bgc-dark" aria-hidden="true"></i>
+                                    </button> 
+                                    <button *ngIf="!card.is_primary" class="v-center btn p-1 c-dark" (click)="deleteCard(card)" placement="bottom" ngbTooltip="Delete card">
+                                        <i class="i-icon i-trash bgc-dark" aria-hidden="true"></i>
+                                    </button>   
+                                    <ng-template #primaryMark>
+                                        <div class="v-center justify-content-end">
+                                        <span class="badge badge-primary">PRIMARY</span>
+                                        </div>
+                                    </ng-template>                                 
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </tbody>
+            </table>
+            <div class="current-plan-list">
+                <div class="v-center justify-content-between w-100 mb-auto">
+                    <span class="c-seablue" translate>Your current plan</span>
+                </div>
+                <hr/>
+                <div class="d-flex align-items-start">
+                    <ng-container *ngIf="currentPackage?.package">
+                        <div class="justify-content-between w-100 mb-auto">
+                            <div class="c-plan-item">{{currentPackage?.package}}</div>
+                            <div [translateParams]="{interval, currentPeriodEndAt, amount}" translate>next_invoice_status</div>
+                        </div>
+                        <div class="v-center justify-content-between">
+                            <button class="btn btn-white border border-primary" data-action="account-cancel" (click)="cancelAccount()" translate>Cancel</button>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </ng-template>
+    </ng-container>
+    <ng-template #emptyPayment>
+        <div class="list-loading text-center">
+            <div class="loader my-5 lg"></div>
+        </div>
+    </ng-template>
+</div>
+
+<div class="f-22 fw-600 mt-5">
+    Invoices
+</div>
+<div class="invoice-container position-relative mt-4">
+    <table class="table mt-5" *ngIf="invoices.length">
+        <thead>
+            <tr>
+                <th class="f-2 number-col">
+                    description
+                </th>
+                <th class="f-2 status-col">
+                    status
+                </th>
+                <th class="f-2 gross-col">
+                    amount
+                </th>
+                <th class="f-2 download-col">
+                    actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <ng-container *ngFor="let invoice of invoices; let index=index;">
+                <tr>
+                    <td class="number-col f-4 pt-3 pb-0">
+                        Invoice for CRM Grow {{invoice.date | date: 'MM/dd/yyyy'}}
+                    </td>
+                    <td class="status-col f-4 pt-3 pb-0">
+                        {{invoice.status}}
+                    </td>
+                    <td class="gross-col f-4 pt-3 pb-0">
+                        $ {{invoice.amount}}
+                    </td>
+                    <td class="download-col f-4 c-blue pt-3 pb-0">
+                        <a class="download-invoice v-center justify-content-start c-pointer" [href]="invoice.invoice_pdf" *ngIf="invoice.invoice_pdf">
+                            <i class="i-icon i-download bgc-blue d-block"></i>
+                            <span class="ml-2">Download invoice</span>
+                        </a>
+                    </td>
+                </tr>
+            </ng-container>
+        </tbody>
+    </table>
+    <ng-container *ngIf="loadingInvoice; else invoiceList">
+        <ng-container *ngIf="!invoices.length; else newLoading">
+            <div class="list-loading text-center">
+                <div class="loader mt-5 lg"></div>
+                <h4 class="fw-600 mt-2">Loading invoice informations...</h4>
+            </div>
+        </ng-container>
+        <ng-template #newLoading>
+            <div class="updating-status">
+              LOADING
+            </div>
+        </ng-template>
+    </ng-container>
+    <ng-template #invoiceList>
+        <ng-container *ngIf="!invoices.length; else invoiceTable">
+            <div class="empty-list mt-5">
+                <div class="object-icon v-center">
+                  <i class="i-icon i-information d-block bgc-dark"></i>
+                </div>
+                <h4 class="font-weight-bold mt-3 mb-3" translate>
+                    There are no invoices.
+                </h4>
+            </div>
+        </ng-container>
+
+    </ng-template>
+    <div class="v-center justify-content-center mt-3" [class.d-none]="!invoices.length && !firstInvoice">
+        <a class="mx-3 f-3 c-pointer" [class.disabled]="!firstInvoice || firstInvoice?.id == invoices[0]?.id" (click)="loadInvoice('PREV')">
+            <i class="i-icon d-block i-prev bgc-blue"></i>
+        </a>
+        <a class="mx-3 f-3 c-pointer" [class.disabled]="!hasNextPage || pageSize > invoices.length" (click)="loadInvoice('NEXT')">
+            <i class="i-icon d-block i-next bgc-blue"></i>
+        </a>
+    </div>
+</div>

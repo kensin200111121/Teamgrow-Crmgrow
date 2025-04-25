@@ -1,0 +1,65 @@
+<div class="d-flex w-100 fit-page-container position-relative">
+  <div class="flex-grow-1 page-content w-100 h-100 overflow-auto">
+    <div class="v-center mb-2">
+      <h1 class="page-title" translate>Materials</h1>
+      <div class="ml-auto v-center">
+        <button *ngIf="LIST_TYPE === 'OWN'" class="v-center btn btn-primary f-4 font-weight-bold btn-font-bold c-white px-3"
+          (click)="recordSetting()" [attr.data-action]="'material-record-video'">
+          <span translate>Record Video</span>
+        </button>
+        <div *ngIf="LIST_TYPE === 'OWN'" class="btn ml-1" ngbDropdown>
+          <div
+            class="btn btn-white border border-primary f-4 font-weight-bold btn-font-bold c-blue c-pointer px-3 button-add"
+            ngbDropdownToggle translate data-name="new-material-btn">
+            Upload
+          </div>
+          <div ngbDropdownMenu>
+            <div class="dropdown-item v-center" (click)="createFolder()" [attr.data-name]="'create-material-folder'">
+              <i class="i-icon d-block i-folder mr-2 bgc-dark"></i>
+              <span class="f-3" translate>Folder</span>
+            </div>
+            <hr class="my-0" />
+            <div class="dropdown-item v-center" (click)="createMaterial('video')" [attr.data-name]="'create-material-video'">
+              <i class="i-icon d-block i-video bgc-dark mr-2"></i>
+              <span class="f-3" translate>Video</span>
+            </div>
+            <div class="dropdown-item v-center" (click)="createMaterial('pdf')" [attr.data-name]="'create-material-pdf'">
+              <i class="i-icon d-block i-pdf bgc-dark mr-2"></i>
+              <span class="f-3" translate>PDF</span>
+            </div>
+            <div class="dropdown-item v-center" (click)="createMaterial('image')" [attr.data-name]="'create-material-image'">
+              <i class="i-icon d-block i-image bgc-dark mr-2"></i>
+              <span class="f-3" translate>Image</span>
+            </div>
+          </div>
+        </div>
+        <div class="v-center ml-1 rounded border border-dark">
+          <div [class]="selectedView === 'list_view' ?
+              'v-center p-1 bgc-silver c-dark rounded border-right border-dark' :
+              'v-center p-1 bgc-white c-black rounded'" translate (click)="toggleView(0)"
+              [attr.data-name]="'material-view-mode-list'">
+            <i class="d-block i-icon i-list bgc-dark c-pointer"></i>
+          </div>
+          <div [class]="selectedView === 'tile_view' ?
+              'w-50 p-1 bgc-silver c-dark rounded border-left border-dark' :
+              'w-50 p-1 bgc-white c-black rounded'" translate (click)="toggleView(1)"
+              [attr.data-name]="'material-view-mode-tile'">
+            <i class="d-block i-icon i-grid_view bgc-dark c-pointer"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex mb-2 tab-container">
+      <div class="mr-4 cursor-pointer tab" [class]="isMyList? 'selected':''" (click)="gotoRoot('own')">My Materials List</div>
+      <div class="cursor-pointer tab" [class]="isLibrary? 'selected':''" (click)="gotoRoot('library')">Library</div>
+    </div>
+    <div class="main-view">
+      <div class="main-area w-100">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+  <div class="preview-side h-100 overflow-auto" *ngIf="selectedMaterial">
+    <app-material-preview-v2 [setMaterialItem]="selectedMaterial" [isMyList]="isMyList"></app-material-preview-v2>
+  </div>
+</div>

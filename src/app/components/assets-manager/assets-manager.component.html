@@ -1,0 +1,145 @@
+<div class="asset-managers position-relative">
+  <h1 class="m-0" mat-dialog-title translate>
+    Assets Library
+  </h1>
+  <div class="mat-dialog-content mt-3">
+    <div class="assets-wrapper">
+      <div class="assets-list">
+        <div class="group" *ngIf="commonAssets.length && !disableCommonImages">
+          <div class="group-header" translate>
+            Common Assets
+          </div>
+          <div class="group-assets">
+            <ng-container *ngFor="let asset of commonAssets">
+              <div class="asset" *ngIf="asset.url"  [class.selected]="selectedCommonAssets.indexOf(asset._id) !== -1">
+                  <div class="image-wrapper">
+                    <img src={{asset.url}} />
+                  </div>
+                  <div class="selector" (click)="toggleCommonAssets(asset)">
+                  </div>
+                  <div class="editor-link-wrapper">
+                    <a class="editor-link" (click)="openEditor(asset)">Edit</a>
+                  </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+        <div class="group" *ngIf="imagesToUpload.length">
+          <div class="group-header" translate>
+            Images to upload
+          </div>
+          <div class="group-assets">
+            <ng-container *ngFor="let asset of imagesToUpload">
+              <div class="asset">
+                  <div class="image-wrapper">
+                    <img src={{asset.data}} />
+                  </div>
+                  <div class="editor-link-wrapper" *ngIf="!uploadingStatus[asset.key]; else uploadingPercent">
+                    <a class="editor-link" (click)="uploadFile(asset)" translate>Upload</a>
+                  </div>
+                  <ng-template #uploadingPercent>
+                    <div class="editor-link-wrapper" style="opacity: 1;">
+                      <a class="editor-link">
+                        <div>{{uploadingStatus[asset.key]}}%</div>
+                      </a>
+                    </div>
+                  </ng-template>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+        <div class="group">
+          <div class="group-header sticky-header d-flex">
+            <span class="f-4 c-dark" translate>My Assets</span>
+            <a class="text-sky ml-auto" style="cursor: pointer; font-weight: bold;" (click)="browseAssets()" *ngIf="!uploading" translate>Browse</a>
+            <div class="ml-auto upload-progress-bar" *ngIf="uploading">
+              <div class="progress">
+                <div class="progress-bar bg-primary" role="progressbar"
+                  [style.width]="uploader.progress+'%'"></div>
+              </div>
+            </div>
+            <ng-container *ngIf="selectedMyAssets.length">
+              <a *ngIf="!removing; else removingTemplate" class="ml-2 remove-link" style="cursor: pointer; font-weight: bold;" (click)="removeAssets()" translate>Remove</a>
+              <ng-template #removingTemplate>
+                <a class="ml-2 remove-link" style="cursor: pointer; font-weight: bold;" translate>Removing...</a>
+              </ng-template>
+            </ng-container>
+          </div>
+          <div class="group-assets">
+            <div class="asset">
+              <div class="image-wrapper dash-border" (click)="browseAssets()" *ngIf="!uploading">
+                <a class="f-4 c-blue text-center d-block text-underline browse-link" translate>Browse Files</a>
+              </div>
+              <div class="image-wrapper dash-border" *ngIf="uploading">
+                <div class="c100 p{{uploader.progress || 0}} medium upload-progress-circle">
+                  <span>{{uploader.progress || 0}}%</span>
+                  <div class="slice"><div class="bar"></div><div class="fill"></div></div>
+                </div>
+              </div>
+            </div>
+            <ng-container *ngFor="let asset of myAssets">
+              <div class="asset" *ngIf="asset.url"  [class.selected]="selectedMyAssets.indexOf(asset._id) !== -1">
+                  <div class="image-wrapper">
+                    <img src={{asset.url}} />
+                  </div>
+                  <div class="selector" (click)="toggleAsset(asset)">
+                  </div>
+                  <ng-container *ngIf="selectionMode && selectedMyAssets.includes(asset._id)">
+                    <div class="selected-index">
+                      {{selectionDic[asset._id]}}
+                    </div>
+                  </ng-container>
+                  <div class="editor-link-wrapper">
+                    <a class="editor-link" (click)="openEditor(asset)" translate>Edit</a>
+                  </div>
+              </div>
+            </ng-container>
+            <div class="asset" *ngIf="loadedAssets < total">
+              <div class="image-wrapper">
+              </div>
+              <div class="load-more-wrapper" (click)="loadMore()"  *ngIf="!loading" >
+                <a class="link" translate>Load More</a>
+              </div>
+              <div class="load-more-wrapper" *ngIf="loading">
+                <a class="" translate>Loading <i class="fa fa-spinner fa-spin"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="backdrop" *ngIf="editorFlag"></div>
+      <div class="asset-editor" [class.opened]="editorFlag" [class.d-none]="!editorFlag">
+        <div class="editor-actions mt-auto">
+          <a class="d-flex align-items-center c-pointer text-decoration-none" (click)="rotateLeft()"> 
+           <i class="i-icon i-undo bgc-black"></i>
+          </a>
+          <a class="d-flex align-items-center c-pointer text-decoration-none" (click)="rotateRight()"> 
+            <i class="i-icon i-redo bgc-black"></i>
+          </a>
+        </div>
+        <div class="editor mt-2 mb-auto selected" >
+          <lib-cropper *ngIf="!reading && assetToEdit" [imageFile]="assetToEdit" [options]="config" (failed)="onFail($event)" (init)="onCropperInit($event)"
+            (crop)="onCrop($event)"></lib-cropper>
+          <div class="reading-spinner" *ngIf="reading" translate>
+            Loading Image <i class="fa fa-spinner fa-spin"></i>
+          </div>
+        </div>
+        <div class="actions my-2 px-2">
+          <button class="btn btn-sm btn-secondary" (click)="closeEditor()" translate>Close</button>
+          <button class="btn btn-sm bg-light mx-1" (click)="duplicate()" *ngIf="!uploading" translate>Create as New</button>
+          <app-loading-button [class]="'btn btn-sm bg-sky-c text-white'" [title]="'Creating'" *ngIf="uploading">
+          </app-loading-button>
+          <ng-container *ngIf="selectedAsset?.user">
+            <button class="btn btn-sm btn-primary" (click)="replace()" *ngIf="!replacing" translate>Update</button>
+            <app-loading-button [class]="'btn btn-sm btn-primary'" [title]="'Updating'" *ngIf="replacing">
+            </app-loading-button>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mat-dialog-actions mx-0 mt-auto mb-2 flex-end">
+    <button class="btn btn-white ml-auto" (click)="close()" translate>Close</button>
+    <button class="btn btn-primary text-white ml-2" (click)="select()" translate>Select</button>
+  </div>
+</div>

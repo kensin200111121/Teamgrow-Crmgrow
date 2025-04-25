@@ -1,0 +1,80 @@
+<div class="page-content p-0">
+    <div class="v-center mb-3 new-header" *ngIf="!loading && (!limitInfo.is_limit || (limitInfo.max_count > guests.length))" [class.d-none]="!guests.length">
+        <button class="btn btn-primary text-white f-3 ml-auto" (click)="openCreateDialog()" translate>
+            Create Assistant
+        </button>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="f-1" translate>assistant info</th>
+                <th class="f-1 password-col text-right">
+                    <span translate>edit password</span>
+                </th>
+                <th class="f-1 toggle-col">
+                    <span translate>enable</span>
+                </th>
+                <th class="f-1 delete-col">
+                    <span translate>delete</span>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <ng-container *ngIf="loading; else listTemplate">
+                <tr>
+                    <td colspan="4">
+                        <div class="loader"></div>
+                    </td>
+                </tr>
+            </ng-container>
+            <ng-template #listTemplate>
+                <ng-container *ngIf="guests.length; else emptyTemplate">
+                    <tr *ngFor="let guest of guests">
+                        <td>
+                            <div class="v-center">
+                                <div class="avatar-wrapper">
+                                    <div class="avatar">{{guest.avatarName}}</div>
+                                </div>
+                                <div class="ml-3">
+                                    <div class="f-4 font-weight-bold">{{guest.name}}</div>
+                                    <div class="f-1">{{guest.email}}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="password-col py-4">
+                            <i class="i-icon i-edit bgc-dark d-block ml-auto c-pointer" (click)="openPasswordEditDialog(guest)"></i>
+                        </td>
+                        <td class="toggle-col">
+                            <div class="v-center custom-control custom-switch pl-0">
+                                <label class="custom-toggle mb-0" placement="top">
+                                  <input type="checkbox" [checked]="!guest.disabled" (change)="toggleAssistant(guest)">
+                                  <span class="custom-toggle-slider rounded-circle"></span>
+                                </label>
+                            </div>
+                        </td>
+                        <td class="delete-col">
+                            <i class="i-icon i-trash bgc-red d-block c-pointer ml-auto" (click)="openDeleteDialog(guest)"></i>
+                        </td>
+                    </tr>
+                </ng-container>
+            </ng-template>
+            <ng-template #emptyTemplate>
+                <tr>
+                    <td colspan="4" class="text-center">
+                        <div class="empty-list">
+                            <div class="object-icon v-center">
+                                <i class="i-icon i-lunch d-block bgc-dark"></i>
+                                </div>
+                                <div class="status-description f-3 text-center mx-auto mt-3" translate>
+                                    You currently do not have any assistants.
+                                </div>
+                        </div>
+                        <button data-action="create-assistant" class="btn btn-primary text-white f-3 mt-4" (click)="openCreateDialog()" translate>
+                            Create Assistant
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+        </tbody>
+    </table>
+</div>

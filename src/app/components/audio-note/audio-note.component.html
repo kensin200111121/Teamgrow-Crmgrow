@@ -1,0 +1,95 @@
+<div>
+    <div class="audio-note-wrapper" *ngIf="!dataURL">
+        <div class="mic-button v-center">
+            <button
+                class="start-btn"
+                [class.recording]="recordStarted && recording"
+                [class.recording-pause]="recordStarted && !recording"
+                type="button"
+                (click)="toggleStart()"
+                placement="bottom"
+                [ngbTooltip]="microphone ? (recordStarted ? ('Stop' | translate) : ('Start' | translate)) : ''"
+            >
+                <ng-container *ngIf="recordStarted && !recording; else recordStartBtn">
+                  <i class="d-block i-icon i-check bgc-dark recording-stop"></i>
+                </ng-container>
+                <ng-template #recordStartBtn>
+                    <i class="d-block i-icon i-record-mic"></i>
+                    <span class="label f-4" translate> Voice Note </span>
+                </ng-template>
+            </button>
+            <ng-container *ngIf="recordStarted">
+                <a (click)="toggleRecording()"
+                   class="record-action-btn"
+                   placement="bottom"
+                   [ngbTooltip]="recording ? ('Pause' | translate) : ('Resume' | translate)"
+                >
+                    <ng-container *ngIf="recording; else resumeBtn">
+                        <i class="d-block i-icon i-record-pause bgc-dark"></i>
+                    </ng-container>
+                    <ng-template #resumeBtn>
+                        <i class="d-block i-icon i-record-play bgc-dark"></i>
+                    </ng-template>
+                </a>
+                <ng-container *ngIf="recording">
+                  <i class="record-state"></i>
+              </ng-container>
+            </ng-container>
+        </div>
+        <div class="mic-list form-group mb-0 v-center">
+            <ng-container *ngIf="!recordStarted; else recordStatus">
+                <ng-container *ngIf="microphones.length; else emptyMicroStatus">
+                    <select class="form-control ml-3" [(ngModel)]="microphone" name="microphone" (ngModelChange)="selectDevice($event)">
+                        <option value="" translate>Please select the microphone</option>
+                        <option *ngFor="let option of microphones" value="{{option.deviceId}}">{{option.label}}</option>
+                    </select>
+                </ng-container>
+                <ng-template #emptyMicroStatus>
+                    <div class="empty-mic-list" translate>
+                        Please connect your microphone and allow the access.
+                    </div>
+                </ng-template>
+            </ng-container>
+            <ng-template #recordStatus>
+                <div style="width: 80px;">
+                    <div class="f-4 mr-auto">{{ leftSecond }} / 2:00</div>
+                </div>
+                <ng-container *ngIf="microphone">
+                  <div class="flex-grow-1 waveform-container">
+                    <div id="waveform" class="ml-auto" [style.width]="recordedTime * 0.8 + 3 + '%'"></div>
+                  </div>
+                  <div class="pids-wrapper" #meterWrapper>
+                    <div class="pid"></div>
+                    <div class="pid"></div>
+                    <div class="pid"></div>
+                    <div class="pid"></div>
+                    <div class="pid"></div>
+                    <div class="pid"></div>
+                    <div class="pid"></div>
+                    <div class="pid"></div>
+                    <div class="pid"></div>
+                    <div class="pid"></div>
+                </div>
+                </ng-container>
+                <div class="v-center border-0 py-1 c-pointer record-remove" (click)="stopRecording(false)" *ngIf="!recording">
+                  <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+    <ng-container *ngIf="error">
+        <div class="error d-block" style="margin-left: 124px; margin-top: 2px;">
+            {{MESSAGES[error] || error}}
+        </div>
+    </ng-container>
+    <ng-container *ngIf="dataURL">
+        <div class="v-center">
+            <audio controls class="flex-grow-1" autobuffer preload="auto">
+                <source [src]="domSanitizer.bypassSecurityTrustUrl(dataURL)" type="audio/wav">
+            </audio>
+            <button class="v-center border-0 py-1 record-remove" (click)="remove()">
+              <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+            </button>
+        </div>
+    </ng-container>
+</div>

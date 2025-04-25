@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app",
+    "types": ["node"]
+  },
+  "files": [
+    "src/main.sspa.ts"
+  ],
+  "include": [
+    "src/**/*.d.ts"
+  ]
+}

@@ -1,0 +1,50 @@
+<div class="card border-0 rounded-lg px-2 py-5 px-sm-5" *ngIf="!isSspa">
+  <div class="mx-3 my-2">
+    <img class="logo mb-3" [src]="sspaService.toAsset('img/crmgrow-logo.svg')">
+    <!-- <h4 class="text-center font-weight-bold mb-4">Welcome back!</h4> -->
+    <p class="f-3 text-center">
+      <a class="font-weight-bold td-underline c-pointer" [routerLink]="['/signup' + queryParam]">
+        {{ 'auth.login.signup' | translate}}
+      </a> {{'auth.login.signup_trial_desc' | translate}}
+    </p>
+    <div class="google-btn-wrapper mt-4">
+      <asl-google-signin-button type="standard" size="large" [width]="304"></asl-google-signin-button>
+    </div>
+    <button type="button"
+      class="v-center social-btn btn w-100 mt-2 font-weight-bold d-flex"
+      (click)="signInOutlook()"
+    >
+      <img class="social-icon" [src]="sspaService.toAsset('img/microsoft.svg')" alt="">
+      <div class="social-text">{{ 'auth.login.outlook_sign' | translate  }}</div>
+    </button>
+    <div class="v-center my-3">
+      <hr class="flex-grow-1"/>
+      <span class="mx-3">or</span>
+      <hr class="flex-grow-1"/>
+    </div>
+    <form #signForm="ngForm" (ngSubmit)="signForm.form.valid ? login() : false">
+      <div class="form-group" [ngClass]="{invalid: signForm.submitted && email.invalid && (email.dirty || email.touched || signForm.submitted)}">
+        <label for="email">{{ 'auth.login.email' | translate  }}</label>
+        <input type="email" tabindex="1" class="form-control" [(ngModel)]="user.email" name="email" id="email" data-name="login-email" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$" #email="ngModel"/>
+        <span class="error" *ngIf="email.errors" translate>
+          <ng-container *ngIf="email.errors.required">auth.login.email_required</ng-container>
+          <ng-container *ngIf="email.errors.pattern">auth.login.email_invalid</ng-container>
+        </span>
+      </div>
+      <div class="form-group" [ngClass]="{invalid: signForm.submitted && password.invalid && (password.dirty || password.touched || signForm.submitted)}">
+        <div class="d-flex">
+          <label for="password">{{'auth.login.password' | translate}}</label>
+          <a id="forgot_password_link" class="f-3 ml-auto font-weight-bold td-none" [routerLink]="['/forgot-password']">
+            {{'auth.login.forgot_password' | translate}}
+          </a>
+        </div>
+        <input type="password"  tabindex="2" class="form-control" [(ngModel)]="user.password" name="password" id="password" data-name="login-password" required minlength="6" #password="ngModel"/>
+        <span class="error" *ngIf="password.errors" translate>
+          <ng-container *ngIf="password.errors.required">auth.login.password_required</ng-container>
+          <ng-container *ngIf="password.errors.minlength">auth.login.password_invalid</ng-container>
+        </span>
+      </div>
+      <button type="submit" data-action="login-submit" class="btn btn-primary d-block w-100 font-weight-bold mt-4" [class.loading]="submitting">{{'auth.login.button' | translate}}</button>
+    </form>
+  </div>
+</div>

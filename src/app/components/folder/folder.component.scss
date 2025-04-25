@@ -1,0 +1,17 @@
+.input-div {
+  border: 1px solid rgb(185, 185, 185);
+  display: flex;
+  margin-top: 5px;
+  border-radius: 8px;
+  align-items: center;
+}
+
+.remove-i {
+  background-color: gray;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+div.input-div:focus {
+  border-color: rgb(60, 144, 255);
+}

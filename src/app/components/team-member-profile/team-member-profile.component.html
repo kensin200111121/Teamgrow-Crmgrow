@@ -1,0 +1,57 @@
+<h1 mat-dialog-title class="v-center d-flex">
+  <span translate>Community Member</span>
+  <button class="border-0 bgc-trans ml-auto" mat-dialog-close>
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</h1>
+<mat-dialog-content>
+  <div class="form-group mt-3">
+    <div class="avatar-wrapper">
+      <img [src]="sspaService.toAsset(user.picture_profile || 'img/user_avatar.svg')" class="avatar"/>
+    </div>
+    <div class="row mt-3">
+      <div class="col-sm-6 col-12">
+        <label for="user_name" class="mr-auto" translate>full name</label>
+        <input type="text" class="form-control" [(ngModel)]="user.user_name" id="user_name" name="user_name" #user_name="ngModel" disabled>
+      </div>
+      <div class="col-sm-6 col-12">
+        <label for="email" class="mr-auto" translate>email</label>
+        <input type="text" class="form-control" [(ngModel)]="user.email" id="email" name="email" #email="ngModel" disabled pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$">
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-sm-6 col-12">
+        <div class="form-group phone-form">
+          <label for="phone" class="mr-auto" translate>phone</label>
+          <app-phone-input
+            [cssClass]="'form-control phone-form'"
+            [onlyCountries]="countries"
+            [selectedCountryISO]="CountryISO.UnitedStates"
+            [(ngModel)]="user.phone.internationalNumber"
+            name="phone"
+            #phoneControl
+            [disabled]="true"
+          >
+          </app-phone-input>
+        </div>
+      </div>
+      <div class="col-sm-6 col-12">
+        <label for="company_info" class="mr-auto" translate>your company</label>
+        <input type="text" class="form-control" [(ngModel)]="user.company" id="company_info" name="company_info" #company_info="ngModel" disabled>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6 col-12">
+        <label for="time_zone_info" class="mr-auto" translate>time zone</label>
+        <app-select-timezone [timezone]="timezone" [disable]="true"></app-select-timezone>
+      </div>
+      <div class="col-sm-6 col-12">
+        <label for="location" class="mr-auto" translate>location</label>
+        <input type="text" class="form-control" [(ngModel)]="user.location" id="location" name="location" #location="ngModel" disabled>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button type="button" mat-dialog-close class="btn c-blue" translate>Cancel</button>
+</mat-dialog-actions>

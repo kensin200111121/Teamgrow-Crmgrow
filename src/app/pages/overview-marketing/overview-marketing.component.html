@@ -1,0 +1,320 @@
+<div class="card" *ngIf="isSspa; else onlyMaterials">
+  <div class="card-header" translate>Marketing</div>
+  <div class="card-body">
+    <div class="page-header mb-2">
+      <app-slide-tab
+        [tabs]="tabs"
+        [selected]="selectedTab"
+        (onChange)="changeTab($event)"
+        type="plain"
+        class="border-bottom pl-0 rounded-0"
+      >
+      </app-slide-tab>
+    </div>
+    <div
+      *ngIf="selectedTab.id == 'landing_page'"
+      class="d-flex flex-column justify-content-between card-content"
+    >
+      <table class="table table-borded">
+        <thead>
+          <tr>
+            <th translate>Title</th>
+            <th translate>Visits</th>
+            <th translate>Visit Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td translate>Landing page Name</td>
+            <td>
+              <span>12</span>
+            </td>
+            <td>
+              <span class="font-weight-bold">54"</span>
+            </td>
+          </tr>
+          <tr>
+            <td translate>Landing page Name</td>
+            <td>
+              <span>12</span>
+            </td>
+            <td>
+              <span class="font-weight-bold">54"</span>
+            </td>
+          </tr>
+          <tr>
+            <td translate>Landing page Name</td>
+            <td>
+              <span>12</span>
+            </td>
+            <td>
+              <span class="font-weight-bold">54"</span>
+            </td>
+          </tr>
+          <tr>
+            <td translate>Landing page Name</td>
+            <td>
+              <span>12</span>
+            </td>
+            <td>
+              <span class="font-weight-bold">54"</span>
+            </td>
+          </tr>
+          <tr>
+            <td translate>Landing page Name</td>
+            <td>
+              <span>12</span>
+            </td>
+            <td>
+              <span class="font-weight-bold">54"</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="v-center d-flex justify-content-between">
+        <div class="w-50 text-center">
+          <div class="bottom-value">5,000</div>
+          <div class="bottom-text v-center justify-content-center">
+            <span translate>Visit</span>
+            <a class="c-pointer ml-3">
+              <i class="d-block i-icon bgc-dark i-chev-right"></i>
+            </a>
+          </div>
+        </div>
+        <div class="w-50 text-center">
+          <div class="bottom-value">1' 33"</div>
+          <div class="bottom-text v-center justify-content-center">
+            <span translate>Average Visit Duration</span>
+            <a class="c-pointer ml-3">
+              <i class="d-block i-icon bgc-dark i-chev-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      *ngIf="selectedTab.id == 'lead_form'"
+      class="d-flex flex-column justify-content-between card-content"
+    >
+      <table class="table table-borded">
+        <thead>
+          <tr>
+            <th translate>Title</th>
+            <th translate>Views</th>
+            <th>{{ 'Partial Entries' | translate }} (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td translate>Lead Form Name</td>
+            <td>
+              <span>12</span>
+            </td>
+            <td>
+              <span class="font-weight-bold">34%</span>
+            </td>
+          </tr>
+          <tr>
+            <td translate>Lead Form Name</td>
+            <td>
+              <span>12</span>
+            </td>
+            <td>
+              <span class="font-weight-bold">34%</span>
+            </td>
+          </tr>
+          <tr>
+            <td translate>Lead Form Name</td>
+            <td>
+              <span>12</span>
+            </td>
+            <td>
+              <span class="font-weight-bold">34%</span>
+            </td>
+          </tr>
+          <tr>
+            <td translate>Lead Form Name</td>
+            <td>
+              <span>12</span>
+            </td>
+            <td>
+              <span class="font-weight-bold">34%</span>
+            </td>
+          </tr>
+          <tr>
+            <td>Lead Form Name</td>
+            <td>
+              <span>12</span>
+            </td>
+            <td>
+              <span class="font-weight-bold">34%</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="v-center d-flex justify-content-between">
+        <div class="w-50 text-center">
+          <div class="bottom-value">4,500</div>
+          <div class="bottom-text v-center justify-content-center">
+            <span>Sent</span>
+            <a class="c-pointer ml-3">
+              <i class="d-block i-icon bgc-dark i-chev-right"></i>
+            </a>
+          </div>
+        </div>
+        <div class="w-50 text-center">
+          <div class="bottom-value">42%</div>
+          <div class="bottom-text v-center justify-content-center">
+            <span>{{ 'Average Partial Entries' | translate }} (%)</span>
+            <a class="c-pointer ml-3">
+              <i class="d-block i-icon bgc-dark i-chev-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      *ngIf="selectedTab.id == 'materials'"
+      class="d-flex flex-column justify-content-between card-content"
+    >
+      <div
+        class="list-loading text-center"
+        *ngIf="materialLoading; else materialList"
+      >
+        <div class="loader mt-5 lg"></div>
+        <h4 class="fw-600 mt-2" translate>Loading materials...</h4>
+      </div>
+      <ng-template #materialList>
+        <div
+          *ngIf="materials.length; else emptyMaterials"
+          style="height: 100%"
+          class="d-flex flex-column"
+        >
+          <table class="table table-borded">
+            <thead>
+              <tr>
+                <th translate>Title</th>
+                <th translate>Sent</th>
+                <th translate>Unique Views</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let element of materials">
+                <td>{{ element.title }}</td>
+                <td>
+                  <span>{{ element.sent }}</span>
+                </td>
+                <td>
+                  <span class="font-weight-bold">{{ element.trackers }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="mt-auto v-center d-flex justify-content-between">
+            <div class="w-50 text-center">
+              <div class="bottom-value">{{ material_sent }}</div>
+              <div class="bottom-text v-center justify-content-center">
+                <span translate>Sent</span>
+                <a class="c-pointer ml-3">
+                  <i class="d-block i-icon bgc-dark i-chev-right"></i>
+                </a>
+              </div>
+            </div>
+            <div class="w-50 text-center">
+              <div class="bottom-value">{{ material_unique_views }}</div>
+              <div class="bottom-text v-center justify-content-center">
+                <span translate>Unique Views</span>
+                <a class="c-pointer ml-3">
+                  <i class="d-block i-icon bgc-dark i-chev-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ng-template #emptyMaterials>
+          <div class="empty-list py-5">
+            <div class="object-icon v-center">
+              <i class="i-icon i-information d-block bgc-dark"></i>
+            </div>
+            <h4 class="text-center font-weight-bold mt-4 mb-3" translate>
+              There is no materials.
+            </h4>
+          </div>
+        </ng-template>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<ng-template #onlyMaterials>
+  <div class="card">
+    <div class="card-header" translate>Materials</div>
+    <div class="card-body">
+      <div
+        class="list-loading text-center"
+        *ngIf="materialLoading; else materialList"
+      >
+        <div class="loader mt-5 lg"></div>
+        <h4 class="fw-600 mt-2" translate>Loading materials...</h4>
+      </div>
+      <ng-template #materialList>
+        <div
+          *ngIf="materials.length; else emptyMaterials"
+          style="height: 100%"
+          class="d-flex flex-column"
+        >
+          <table class="table table-borded">
+            <thead>
+              <tr>
+                <th translate>Title</th>
+                <th class="text-center" translate>Sent</th>
+                <th class="text-center" translate>Unique Views</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let element of materials">
+                <td>{{ element.title }}</td>
+                <td class="text-center">
+                  <span>{{ element.sent }}</span>
+                </td>
+                <td class="text-center">
+                  <span class="font-weight-bold">{{ element.trackers }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="v-center d-flex justify-content-between">
+            <div class="w-50 text-center">
+              <div class="bottom-value">{{ material_sent }}</div>
+              <div class="bottom-text v-center justify-content-center">
+                <span translate>Sent</span>
+                <a class="c-pointer ml-3">
+                  <i class="d-block i-icon bgc-dark i-chev-right"></i>
+                </a>
+              </div>
+            </div>
+            <div class="w-50 text-center">
+              <div class="bottom-value">{{ material_unique_views }}</div>
+              <div class="bottom-text v-center justify-content-center">
+                <span translate>Unique Views</span>
+                <a class="c-pointer ml-3">
+                  <i class="d-block i-icon bgc-dark i-chev-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ng-template #emptyMaterials>
+          <div class="empty-list py-5">
+            <div class="object-icon v-center">
+              <i class="i-icon i-information d-block bgc-dark"></i>
+            </div>
+            <h4 class="text-center font-weight-bold mt-4 mb-3" translate>
+              there_are_no_materials
+            </h4>
+          </div>
+        </ng-template>
+      </ng-template>
+    </div>
+  </div>
+</ng-template>

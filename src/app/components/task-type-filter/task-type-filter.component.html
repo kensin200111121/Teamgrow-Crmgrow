@@ -1,0 +1,30 @@
+<div class="label-items-list">
+  <div
+    class="custom-checkbox label-item"
+    *ngFor="let item of types; let i = index"
+    style="height: unset; line-height: unset"
+  >
+    <input
+      type="checkbox"
+      class="custom-control-input"
+      id="label-{{ item.id }}"
+      name="label-{{ item.id }}"
+      (change)="toggleLabels(item.id)"
+      [checked]="selectedTypes.indexOf(item.id) !== -1"
+    />
+    <label class="custom-control-label v-center" for="label-{{ item.id }}" id="task-type-filter-select-{{i}}">
+      <i
+        class="i-icon {{ item.icon }} d-block ml-3 mr-2 mt-1 mb-auto"
+        [style.backgroundColor]="'#000'"
+      ></i>
+      <span class="f-3 fw-600 mt-1" [class.no-title]="!item.label">
+        {{ item.label }}
+      </span>
+    </label>
+  </div>
+</div>
+<div class="d-flex align-items-end">
+  <button type="submit" data-action="task-type-filter-apply-btn" class="btn btn-primary" (click)="save()" translate>
+    Apply
+  </button>
+</div>

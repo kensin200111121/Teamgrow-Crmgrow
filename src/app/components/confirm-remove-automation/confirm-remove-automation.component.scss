@@ -1,0 +1,33 @@
+@import "variables";
+label {
+  opacity: 0.4;
+}
+
+.link-panel{
+padding: 1rem;
+// border: 1px solid blue;
+// border-radius: 5px;
+// background-color: #f5f5ff;
+}
+
+.automation-title{
+  width: 95%;
+}
+
+.automation-action{
+  width: 5%;
+}
+
+.automation-reason {
+  width: 100%;
+  display: flex;
+}
+
+.automation-reason-title {
+  width: 15%;
+}
+
+.automation-reason-content {
+  width: 85%;
+  display: flex;
+}

@@ -1,0 +1,85 @@
+<div class="v-center justify-content-between">
+    <h1 class="m-0" mat-dialog-title translate>
+        {{ type === 'create' ? 'create_agent' : 'edit_agent'}}
+    </h1>
+    <i class="d-block i-icon i-close bgc-dark" mat-dialog-close></i>
+</div>
+<form #actionForm="ngForm" (ngSubmit)="submitted = true; actionForm.form.valid ? save() : false"
+    [class.was-validated]="submitted">
+    <mat-dialog-content>
+        <div class="description mt-4" translate>
+            agent_description
+        </div>
+        <div class="form-group my-3">
+            <div class="v-center justify-content-between">
+                <label for="state_cc" translate>state</label>
+            </div>
+            <select
+                id="state-cc"
+                class="form-control"
+                [(ngModel)]="agentFilter.state"
+                name="state"
+                #state="ngModel"
+            >
+                <option value="" translate>None</option>
+                <option *ngFor="let region of DefaultCountryStates | keyvalue : orderOriginal" value="{{region.value}}">{{region.key}}</option>
+            </select>
+        </div>
+        <div class="form-group mb-3">
+            <label for="time_frame" translate>agent_timeframe</label>
+            <select
+                id="time-frame"
+                class="form-control"
+                [(ngModel)]="agentFilter.time_frame"
+                name="time_frame"
+                #time_frame="ngModel"
+            >
+                <option *ngFor="let frame of frames" [value]="frame.value" translate>{{frame.name}}</option>
+            </select>
+        </div>
+        <div class="form-group mb-3">
+            <label for="listingType" translate>agent_listing_number</label>
+            <mat-radio-group name="listingType" [(ngModel)]="agentFilter.listing_type">
+                <div class="v-center" *ngFor="let type of agentTypes">
+                    <mat-radio-button [color]="'primary'" class="" [value]="type.value">
+                        <div class="ml-2">
+                            <div class="f-4" translate>{{type.title}}</div>
+                            <div class="description mt-1">{{type.description + '_' + agentFilter.time_frame | translate}}</div>
+                        </div>
+                    </mat-radio-button>
+                </div>
+            </mat-radio-group>
+        </div>
+        <div class="form-group mb-3">
+            <div class="v-center justify-content-between">
+                <label for="agent_brokerage" translate>agent_company</label>
+                <span class="d-block invalid-feedback mt-0 mb-1 text-right" *ngIf="agent_brokerage.errors &&
+                    (agent_brokerage.touched || agent_brokerage.dirty || submitted) &&
+                    submitted" translate
+                >brokerage_require</span>
+            </div>
+            <select
+                id="agent-brokerage"
+                class="form-control"
+                [(ngModel)]="agentFilter.exclude_brokerage"
+                name="agent_brokerage"
+                #agent_brokerage="ngModel"
+                [required]="!agentFilter.exclude_brokerage"
+            >
+                <option *ngFor="let company of companies" [value]="company.value">{{company.name}}</option>
+            </select>
+        </div>
+        <div class="form-group mb-3">
+            <label for="agent_number" translate>agent_number</label>
+            <select id="agent-number" class="form-control" [(ngModel)]="agentFilter.count" name="agent_number" #agent_number="ngModel">
+                <option *ngFor="let number of availableNumbers" [value]="number">{{number}}</option>
+            </select>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <a class="btn btn-white f-6 font-weight-bold mr-2" (click)="close()" translate>Cancel</a>
+        <button class="btn btn-primary f-6 font-weight-bold" type="submit" [class.loading]="saving" translate>
+            Save
+        </button>
+    </mat-dialog-actions>
+</form>

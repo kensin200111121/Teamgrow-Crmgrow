@@ -1,0 +1,25 @@
+<div class="position-relative dialog-wrapper">
+  <button class="v-center justify-content-center btn rounded-circle close-button" mat-dialog-close>
+    &times;
+  </button>
+  <mat-dialog-content>
+    <h5 class="text-center" translate>Connect your calendar</h5>
+    <p class="summary text-center f-4" translate [translateParams]="{source: isVortex ? 'Vortex' : 'crmgrow'}">
+      connect_calendar_issue
+    </p>
+    <button type="button" class="v-center btn bgc-white border-primary c-blue mb-2 mx-auto fw-600 connect-button"
+      (click)="connectCalendar('gmail')">
+      <img [src]="sspaService.toAsset('img/google_calendar.png')">
+      <div class="social-text" translate>
+        Connect with Google
+      </div>
+    </button>
+    <button type="button" class="v-center btn bgc-white border-primary c-blue mx-auto fw-600 connect-button"
+      (click)="connectCalendar('outlook')">
+      <img [src]="sspaService.toAsset('img/outlook_calendar.png')">
+      <div class="social-text" translate>
+        Connect with Microsoft
+      </div>
+    </button>
+  </mat-dialog-content>
+</div>

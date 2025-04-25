@@ -1,0 +1,263 @@
+@import "variables";
+
+.record-dialog {
+  pointer-events: auto;
+}
+
+.setting-screen {
+  padding: 2.25rem 2.25rem 2rem 2.25rem;
+  width: 600px;
+  position: fixed;
+  background: white;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 5px;
+  box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+  z-index: 1001;
+
+  .bgc-record {
+    background-color: #9797B7;
+  }
+
+  .record-mode-wrapper {
+    display: flex;
+    justify-content: space-between;
+    width: 70%;
+    margin: auto;
+
+    .record-item {
+      background-color: #FFFFFF;
+      text-align: center;
+      .i-icon {
+        display: block;
+        margin: 0 auto;
+        width: 70px!important;
+        height: 70px!important;
+      }
+
+      .text {
+        color: $color-dark;
+      }
+
+      .both {
+        width: 24px;
+        height: 16px;
+        background-color: $color-dark;
+      }
+
+      hr {
+        display: none;
+        width: 80%;
+      }
+
+      &.active {
+        .i-icon {
+          background-color: $color-blue-dark;
+        }
+        hr {
+          display: block;
+          background-color: $color-blue-dark;
+        }
+      }
+    }
+  }
+}
+
+.counting-screen {
+  overflow: hidden;
+  background-color: rgba(43, 43, 43, 0.5);
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  text-align: center;
+  padding: 20vh 0px;
+  z-index: 1001;
+
+  .count-number {
+    font-size: 50vh;
+    line-height: 50vh;
+    color: white;
+  }
+}
+
+video {
+  width: 100%;
+}
+#video {
+  position: fixed;
+  margin-top: 360px !important;
+}
+
+.record-screen {
+  display: flex;
+  position: absolute;
+  top: calc(100vh/2);
+  left: 0px;
+  align-items: flex-start;
+  z-index: 1002;
+
+  .preview-container {
+    position: absolute;
+    left: 42px;
+    bottom: 0.25rem;
+    height: 120px;
+    transition: all .3s;
+    box-shadow: 0px 0px 3px #aaa;
+
+    video {
+      width: 220px;
+      height: 120px;
+    }
+  }
+
+  .action-container {
+    position: fixed;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 0px;
+    z-index: 10;
+    background-color: transparent;
+    border-radius: 15px;
+
+    button {
+      width: 40px;
+      height: 40px;
+      border-radius: 3px 0 0 3px;
+      background-color: $color-black-dark;
+      border: 0px;
+
+      .i-icon {
+        width: 14px;
+        height: 14px;
+        background-color: #ffffff;
+      }
+
+      &:hover {
+        background-color: $color-black-dark;
+      }
+
+      &.disable {
+        pointer-events: none;
+        background-color: #9fa1af;
+      }
+    }
+
+    .tip {
+      width: 0px;
+      height: 0px;
+      position: absolute;
+      background: transparent;
+      border: 6px solid $color-dark;
+    }
+
+    .tip-left {
+      top: 8px;
+      left: 48px;
+      border-top-color: transparent;
+      border-right-color: transparent;
+      border-bottom-color: transparent;
+    }
+
+    .tooltip-box {
+      position: relative;
+      max-width: 300px;
+      height: auto;
+      padding: 7px 10px;
+      background-color: $color-dark;
+      border-radius: 3px;
+      box-shadow: 0 4px 8px -4px $color-dark;
+      margin-left: 2px;
+    }
+
+    .record-btn-tooltip {
+      position: unset;
+    }
+
+    .elapse-time {
+      color:white;
+      background: $color-black;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 13px;
+    }
+
+  }
+}
+
+.upload-screen {
+  padding: 2.25rem 2.25rem 2.25rem 2.25rem;
+  width: 500px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 5px;
+  z-index: 1001;
+}
+
+@keyframes shadow-pulse
+{
+  0% {
+    box-shadow: 0 0 0 0px rgba(255, 0, 0, 0.9);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+  }
+}
+
+.recording-mark {
+  width: 14px;
+  height: 14px;
+  letter-spacing: 1px;
+  background: $color-pink-red;
+  border-radius: 1px;
+}
+
+.progress-wrapper{
+  position: absolute;
+  top: 50%;
+  width: 84%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+}
+
+.record-screen.closed .preview-container {
+  transform: translateX(-300px);
+  transition: all .3s;
+}
+
+.modes {
+  display: flex;
+  justify-content: space-between;
+}
+.modes .mode {
+  width: calc(33.33% - 15px);
+  padding: 10px;
+  text-align: center;
+  border: 1px solid gainsboro;
+  border-radius: 5px;
+
+  img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+
+.record-button {
+  display: flex;
+  background-color: $color-blue-dark;
+  align-items: center;
+  width: 100%;
+  height: 45px;
+  border-radius: 5px;
+  justify-content: center;
+}
+.mb-1 {
+  margin-bottom: 1px!important;
+}

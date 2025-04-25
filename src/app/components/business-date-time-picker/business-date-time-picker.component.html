@@ -1,0 +1,210 @@
+<div class="business-date-time-container">
+  <div class="form-group mb-0 px-0 v-center justify-content-start" *ngIf="mode === 'inline'">
+    <div class="f-5 c-dark">{{ getPickedDateTime() }}</div>
+    <ng-container *ngIf="!isCreateMode">
+      <div class="v-center border-0 py-1  c-pointer ml-2 bgc-trans" (click)="toggleEditing()">
+         <i *ngIf="!isEditing" class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i>
+         <i *ngIf="isEditing" class="i-icon i-close bgc-dark ml-1" aria-hidden="true"></i>
+      </div>
+    </ng-container>
+
+
+  </div>
+  <div class="datetime-wrapper w-100 mt-2" *ngIf="mode === 'inline' ">
+    <ng-container *ngIf="isCreateMode || isEditing">
+    <div  #calendarRef class="calendar-wrapper position-relative mb-2">
+      <div class="v-center justify-content-between pl-2 calendar-time">
+        <div class="v-center justify-content-between w-100">
+          <div class="v-center justify-content-center text-center c-dark date">
+            <span>
+              {{ displayCurrentMonth() }}
+            </span>
+          </div>
+          <div class="v-center calendar-controls">
+            <div [class.btn-disabled]="disableButton(viewDate, 'prev')">
+              <i class="i-icon d-block i-chev-left bgc-blue c-pointer" (click)="monthButtonnClicked('prev')">
+              </i>
+            </div>
+            <div [class.btn-disabled]="disableButton(viewDate, 'next')">
+              <i class="i-icon d-block i-chev-right ml-3 bgc-blue c-pointer" (click)="monthButtonnClicked('next')">
+              </i>
+            </div>
+            <ng-template #prevContent>
+              <ng-container> Previous month </ng-container>
+            </ng-template>
+            <ng-template #nextContent>
+              <ng-container> Next month </ng-container>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+      <mwl-calendar-month-view [viewDate]="viewDate" [headerTemplate]="monthHeaderTemplate"
+        (beforeViewRender)="beforeViewRender($event)" (dayClicked)="dayClicked($event.day)"
+        [cellTemplate]="customCellTemplate" [refresh]="refresh" [locale]="locale" [weekStartsOn]="0">
+      </mwl-calendar-month-view>
+
+      <ng-template #monthHeaderTemplate let-days="days" let-locale="locale">
+        <div class="v-center cal-header py-2">
+          <div class="cal-header-cell desktop" *ngFor="let day of days">
+            <span class="px-2">{{ day.date | date : 'EEE' : '' : locale }}
+            </span>
+          </div>
+          <div class="cal-header-cell mobile" *ngFor="let day of days">
+            <span class="px-2">{{
+              day.date | date : 'EEE' : '' : locale
+              }}</span>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template #customCellTemplate let-day="day" let-locale="locale">
+        <div class="cal-cell-top" [class.cal-day-selected]="isSelectedDay(day.date)">
+          <span class="cal-day-number">{{ day.date | date : 'd' }} </span>
+        </div>
+      </ng-template>
+    </div>
+    <div *ngIf="selectedDay && !hideTime" class="time-wrapper mb-2 mb-sm-0">
+      <div class="d-flex justify-content-between w-100">
+        <mat-form-field class="form-group w-30">
+          <mat-select class="form-control c-blue f-5" [(ngModel)]="selectedTime"
+            (selectionChange)="timeClicked($event)">
+            <mat-option class="f-4 c-dark" [class.c-blue]="selectedTime === time.id" *ngFor="let time of timeRanges"
+              value="{{ time.id }}">
+              {{ selectedDay + 'T' + time.id | date : 'h:mm a' }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="timezone-wrapper v-center w-50">
+          <app-select-timezone [timezone]="time_zone" [uiType]="'dropdown'"
+            (timezoneChange)="selectTimezone($event)"></app-select-timezone>
+        </div>
+      </div>
+      
+    </div>
+    <div *ngIf="!timeRanges.length && isEditing" class="w-100 text-left mt-2">
+      <div class="f-3 text-danger">There are no available times on this date. </div>    
+    </div>
+  </ng-container>
+  </div>
+
+
+  <div class="datetime-wrapper mt-2" *ngIf="mode === 'popup'">
+    <div class="v-center justify-content-between">
+
+       <div class="v-center justify-content-between flex-grow-1">
+        <div class="input-group-prepend rounded form-group w-50 pr-2 mt-0" cdkOverlayOrigin #trigger="cdkOverlayOrigin">
+          <span class="input-group-text bgc-blue border-0" (click)="openOverlay()" [ngClass]="{'disable-click': !isEditing && !isCreateMode}" >
+            <i class="i-icon i-calendar bgc-white"></i>
+          </span>
+          <input data-name="task-date-picker" class="form-control datepicker" [placeholder]="placeholder"
+            [(ngModel)]="selectedDay" [ngClass]="{'disable-click': !isEditing && !isCreateMode, 'disable-input': !isEditing && !isCreateMode}" [required]="true" [formControl]="dateInput" view="text" cdkOverlayOrigin
+            #trigger="cdkOverlayOrigin" (click)="openOverlay()" />
+        </div>
+        <div *ngIf="selectedDay && !hideTime" class="time-wrapper w-50 pl-2 mb-0">
+         
+            <ng-container *ngIf="!isEditing && !isCreateMode else selectTimeRangeContent">
+              <mat-form-field class="form-group">
+                <mat-select class="form-control c-blue f-5 disable-click" [(ngModel)]="selectedTime" [ngClass]="{'disable-click': !isEditing && !isCreateMode, 'disable-input': !isEditing && !isCreateMode}"
+                  (selectionChange)="timeClicked($event)" [attr.data-name]="'task-time-select'">
+                  <mat-option class="f-4 c-dark" [class.c-blue]="selectedTime === time"
+                    *ngFor="let time of [selectedTime] ; let i = index;" value="{{ time }}"
+                    [attr.data-name]="'task-date-time-' + i">
+                    {{ selectedDay + 'T' + time | date : 'h:mm a' }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </ng-container>
+            <ng-template #selectTimeRangeContent>
+              <mat-form-field class="form-group">
+                <mat-select class="form-control c-blue f-5" [(ngModel)]="selectedTime"
+                  (selectionChange)="timeClicked($event)" [attr.data-name]="'task-time-select'">
+                  <mat-option class="f-4 c-dark" [class.c-blue]="selectedTime === time.id"
+                    *ngFor="let time of timeRanges; let i = index;" value="{{ time.id }}"
+                    [attr.data-name]="'task-date-time-' + i">
+                    {{ selectedDay + 'T' + time.id | date : 'h:mm a' }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </ng-template>
+         
+          <!--  -->
+        </div>
+       </div>
+       <ng-container *ngIf="!isCreateMode">
+        <div class="v-center border-0 py-1  c-pointer ml-2 bgc-trans" (click)="toggleEditing()">
+           <i *ngIf="!isEditing" class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i>
+           <i *ngIf="isEditing" class="i-icon i-close bgc-dark ml-1" aria-hidden="true"></i>
+        </div>
+      </ng-container>
+
+    </div>
+
+    <div *ngIf="!timeRanges.length && isEditing" class="w-100 text-left mt-2">
+      <div class="f-3 text-danger">There are no available times on this date. </div>
+    </div>
+    <div class="timezone-wrapper v-center justify-content-end mt-1">
+      <app-select-timezone [timezone]="time_zone" [uiType]="'dropdown'" [disable]="!isEditing && !isCreateMode"
+        (timezoneChange)="selectTimezone($event)"></app-select-timezone>
+    </div>
+
+    <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="trigger" [cdkConnectedOverlayOpen]="isOpen"
+      (overlayOutsideClick)="closeOverlay($event)">
+      <div class="business-date-time-wrapper pb-2">
+        <div #calendarRef class="calendar-wrapper business-date-time-wrapper position-relative">
+
+          <div class="v-center justify-content-between pl-2 calendar-time">
+            <div class="v-center justify-content-between w-100">
+              <div class="v-center justify-content-center text-center c-dark date">
+                <span>
+                  {{ displayCurrentMonth() }}
+                </span>
+              </div>
+              <div class="v-center calendar-controls">
+                <div [class.btn-disabled]="disableButton(viewDate, 'prev')">
+                  <i class="i-icon d-block i-chev-left bgc-blue c-pointer" (click)="monthButtonnClicked('prev')">
+                  </i>
+                </div>
+                <div [class.btn-disabled]="disableButton(viewDate, 'next')">
+                  <i class="i-icon d-block i-chev-right ml-3 bgc-blue c-pointer"
+                    (click)="monthButtonnClicked('next')">
+                  </i>
+                </div>
+                <ng-template #prevContent>
+                  <ng-container> Previous month </ng-container>
+                </ng-template>
+                <ng-template #nextContent>
+                  <ng-container> Next month </ng-container>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+
+          <mwl-calendar-month-view [viewDate]="viewDate" [headerTemplate]="monthHeaderTemplate"
+            (beforeViewRender)="beforeViewRender($event)" (dayClicked)="dayClicked($event.day)"
+            [cellTemplate]="customCellTemplate" [refresh]="refresh" [locale]="locale" [weekStartsOn]="0">
+          </mwl-calendar-month-view>
+
+          <ng-template #monthHeaderTemplate let-days="days" let-locale="locale">
+            <div class="v-center cal-header py-2">
+              <div class="cal-header-cell desktop" *ngFor="let day of days">
+                <span class="px-2">{{
+                  day.date | date : 'EEE' : '' : locale | uppercase
+                  }}</span>
+              </div>
+              <div class="cal-header-cell mobile" *ngFor="let day of days">
+                <span class="px-2">{{
+                  day.date | date : 'EEE' : '' : locale | uppercase
+                  }}</span>
+              </div>
+            </div>
+          </ng-template>
+          <ng-template #customCellTemplate let-day="day" let-locale="locale">
+            <div class="cal-cell-top" [class.cal-day-selected]="isSelectedDay(day.date)">
+              <span class="cal-day-number">{{ day.date | date : 'd' }}</span>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>

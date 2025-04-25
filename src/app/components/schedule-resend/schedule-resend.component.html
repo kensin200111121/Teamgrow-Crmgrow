@@ -1,0 +1,31 @@
+<div class="position-relative dialog-wrapper">
+  <button class="v-center justify-content-center btn rounded-circle close-button mt-2 mr-2"  mat-dialog-close>
+    &times;
+  </button>
+
+  <div mat-dialog-title class="text-center">
+    <span class="operation">Schedule Resend</span>
+  </div>
+  <mat-dialog-content>
+    <p class="text-center f-3" translate [translateParams]="{count: data.contactIds.length}">
+      failed_desc_task
+    </p>
+    <ul class="p-0 f-3 mb-0 detail-list">
+      <li class="member mb-1" *ngFor="let contact of data.contactsObj">
+        <div class="name font-weight-bold">
+          {{contact?.first_name}} {{contact?.last_name}}
+        </div>
+        <div class="contact-info">
+          <div class="v-center" *ngIf="contact?.email">
+            <i class="i-icon i-emails d-block bgc-dark sm mr-1"></i>
+            <span>{{contact.email || '----'}}</span>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end" class="mx-0">
+    <button class="btn btn-white c-blue font-weight-bold" mat-dialog-close translate>Cancel</button>
+    <button class="btn btn-primary f-6 font-weight-bold px-3 ml-2" [class.loading]="saving" (click)="scheduleAgain()" translate>Schedule Again</button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,96 @@
+:host ::ng-deep {
+    .mat-select {
+        border: 1px solid #aaa;
+        padding: 8px 12px;
+        border-radius: 5px;
+    }
+
+    .mat-select-value-text {
+        color: #000;
+    }
+
+    table {
+        border-left: 1px solid #e9ecef;
+        border-bottom: 1px solid #e9ecef;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    table tbody tr td {
+        border-top: 1px solid #e9ecef;
+        border-right: 1px solid #e9ecef;
+        vertical-align: middle;
+        background-color: #fce9e9;
+        line-height: 15px;
+    
+        &.selected {
+            background-color: #f2e5ff;
+        }
+        &.updated {
+            background-color: white;
+        }
+        .data-field {
+            height: 35px;
+        }
+    }
+
+    table thead tr th {
+        background-color: #f5f6ff !important;
+        border-top: 1px solid #e9ecef;
+        border-right: 1px solid #e9ecef;
+        vertical-align: middle;
+    }
+
+    table tbody tr.blank-row td {
+        background-color: white !important;
+        padding: 2px 10px !important;
+    }
+}
+
+.duplicate-wrapper {
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+    white-space: nowrap;
+
+    .duplicate-check-wrapper {
+        border: 1px solid #e9ecef;
+        overflow: hidden;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow: auto;
+    }
+
+    .duplicate-table {
+        thead tr th {
+            position: relative;
+            top: 0;
+        }
+
+        .sticky-checkbox-col {
+            position: sticky !important;
+            left: 0;
+            width: 40px;
+            border-right: 1px solid #e9ecef;
+            padding: 12px 7px;
+            z-index: 1 !important;
+        }
+
+        .sticky-action-col {
+            position: sticky !important;
+            right: 0px;
+            width: 40px;
+            border-left: 1px solid #e9ecef;
+            z-index: 1;
+        }
+    }
+}
+
+.table-control {
+    position: sticky;
+    bottom: 0px;
+    background: white;
+    padding: 8px 0px;
+}

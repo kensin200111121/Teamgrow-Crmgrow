@@ -1,0 +1,24 @@
+<div class="page-content">
+  <h1 class="page-title mb-3">Profile</h1>
+  <div class="page-header">
+    <app-slide-tab [tabs]="activeItems" [selected]="currentPageItem" (onChange)="changeTab($event)" type="plain" class="border-bottom pl-0 rounded-0">
+    </app-slide-tab>
+  </div>
+  <div class="d-flex justify-content-start mt-5">
+    <ng-container [ngSwitch]="currentPage">
+      <app-general-profile *ngSwitchCase="'general'" style="width: 720px;"></app-general-profile>
+      <app-signature *ngSwitchCase="'signature'"></app-signature>
+      <app-security *ngSwitchCase="'security'" style="width: 300px;"></app-security>
+      <app-company *ngSwitchCase="'account'" style="width: 900px;"></app-company>
+      <ng-container *ngSwitchCase="'subscription'">
+        <ng-container *ngIf="profile?.user_version >= 2.3; else oldVersion">
+          <app-subscription-v2></app-subscription-v2>
+        </ng-container>
+        <ng-template #oldVersion>
+          <app-subscription ></app-subscription>
+        </ng-template>
+      </ng-container>
+      <app-billing *ngSwitchCase="'billing'" style="width: 900px;"></app-billing>
+    </ng-container>
+  </div>
+</div>

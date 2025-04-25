@@ -1,0 +1,82 @@
+p {
+  margin: 0;
+}
+
+.check-group {
+  label {
+    opacity: 1;
+    line-height: 22px;
+    text-transform: none;
+  }
+  .custom-control-label::before {
+    top: 0;
+  }
+
+  .custom-control-label::after {
+    top: 0;
+  }
+}
+
+.warning-text {
+  color: #e02020;
+}
+
+.send-materials {
+  overflow: auto;
+  max-height: 240px;
+
+  .thumbnail {
+    width: 96px;
+    height: 54px;
+    object-fit: cover;
+  }
+
+  .material-item {
+    margin: 10px 0px;
+
+    .delete-button {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+
+    .material-detail {
+      width: calc(100% - 96px - 32px);
+      padding: 0px 15px;
+
+      .material-title {
+        line-height: 15px;
+        color: #101336;
+      }
+
+      .material-description {
+        line-height: 15px;
+        word-break: break-all;
+        color: #101336;
+      }
+    }
+  }
+}
+
+.invalid {
+  &.invalid-feedback {
+    display: block;
+  }
+}
+
+:host ::ng-deep {
+  mat-dialog-content {
+    overflow: visible;
+  }
+}
+
+.add-short-button {
+  font-size: 11px;
+  border: 1px solid blue;
+  padding: 2px 8px;
+  border-radius: 10px;
+  text-decoration: none;
+}
+.visible-hide {
+  visibility: hidden;
+}

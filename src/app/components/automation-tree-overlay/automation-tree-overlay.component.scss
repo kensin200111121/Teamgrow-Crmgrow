@@ -1,0 +1,50 @@
+.tree-overlay {
+    width: 300px;
+    max-height: 500px;
+    overflow: hidden;
+    padding: 1rem;
+    background: white;
+    box-shadow: -8px 0 24px -5px rgba(16,19,54,0.24);
+
+    .automation-detail {
+        word-break: break-word;
+
+        .thumbnail {
+            padding: 0px;
+            width: 128px;
+            height: 72px;
+            object-fit: contain;
+            border: none;
+            margin: 0px;
+            border-radius: 0px;
+            background-color: #dedede;
+        }
+
+        .thumb-prev-wrapper img {
+            width: 128px;
+            height: 72px;
+            object-fit: cover;
+        }
+
+        .thumb-prev-wrapper .preview {
+            display: none;
+        }
+
+        .thumb-prev-wrapper {
+            &:hover .preview {
+                display: block;
+            }
+            &:hover .thumbnail {
+                display: none;
+            }
+        }
+    }
+    .read-more {
+        span {
+            display: none;
+            &.show {
+                display: block;
+            }
+        }
+    }
+}

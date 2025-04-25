@@ -1,0 +1,272 @@
+<div class="p-4c panel">
+  <form
+    #form="ngForm"
+    (ngSubmit)="form.form.valid ? update() : false"
+    [class.was-validated]="form.submitted"
+  >
+    <div class="v-center mb-3">
+      <h5 class="font-weight-bold mb-0" translate>Editing multiple contacts</h5>
+    </div>
+    <div class="content">
+      <div class="form-group">
+        <label translate>Status</label>
+        <app-label-select
+          type="form"
+          [hasKeepLabel]="true"
+          [value]="contact.label"
+          (valueChange)="changeLabel($event)"
+          (clearLabel)="clearLabel()"
+        ></app-label-select>
+      </div>
+      <div class="form-group">
+        <label for="bulk-source" translate>source</label>
+        <input
+          type="text"
+          name="source"
+          class="form-control"
+          id="bulk-source"
+          [(ngModel)]="contact.source"
+        />
+      </div>
+      <div class="form-group">
+        <label for="bulk-company" translate>company</label>
+        <input
+          type="text"
+          name="company"
+          class="form-control"
+          id="bulk-company"
+          [(ngModel)]="contact.brokerage"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="bulk-company" translate>tags</label>
+        <div class="form-group">
+          <select
+            [(ngModel)]="tagMode"
+            class="form-control"
+            name="keepTag"
+            #keepTag="ngModel"
+          >
+            <option [ngValue]="MODE.KEEP"></option>
+            <option [ngValue]="MODE.PUSH" translate>Add new tags</option>
+            <option [ngValue]="MODE.PULL" translate>Remove the tags</option>
+            <option [ngValue]="MODE.SET" translate>
+              Add new tags and remove current tags
+            </option>
+          </select>
+        </div>
+        <div class="" *ngIf="tagMode != MODE.KEEP">
+          <app-input-tag [selectedTags]="contact.tags"></app-input-tag>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="bulk-city" translate>city</label>
+        <input
+          type="text"
+          name="city"
+          class="form-control"
+          id="bulk-city"
+          [(ngModel)]="contact.city"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="contact-country" translate>country</label>
+        <mat-select [(ngModel)]="contact.country" name="contact-country">
+          <mat-option [value]="''">
+            <div class="d-flex chip py-2">
+              <div class="info">
+                <div class="f-4 fw-600"></div>
+              </div>
+            </div>
+          </mat-option>
+          <mat-option
+            [attr.data-name]="'contact-country-' + country.name"
+            *ngFor="let country of COUNTRIES"
+            [value]="country.code"
+          >
+            <div class="d-flex chip py-2">
+              <div class="info">
+                <div class="f-4 fw-600">{{ country.name }}</div>
+              </div>
+            </div>
+          </mat-option>
+        </mat-select>
+      </div>
+
+      <div class="form-group">
+        <label for="contact-state" translate>state</label>
+        <mat-select [(ngModel)]="contact.state" name="contact-state">
+          <mat-option value="">
+            <div class="d-flex chip py-2">
+              <div class="info">
+                <div class="f-4 fw-600"></div>
+              </div>
+            </div>
+          </mat-option>
+          <ng-container *ngIf="!contact.country; else selectedState">
+            <mat-optgroup
+              *ngFor="
+                let country of DefaultCountryStates | keyvalue : orderOriginal
+              "
+              label="{{ country.key }}"
+            >
+              <mat-option
+                [attr.data-name]="'contact-state-' + region"
+                *ngFor="let region of country.value"
+                value="{{ region }}"
+              >
+                <div class="d-flex chip py-2">
+                  <div class="info">
+                    <div class="f-4 fw-600">{{ region }}</div>
+                  </div>
+                </div>
+              </mat-option>
+            </mat-optgroup>
+          </ng-container>
+          <ng-template #selectedState>
+            <mat-option
+              *ngFor="let region of COUNTRY_REGIONS[contact.country]"
+              value="{{ region }}"
+            >
+              <div class="d-flex chip py-2">
+                <div class="info">
+                  <div class="f-4 fw-600">{{ region }}</div>
+                </div>
+              </div>
+            </mat-option>
+          </ng-template>
+        </mat-select>
+      </div>
+
+      <div class="form-group my-3">
+        <label for="bulk-zipcode" translate>zipcode</label>
+        <input
+          type="text"
+          name="zipcode"
+          class="form-control"
+          id="bulk-zipcode"
+          [(ngModel)]="contact.zip"
+        />
+      </div>
+
+      <div class="form-group" *ngIf="lead_fields.length > 0">
+        <ng-container *ngFor="let field of lead_fields; let i = index">
+          <div class="my-3">
+            <div class="form-group flex-grow-1 mb-0">
+              <label class="additional-field-label">{{ field.name }}</label>
+            </div>
+            <div
+              class="form-group flex-grow-1 mb-0"
+              [ngSwitch]="field.type"
+              #wrapper
+            >
+              <input
+                type="text"
+                class="form-control"
+                *ngSwitchCase="FieldTypeEnum.TEXT"
+                name="{{ 'additional-field-value-' + i }}"
+                placeholder="{{ field.placeholder }}"
+                [(ngModel)]="contact.additional_field[field.name]"
+              />
+              <input
+                type="text"
+                class="form-control"
+                *ngSwitchCase="FieldTypeEnum.LINK"
+                name="{{ 'additional-field-value-' + i }}"
+                placeholder="{{ field.placeholder }}"
+                [(ngModel)]="contact.additional_field[field.name]"
+              />
+              <input
+                type="email"
+                class="form-control"
+                *ngSwitchCase="FieldTypeEnum.EMAIL"
+                name="{{ 'additional-field-value-' + i }}"
+                placeholder="{{ field.placeholder }}"
+                [(ngModel)]="contact.additional_field[field.name]"
+                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$"
+              />
+              <span
+                class="error mt-1"
+                *ngIf="field.type === FieldTypeEnum.EMAIL"
+                translate
+              >
+                Email is invalid!
+              </span>
+              <app-phone-input
+                [cssClass]="'form-control'"
+                *ngSwitchCase="FieldTypeEnum.PHONE"
+                name="{{ 'additional-field-value-' + i }}"
+                [onlyCountries]="countries"
+                [selectedCountryISO]="CountryISO.UnitedStates"
+                [(ngModel)]="contact.additional_field[field.name]"
+                (ngModelChange)="
+                  checkPhoneValidation(wrapper, phoneControl, $event)
+                "
+                [placeholder]="field.placeholder"
+                #phoneControl
+              >
+              </app-phone-input>
+              <span
+                class="error mt-1"
+                *ngIf="field.type === FieldTypeEnum.PHONE"
+                translate
+              >
+                Phone is invalid!
+              </span>
+              <select
+                class="form-control"
+                *ngSwitchCase="FieldTypeEnum.DROPDOWN"
+                [(ngModel)]="contact.additional_field[field.name]"
+                name="{{ 'additional-field-value-' + i }}"
+                #option="ngModel"
+              >
+                <option value="" translate>None</option>
+                <option
+                  *ngFor="let option of field.options"
+                  value="{{ option.value }}"
+                >
+                  {{ option.value }}
+                </option>
+              </select>
+              <app-date-input
+                *ngSwitchCase="FieldTypeEnum.DATE"
+                type="prepend"
+                name="{{ 'additional-field-value-' + i }}"
+                [(value)]="contact.additional_field[field.name]"
+                [placeholder]="field.placeholder"
+                [required]="false"
+                [format]="field.format"
+              >
+              </app-date-input>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="bg-white pt-3">
+      <div class="mt-4 d-flex" id="form-buttons">
+        <button
+          data-action="contact-bulk-edit-cancel"
+          type="button"
+          class="btn btn-white font-weight-bold ml-auto"
+          (click)="close()"
+          translate
+        >
+          Cancel
+        </button>
+        <button
+          data-action="contact-bulk-edit-save"
+          type="submit"
+          class="btn btn-primary ml-2"
+          [class.loading]="isUpdating"
+          translate
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,19 @@
+<div class="v-center justify-content-between">
+    <div class="warning d-flex">
+        <h1 class="m-0 ml-2" mat-dialog-title translate>
+            Delete Custom Field
+        </h1>
+    </div>
+    <div>
+        <i class="d-block i-icon i-close bgc-dark" mat-dialog-close></i>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="c-dark mt-3 ml-3">
+        <p class="f-5 mt-2" translate>delete_custom_field_desc_2</p>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button class="btn btn-white f-6 font-weight-bold c-blue mr-2" mat-dialog-close translate>Cancel</button>
+    <button class="btn btn-red f-6 font-weight-bold" [class.loading]="deleting" (click)="deleteField()" translate>Yes, Delete</button>
+</mat-dialog-actions>

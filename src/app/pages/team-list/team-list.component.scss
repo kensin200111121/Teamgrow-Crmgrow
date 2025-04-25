@@ -1,0 +1,172 @@
+@import "variables";
+
+.owners {
+  margin-right: 20px;
+
+  .owner {
+    margin-left: -15px;
+  }
+
+  .owner:first-child {
+    margin-left: 0px;
+  }
+}
+
+.team-name a {
+  color: $color-dark;
+
+  &:hover {
+    color: $color-dark;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .owner-names {
+    display: none;
+  }
+}
+
+.table {
+  th, td {
+    padding: 10px 0px;
+  }
+
+  tbody tr {
+    height: 50px;
+  }
+}
+
+.teams-table {
+  margin-bottom: 50px;
+
+  th, td {
+    &.count-col {
+      width: 90px;
+      padding-right: 30px;
+    }
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+
+  .invite-count {
+    background-color: #066FD3;
+    padding: 3px 5px;
+    border-radius: 8px;
+  }
+
+  .team-status {
+    .status {
+      padding: 3px 8px;
+      border-radius: 8px;
+      width: fit-content;
+      text-align: center;
+
+      &.Owner {
+        background-color: $color-red
+      }
+
+      &.Viewer {
+        background-color: $color-blue;
+      }
+
+      &.Editor {
+        background-color: #08CE97;
+      }
+    }
+  }
+}
+
+.team-actions {
+  text-align: right;
+  width: 100px;
+  opacity: 0;
+
+  .button-more {
+    a {
+      &::after {
+        content: none;
+      }
+    }
+  }
+}
+
+tr:hover {
+  .team-actions {
+    opacity: 1;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .teams-table {
+    .team-materials, .team-contacts, .team-automations, .team-templates {
+      display: none;
+    }
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .teams-table {
+
+    .team-name a {
+      font-size: 14px;
+    }
+
+    .team-owner, .team-members, .team-materials, .team-contacts, .team-automations, .team-templates {
+      display: none;
+    }
+  }
+}
+
+.btn-decline.loading {
+  background-color: #E02020;
+}
+
+.btn-accept-outline.loading {
+  background-color: #04B800;
+}
+
+@media screen and (max-width: 480px) {
+  .team-name {
+    a {
+      display: block;
+
+      .invite-count {
+        width: fit-content;
+        margin-left: 0px!important;
+        padding: 1px 5px;
+        font-size: 10px!important;
+      }
+    }
+  }
+}
+
+.has-sticky-header {
+  thead tr:first-child th {
+    top: 112px;
+    height: 45px;
+  }
+}
+
+.team-list-actions {
+  position: relative;
+  z-index: 2;
+}
+
+.team-list-container {
+  position: relative;
+  z-index: 1;
+}
+
+.i-icon {
+  height: 12px;
+}
+
+.f-4 {
+  text-align: left;
+}
+
+.team-name > div {
+  display: flex;
+}

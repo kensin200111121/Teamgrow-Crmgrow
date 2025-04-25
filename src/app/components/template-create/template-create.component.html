@@ -1,0 +1,116 @@
+<div class="bg-white overlay-wrapper">
+  <h5 class="font-weight-bold" translate>
+    Create new template
+  </h5>
+  <form #templateForm="ngForm" (ngSubmit)="submitted = true; templateForm.form.valid ? saveTemplate() : false"
+    [class.was-validated]="templateForm.submitted">
+    <div class="overlay-content">
+      <div class="form-group">
+        <label translate>Title</label>
+        <input type="text" class="form-control" style="padding-right: 60px;" required [(ngModel)]="template.title"
+          name="title" #title="ngModel" />
+        <span class="error d-block" *ngIf="template.title == '' && submitted" translate>
+          Please input template name.
+        </span>
+      </div>
+
+      <ng-container *ngIf="type == 'email'; else textTemplate">
+        <div class="form-group position-relative">
+          <label translate>Subject</label>
+          <input type="text" class="form-control" #subjectField [(ngModel)]="template.subject"
+            (blur)="keepCursor(subjectField)" name="mailSubject" [mention]="templateTokens"
+            (itemSelected)="onSubjectTokenSelected($event)" [mentionConfig]="mentionConfig" #mailSubject="ngModel"
+            required />
+          <ng-container *ngIf="mailSubject.errors && (mailSubject.touched || mailSubject.dirty)">
+            <span class="invalid-feedback" translate>
+              Please input the email template subject.
+            </span>
+          </ng-container>
+          <div ngbDropdown class="insert-token for-subject bottom-right">
+            <div class="v-center no-carot" ngbDropdownToggle>
+              <span class="f-1 font-weight-bold mr-1" translate>Merge field</span>
+              <i class="d-block i-icon i-triangle-down bgc-dark"></i>
+              <i class="d-block i-icon i-triangle-up bgc-blue"></i>
+            </div>
+            <div ngbDropdownMenu class="light p-2">
+              <ng-container *ngFor="let token of templateTokens">
+                <div class="f-3 p-1 mt-1 c-pointer menu-item dropdown-item" (click)="insertEmailSubjectValue(token.name)" translate>
+                  {{token.name}}
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label translate>Content</label>
+          <div class="position-relative">
+            <app-html-editor [(value)]="_value" placeholder="{{ placeholder | translate }}" required="true" [hasAttachment]="false"
+              [hasTemplates]="false" [hasCalendly]="false" [hasRecord]="false" [subject]="mailSubject" [style]="style"
+              [modules]="config" [mention]="tokens" [mentionEnabled]="true" [hasImageHandler]="true" (imageHandler)="initImageHandler()"
+              (onEditorCreated)="getEditorInstance($event)" #emailEditor>
+            </app-html-editor>
+
+            <div ngbDropdown class="insert-token bottom-right">
+              <div class="v-center no-carot" ngbDropdownToggle>
+                <span class="f-1 font-weight-bold mr-1" translate>Merge field</span>
+                <i class="d-block i-icon i-triangle-down bgc-dark"></i>
+                <i class="d-block i-icon i-triangle-up bgc-blue"></i>
+              </div>
+              <div ngbDropdownMenu class="light p-2">
+                <ng-container *ngFor="let token of templateTokens">
+                  <div class="f-3 p-1 mt-1 c-pointer menu-item dropdown-item" (click)="insertEmailContentValue(token.name)" translate>
+                    {{token.name}}
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #textTemplate>
+        <div class="form-group mt-2">
+          <div class="text-template-contents v-center justify-content-between">
+            <label translate>Content</label>
+            <div ngbDropdown class="insert-token bottom-right">
+              <div class="v-center no-carot" ngbDropdownToggle>
+                <span class="f-1 font-weight-bold mr-1" translate>Merge field</span>
+                <i class="d-block i-icon i-triangle-down bgc-dark"></i>
+                <i class="d-block i-icon i-triangle-up bgc-blue"></i>
+              </div>
+              <div ngbDropdownMenu class="light p-2">
+                <ng-container *ngFor="let token of templateTokens">
+                  <div class="f-3 p-1 mt-1 c-pointer menu-item dropdown-item" (click)="insertEmailContentValue(token.name)" translate>
+                    {{token.name}}
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <textarea rows="10" class="form-control text-content" [(ngModel)]="_value" name="content" #content="ngModel"
+            [required]="true" #messageText (click)="setCursorPos(messageText)" (keyup)="setCursorPos(messageText)"
+            [mention]="templateTokens" (itemSelected)="onTextTokenSelected($event)" [mentionConfig]="mentionConfig">
+          </textarea>
+          <span class="error d-block mt-1" *ngIf="_value == '' && submitted" translate>Please input template
+            content</span>
+        </div>
+      </ng-template>
+
+    </div>
+
+    <div class="d-flex justify-content-between pt-2">
+      <div class="v-center">
+        <button *enableByFeatures="USER_FEATURES.MATERIAL" type="button" class="v-center btn border-primary f-3 font-weight-bold c-blue p-2 mr-2 material-button"
+          (click)="openMaterialsDlg()">
+          <i class="d-block i-icon i-material bgc-blue"></i>
+          <span class="f-3 font-weight-bold c-blue mx-2" translate>Material</span>
+          <i class="d-block i-icon i-plus bgc-blue"></i>
+        </button>
+      </div>
+      <div class="v-center">
+        <button class="btn c-blue font-weight-bold" type="button" (click)="close()" translate>Cancel</button>
+        <button class="btn btn-primary font-weight-bold ml-2" [class.loading]="isSaving" translate>Save</button>
+      </div>
+    </div>
+  </form>
+
+</div>

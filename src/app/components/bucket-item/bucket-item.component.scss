@@ -1,0 +1,35 @@
+@import 'variables';
+
+.bucket-item {
+  background-color: white;
+  border: 1px solid gainsboro;
+  border-radius: 8px;
+
+  h5 {
+    font-size: 1.125rem!important;
+    font-weight: bold;
+    cursor: move;
+  }
+
+  a {
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    &.remove {
+      color: $color-red!important;
+
+      &.loading {
+        color: transparent!important;
+      }
+    }
+
+    &.disabled {
+      pointer-events: none;
+      opacity: .4;
+    }
+  }
+}

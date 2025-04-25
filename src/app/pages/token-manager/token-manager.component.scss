@@ -1,0 +1,108 @@
+@import "variables";
+
+.token-manager-page {
+    margin: 5px 10px;
+    padding: 10px 20px;
+}
+
+.page-content {
+    padding: 0;
+}
+
+.template-token-panel {
+    width: 100%;
+    max-width: 400px;
+
+    .form-control {
+        width: 150px;
+
+        @media screen and (max-width: 576px) {
+            width: 100%;
+        }
+    }
+
+    .form-group {
+        .add-button {
+            i {
+                width: 12px;
+                height: 12px;
+                min-width: 12px;
+            }
+        }
+
+        label {
+            text-transform: unset;
+        }
+
+        .custom-control-label {
+            opacity: 1;
+        }
+
+        .required-field {
+            width: max-content;
+            
+            .field-name {
+                width: 120px;
+                overflow-wrap: break-word;
+            }
+
+            .field-value {
+                width: 150px;
+                overflow-wrap: break-word;
+            }
+
+            .field-match {
+                width: 150px;
+            }
+
+            .field-action {
+                width: 60px;
+            }
+
+            &.fields-header {
+                height: 47px;
+                border-bottom: 1px solid gainsboro;
+
+                &.selected {
+                    background-color: #f5f6fd;
+                }
+            }
+        }
+    }
+
+    .btn-blue {
+        &:hover {
+            color: white;
+        }
+    }
+}
+
+.action-panel {
+    flex: 1;
+    padding-left: 24px;
+
+    .action-panel-header {
+        margin-bottom: 15px;
+    }
+}
+
+.mat-table-body-wrapper {
+    min-height: 80px;
+}
+
+.load-status {
+    position: absolute;
+    background: #000000aa;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: white;
+    z-index: 2;
+    left: 400px;
+    top: 50%;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.pagination-wrapper {
+    z-index: 2;
+}

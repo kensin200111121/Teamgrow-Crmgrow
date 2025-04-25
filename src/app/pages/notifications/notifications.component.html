@@ -1,0 +1,95 @@
+<div class="page-content p-0">
+  <table class="table">
+    <thead>
+      <tr>
+        <th class="f-4 border-bottom-0 pl-0" translate>type</th>
+        <th class="f-4 checkbox-col border-bottom-0" translate>desktop</th>
+        <th class="f-4 checkbox-col border-bottom-0" translate>text</th>
+        <th class="f-4 checkbox-col border-bottom-0" translate>email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="f-4 c-dark pl-0" translate>all</td>
+        <td class="checkbox-col">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="desktop-all" (change)="toggleDesktopNotification($event)"
+              [checked]="garbage.entire_desktop_notification === 1" [class.indeterminate]="garbage.entire_desktop_notification === 0" />
+            <label class="custom-control-label" for="desktop-all"></label>
+          </div>
+        </td>
+        <td class="checkbox-col">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="text-all" (change)="toggleNotification('text_notification', $event)"
+              [checked]="garbage.entire_text_notification === 1" [class.indeterminate]="garbage.entire_text_notification === 0" />
+            <label class="custom-control-label" for="text-all"></label>
+          </div>
+        </td>
+        <td class="checkbox-col">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="email-all" (change)="toggleNotification('email_notification', $event)"
+              [checked]="garbage.entire_email_notification === 1" [class.indeterminate]="garbage.entire_email_notification === 0" />
+            <label class="custom-control-label" for="email-all"></label>
+          </div>
+        </td>
+      </tr>
+      <tr *ngFor="let type of types">
+        <td class="f-4 c-dark pl-0">{{ type.label | translate }}</td>
+        <td class="checkbox-col">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="desktop-{{ type.id }}"
+              (change)="toggleDesktopNotification($event, type.id)" [checked]="garbage.desktop_notification[type.id]" />
+            <label class="custom-control-label" for="desktop-{{ type.id }}"></label>
+          </div>
+        </td>
+        <td class="checkbox-col">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="text-{{ type.id }}" (change)="
+                toggleNotification('text_notification', $event, type.id)
+              " [checked]="garbage.text_notification[type.id]" />
+            <label class="custom-control-label" for="text-{{ type.id }}"></label>
+          </div>
+        </td>
+        <td class="checkbox-col">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="email-{{ type.id }}" (change)="
+                toggleNotification('email_notification', $event, type.id)
+              " [checked]="garbage.email_notification[type.id]" />
+            <label class="custom-control-label" for="email-{{ type.id }}"></label>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="v-center justify-content-between w-100">
+    <div class="reminder mt-4">
+      <div class="f-4 font-weight-bold" translate>Task reminder</div>
+      <div class="form-group mb-2">
+        <label class="f-4 c-light-dark" translate>Set the reminder prior to task due time</label>
+      </div>
+      <div class="form-group mt-2">
+        <select class="form-control f-4 font-weight-bold" [(ngModel)]="garbage.reminder_before" name="reminder" id="reminder"
+          required #reminder="ngModel" (ngModelChange)="saveReminder('reminder')">
+          <option *ngFor="let reminder of reminders" value="{{ reminder.id }}">
+            {{ reminder.text }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="reminder mt-4" *ngIf="(userService.profile$ | async).scheduler_info?.is_enabled">
+      <div class="f-4 font-weight-bold" translate>Schedule reminder</div>
+      <div class="form-group mb-2">
+        <label class="f-4 c-light-dark" translate>Set the reminder prior to schedule due time</label>
+      </div>
+      <div class="form-group mt-2">
+        <select class="form-control f-4 font-weight-bold" [(ngModel)]="garbage.reminder_scheduler" name="schedulerReminder"
+          id="schedulerReminder" required #schedulerReminder="ngModel" (ngModelChange)="saveReminder('reminder_scheduler')">
+          <option *ngFor="let reminder of reminders" value="{{ reminder.id }}">
+            {{ reminder.text }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>

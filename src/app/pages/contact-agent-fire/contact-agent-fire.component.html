@@ -1,0 +1,47 @@
+<div class="property-list-header d-flex">
+  <i class="i-icon d-block i-lightbulb bgc-dark"></i>
+  <div class="ml-2">
+    <span>Insights</span>
+  </div>
+  <div class="ml-auto source">
+    Powered by <img [src]="sspaService.toAsset('img/agentfire.png')" />
+  </div>
+</div>
+<div class="list-wrapper">
+  <ng-container *ngIf="isLoading; else list">
+
+  </ng-container>
+  <ng-template #list>
+    <ng-template #emptyList>
+      
+    </ng-template>
+    <ng-container *ngIf="properties.length; else emptyList">
+      <div class="property" *ngFor="let property of properties">
+        <div class="thumbnail-wrapper">
+          <a href="{{property.url}}" target="_blank">
+            <img [src]="property.thumb || 'assets/img/agentfire_placeholder.png'" class="thumbnail"/>
+          </a>
+        </div>
+        <div class="street">{{ property.street }}</div>
+        <div class="city">{{ property.city }}</div>
+        <div class="d-flex">
+          <div class="spec-item">
+            <i class="spec-item-icon i-icon d-block i-bedroom"></i>
+            <div class="spec-item-content">{{ property.bedrooms }}</div>
+          </div>
+          <div class="spec-item">
+            <i class="spec-item-icon i-icon d-block i-bathroom"></i>
+            <div class="spec-item-content">{{ property.bathrooms }}</div>
+          </div>
+          <div class="spec-item">
+            <i class="spec-item-icon i-icon d-block i-area"></i>
+            <div class="spec-item-content">{{ property.area }}</div>
+          </div>
+        </div>
+        <div class="price">
+          $ {{property.price}}
+        </div>
+      </div>
+    </ng-container>
+  </ng-template>
+</div>

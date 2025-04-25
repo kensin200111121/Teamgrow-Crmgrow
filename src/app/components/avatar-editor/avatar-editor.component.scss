@@ -1,0 +1,50 @@
+.edit-photo {
+    margin-left: -36px;
+    margin-right: -36px;
+    height: 240px;
+    overflow: hidden;
+    input {
+        display: none;
+    }
+}
+
+:host ::ng-deep {
+    mat-slider {
+        width: 100%;
+    }
+    lib-cropper {
+        .cropper-drag-box {
+            opacity: 0.8;
+        }
+        .cropper-crop-box {
+            pointer-events: none;
+            .cropper-view-box {
+                border-radius: 50%;
+                outline: none;
+                border: 2px solid #eee;
+            }
+            .cropper-line, .cropper-point, .cropper-center {
+                display: none;
+            }
+            .cropper-face {
+                opacity: 0;
+            }
+            .cropper-dashed {
+                border: 0 solid #eee;
+                opacity: 1;
+                &.dashed-h {
+                    left: 7px;
+                    width: 94%;
+                    border-bottom-width: 2px;
+                    border-top-width: 2px;
+                }
+                &.dashed-v {
+                    top: 7px;
+                    height: 94%;
+                    border-left-width: 2px;
+                    border-right-width: 2px;
+                }
+            }
+        }
+    }
+}

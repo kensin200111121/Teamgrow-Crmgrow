@@ -1,0 +1,10 @@
+<h1 mat-dialog-title>Unassign Automation</h1>
+<mat-dialog-content>
+  <div class="text-center f-5 c-dark mt-3" style="font-size: 18px;font-weight: 600;" translate>
+    unassign_automation_confirm
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button type="button" class="btn btn-white" type="button" mat-dialog-close translate>Close</button>
+  <button type="button" class="btn btn-red ml-2" [class.loading]="loading" (click)="unassign()" translate>Unassign</button>
+</mat-dialog-actions>

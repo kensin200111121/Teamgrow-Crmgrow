@@ -1,0 +1,51 @@
+diff --git a/node_modules/ngx-pipes/.DS_Store b/node_modules/ngx-pipes/.DS_Store
+new file mode 100644
+index 0000000..1b8ef03
+Binary files /dev/null and b/node_modules/ngx-pipes/.DS_Store differ
+diff --git a/node_modules/ngx-pipes/esm2020/.DS_Store b/node_modules/ngx-pipes/esm2020/.DS_Store
+new file mode 100644
+index 0000000..7afdc03
+Binary files /dev/null and b/node_modules/ngx-pipes/esm2020/.DS_Store differ
+diff --git a/node_modules/ngx-pipes/esm2020/src/.DS_Store b/node_modules/ngx-pipes/esm2020/src/.DS_Store
+new file mode 100644
+index 0000000..cf576ff
+Binary files /dev/null and b/node_modules/ngx-pipes/esm2020/src/.DS_Store differ
+diff --git a/node_modules/ngx-pipes/esm2020/src/ng-pipes/pipes/string/strip-tags.mjs b/node_modules/ngx-pipes/esm2020/src/ng-pipes/pipes/string/strip-tags.mjs
+index 40f5eb3..494c6e3 100644
+--- a/node_modules/ngx-pipes/esm2020/src/ng-pipes/pipes/string/strip-tags.mjs
++++ b/node_modules/ngx-pipes/esm2020/src/ng-pipes/pipes/string/strip-tags.mjs
+@@ -4,7 +4,7 @@ export class StripTagsPipe {
+     transform(text, ...allowedTags) {
+         return allowedTags.length > 0
+             ? text.replace(new RegExp(`<(?!\/?(${allowedTags.join('|')})\s*\/?)[^>]+>`, 'g'), '')
+-            : text.replace(/<(?:.|\s)*?>/g, '');
++            : text.replace(/<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g, '');
+     }
+ }
+ StripTagsPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "14.2.12", ngImport: i0, type: StripTagsPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
+diff --git a/node_modules/ngx-pipes/fesm2015/ngx-pipes.mjs b/node_modules/ngx-pipes/fesm2015/ngx-pipes.mjs
+index 4333ae4..97055c9 100644
+--- a/node_modules/ngx-pipes/fesm2015/ngx-pipes.mjs
++++ b/node_modules/ngx-pipes/fesm2015/ngx-pipes.mjs
+@@ -943,7 +943,7 @@ class StripTagsPipe {
+     transform(text, ...allowedTags) {
+         return allowedTags.length > 0
+             ? text.replace(new RegExp(`<(?!\/?(${allowedTags.join('|')})\s*\/?)[^>]+>`, 'g'), '')
+-            : text.replace(/<(?:.|\s)*?>/g, '');
++            : text.replace(/<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g, '');
+     }
+ }
+ StripTagsPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "14.2.12", ngImport: i0, type: StripTagsPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
+diff --git a/node_modules/ngx-pipes/fesm2020/ngx-pipes.mjs b/node_modules/ngx-pipes/fesm2020/ngx-pipes.mjs
+index 11c4a87..567be3a 100644
+--- a/node_modules/ngx-pipes/fesm2020/ngx-pipes.mjs
++++ b/node_modules/ngx-pipes/fesm2020/ngx-pipes.mjs
+@@ -943,7 +943,7 @@ class StripTagsPipe {
+     transform(text, ...allowedTags) {
+         return allowedTags.length > 0
+             ? text.replace(new RegExp(`<(?!\/?(${allowedTags.join('|')})\s*\/?)[^>]+>`, 'g'), '')
+-            : text.replace(/<(?:.|\s)*?>/g, '');
++            : text.replace(/<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g, '');
+     }
+ }
+ StripTagsPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "14.2.12", ngImport: i0, type: StripTagsPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });

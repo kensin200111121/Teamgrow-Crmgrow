@@ -1,0 +1,40 @@
+<div class="page-content bg-white">
+  <div class="v-center mb-3">
+    <h1 class="page-title" translate>Rating settings</h1>
+  </div>
+
+  <div class="page-inner">
+    <div class="f-3 mb-4">
+      Contact will achieved the star when meet the following case.
+    </div>
+    <div class="">
+      <mat-form-field appearance="outline" class="d-block w-100">
+        <mat-label>1st star</mat-label>
+        <input matInput disabled value="When you favorite the contact, contact will have one star automatically." />
+      </mat-form-field>
+    </div>
+    <div class="mt-3" *ngFor="let item of rateIndexes; let i = index;">
+      <mat-form-field appearance="outline" class="d-block w-100">
+        <mat-label>{{item}} star </mat-label>
+        <mat-select [(ngModel)]="options[i].id" name="rate-option-{{ i }}" id="rate-option-{{ i }}" #rateOption>
+          <mat-option *ngFor="let option of optionList" value="{{option.id}}">
+            <div class="f-3 c-black">
+              {{ option.label | translate }}
+            </div>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="mt-3 d-flex justify-content-end">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="saveOptions()"
+        [class.loading]="saving"
+        >
+        Save & Recalculate
+      </button>
+    </div>
+  </div>
+</div>

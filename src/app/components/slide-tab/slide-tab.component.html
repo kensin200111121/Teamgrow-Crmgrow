@@ -1,0 +1,33 @@
+<ng-container *ngIf="tabs.length < 5 && method !== 'billing'; else matTemplate">
+  <div class="tab-container {{type}} {{class}}" #container [ngClass]="{'colorful': viewMode === 'colorful'}">
+    <div class="tab-indicator" #indicator
+      [class]="'tab-indicator indicator-' + _selected?.id">
+    </div>
+    <ng-container *ngFor="let tab of tabs; let i = index;">
+      <ng-container *enableByFeatures="tab.feature">
+        <div class="tab"
+          [ngClass]="{'active': tab.id === _selected?.id}"
+          [class]="'tab-' + _selected?.id"
+          (click)="changeTab($event, tab)">
+          <i *ngIf="tab.icon" class="i-icon tab-icon {{tab.icon}} mr-2"></i>
+          <span class="tab-label" [attr.data-name]="'profile-tab-item-' + tab.label">
+            {{ (tab.label ? tab.label : tab.id).trim() | translate }}
+          </span>
+        </div>
+        </ng-container>
+    </ng-container>
+  </div>
+</ng-container>
+<ng-template #matTemplate>
+  <mat-tab-group animationDuration="0ms" disableRipple="true" [(selectedIndex)]="selectedTabIndex"
+    (selectedTabChange)="selectedTabChange($event)">
+    <ng-container *ngFor="let tab of tabs">
+      <mat-tab  label="{{tab.id}}" *enableByFeatures="tab.feature">
+        <ng-template mat-tab-label>
+          <i *ngIf="tab.icon" class="tab-icon {{tab.icon}} mr-2"></i>
+          <span class="tab-label" [attr.data-name]="'deal-tab-item-' + tab.label">{{ tab.label | translate }}</span>
+        </ng-template>
+      </mat-tab>
+    </ng-container>
+  </mat-tab-group>
+</ng-template>

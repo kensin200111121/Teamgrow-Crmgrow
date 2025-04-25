@@ -1,0 +1,127 @@
+<form #form="ngForm" (ngSubmit)="(form.form.valid && isValidCode) ? submit() : false">
+  <h1 mat-dialog-title>
+    <span *ngIf="isNew;else editTitle" translate>Add Smart Code</span>
+    <ng-template #editTitle>{{ 'Edit Smart Code' | translate }}</ng-template>
+  </h1>
+  <mat-dialog-content>
+    <div class="row">
+      <div class="col-12 form-group"
+        [ngClass]="{invalid: form.submitted && (code.invalid || !isValidCode) && (code.dirty || code.touched || form.submitted)}">
+        <div class="d-flex">
+          <label for="code" class="mr-auto" translate>Custom Code</label>
+          <span class="error" *ngIf="code.errors || !isValidCode">
+            <ng-container *ngIf="code.errors && code.errors.required">
+              {{ 'Required!' | translate }}
+            </ng-container>
+            <ng-container *ngIf="!isValidCode">{{codeErrorMsg}}</ng-container>
+          </span>
+        </div>
+        <input type="text" class="form-control text-lowercase" [(ngModel)]="smartCode.code" name="code" id="code"
+          required #code="ngModel" (ngModelChange)="validateCode($event)" />
+        <div class="v-center mt-1">
+          <i class="i-icon i-information d-block bgc-grey tooltip-icon sm mr-2"></i>
+          <span class="detail-title c-seablue tip" translate>Text that automatic trigger your reply message</span>
+        </div>
+      </div>
+
+    </div>
+    <div class="mb-2"
+      [ngClass]="{invalid: form.submitted && message.invalid && (message.dirty || message.touched || form.submitted)}">
+      <div class="v-center">
+        <span for="message" translate>Message</span>
+        <span *ngIf="segments > 1" class="d-inline-flex ml-1 f-2">
+          ({{segments}} Segments
+          <a href="{{redirectArticleURL}}" target="_blank">
+            <i class="d-block i-icon i-information bgc-dark"></i>
+          </a>
+          )
+        </span>
+        <span class="error ml-auto" *ngIf="message.errors">
+          <ng-container *ngIf="message.errors.required">
+            {{ 'Required!' | translate }}
+          </ng-container>
+          <ng-container *ngIf="message.errors.minlength">
+            {{ 'At least 6 characters!' | translate }}
+          </ng-container>
+        </span>
+      </div>
+      <textarea class="form-control" [(ngModel)]="smartCode.message" name="message" rows="6" #message="ngModel"
+        placeholder="{{'Write your automatic reply when someone text you with your custom code' | translate}}"
+        (ngModelChange)="messageChanged()" #messageText required></textarea>
+    </div>
+    <div class="d-flex" *enableByFeatures="USER_FEATURES.MATERIAL">
+      <div class="v-center">
+        <button type="button" class="v-center btn border-primary f-3 font-weight-bold c-blue p-2 mr-2 material-button"
+          (click)="openMaterialsDlg()">
+          <i class="d-block i-icon i-material bgc-blue"></i>
+          <span class="f-3 font-weight-bold c-blue mx-2" translate>Material</span>
+          <i class="d-block i-icon i-plus bgc-blue"></i>
+        </button>
+      </div>
+      <div ngbDropdown class="insert-token">
+        <div class="v-center no-carot c-pointer" ngbDropdownToggle placement="bottom" ngbTooltip="{{ 'Emoji' | translate }}"
+          style="width: fit-content;">
+          <img class="emoji-icon mt-2" [src]="sspaService.toAsset('img/emoji.png')">
+        </div>
+        <div ngbDropdownMenu class="light templates">
+          <emoji-mart class="emoji-mart" [set]="set" [darkMode]="false"
+            (emojiSelect)="insertTextContentValue($event.emoji.native)" title="{{ 'Pick your emoji' | translate }}">
+          </emoji-mart>
+        </div>
+      </div>
+    </div>
+    <div class="mt-5" *enableByFeatures="USER_FEATURES.AUTOMATION">
+      <label for="message" class="mr-auto" translate>Attach an Automation</label>
+      <div class="d-flex justify-content-between;">
+        <span class="teex-overflow-wrap mr-3 description">You can set an automation for sending your welcome materials, for example</span>
+        <div class="v-center custom-control custom-switch pl-0">
+          <label class="custom-toggle mb-0" placement="top">
+            <input type="checkbox" [checked]="isShowAutomation" (change)="switchAutomation()">
+            <span class="custom-toggle-slider rounded-circle"></span>
+          </label>
+      </div>
+      </div>
+    </div>
+    <ng-container *enableByFeatures="USER_FEATURES.AUTOMATION">
+      <div *ngIf="isShowAutomation" class="mt-3">
+        <div class="form-group" *ngIf="isNew;else editAutomation">
+          <label translate>Automation</label>
+          <app-input-automation [type]="'contact'" (automationChange)="selectAutomation($event)"></app-input-automation>
+        </div>
+        <ng-template #editAutomation>
+          <div class="form-group">
+            <label translate>Automation</label>
+            <div class="v-center">
+              <app-input-automation class="w-100" [type]="'contact'" [automation]="selectedAutomation"
+                (automationChange)="selectAutomation($event)"></app-input-automation>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </ng-container>
+  </mat-dialog-content>
+  <hr class="seperate-line">
+  <mat-dialog-actions class="dlg-actions">
+    <div class="col-12 form-group">
+      <label translate>Tags</label>
+      <app-input-tag [selectedTags]="tags"></app-input-tag>
+    </div>
+    <div class="action-buttons">
+      <button type="button" class="btn" mat-dialog-close>
+        {{ 'Cancel' | translate }}
+      </button>
+      <button [attr.data-action]="'new-smart-code-add'" type="submit" class="btn btn-primary segment-width" [class.loading]="creating">
+        <span *ngIf="isNew;else saveButton" translate>Add</span>
+        <ng-template #saveButton>{{ 'Save' | translate }}</ng-template>
+      </button>
+    </div>
+    <div class="ml-auto text-center segment-width">
+      <span *ngIf="segments > 1" class="d-inline-flex ml-1 f-2">
+        {{segments}} Segments
+        <a href="{{redirectArticleURL}}" target="_blank">
+          <i class="d-block i-icon i-information bgc-dark"></i>
+        </a>
+      </span>
+    </div>
+  </mat-dialog-actions>
+</form>

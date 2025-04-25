@@ -1,0 +1,33 @@
+<div class="material-navigation">
+  <a class="close-nav" (click)="closeNav($event)">
+    <i class="i-icon i-close bgc-dark d-block"></i>
+  </a>
+  <div class="navigation-body">
+    <mat-accordion class="example-headers-align" multi>
+      <mat-expansion-panel [expanded]="true" hideToggle (closed)="setIsExpanded('own', false)" (opened)="setIsExpanded('own', true)">
+        <mat-expansion-panel-header style="padding: 0px;" [style.background-color]="isOwnRoot?'#EFEFEF':'#FFFFFF'">
+          <mat-panel-title>
+            <a><i class="i-icon i-chev-right d-block bgc-dark" [class.expanded]="isOwnExpanded"></i></a>
+            <i class="i-icon i-folder d-block"></i>
+            <label class="label mb-0 c-pointer ml-2" data-name="material-list-My Materials List" (click)="gotoRoot($event, 'own')" translate>My Materials List</label>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="navigation-content">
+          <app-materials-tree-view [type]="'Own'" (gotoFolder)="unsetRoot()"></app-materials-tree-view>
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel [expanded]="true" hideToggle (closed)="setIsExpanded('library', false)" (opened)="setIsExpanded('library', true)">
+        <mat-expansion-panel-header style="padding: 0px;" [style.background-color]="isLibraryRoot?'#EFEFEF':'#FFFFFF'">
+          <mat-panel-title>
+            <a><i class="i-icon i-chev-right d-block bgc-dark" [class.expanded]="isLibraryExpanded"></i></a>
+            <i class="i-icon i-folder d-block"></i>
+            <label class="label mb-0 c-pointer ml-2" data-name="material-list-Materials Library" (click)="gotoRoot($event, 'library')" translate>Materials Library</label>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="navigation-content">
+          <app-materials-tree-view [type]="'Library'" (gotoFolder)="unsetRoot()"></app-materials-tree-view>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div>

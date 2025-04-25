@@ -1,0 +1,108 @@
+<div class="card">
+  <div
+    class="card-header d-flex justify-content-between align-items-center"
+    translate
+  >
+    Report
+    <div
+      class="ml-auto c-pointer v-center btn-card-header"
+      ngbDropdown
+      placement="bottom-right"
+    >
+      <div class="v-center c-pointer" ngbDropdownToggle>
+        <span class="pr-2">{{
+          (viewOption.label == 'Last Month' ? 'Last Month' : viewOption.label)
+            | translate
+        }}</span>
+      </div>
+      <div ngbDropdownMenu aria-labelledby="taskSortTypes">
+        <div
+          class="py-2"
+          ngbDropdownItem
+          *ngFor="let option of VIEW_OPTIONS"
+          (click)="changeOption(option)"
+        >
+          <span
+            class="f-4 v-center"
+            [class.font-weight-bold]="option.id === viewOption.id"
+          >
+            {{ option.label | translate }}
+            <i
+              class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+              *ngIf="option.id === viewOption.id"
+            ></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-body d-flex flex-column">
+    <div class="list-loading text-center" *ngIf="loading; else reportList">
+      <div class="loader mt-5 lg"></div>
+      <h4 class="fw-600 mt-2" translate>Loading report...</h4>
+    </div>
+    <ng-template #reportList>
+      <table class="table table-borded">
+        <thead>
+          <tr>
+            <th translate>Activity</th>
+            <th translate>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <span class="v-center">
+                <i class="d-block i-icon i-phone bgc-grey"></i>
+                <span class="ml-2" translate>Calls Made</span>
+              </span>
+            </td>
+            <td class="report-value">{{ calls }}</td>
+          </tr>
+          <tr>
+            <td>
+              <span class="v-center">
+                <i class="d-block i-icon act-texts bgc-grey"></i>
+                <span class="ml-2" translate>Texts Sent</span>
+              </span>
+            </td>
+            <td class="report-value">{{ texts }}</td>
+          </tr>
+          <tr>
+            <td>
+              <span class="v-center">
+                <i class="d-block i-icon act-emails bgc-grey"></i>
+                <span class="ml-2" translate>Emails Sent</span>
+              </span>
+            </td>
+            <td class="report-value">{{ emails }}</td>
+          </tr>
+          <tr>
+            <td>
+              <span class="v-center">
+                <i class="d-block i-icon act-follow_ups bgc-grey"></i>
+                <span class="ml-2" translate>Tasks Completed</span>
+              </span>
+            </td>
+            <td class="report-value">{{ tasks }}</td>
+          </tr>
+          <tr>
+            <td>
+              <span class="v-center">
+                <i class="d-block i-icon i-event bgc-grey"></i>
+                <span class="ml-2">Appt. Set</span>
+              </span>
+            </td>
+            <td class="report-value">{{ appointments }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <a
+        class="mt-auto btn btn-outline-primary w-100 c-pointer"
+        (click)="gotoActivities()"
+        translate
+        >See All</a
+      >
+    </ng-template>
+  </div>
+</div>

@@ -1,0 +1,44 @@
+@import 'variables.scss';
+
+.prepend-wrapper {
+  transform: translateX(-40px);
+}
+.date-picker-overlay.mode1 {
+  padding: 0px 10px 10px 10px;
+  border: 1px solid gainsboro;
+  border-radius: 4px;
+}
+.action {
+  background: transparent;
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  z-index: 1000;
+}
+.time-wrapper {
+  display: flex;
+  flex-direction: column;
+
+  .timer {
+    margin: auto;
+  }
+}
+.input-append {
+  border-radius: 8px!important;
+}
+@media screen and (max-width: 460px) {
+  .date-time-wrapper {
+    flex-direction: column;
+  }
+}
+
+:host ::ng-deep {
+  .date-time-wrapper {
+    .ngb-dp-day, .ngb-dp-week-number, .ngb-dp-weekday {
+      @media screen and (max-width: 460px) {
+        height: 1.4rem;
+      }
+    }
+  }
+}

@@ -1,0 +1,137 @@
+.event-container {
+    max-height: 100%;
+    padding: 0px;
+    background: white;
+    box-shadow: -8px 0 24px -5px rgba(16,19,54,0.24);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-top: 50px;
+
+    &.other {
+        padding-top: 60px;
+    }
+
+    .header {
+        position: absolute;
+        top: 0px;
+        width: 100%;
+        left: 0px;
+    }
+
+    .event-detail {
+        width: 100%;
+        flex-grow: 1;
+        overflow: auto;
+    }
+    .description {
+        h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        ul {
+            list-style: inherit;
+        }
+        overflow-wrap: break-word;
+    }
+}
+.btn-red {
+    &:hover {
+        color: #fff;
+    }
+}
+
+.member {
+    .avatar {
+        background-image: url(../../../assets/img/avatar.svg);
+        background-size: 80%;
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        background-repeat: no-repeat;
+        background-position: center bottom;
+        background-color: #e8e8e8;
+        position: relative;
+    }
+
+    .response {
+        width: 16px;
+        height: 16px;
+        position: relative;
+        border-radius: 4px;
+        
+        &.declined {
+            background-color: #d92022;
+            &::after {
+                position: absolute;
+                left: 2px;
+                width: 12px;
+                height: 2px;
+                background: white;
+                content: "";
+                top: 50%;
+                transform: translateY(-1px) rotate(45deg);
+            }
+            &::before {
+                position: absolute;
+                left: 2px;
+                width: 12px;
+                height: 2px;
+                background: white;
+                content: "";
+                top: 50%;
+                transform: translateY(-1px) rotate(-45deg);
+            }
+        }
+        &.accepted {
+            background-color: #00da42;
+            &::after {
+                content: "";
+                width: 10px;
+                height: 5px;
+                border-left: 2px solid white;
+                position: absolute;
+                border-bottom: 2px solid white;
+                transform: translateY(4px) rotate(-45deg);
+                left: 3px;
+            }
+        }
+        &.needsAction {
+            background-color: #797b8e;
+            &::after {
+                content: "?";
+                color: white;
+                text-align: center;
+                width: 100%;
+                position: absolute;
+                line-height: 16px;
+            }
+        }
+        &.tentative {
+            background-color: #f7b500;
+            &::after {
+                position: absolute;
+                left: 3px;
+                width: 10px;
+                height: 2px;
+                background: white;
+                content: "";
+                top: 50%;
+                transform: translateY(-1px);
+            }
+        }
+    }
+}
+
+:host ::ng-deep {
+    .description {
+        h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        ul {
+            list-style: inherit;
+        }
+    }
+}

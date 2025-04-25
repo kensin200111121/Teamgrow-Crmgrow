@@ -1,0 +1,20 @@
+@import 'variables';
+
+.mat-table {
+  font-family: $font-default!important;
+  color: $color-dark;
+}
+.mat-header-cell {
+  font-size: 14px;
+  font-weight: 400;
+  text-transform: capitalize;
+}
+tr.mat-header-row {
+  height: 47px;
+}
+tbody {
+  td.mat-cell {
+    border-bottom-width: 0px;
+    font-size: 13px;
+  }
+}

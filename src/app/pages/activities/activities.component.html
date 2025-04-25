@@ -1,0 +1,221 @@
+<div class="custom-mat-table">
+  <div class="d-flex table-control-header v-center">
+    <div
+      class="border-left pl-3 pr-0 py-1 text-center ml-3 mr-2"
+      ngbDropdown
+      id="editColumn"
+    >
+      <div
+        class="ml-3 f-3 font-weight-bold c-dark td-none c-pointer v-center"
+        (click)="openColumnEdit()"
+      >
+       <img
+         class="mr-1"
+         [src]="sspaService.toAsset('img/width_normal.svg')"
+         alt="column-icon"
+         style="width: 16px; height: 16px;"
+       />
+       <span translate>Edit Columns</span>
+      </div>
+    </div>
+  </div>
+  <div class="position-relative">
+    <div class="mat-table-wrapper mode-2">
+      <table class="w-100 page-table"
+        mat-table
+        [dataSource]="storeService.activities$ | async">
+
+        <ng-container matColumnDef="loader-cell">
+          <th mat-header-cell
+            *matHeaderCellDef colspan="12" class="loader-cell">
+            <div class="updating-status"
+            *ngIf="(storeService.activities$ | async).length && (activityService.loading$ | async) === STATUS.REQUEST">
+              LOADING
+            </div>
+          </th>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="contact_name">
+          <th mat-header-cell
+            *matHeaderCellDef
+            class="pl-0" translate>contact name</th>
+          <td mat-cell
+            *matCellDef="let element"
+            class="pl-0 contact-column contact-name-column">
+            <a class="v-center c-pointer undecoration" [routerLink]="['/contacts/' + element.contacts._id]">
+              <div class="contact-avatar f-3 mr-2">{{element.contacts.avatarName}}</div>
+              <span class="c-dark fw-600">{{element.contacts.fullName}}</span>
+            </a>
+          </td>
+        </ng-container>
+
+        <!-- Country Column -->
+        <ng-container matColumnDef="contact_address">
+          <th mat-header-cell
+            *matHeaderCellDef class="address-col" translate>address</th>
+          <td mat-cell
+            *matCellDef="let element" class="address-col">
+            <a class="c-pointer undecoration c-dark d-block" [routerLink]="['/contacts/' + element.contacts._id]">
+              <span class="c-dark">{{element.contacts.shortAddress}}</span>
+            </a>
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="contact_label">
+          <th mat-header-cell
+            *matHeaderCellDef translate>Status</th>
+          <td mat-cell
+            *matCellDef="let element"
+            class="contact-column contact-status-column">
+            <app-label-select [value]="element.contacts.label"
+              (valueChange)="updateLabel($event, element.contacts._id)"></app-label-select>
+          </td>
+        </ng-container>
+
+        <!-- Activity Column -->
+        <ng-container matColumnDef="activity">
+          <th mat-header-cell
+            *matHeaderCellDef translate>Last Activity</th>
+          <td mat-cell
+            *matCellDef="let element">
+            <a class="v-center c-pointer undecoration c-light-dark" [routerLink]="['/contacts/' + element.contacts._id]">
+              <ng-container *ngIf="element.additional_field; else singleActivity">
+                <i class="act-icon normal act-bell d-block mr-2 bgc-light-dark"></i>
+                <span class="c-light-dark fw-600">{{element.additional_field.length + 1}} activities</span>
+              </ng-container>
+              <ng-template #singleActivity>
+                <i class="act-icon normal {{'act-' + element.type}} d-block mr-2 bgc-light-dark"></i>
+                <span>{{element.content}}</span>
+              </ng-template>
+            </a>
+          </td>
+        </ng-container>
+
+        <!-- Time Column -->
+        <ng-container matColumnDef="activity_time">
+          <th mat-header-cell
+            *matHeaderCellDef
+            class="pl-0" translate>time</th>
+          <td mat-cell
+            *matCellDef="let element"
+            class="pl-0">
+            <a class="c-pointer undecoration" [routerLink]="['/contacts/' + element.contacts._id]">
+              <span class="f-2 ci-dark">{{element.created_at | date: 'MMM dd yyyy, hh:mm a'}}</span>
+            </a>
+          </td>
+        </ng-container>
+
+        <!-- Email Column -->
+        <ng-container matColumnDef="contact_email">
+          <th mat-header-cell
+            *matHeaderCellDef translate>email</th>
+          <td mat-cell
+            *matCellDef="let element"
+            class="contact-column contact-email-column">
+            <a class="c-pointer undecoration c-dark" [routerLink]="['/contacts/' + element.contacts._id]">{{element.contacts.email}}</a>
+          </td>
+        </ng-container>
+
+        <!-- Phone Column -->
+        <ng-container matColumnDef="contact_phone">
+          <th mat-header-cell
+            *matHeaderCellDef translate>phone</th>
+          <td mat-cell
+            *matCellDef="let element">
+            <a class="c-blue undecoration font-weight-bold" [routerLink]="['/contacts/' + element.contacts._id]">{{element.contacts.cell_phone | phone_format}}</a>
+          </td>
+        </ng-container>
+
+        <!-- Tags Column -->
+        <ng-container matColumnDef="contact_tags">
+          <th mat-header-cell *matHeaderCellDef>tags</th>
+          <td mat-cell class="px-md-3 px-sm-2" *matCellDef="let element">
+            <span class="tag rounded mr-2" *ngIf="element.contacts.tags?.length">{{ element.contacts.tags[0] }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Country -->
+        <ng-container matColumnDef="country">
+          <th mat-header-cell *matHeaderCellDef translate>country</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="">{{ element.contacts.country }}</span>
+          </td>
+        </ng-container>
+
+        <!-- state -->
+        <ng-container matColumnDef="state">
+          <th mat-header-cell *matHeaderCellDef translate>state</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="">{{ element.contacts.state }}</span>
+          </td>
+        </ng-container>
+
+        <!-- city -->
+        <ng-container matColumnDef="city">
+          <th mat-header-cell *matHeaderCellDef translate>city</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="">{{ element.contacts.city }}</span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row
+          *matHeaderRowDef="['loader-cell']" class="loader-row"></tr>
+        <tr mat-header-row
+          *matHeaderRowDef="DISPLAY_COLUMNS" class="table-header"></tr>
+        <tr mat-row
+          *matRowDef="let row; columns: DISPLAY_COLUMNS;"></tr>
+      </table>
+    </div>
+    <ng-container *ngIf="(storeService.activities$ | async).length || (activityService.total$ | async)">
+      <div class="my-2 table-control mode-1" >
+        <div class="pagination-wrapper m-auto v-center" [class.disabled]="(activityService.loading$ | async) === STATUS.REQUEST">
+          <a class="c-pointer" (click)="loadPage('first')" [class.disabled]="(storeService.activities$ | async)[0]?._id === (activityService.latest$ | async)"><i class="i-icon i-first d-block"></i></a>
+          <a class="c-pointer" (click)="loadPage('prev')" [class.disabled]="(storeService.activities$ | async)[0]?._id === (activityService.latest$ | async)"><i class="i-icon i-prev d-block"></i></a>
+          <a class="c-pointer" (click)="loadPage('next')" [class.disabled]="pageSize.id > (storeService.activities$ | async)?.length"><i class="i-icon i-next d-block"></i></a>
+        </div>
+        <div class="shadow-dropdown ml-auto page-size-control"
+          ngbDropdown
+          placement="top-right">
+          <div class="v-center c-pointer f-3 p-3 font-weight-bold"
+            ngbDropdownToggle>
+            <span id="activity-show-count-page" class="pr-2 c-dark">Show {{pageSize.id}} rows per page</span>
+          </div>
+          <div ngbDropdownMenu
+            aria-labelledby="contactPageSize">
+            <div class="py-2"
+              ngbDropdownItem
+              *ngFor="let type of PAGE_COUNTS; let i = index"
+              (click)="changePageSize(type)">
+              <span class="f-3 v-center" id="activity-show-count-select-{{i}}"
+                [class.font-weight-bold]="type.id === pageSize.id">
+                Show {{type.label}} rows per page
+                <i class="i-icon i-check d-block bgc-dark sm ml-1 mb-1"
+                  *ngIf="type.id === pageSize.id"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="!(storeService.activities$ | async).length && !(activityService.total$ | async)">
+      <ng-container [ngSwitch]="(activityService.loading$ | async)">
+        <div class="empty-list py-5" *ngSwitchCase="STATUS.SUCCESS">
+          <div class="object-icon v-center">
+            <i class="i-icon i-activity d-block bgc-dark"></i>
+          </div>
+          <h4 class="font-weight-bold mt-4 mb-3">
+            There is no activity in your account.
+          </h4>
+        </div>
+        <div class="list-loading text-center" *ngSwitchCase="STATUS.REQUEST">
+          <div class="loader mt-5 lg"></div>
+          <h4 class="fw-600 mt-2">Loading activities...</h4>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+
+
+</div>

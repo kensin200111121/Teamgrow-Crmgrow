@@ -1,0 +1,58 @@
+.btn-blue {
+    &:hover {
+        color: #fff;
+    }
+    &:active {
+        background-color: #0000ff;
+        border-color: #0000ff;
+    }
+}
+.container-wrapper {
+    border-top: 1px solid #eeeeee;
+    box-shadow: 0 -3px 1px -2px rgba(0,0,0,.2), 0 -2px 2px 0 rgba(0,0,0,.14), 0 -1px 5px 0 rgba(0,0,0,.12);
+    background: #eeeeee;
+    .calendly-right {
+        padding: 25px;
+        h2 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #32325d;
+        }
+        a {
+            &:hover {
+                text-decoration: none;
+                color: #101336;
+            }
+        }
+    }
+    .calendly-left {
+        background-color: #ced4da;
+        .center-image {
+            .icon-crmgrow {
+                width: 70px;
+                height: 70px;
+                border-radius: 50%;
+                padding-top: 20px;
+                img {
+                  width: 35px;
+                }
+            }
+            .icon-calendly {
+                width: 70px;
+                height: 70px;
+                border-radius: 50%;
+                padding-top: 20px;
+                img {
+                  width: 30px;
+                }
+            }
+            i {
+                margin-top: 27px;
+                background-color: #B0B1CC;
+            }
+        }
+        @media screen and (max-width: 568px) {
+          display: none !important;
+        }
+    }
+}

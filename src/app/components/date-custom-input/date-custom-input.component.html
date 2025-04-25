@@ -1,0 +1,21 @@
+<div>
+  <div class="input-group bgc-dark-trans08 rounded">
+    <ng-container *ngIf="clearable && dateObj">
+      <div class="clear-action" (click)="clearDate()">
+        <i class="d-block i-icon i-close bgc-dark"></i>
+      </div>
+    </ng-container>
+  </div>
+    <div class="d-flex">
+      <div class="bg-white date-picker-overlay mode1" [class.prepend-wrapper]="type=='prepend'">
+        <ng-container *ngIf="!hasTime">
+          <ngb-datepicker name="select_date" class="border-0" #dp [(ngModel)]="dateObj" (change)="onChange($event)" (dateSelect)="onDateSelect($event)" [minDate]="minDate" [firstDayOfWeek]="7"
+            [class.mark-today]="markToday"></ngb-datepicker>
+          <div class="v-center mt-3 mt-2" style="width: 90%">
+            <button class="btn btn-white f-6 font-weight-bold ml-auto w-50" type="button" (click)="clearDate()" translate>Cancel</button>
+            <div class="btn btn-primary f-6 font-weight-bold ml-2 w-50" (click)="setDate()" translate>Set Date</div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+</div>

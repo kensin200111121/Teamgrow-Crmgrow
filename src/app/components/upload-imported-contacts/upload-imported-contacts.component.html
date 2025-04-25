@@ -1,0 +1,243 @@
+<div class="dialog-container">
+  <div class="v-center justify-content-between mx-0">
+
+    <ng-container *ngIf="step == 1">
+      <div class="f-22 fw-600 c-black" translate>Creating Deals</div>
+    </ng-container>
+
+    <ng-container *ngIf="step == 2">
+      <div class="f-22 fw-600 c-black" translate>Upload Result</div>
+    </ng-container>
+
+    <ng-container *ngIf="step == 3">
+      <div class="d-flex align-items-end">
+        <div class="f-22 fw-600 c-black" [translateParams]="{length: exceedContacts.length}" translate>
+          length contacts are exceeded
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="step == 4">
+    </ng-container>
+
+    <ng-container *ngIf="step == 5">
+    </ng-container>
+
+    <ng-container *ngIf="step == 6">
+      <div class="f-22 fw-600 c-black" translate>Updating Contacts</div>
+    </ng-container>
+
+  </div>
+
+  <mat-dialog-content class="mt-3">
+    
+    <!-- BEGIN CREATING DEALS -->
+    <ng-container *ngIf="step == 1">
+      <div class="my-3">
+        <mat-progress-bar class="custom-progress" [value]="createDealPercent"></mat-progress-bar>
+        <div class="v-center justify-content-between w-100 mt-2">
+          <div class="f-3 fw-600" [translateParams]="{count1: createdDeals, count2: overallDeals}" translate>
+            create status
+          </div>
+          <div class="f-3 fw-600">{{createDealPercent}}%</div>
+        </div>
+      </div>
+      <div class="attention v-center justify-content-center py-2">
+        <i class="i-icon i-warning-red attention-icon d-block"></i>
+        <div class="f-4 fw-600 c-black ml-3" translate>
+          Don't close this tab while creating deals.
+        </div>
+      </div>
+    </ng-container>
+    <!-- END CREATING DEALS -->
+    
+    <!-- BEGIN UPLOADING CONTACTS -->
+    <ng-container *ngIf="step == 2">
+      <div class="my-3">
+        <mat-progress-bar class="custom-progress" [value]="uploadContactPercent"></mat-progress-bar>
+        <div class="v-center justify-content-between w-100 mt-2">
+          <div class="f-3 fw-600" [translateParams]="{count1: uploadedContacts, count2: overallContacts}" translate>
+            import status
+          </div>
+          <div class="f-3 fw-600">{{uploadContactPercent}}%</div>
+        </div>
+      </div>
+      <div class="attention v-center justify-content-center py-2">
+        <i class="i-icon i-warning-red attention-icon d-block"></i>
+        <div class="f-4 fw-600 c-black ml-3" translate>
+          Don't close this tab while uploading contacts.
+        </div>
+      </div>
+    </ng-container>
+    <!-- END UPLOADING CONTACTS -->
+    
+    <!-- BEGIN EXCEED CONTACTS REVIEW -->
+    <ng-container *ngIf="step == 3">
+      <div class="review-container">
+        <table class="table review-table">
+          <thead>
+            <tr>
+              <ng-container *ngFor="let match of pcMatching | keyvalue : orderOriginal">
+                <th>
+                  {{match.key}}
+                </th>
+              </ng-container>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let exceed of exceedContacts | paginate: {id: 'exceedPage', itemsPerPage: ePSize, currentPage: ePage, totalItems: exceedContacts.length}; let row = index;">
+              <ng-container *ngFor="let match of pcMatching | keyvalue : orderOriginal; let i = index;">
+                <td class="{{match.key}} f-3 fw-600">
+                  <div [class]="match.key">
+                    {{exceed[match.value]}}
+                  </div>
+                </td>
+              </ng-container>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <pagination-controls (pageChange)="changeExceedPage($event)" id="exceedPage" maxSize="5" previousLabel=""
+        nextLabel="" autoHide="true">
+      </pagination-controls>
+    </ng-container>
+    <!-- END EXCEED CONTACTS REVIEW -->
+    
+    <!-- BEGIN DUPLICATION REVIEW SECTION -->
+    <ng-container *ngIf="step == 4">
+      <div class="v-center justify-content-center my-3">
+        <div class="uploading-error-container">
+          <div class="v-center failed-image">
+            <img [src]="sspaService.toAsset('img/warning-lg.svg')" alt="">
+          </div>
+          <div class="my-3 c-black f-22 font-weight-bold" translate>
+            Error importing contacts
+          </div>
+          <div class="mb-3 c-black f-8" *ngIf="duplicatedContacts.length === 1" [translateParams]="{length: duplicatedContacts}" translate>
+            length contact is duplicated in your contacts list
+          </div>
+          <div class="mb-3 c-black f-8" *ngIf="duplicatedContacts.length > 1" [translateParams]="{length: duplicatedContacts}" translate>
+            length contacts are duplicated in your contacts list
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <!-- END DUPLICATION REVIEW SECTION -->
+
+    <ng-container *ngIf="step == 5">
+      <div class="v-center justify-content-center my-3">
+        <div class="success-container">
+          <div class="v-center success-image">
+            <img [src]="sspaService.toAsset('img/check-mark-lg.svg')" alt="" />
+          </div>
+          <div class="my-3 c-black f-20 font-weight-bold" *ngIf="uploadedContacts.length === 1" [translateParams]="{length: uploadedContacts}" translate>
+            length contact_imported_successfully
+          </div>
+          <div class="my-3 c-black f-20 font-weight-bold" *ngIf="uploadedContacts.length > 1" [translateParams]="{length: uploadedContacts}" translate>
+            length contacts_imported_successfully
+          </div>
+          <ng-container *ngIf="nextDeal()">
+            <div class="mb-3 c-black f-8 fw-600" translate>
+              Deal column found in your contact upload file
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+    
+    <!-- BEGIN UPDATING DUPLICATED CONTACTS -->
+    <ng-container *ngIf="step == 6">
+      <div class="my-3">
+        <mat-progress-bar class="custom-progress" [value]="updateContactPercent"></mat-progress-bar>
+        <div class="v-center justify-content-between w-100 mt-2">
+          <div class="f-3 fw-600" [translateParams]="{count1: updatedContacts, count2: overallUpdateContacts}" translate>
+            update status
+          </div>
+          <div class="f-3 fw-600">{{updateContactPercent}}%</div>
+        </div>
+      </div>
+      <div class="attention v-center justify-content-center py-2">
+        <i class="i-icon i-warning-red attention-icon d-block"></i>
+        <div class="f-4 fw-600 c-black ml-3" translate>
+          Don't close this tab while updating duplicated contacts.
+        </div>
+      </div>
+    </ng-container>
+    <!-- END UPDATING DUPLICATED CONTACTS -->
+
+    <ng-container *ngIf="step == 7">
+      <div class="v-center justify-content-center my-3">
+        <div class="success-container">
+          <div class="v-center success-image">
+            <img [src]="sspaService.toAsset('img/check-mark-lg.svg')" alt="" />
+          </div>
+          <div class="my-3 c-black f-20 font-weight-bold" [translateParams]="{length: createdDeals}" translate>
+            length deals are created successfully
+          </div>
+          <ng-container *ngIf="dealGroups.length > 0">
+            <div class="mb-3 c-black f-8 fw-600" [translateParams]="{length: dealGroups.length}" translate>
+              We've found some conflicts in length deals
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+  
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <ng-container *ngIf="step == 3">
+      <div class="d-flex justify-content-center w-100">
+        <div class="v-center">
+          <button class="btn btn-white c-blue fw-600" type="button" (click)="closeExceedContacts()" translate>Cancel</button>
+          <button class="btn btn-white v-center f-6 border-0 c-blue fw-600" (click)="downloadExceed()">
+            <i class="i-icon sm d-block i-download bgc-blue" aria-hidden="true"></i>
+            <span class="ml-2" translate>Download CSV</span>
+          </button>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="step == 4">
+      <div class="d-flex justify-content-center w-100">
+        <div class="d-flex">
+          <button class="btn btn-white c-blue fw-600" type="button" (click)="closeReviewDuplication()" translate>Cancel</button>
+          <button class="btn btn-white v-center f-6 border-0 c-blue fw-600" (click)="downloadFailed()">
+            <i class="i-icon sm d-block i-download bgc-blue" aria-hidden="true"></i>
+            <span class="ml-2" translate>Download CSV</span>
+          </button>
+          <button class="btn btn-primary" type="button" (click)="confirmDuplicates()" [class.loading]="isCheckingDuplicates" translate>
+            Check Duplication
+          </button>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="step == 5">
+      <div class="d-flex justify-content-center w-100">
+        <div class="v-center">
+          <button [attr.data-action]="'contact-import-back-to-crmgrow'" class="btn btn-white border border-primary rounded" type="button" (click)="back()" translate>
+            {{isSspa ? 'Back to Vortex' : 'Back to crmgrow'}}
+          </button>
+          <ng-container *ngIf="nextDeal()">
+            <button class="btn btn-primary rounded ml-2" type="button" (click)="moveToDealCreation()" translate>
+              Create Deals
+            </button>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="step == 7">
+      <div class="d-flex justify-content-center w-100">
+        <div class="v-center">
+          <button class="btn btn-white border border-primary rounded" type="button" (click)="back()" translate>
+            {{isSspa ? 'Back to Vortex' : 'Back to crmgrow'}}
+          </button>
+          <ng-container *ngIf="dealGroups.length > 0">
+            <button class="btn btn-primary ml-2" type="button" (click)="moveToDealConflict()" translate>
+              Check Conflicts
+            </button>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+  </mat-dialog-actions>
+</div>

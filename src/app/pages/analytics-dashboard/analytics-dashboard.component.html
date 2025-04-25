@@ -1,0 +1,301 @@
+<div class="f-22 fw-600 mt-3" translate>
+  Contacts Stats
+</div>
+<div class="row analytics">
+  <div class="col-md-6 mt-4">
+    <div class="card">
+      <div class="card-header v-center">
+        <span class="text-capitalize" translate>Contact health</span>
+        <a class="ml-auto" (click)="loadFieldAnalytics()">
+          <i class="i-icon i-reload d-block" [class.loading]="loadingFieldAnalytics"></i>
+        </a>
+      </div>
+      <div class="card-body">
+        <div class="chart-legends d-flex justify-content-center mb-4">
+          <div class="legend-item v-center mx-2" *ngFor="let item of fieldAnalytics">
+              <div class="legend-color d-block mr-1" [style.backgroundColor]="item.color"></div>
+              <div class="legend-name f-3" translate>{{item.id}}</div>
+          </div>
+        </div>
+        <div class="chart">
+          <canvas baseChart
+            [datasets]="pieChartData"
+            [labels]="pieChartLabels"
+            [type]="pieChartType"
+            [options]="pieChartOptions"
+            [plugins]="pieChartPlugins"
+            [legend]="pieChartLegend">
+          </canvas>
+        </div>
+        <div class="analytics-data v-center justify-content-center mt-4">
+          <div class="analytics-item mx-2 c-pointer" *ngFor="let item of fieldAnalytics; let i = index;" (click)="filterContacts(item.id)">
+            <div [attr.data-name]="'analytics-count-health-' + item.id" class="count">{{item.count}}</div>
+            <div class="label v-center">
+              <div class="info-name f-3 text-capitalize" translate>{{item.id}}</div>
+              <a class="c-pointer">
+                <i class="d-block i-icon bgc-dark i-chev-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6 mt-4">
+    <div class="card">
+      <div class="card-header v-center">
+        <span class="text-capitalize" translate>automation</span>
+        <a class="ml-auto" (click)="loadAutomationAnalytics()">
+          <i class="i-icon i-reload d-block" [class.loading]="loadingAutomationAnalytics"></i>
+        </a>
+      </div>
+      <div class="card-body">
+        <div class="chart-legends justify-content-center d-flex mb-4">
+          <div class="legend-item v-center mx-2">
+              <div class="legend-color d-block mr-1 " [style.backgroundColor]="'#E4E0F3'"></div>
+              <div class="legend-name f-3" translate>On automation</div>
+              <div class="legend-color d-block ml-2 mr-1" [style.backgroundColor]="'#362A77'"></div>
+              <div class="legend-name f-3" translate>Recently Off</div>
+              <div class="legend-color d-block ml-2 mr-1" [style.backgroundColor]="'#9185D2'"></div>
+              <div class="legend-name f-3" translate>Never Automated</div>
+          </div>
+        </div>
+        <div class="chart" *ngFor="let item of automationAnalytics">
+          <div class="d-flex">
+            <div 
+              class="automation-bar" 
+              placement="top" 
+              ngbTooltip="{{item.count_on}}" 
+              [style.width]="item.percent_on + '%'" 
+              [style.backgroundColor]="item.color_on"
+              (click)="item.id == 'Contacts' ? filterContacts('on_automation') : null"
+              >
+            </div>
+            <div 
+              class="automation-bar" 
+              placement="top" 
+              ngbTooltip="{{item.count_off}}" 
+              [style.width]="item.percent_off + '%'" 
+              [style.backgroundColor]="item.color_off"
+              (click)="item.id == 'Contacts' ? filterContacts('recent_off_automation') : null"
+              >
+            </div>
+            <div 
+              class="automation-bar" 
+              placement="top" 
+              ngbTooltip="{{item.count_never}}" 
+              [style.width]="item.percent_never + '%'" 
+              [style.backgroundColor]="item.color_never"
+              (click)="item.id == 'Contacts' ? filterContacts('never_automated') : null"
+              >
+            </div>
+          </div>
+          <div class="automation-label">{{item.id}}</div>
+        </div>
+        <div class="analytics-data v-center justify-content-center mt-4">
+          <div class="analytics-item mx-2 c-pointer" (click)="filterContacts('on_automation')">
+            <div class="count">{{automationAnalytics[0].count_on}}</div>
+            <div class="label v-center">
+              <div class="info-name f-3 text-capitalize" translate>Contacts On automation</div>
+              <a class="c-pointer">
+                <i class="d-block i-icon bgc-dark i-chev-right"></i>
+              </a>
+            </div>
+          </div>
+          <div class="analytics-item mx-2 c-pointer" (click)="filterContacts('recent_off_automation')">
+            <div class="count">{{automationAnalytics[0].count_off}}</div>
+            <div class="label v-center">
+              <div class="info-name f-3 text-capitalize" translate>Contacts Recently Off automation</div>
+              <a class="c-pointer">
+                <i class="d-block i-icon bgc-dark i-chev-right"></i>
+              </a>
+            </div>
+          </div>     
+          <div class="analytics-item mx-2 c-pointer" (click)="filterContacts('never_automated')">
+            <div class="count">{{automationAnalytics[0].count_never}}</div>
+            <div class="label v-center">
+              <div class="info-name f-3 text-capitalize" translate>Contacts Never automated</div>
+              <a class="c-pointer">
+                <i class="d-block i-icon bgc-dark i-chev-right"></i>
+              </a>
+            </div>
+          </div>                         
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6 mt-4">
+    <div class="card">
+      <div class="card-header v-center">
+        <span class="text-capitalize" translate>Contacts by rating</span>
+        <a class="ml-auto c-pointer" (click)="loadRatesAnalytics()">
+          <i class="i-icon i-reload d-block" [class.loading]="loadingRatesAnalytics"></i>
+        </a>
+        <a class="ml-2 c-pointer d-none" [routerLink]="['/dashboard-setting']">
+          <i class="i-icon i-setting d-block bgc-dark"></i>
+        </a>
+        <a class="ml-2 c-pointer" (click)="calculateRates()" [ngbTooltip]="'Apply the stars to contacts again.' | translate">
+          <ng-container *ngIf="calculating; else commandIcon">
+            <i class="i-icon i-spinner d-block" style="background-color: #f7b500;"></i>
+          </ng-container>
+          <ng-template #commandIcon>
+            <i class="i-icon i-star d-block" style="background-color: #f7b500;"></i>
+          </ng-template>
+        </a>
+      </div>
+      <div class="card-body">
+        <div class="chart">
+          <div class="rate-chart v-center" *ngFor="let item of rateAnalytics; let i = index">
+            <div class="label" translate>{{item.id}}</div>
+            <i class="i-stars d-block" [class]="item.rate"></i>
+            <div class="rate-status-wrapper" (click)="filterContacts(item.id)">
+              <div class="rate-status" [style.width]="item.percentage + '%'"></div>
+            </div>
+            <div id="Rating-Status-Info-{{i}}" class="rate-status-info">
+              {{item.percentage}}%
+            </div>
+          </div>
+        </div>
+        <div class="analytics-data">
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6 mt-4">
+    <div class="card">
+      <div class="card-header v-center">
+        <span class="text-capitalize" translate>Contact communication health</span>
+        <a class="ml-auto" (click)="loadActivityAnalytics()">
+          <i class="i-icon i-reload d-block" [class.loading]="loadingActivityAnalytics"></i>
+        </a>
+      </div>
+      <div class="card-body">
+        <div class="chart with-items">
+          <div class="item" *ngFor="let activity of activityAnalytics">
+            <div class="item-title" translate [translateParams]="{range: activity.range}">
+              {{ activity.id }}
+            </div>
+            <div class="item-value v-center justify-content-center">
+              <div class="v-center c-pointer" (click)="filterContacts(activity.id, activity.range)">
+                <span>
+                  {{ activity.result[0]?.count || 0 }}
+                </span>
+                <a class="c-pointer">
+                  <i class="d-block i-icon bgc-blue i-chev-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-container *ngIf="isSspa">
+  <div class="v-center analytics mt-4">
+    <div class="f-22 fw-600 " translate>
+      Prospecting Reports
+    </div>
+    <div class="ml-auto" ngbDropdown placement="bottom-right">
+      <div
+        class="v-center c-pointer f-4 p-3 mr-2"
+        ngbDropdownToggle
+      >
+        <span class="pr-2">
+          {{ sortType.label | translate }}
+        </span>
+      </div>
+      <div ngbDropdownMenu aria-labelledby="reportSortTypes">
+        <div
+          class="py-2"
+          ngbDropdownItem
+          *ngFor="let type of SORT_TYPES"
+          (click)="changeSort(type)"
+        >
+          <span
+            class="f-4 v-center"
+            [class.font-weight-bold]="type.id === sortType.id"
+          >
+            {{ type.label | translate }}
+            <i
+              class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+              *ngIf="type.id === sortType.id"
+            ></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row analytics">
+    <div class="col-md-6 mt-4">
+      <div class="card">
+        <div class="card-header v-center">
+          <span class="text-capitalize" translate>Uncontacted Prospects Listings</span>
+          <a class="ml-auto" (click)="loadProspectLists()">
+            <i class="i-icon i-reload d-block" [class.loading]="loadingProspectLists"></i>
+          </a>
+        </div>
+        <div class="card-body">
+          <div class="v-center mt-3" *ngFor="let item of prospectListing">
+            <i class="i-icon d-block" [class]="item.icon"></i>
+            <span class="f-4 fw-600 c-dark ml-2" translate>{{item.label}}</span>
+            <ng-container *ngIf="item.count == 0; else showCount">
+              <button
+                class="btn btn-white border border-primary f-4 fw-600 rounded c-blue px-3 ml-auto"
+                translate
+              >
+                Learn more
+              </button>
+            </ng-container>
+            <ng-template #showCount>
+              <span class="f-22 fw-600 c-dark ml-auto">{{item.count}}</span>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mt-4">
+      <div class="card">
+        <div class="card-header v-center">
+          <span class="text-capitalize" translate>pulse reports</span>
+          <a class="ml-auto" (click)="loadPulseReports()">
+            <i class="i-icon i-reload d-block" [class.loading]="loadingPulseReports"></i>
+          </a>
+        </div>
+        <div class="card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th class="activity-col" translate>activity</th>
+                <th class="average-col" translate>daily average</th>
+                <th class="total-col" translate>total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of pluseReports">
+                <td class="activity-col">
+                  <div class="v-center">
+                    <i class="i-icon d-block bgc-dark" [class]="item.icon"></i>
+                    <span class="f-4 fw-600 ml-2">{{item.label}}</span>
+                  </div>
+                </td>
+                <td class="average-col">
+                  {{item.average}}
+                </td>
+                <td class="total-col">
+                  {{item.total}}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

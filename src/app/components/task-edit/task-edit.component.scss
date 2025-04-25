@@ -1,0 +1,31 @@
+.delete-btn {
+  color: #e02020 !important;
+}
+.custom-control {
+  min-height: 40px;
+}
+
+:host::ng-deep {
+  .time-zone {
+    mat-form-field {
+      width: 100%;
+      .mat-form-field-wrapper {
+        padding: 0;
+        .mat-form-field-infix {
+          width: 100%;
+          padding: 0;
+          border: none;
+          .mat-select-trigger {
+            padding-top: 4px;
+          }
+        }
+        .mat-form-field-underline {
+          height: 0;
+          span {
+            height: 0 !important;
+          }
+        }
+      }
+    }
+  }
+}

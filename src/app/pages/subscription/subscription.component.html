@@ -1,0 +1,1833 @@
+<div class="billing-container">
+  <ng-container *ngIf="step == 1">
+    <div class="f-26 fw-600" translate>
+      Subscription
+    </div>
+    <div class="current-plan mt-4">
+      <span class="f-4 fw-600 c-seablue" translate>Your Current Plan & Usage</span>
+      <div class="current-plan-detail mt-2">
+        <div class="current-plan-detail-title f-22 font-weight-bold">
+          <ng-container *ngIf="user.is_trial; else ownPackage">
+            {{ 'Free Trial' | translate }}
+          </ng-container>
+          <ng-template #ownPackage>
+            <span>{{ getPackageLabel() | translate }}</span>
+          </ng-template>
+        </div>
+        <div class="current-plan-detail-value">
+          <div class="d-flex align-items-start flex-column">
+            <div class="v-center justify-content-between w-100 mb-auto" *ngIf="user.is_trial">
+              <span class="f-4 fw-600 c-seablue" translate>Trial expires</span>
+              <ng-container *ngIf="getExpireTime() > 9">
+                <span class="f-4 fw-600" translate>Done</span>
+              </ng-container>
+              <ng-container *ngIf="getExpireTime() < 10">
+                <span class="f-4 fw-600" [translateParams]="{n: getExpireTime()}" translate>
+                  n days
+                </span>
+              </ng-container>
+            </div>
+            <ng-container *ngIf="user && user.material_info?.is_enabled">
+              <div class="v-center justify-content-between w-100">
+                <span class="f-4 fw-600 c-seablue" translate>Material Uploads</span>
+                <span class="f-4 fw-600">
+                  {{ statistics['material']['count'] }}{{ user && user.material_info?.is_limit ? '/' + user.material_info.upload_max_count : '' }}
+                </span>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="user && user.automation_info?.is_enabled">
+              <div class="v-center justify-content-between w-100">
+                <span class="f-4 fw-600 c-seablue" translate>Active Automations</span>
+                <span class="f-4 fw-600">
+                  {{ statistics['automation']['count'] }}{{ user && user.automation_info?.is_limit ? '/' + user.automation_info.max_count : '' }}
+                </span>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="user && user.assistant_info?.is_enabled">
+              <div class="v-center justify-content-between w-100">
+                <span class="f-4 fw-600 c-seablue" translate>Virtual Assistant Seats</span>
+                <span class="f-4 fw-600">
+                  {{ statistics['assistant']['count'] }}{{ user && user.assistant_info?.is_limit ? '/' + user.assistant_info.max_count : '' }}
+                </span>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="user && user.landing_page_info?.is_enabled">
+              <div class="v-center justify-content-between w-100">
+                <span class="f-4 fw-600 c-seablue" translate>Websites</span>
+                <span class="f-4 fw-600">
+                  {{ statistics['landing_page']['count'] }}{{ user && user.landing_page_info?.is_limit ? '/' + user.landing_page_info.max_count : '' }}
+                </span>
+              </div>
+            </ng-container>
+          </div>
+          <div class="d-flex align-items-start flex-column">
+            <div class="v-center justify-content-between w-100">
+              <span class="f-4 fw-600 c-seablue" translate>Contacts</span>
+              <span class="f-4 fw-600">
+                {{ statistics['contact']['count'] }}{{ user && user.contact_info?.is_limit ? '/' + user.contact_info.max_count : '' }}
+              </span>
+            </div>
+            <ng-container *ngIf="user && user.material_info?.is_enabled">
+              <div class="v-center justify-content-between w-100 mt-auto">
+                <span class="f-4 fw-600 c-seablue" translate>Video Recordings</span>
+                <span class="f-4 fw-600">
+                  {{ getTime(statistics['material']['record_duration']) }} min {{ user && user.material_info?.is_limit ? '/' + getTime(user.material_info.record_max_duration) + 'min': '' }}
+                </span>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="user && user.scheduler_info?.is_enabled">
+              <div class="v-center justify-content-between w-100 mt-auto">
+                <span class="f-4 fw-600 c-seablue" translate>Scheduler</span>
+                <span class="f-4 fw-600">
+                  {{ statistics['scheduler']['count'] }}{{ user && user.scheduler_info?.is_limit ? '/' + user.scheduler_info.max_count : '' }}
+                </span>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="user && user.calendar_info?.is_enabled">
+              <div class="v-center justify-content-between w-100 mt-auto">
+                <span class="f-4 fw-600 c-seablue" translate>Calendar</span>
+                <span class="f-4 fw-600">
+                  {{ statistics['calendar']['count'] }}{{ user && user.calendar_info?.is_limit ? '/' + user.calendar_info.max_count : '' }}
+                </span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-container *ngIf="loadingCheckDowngrade; else checkedDowngrade">
+      <div class="text-center">
+        <div class="loader mt-3"></div>
+        <div class="f-8 fw-600" translate>Checking downgradable</div>
+      </div>
+    </ng-container>
+    <ng-template #checkedDowngrade>
+      <div class="notification-area mt-4" *ngIf="isOverflow">
+        <span class="f-6 font-weight-bold" translate>Ooops</span>
+        <span class="f-6 ml-2" translate>Before you can downgrade you will have to do the following:</span>
+        <ul class="overflow">
+          <li class="f-6 c-red" *ngFor="let message of overflowMessage">
+            <span [translateParams]="{message: error_messages[message.type]}" translate>
+              message Please confirm in
+            </span>
+            <span>
+              <ng-container [ngSwitch]="message.type">
+                <ng-container *ngSwitchCase="'limit_contacts'">
+                  <a class="ml-1" [routerLink]="['/contacts']" target="_blank" translate>here</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'limit_materials'">
+                  <a class="ml-1" [routerLink]="['/materials']" target="_blank" translate>here</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'limit_automations'">
+                  <a class="ml-1" [routerLink]="['/automations']" target="_blank" translate>here</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'remove_automations'">
+                  <a class="ml-1" [routerLink]="['/automations']" target="_blank" translate>here</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'limit_assistants'">
+                  <a class="ml-1" [routerLink]="['/settings/assistant']" target="_blank" translate>here</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'remove_assistants'">
+                  <a class="ml-1" [routerLink]="['/settings/assistant']" target="_blank" translate>here</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'limit_calendars'">
+                  <a class="ml-1" [routerLink]="['/settings/integration']" target="_blank" translate>here</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'remove_calendars'">
+                  <a class="ml-1" [routerLink]="['/settings/integration']" target="_blank" translate>here</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'remove_teams'">
+                  <a class="ml-1" [routerLink]="['/community']" target="_blank" translate>here</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'remove_multi_profile'">
+                  <a class="ml-1" [routerLink]="['/profile/account']" target="_blank" translate>here</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'limit_agents'">
+                  <a class="ml-1" [routerLink]="['/lead-hub/agent-filter']" target="_blank">here.</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'remove_agents'">
+                  <a class="ml-1" [routerLink]="['/lead-hub/agent-filter']" target="_blank">here.</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'limit_scheduler'">
+                  <a class="ml-1" [routerLink]="['/lead-hub/scheduler']" target="_blank">here.</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'remove_scheduler'">
+                  <a class="ml-1" [routerLink]="['/lead-hub/scheduler']" target="_blank">here.</a>
+                </ng-container>
+              </ng-container>
+            </span>
+          </li>
+        </ul>
+      </div>
+    </ng-template>
+    <div class="plans mt-4" [class.crmgrow]="getPackageType() == 'CRMGROW'" *ngIf="user.billing_access_enabled && getPackageType() == 'CRMGROW'">
+      <div class="lite-plan" [class.selected]="getPackageLabel() == 'Lite'">
+        <div class="f-22 fw-600" translate>
+          Lite
+        </div>
+        <div class="mt-2">
+          <span class="f-4 c-seablue">$ </span>
+          <span class="f-32 fw-600">29</span>
+          <span class="f-4 c-seablue"> /{{ 'Month' | translate }}</span>
+        </div>
+        <div class="plan-summary c-seablue mt-2" translate>
+          Best for business and growth leaders newer to their businesses
+        </div>
+        <hr />
+        <div class="plan-detail">
+          <div class="v-center justify-content-between">
+            <span class="detail-title c-seablue" translate>Contacts</span>
+            <span class="detail-value">{{ constPackage.LITE.contact_info.max_count }}</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Material Uploads</span>
+            <span class="detail-value">{{ constPackage.LITE.material_info.upload_max_count }}</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Video Recordings</span>
+            <span class="detail-value" [translateParams]="{n: '10'}" translate>n min</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Active Automations</span>
+            <span class="detail-value">-</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Calendar</span>
+            <span class="detail-value">-</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>SMS</span>
+            <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+            <span class="detail-value ml-auto">-</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Pipeline</span>
+            <span class="detail-value ml-auto">1</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Custom Websites</span>
+            <span class="detail-value ml-auto">-</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Scheduler</span>
+            <span class="detail-value ml-auto">-</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Virtual Assistant Seats</span>
+            <span class="detail-value ">-</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Team</span>
+            <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+            <span class="detail-value ml-auto">-</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Dialer Add-On</span>
+            <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+            <span class="detail-value ml-auto" [translateParams]="{plan: '$19/mo'}" translate>
+              from plan
+            </span>
+          </div>
+        </div>
+        <ng-container *ngIf="getPackageLabel() == 'Lite'">
+          <button class="btn btn-plan f-4 fw-600 w-100 mt-2"
+            (click)="selectPlan(litePackage)" translate>
+            Your Plan
+          </button>
+        </ng-container>
+        <ng-container *ngIf="getPackageLabel() == 'Sleep'">
+          <button class="btn btn-white border-dark f-4 fw-600 w-100 mt-2" (click)="selectPlan(litePackage)"
+            translate>
+            Upgrade
+          </button>
+        </ng-container>
+        <ng-container *ngIf="getPackageLabel() == 'Professional' || getPackageLabel() == 'Elite'">
+          <button class="btn btn-white border-dark f-4 fw-600 w-100 mt-2"
+            (click)="selectPlan(litePackage)" translate>
+            Downgrade
+          </button>
+        </ng-container>
+      </div>
+      <div class="pro-plan" [class.selected]="getPackageLabel() == 'Professional'">
+        <div class="v-center">
+          <span class="f-22 fw-600" translate>Pro</span>
+          <span class="plan-tag f-4 fw-600 ml-auto c-white text-capitalize" translate>most popular</span>
+        </div>
+        <div class="mt-2">
+          <span class="f-4 c-seablue">$ </span>
+          <span class="f-32 fw-600">49</span>
+          <span class="f-4 c-seablue"> /{{ 'Month' | translate }}</span>
+        </div>
+        <div class="plan-summary c-seablue mt-2" translate>
+          Best for business leaders and entrepreneurs with one business and focus
+        </div>
+        <hr />
+        <div class="plan-detail">
+          <div class="v-center justify-content-between">
+            <span class="detail-title c-seablue" translate>Contacts</span>
+            <span class="detail-value">{{ constPackage.PRO.contact_info.max_count }}</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Material Uploads</span>
+            <span class="detail-value">{{ constPackage.PRO.material_info.upload_max_count }}</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Video Recordings</span>
+            <span class="detail-value">120 min</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Active Automations</span>
+            <span class="detail-value">{{ constPackage.PRO.automation_info.max_count }}</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Calendar</span>
+            <span class="detail-value">{{ constPackage.PRO.calendar_info.max_count }}</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>SMS</span>
+            <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+            <span class="detail-value ml-auto">{{ constPackage.PRO.text_info.max_count }}</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Pipeline</span>
+            <span class="detail-value">{{ constPackage.PRO.pipe_info.max_count }}</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Custom Websites</span>
+            <span class="detail-value">{{ constPackage.PRO.landing_page_info.max_count }}</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Scheduler</span>
+            <span class="detail-value">{{ constPackage.PRO.scheduler_info.max_count }}</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Virtual Assistant Seats</span>
+            <span class="detail-value">{{ constPackage.PRO.agent_vending_info.max_count }}</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Team</span>
+            <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+            <span class="detail-value ml-auto">-</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Dialer Add-On</span>
+            <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+            <span class="detail-value ml-auto" [translateParams]="{plan: '$19/mo'}" translate>from plan</span>
+          </div>
+        </div>
+        <ng-container *ngIf="getPackageLabel() == 'Lite' || getPackageLabel() == 'Sleep'">
+          <button class="btn btn-white border-dark f-4 fw-600 w-100 mt-2" (click)="selectPlan(proPackage)" translate>
+            Upgrade
+          </button>
+        </ng-container>
+        <ng-container *ngIf="getPackageLabel() == 'Professional'">
+          <button class="btn btn-plan f-4 fw-600 w-100 mt-2" (click)="selectPlan(proPackage)" translate>
+            Your Plan
+          </button>
+        </ng-container>
+        <ng-container *ngIf="getPackageLabel() == 'Elite'">
+          <button class="btn btn-white border-dark f-4 fw-600 w-100 mt-2" (click)="selectPlan(proPackage)" translate>
+            Downgrade
+          </button>
+        </ng-container>
+      </div>
+      <div class="elite-plan" data-name="elite-plan" [class.selected]="getPackageLabel() == 'Elite'">
+        <div class="f-22 fw-600" translate>
+          Elite
+        </div>
+        <div class="mt-2">
+          <span class="f-4 c-seablue">$ </span>
+          <span class="f-32 fw-600">99</span>
+          <span class="f-4 c-seablue"> /{{ 'Month' | translate }}</span>
+        </div>
+        <div class="plan-summary c-seablue mt-2" translate>
+          Best for Entrepreneurs, Influencers, and people looking to become Growth Leaders
+        </div>
+        <hr />
+        <div class="plan-detail">
+          <div class="v-center justify-content-between">
+            <span class="detail-title c-seablue" translate>Contacts</span>
+            <span class="detail-value" translate>Unlimited</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Material Uploads</span>
+            <span class="detail-value" translate>Unlimited</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Video Recordings</span>
+            <span class="detail-value" [translateParams]="{n: '1000'}" translate>n min</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Active Automations</span>
+            <span class="detail-value">{{ constPackage.ELITE.automation_info.max_count }}</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Calendar</span>
+            <span class="detail-value">{{ constPackage.ELITE.calendar_info.max_count }}</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>SMS</span>
+            <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+            <span class="detail-value ml-auto">{{ constPackage.ELITE.text_info.max_count }}</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Pipeline</span>
+            <span class="detail-value">{{ constPackage.ELITE.pipe_info.max_count }}</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Custom Websites</span>
+            <span class="detail-value">{{ constPackage.ELITE.landing_page_info.max_count }}</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Scheduler</span>
+            <span class="detail-value" translate>Unlimited</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Virtual Assistant Seats</span>
+            <span class="detail-value">{{ constPackage.ELITE.agent_vending_info.max_count }}</span>
+          </div>
+          <div class="v-center mt-2">
+            <span class="detail-title c-seablue" translate>Team</span>
+            <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+            <span class="detail-value sp-only" [translateParams]="{price: '$49'}" translate>price per sub account</span>
+          </div>
+          <div class="text-right pc-only">
+            <span class="detail-value ml-auto" [translateParams]="{price: '$49'}" translate>price per sub account</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Dialer Add-On</span>
+            <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+            <span class="detail-value ml-auto" [translateParams]="{plan: '$19/mo'}" translate>from plan</span>
+          </div>
+        </div>
+        <ng-container *ngIf="getPackageLabel() == 'Lite' || getPackageLabel() == 'Professional' || getPackageLabel() == 'Sleep'">
+          <button class="btn btn-white border-dark f-4 fw-600 w-100 mt-2"
+            (click)="selectPlan(elitePackage)" translate>
+            Upgrade
+          </button>
+        </ng-container>
+        <ng-container *ngIf="getPackageLabel() == 'Elite'">
+          <button class="btn btn-plan f-4 fw-600 w-100 mt-2"
+            (click)="selectPlan(elitePackage)" translate>
+            Your Plan
+          </button>
+        </ng-container>
+      </div>
+    </div>
+    <div class="plans mt-4" [class.evo]="getPackageType() == 'EVO'" *ngIf="user.billing_access_enabled && getPackageType() == 'EVO'">
+      <div class="pro-plan" [class.selected]="getPackageLabel() == 'EVO Professional'">
+        <div class="v-center">
+          <span class="f-22 fw-600" translate>EVO Pro</span>
+          <span class="plan-tag f-4 fw-600 ml-auto c-white text-capitalize" translate>most popular</span>
+        </div>
+        <div class="mt-2">
+          <span class="f-4 c-seablue">$ </span>
+          <span class="f-32 fw-600">49</span>
+          <span class="f-4 c-seablue"> /{{ 'Month' | translate }}</span>
+        </div>
+        <div class="plan-summary c-seablue mt-2" translate>
+          Best for business leaders and entrepreneurs with one business and focus
+        </div>
+        <hr />
+        <div class="plan-detail">
+          <div class="v-center justify-content-between">
+            <span class="detail-title c-seablue" translate>Contacts</span>
+            <span class="detail-value">5000</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Material Uploads</span>
+            <span class="detail-value">100</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Video Recordings</span>
+            <span class="detail-value" [translateParams]="{n: '120'}">n min</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Active Automations</span>
+            <span class="detail-value">300</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Calendar</span>
+            <span class="detail-value">1</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>SMS</span>
+            <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+            <span class="detail-value ml-auto">250</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Pipeline</span>
+            <span class="detail-value">2</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Custom Websites</span>
+            <span class="detail-value">1</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Scheduler</span>
+            <span class="detail-value">3</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Virtual Assistant Seats</span>
+            <span class="detail-value">1</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Team</span>
+            <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+            <span class="detail-value ml-auto">-</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Dialer Add-On</span>
+            <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+            <span class="detail-value ml-auto" [translateParams]="{plan: '$19/mo'}" translate>from plan</span>
+          </div>
+        </div>
+        <ng-container *ngIf="getPackageLabel() == 'EVO Professional'">
+          <button class="btn btn-plan f-4 fw-600 w-100 mt-2"
+            (click)="selectPlan(evoProPackage)" translate>
+            Your Plan
+          </button>
+        </ng-container>
+        <ng-container *ngIf="getPackageLabel() == 'EVO Elite'">
+          <button class="btn btn-white border-dark f-4 fw-600 w-100 mt-2"
+            (click)="selectPlan(evoProPackage)" translate>
+            Downgrade
+          </button>
+        </ng-container>
+        <ng-container *ngIf="getPackageLabel() == 'Sleep'">
+          <button class="btn btn-white border-dark f-4 fw-600 w-100 mt-2" (click)="selectPlan(evoProPackage)"
+            translate>
+            Upgrade
+          </button>
+        </ng-container>
+      </div>
+      <div class="elite-plan" [class.selected]="getPackageLabel() == 'EVO Elite'">
+        <div class="f-22 fw-600" translate>
+          EVO Elite
+        </div>
+        <div class="mt-2">
+          <span class="f-4 c-seablue">$ </span>
+          <span class="f-32 fw-600">99</span>
+          <span class="f-4 c-seablue"> /{{ 'Month' | translate }}</span>
+        </div>
+        <div class="plan-summary c-seablue mt-2" translate>
+          Best for Entrepreneurs, Influencers, and people looking to become Growth Leaders
+        </div>
+        <hr />
+        <div class="plan-detail">
+          <div class="v-center justify-content-between">
+            <span class="detail-title c-seablue" translate>Contacts</span>
+            <span class="detail-value" translate>Unlimited</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Material Uploads</span>
+            <span class="detail-value" translate>Unlimited</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Video Recordings</span>
+            <span class="detail-value" [translateParams]="{n: '1000'}" translate>n min</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Active Automations</span>
+            <span class="detail-value">2000</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Calendar</span>
+            <span class="detail-value">4</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>SMS</span>
+            <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+            <span class="detail-value ml-auto">1000</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Pipeline</span>
+            <span class="detail-value">5</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Custom Websites</span>
+            <span class="detail-value">3</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Scheduler</span>
+            <span class="detail-value" translate>Unlimited</span>
+          </div>
+          <div class="v-center justify-content-between mt-2">
+            <span class="detail-title c-seablue" translate>Virtual Assistant Seats</span>
+            <span class="detail-value">2</span>
+          </div>
+          <div class="v-center mt-2">
+            <span class="detail-title c-seablue" translate>Team</span>
+            <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+            <span class="detail-value ml-auto sp-only" [translateParams]="{price: '$49'}" translate>price per sub account</span>
+          </div>
+          <div class="text-right pc-only">
+            <span class="detail-value ml-auto" [translateParams]="{price: '$49'}" translate>price per sub account</span>
+          </div>
+          <div class="v-center justify-content-between mt-3">
+            <span class="detail-title c-seablue" translate>Dialer Add-On</span>
+            <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+            <span class="detail-value ml-auto" [translateParams]="{plan: '$19/mo'}" translate>from plan</span>
+          </div>
+        </div>
+        <ng-container *ngIf="getPackageLabel() == 'EVO Professional' || getPackageLabel() == 'Sleep'">
+          <button class="btn btn-white border-dark f-4 fw-600 w-100 mt-2"
+            (click)="selectPlan(evoElitePackage)" translate>
+            Upgrade
+          </button>
+        </ng-container>
+        <ng-container *ngIf="getPackageLabel() == 'EVO Elite'">
+          <button class="btn btn-plan f-4 fw-600 w-100 mt-2"
+            (click)="selectPlan(evoElitePackage)" translate>
+            Your Plan
+          </button>
+        </ng-container>
+      </div>
+    </div>
+    <div class="all-features">
+      <div class="site-pricing-table-container" *ngIf="getPackageType() == 'CRMGROW'">
+        <div class="site-pricing-table">
+          <div class="site-pricing-table-header">
+            <div class="site-pricing-table-header-col--label site-pricing-table-header-col feature-type" translate>
+              Popular features
+            </div>
+            <div class="site-pricing-table-header-col plan-type lite" translate>
+              Lite
+            </div>
+            <div class="site-pricing-table-header-col plan-type pro" translate>
+              Pro
+            </div>
+            <div class="site-pricing-table-header-col plan-type elite" translate>
+              Elite
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Contacts
+            </div>
+            <div class="site-pricing-table-col">
+              200
+            </div>
+            <div class="site-pricing-table-col">
+              5,000
+            </div>
+            <div class="site-pricing-table-col" translate>
+              Unlimited
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Material Uploads
+            </div>
+            <div class="site-pricing-table-col">
+              10
+            </div>
+            <div class="site-pricing-table-col">
+              100
+            </div>
+            <div class="site-pricing-table-col" translate>
+              Unlimited
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Video Recordings
+            </div>
+            <div class="site-pricing-table-col" [translateParams]="{n: '10'}" translate>
+              n min
+            </div>
+            <div class="site-pricing-table-col" [translateParams]="{n: '120'}" translate>
+              n min
+            </div>
+            <div class="site-pricing-table-col" [translateParams]="{n: '1,000'}" translate>
+              n min
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Active Automations
+            </div>
+            <div class="site-pricing-table-col">
+
+            </div>
+            <div class="site-pricing-table-col">
+              1,000
+            </div>
+            <div class="site-pricing-table-col">
+              3,000
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Calendar
+            </div>
+            <div class="site-pricing-table-col">
+
+            </div>
+            <div class="site-pricing-table-col">
+              1
+            </div>
+            <div class="site-pricing-table-col">
+              4
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              <span translate>SMS</span>
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom"
+                ngbTooltip="{{ 'Texts per month. More can be purchased per month from within settings' | translate }}" ngbButtonLabel></i>
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <span>250</span>
+            </div>
+            <div class="site-pricing-table-col">
+              1,000
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Pipeline
+            </div>
+            <div class="site-pricing-table-col">
+              1
+            </div>
+            <div class="site-pricing-table-col">
+              10
+            </div>
+            <div class="site-pricing-table-col">
+              20
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              <span translate>Team</span>
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom"
+                ngbTooltip="{{ 'Run two businesses from one account. Each profile has unique email linked, calendar linked, contacts, materials, automations, and templates' | translate }}"
+                ngbButtonLabel></i>
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <span [translateParams]="{price: '$49'}" translate>price per sub account</span>
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom"
+                ngbTooltip="{{ 'Need more than 1 account?  Expand your Elite account by adding profiles at $49 per sub account.' | translate }}"
+                ngbButtonLabel></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-header">
+            <div class="site-pricing-table-header-col--label site-pricing-table-header-col feature-type" translate>
+              Additional features
+            </div>
+            <div class="site-pricing-table-header-col plan-type lite" translate>
+              Lite
+            </div>
+            <div class="site-pricing-table-header-col plan-type pro" translate>
+              Pro
+            </div>
+            <div class="site-pricing-table-header-col plan-type elite" translate>
+              Elite
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Custom Statuses
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Activity Tracker
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Lead Form
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Advanced Filters
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Tag Management
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Assistant Access
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <div>
+                <i class="i-icon i-check bgc-blue d-block mx-auto"></i>
+                <div [translateParams]="{n: '1'}" translate>n seat</div>
+              </div>
+            </div>
+            <div class="site-pricing-table-col">
+              <div>
+                <i class="i-icon i-check bgc-blue d-block mx-auto"></i>
+                <div class="v-center align-items-center" [translateParams]="{n: '2'}" translate>
+                  n seat
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Mail Templates
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Merge fields
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Email 'Click' Tracking
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Group/Mass Email
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Automations
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Scheduler
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <div>
+                <i class="i-icon i-check bgc-blue d-block mx-auto"></i>
+                <div>3</div>
+              </div>
+            </div>
+            <div class="site-pricing-table-col">
+              <div>
+                <i class="i-icon i-check bgc-blue d-block mx-auto"></i>
+                <div class="v-center align-items-center" translate>
+                  Unlimited
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Custom Websites
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <div>
+                <i class="i-icon i-check bgc-blue d-block mx-auto"></i>
+                <div [translateParams]="{n: '1'}" translate>n site</div>
+              </div>
+            </div>
+            <div class="site-pricing-table-col">
+              <div>
+                <i class="i-icon i-check bgc-blue d-block mx-auto"></i>
+                <div class="v-center align-items-center" [translateParams]="{n: '3'}" translate>
+                  n site
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              {{ 'Community' | translate }}
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom"
+                ngbTooltip="{{ 'Lite plan you can be part of a community but not a community leader' | translate }}" ngbButtonLabel></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-header">
+            <div class="site-pricing-table-header-col--label site-pricing-table-header-col feature-type" translate>
+              Add-on features
+            </div>
+            <div class="site-pricing-table-header-col plan-type lite" translate>
+              Lite
+            </div>
+            <div class="site-pricing-table-header-col plan-type pro" translate>
+              Pro
+            </div>
+            <div class="site-pricing-table-header-col plan-type elite" translate>
+              Elite
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Dialer (Optional)
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col" [translateParams]="{plan: '$19/mo'}" translate>
+              from plan
+            </div>
+            <div class="site-pricing-table-col" [translateParams]="{plan: '$19/mo'}" translate>
+              from plan
+            </div>
+          </div>
+          <div class="site-pricing-table-header">
+            <div class="site-pricing-table-header-col--label site-pricing-table-header-col feature-type" translate>
+              Crmgrow Support
+            </div>
+            <div class="site-pricing-table-header-col plan-type lite" translate>
+              Lite
+            </div>
+            <div class="site-pricing-table-header-col plan-type pro" translate>
+              Pro
+            </div>
+            <div class="site-pricing-table-header-col plan-type elite" translate>
+              Elite
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Online Support
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Email Support
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Priority and Chat Support
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Weekly Live Training
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Roadmap and Mastermind
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="site-pricing-table-container" *ngIf="getPackageType() == 'EVO'">
+        <div class="site-pricing-table evo-pricing-table">
+          <div class="site-pricing-table-header">
+            <div class="site-pricing-table-header-col--label site-pricing-table-header-col feature-type" translate>
+              Popular features
+            </div>
+            <div class="site-pricing-table-header-col plan-type pro" translate>
+              EVO Pro
+            </div>
+            <div class="site-pricing-table-header-col plan-type elite" translate>
+              EVO Elite
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Contacts
+            </div>
+            <div class="site-pricing-table-col">
+              5,000
+            </div>
+            <div class="site-pricing-table-col">
+              <span>50,000</span>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Material Uploads
+            </div>
+            <div class="site-pricing-table-col">
+              100
+            </div>
+            <div class="site-pricing-table-col" translate>
+              Unlimited
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Video Recordings
+            </div>
+            <div class="site-pricing-table-col" [translateParams]="{n: '120'}" translate>
+              n min
+            </div>
+            <div class="site-pricing-table-col" [translateParams]="{n: '1,000'}" translate>
+              n min
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Active Automations
+            </div>
+            <div class="site-pricing-table-col">
+              300
+            </div>
+            <div class="site-pricing-table-col">
+              <span>2,000</span>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Calendar
+            </div>
+            <div class="site-pricing-table-col">
+              1
+            </div>
+            <div class="site-pricing-table-col">
+              <span>4</span>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              <span translate>SMS</span>
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom"
+                ngbTooltip="{{ 'Texts per month. More can be purchased per month from within settings' | translate }}" ngbButtonLabel></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <span>250</span>
+            </div>
+            <div class="site-pricing-table-col">
+              <span>1,000</span>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Pipeline
+            </div>
+            <div class="site-pricing-table-col">
+              1
+            </div>
+            <div class="site-pricing-table-col">
+              2
+            </div>
+            <div class="site-pricing-table-col">
+              5
+            </div>
+          </div>
+          <div class="site-pricing-table-header">
+            <div class="site-pricing-table-header-col--label site-pricing-table-header-col feature-type" translate>
+              Additional features
+            </div>
+            <div class="site-pricing-table-header-col plan-type pro" translate>
+              EVO Pro
+            </div>
+            <div class="site-pricing-table-header-col plan-type elite" translate>
+              EVO Elite
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Custom Statuses
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Activity Tracker
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Lead Form
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Advanced Filters
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Tag Management
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Assistant Access
+            </div>
+            <div class="site-pricing-table-col">
+              <div>
+                <i class="i-icon i-check bgc-blue d-block mx-auto"></i>
+                <div [translateParams]="{n: '1'}" translate>n seat</div>
+              </div>
+            </div>
+            <div class="site-pricing-table-col">
+              <div>
+                <i class="i-icon i-check bgc-blue d-block mx-auto"></i>
+                <div class="v-center align-items-center" [translateParams]="{n: '2'}" translate>
+                  n seat
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Mail Templates
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Merge fields
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Email 'Click' Tracking
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Group/Mass Email
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Automations
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Scheduler
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <div>
+                <i class="i-icon i-check bgc-blue d-block mx-auto"></i>
+                <div>3</div>
+              </div>
+            </div>
+            <div class="site-pricing-table-col">
+              <div>
+                <i class="i-icon i-check bgc-blue d-block mx-auto"></i>
+                <div class="v-center align-items-center" translate>
+                  Unlimited
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Custom Websites
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <div>
+                <i class="i-icon i-check bgc-blue d-block mx-auto"></i>
+                <div [translateParams]="{n: '1'}" translate>n site</div>
+              </div>
+            </div>
+            <div class="site-pricing-table-col">
+              <div>
+                <i class="i-icon i-check bgc-blue d-block mx-auto"></i>
+                <div class="v-center align-items-center" [translateParams]="{n: '3'}" translate>
+                  n site
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              {{ 'Community' | translate }}
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom"
+                ngbTooltip="{{ 'Lite plan you can be part of a team but not a team leader' | translate }}" ngbButtonLabel></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-header">
+            <div class="site-pricing-table-header-col--label site-pricing-table-header-col feature-type" translate>
+              Add-on features
+            </div>
+            <div class="site-pricing-table-header-col plan-type pro" translate>
+              EVO Pro
+            </div>
+            <div class="site-pricing-table-header-col plan-type elite" translate>
+              EVO Elite
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Dialer (Optional)
+            </div>
+            <div class="site-pricing-table-col" [translateParams]="{plan: '$19/mo'}" translate>
+              from plan
+            </div>
+            <div class="site-pricing-table-col" [translateParams]="{plan: '$19/mo'}" translate>
+              from plan
+            </div>
+          </div>
+          <div class="site-pricing-table-header">
+            <div class="site-pricing-table-header-col--label site-pricing-table-header-col feature-type" translate>
+              Crmgrow Support
+            </div>
+            <div class="site-pricing-table-header-col plan-type pro" translate>
+              EVO Pro
+            </div>
+            <div class="site-pricing-table-header-col plan-type elite" translate>
+              EVO Elite
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Online Support
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Email Support
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Priority and Chat Support
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Weekly Live Training
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label" translate>
+              Roadmap and Mastermind
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="step == 2">
+    <div class="v-center justify-content-between">
+      <div class="f-26 font-weight-bold" translate>Confirm your subscription</div>
+      <i class="i-icon i-close d-block bgc-dark c-seablue c-pointer" (click)="onBack()"></i>
+    </div>
+    <div class="confirm-wrapper mt-3">
+      <div class="upgrade-plan-wrapper">
+        <div class="stripe-wrapper">
+          <ng-container *ngIf="card">
+            <div class="f-3 font-weight-bold" translate>Payment details</div>
+              <div class="f-1 my-3" translate>Credit or debit card</div>
+              <div class="v-center form-group">
+                <div class="stripe-card v-center justify-content-between">
+                  <div class="card-img">
+                    <ng-container [ngSwitch]="card.card_brand">
+                      <img [src]="sspaService.toAsset('img/card_visa.svg')" *ngSwitchCase="'Visa'">
+                      <img [src]="sspaService.toAsset('img/card_amex.svg')" *ngSwitchCase="'amex'">
+                      <img [src]="sspaService.toAsset('img/card_master.svg')" *ngSwitchCase="'mastercard'">
+                      <img [src]="sspaService.toAsset('img/card_jcb.svg')" *ngSwitchCase="'jcb'">
+                      <img [src]="sspaService.toAsset('img/card_discover.svg')" *ngSwitchCase="'discover'">
+                      <img [src]="sspaService.toAsset('img/card_diners.svg')" *ngSwitchCase="'diners'">
+                    </ng-container>
+                  </div>
+                  <div class="f-3 font-weight-bold">•••• •••• •••• {{card.last4}}</div>
+                </div>
+                <button class="btn btn-package f-3 ml-2" (click)="gotoBilling()" translate>Manage billing</button>
+              </div>
+              <div class="mt-4">
+                <re-captcha id="recaptcha" name="recaptcha" #recaptcha="ngModel" [(ngModel)]="captchaToken"></re-captcha>
+                <span class="error mt-1">
+                  <ng-container *ngIf="!captchaToken && submitted">
+                    {{ 'Please check if you are not a robot.' | translate }}
+                  </ng-container>
+                </span>
+              </div>
+          </ng-container>
+          <button class="btn btn-primary f-16 font-weight-bold my-4 w-100" data-action="change-grade-plan"
+            [class.disabled]="selectedPackage.package == currentPackage.package"
+            [class.suspended]="loadingCheckDowngrade" [class.loading]="loadingUpdatePackage" (click)="updatePackage()">
+            {{ getButtonLabel() | translate }}
+          </button>
+          <div class="v-center justify-content-center mb-4">
+            <i class="i-icon i-lock bgc-black d-block"></i>
+            <span class="mx-2 f-1" translate>Guaranteed safe and secure checkout</span>
+          </div>
+          <div class="h-line"></div>
+          <p class="f-2 c-seablue font-italic mt-3 mb-2" translate>
+            “Since I implemented Crmgrow 6 months ago, we've had an exponential return”
+          </p>
+          <div class="v-center">
+            <img class="reivew-avatar" [src]="sspaService.toAsset('img/review_avatar.svg')" alt="review">
+            <span class="f-1 c-dark font-weight-bold ml-2" translate>Larry White</span>
+          </div>
+        </div>
+      </div>
+      <div class="selected-package ml-5">
+        <div class="lite-plan" *ngIf="selectedPackage.package == litePackage.package">
+          <div class="f-22 fw-600" translate>
+            Lite
+          </div>
+          <div class="mt-2">
+            <span class="f-4 c-seablue">$ </span>
+            <span class="f-32 fw-600">29</span>
+            <span class="f-4 c-seablue"> /{{ 'Month' | translate }}</span>
+          </div>
+          <div class="f-4 plan-summary c-seablue mt-2" translate>
+            Best for business and growth leaders newer to their businesses
+          </div>
+          <hr />
+          <div class="f-4 plan-detail">
+            <div class="v-center justify-content-between">
+              <span class="detail-title c-seablue" translate>Contacts</span>
+              <span class="detail-value" translate>200</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Material Uploads</span>
+              <span class="detail-value" translate>10</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Video Recordings</span>
+              <span class="detail-value" [translateParams]="{n: '1000'}" translate>n min</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Active Automations</span>
+              <span class="detail-value">-</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Calendar</span>
+              <span class="detail-value">-</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>SMS</span>
+              <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+              <span class="detail-value ml-auto">-</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Virtual Assistant Seats</span>
+              <span class="detail-value">-</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Team</span>
+              <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+              <span class="detail-value ml-auto">-</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Dialer Add-On</span>
+              <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+              <span class="f-2 detail-value ml-auto" [translateParams]="{plan: '$19/mo'}" translate>
+                from plan
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="pro-plan" *ngIf="selectedPackage.package == proPackage.package">
+          <div class="v-center">
+            <span class="f-22 fw-600" translate>Pro</span>
+            <span class="plan-tag f-4 fw-600 ml-auto c-white text-capitalize" translate>most popular</span>
+          </div>
+          <div class="mt-2">
+            <span class="f-4 c-seablue">$ </span>
+            <span class="f-32 fw-600">49</span>
+            <span class="f-4 c-seablue"> /{{ 'Month' | translate }}</span>
+          </div>
+          <div class="f-4 plan-summary c-seablue mt-2" translate>
+            Best for business leaders and entrepreneurs with one business and focus
+          </div>
+          <hr />
+          <div class="f-4 plan-detail">
+            <div class="v-center justify-content-between">
+              <span class="detail-title c-seablue" translate>Contacts</span>
+              <span class="detail-value" translate>2000</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Material Uploads</span>
+              <span class="detail-value" translate>100</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Video Recordings</span>
+              <span class="detail-value" [translateParams]="{n: '1000'}" translate>n min</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Active Automations</span>
+              <span class="detail-value">300</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Calendar</span>
+              <span class="detail-value">1</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>SMS</span>
+              <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+              <span class="detail-value ml-auto">250</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Virtual Assistant Seats</span>
+              <span class="detail-value">1</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Team</span>
+              <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+              <span class="detail-value ml-auto">-</span>
+            </div>
+            <div class="v-center justify-content-between mt-3">
+              <span class="detail-title c-seablue" translate>Dialer Add-On</span>
+              <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+              <span class="f-2 detail-value ml-auto" [translateParams]="{plan: '$19/mo'}" translate>
+                from plan
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="elite-plan" data-name="elite-plan" *ngIf="selectedPackage.package == elitePackage.package">
+          <div class="f-22 fw-600" translate>
+            Elite
+          </div>
+          <div class="mt-2">
+            <span class="f-4 c-seablue">$ </span>
+            <span class="f-32 fw-600">99</span>
+            <span class="f-4 c-seablue"> /{{ 'Month' | translate }}</span>
+          </div>
+          <div class="f-4 plan-summary c-seablue mt-2" translate>
+            Best for Entrepreneurs, Influencers, and people looking to become Growth Leaders
+          </div>
+          <hr />
+          <div class="f-4 plan-detail">
+            <div class="v-center justify-content-between">
+              <span class="detail-title c-seablue" translate>Contacts</span>
+              <span class="detail-value" translate>Unlimited</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Material Uploads</span>
+              <span class="detail-value" translate>Unlimited</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Video Recordings</span>
+              <span class="detail-value" [translateParams]="{n: '1000'}" translate>n min</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Active Automations</span>
+              <span class="detail-value">2000</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Calendar</span>
+              <span class="detail-value">4</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>SMS</span>
+              <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+              <span class="detail-value ml-auto">1000</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Virtual Assistant Seats</span>
+              <span class="detail-value">2</span>
+            </div>
+            <div class="v-center mt-2">
+              <span class="detail-title c-seablue" translate>Team</span>
+              <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+              <span class="detail-value ml-auto sp-only" [translateParams]="{price: '$49'}" translate>
+                price per sub account
+              </span>
+            </div>
+            <div class="text-right pc-only">
+              <span class="detail-value ml-auto" [translateParams]="{price: '$49'}" translate>
+                price per sub account
+              </span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Dialer Add-On</span>
+              <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+              <span class="f-2 detail-value ml-auto" [translateParams]="{plan: '$19/mo'}" translate>
+                from plan
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="pro-plan" *ngIf="selectedPackage.package == evoProPackage.package">
+          <div class="v-center">
+            <span class="f-22 fw-600" translate>EVO Pro</span>
+            <span class="plan-tag f-4 fw-600 ml-auto c-white text-capitalize" translate>most popular</span>
+          </div>
+          <div class="mt-2">
+            <span class="f-4 c-seablue">$ </span>
+            <span class="f-32 fw-600">49</span>
+            <span class="f-4 c-seablue"> /{{ 'Month' | translate }}</span>
+          </div>
+          <div class="f-4 plan-summary c-seablue mt-2" translate>
+            Best for business leaders and entrepreneurs with one business and focus
+          </div>
+          <hr />
+          <div class="f-4 plan-detail">
+            <div class="v-center justify-content-between">
+              <span class="detail-title c-seablue" translate>Contacts</span>
+              <span class="detail-value" translate>5000</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Material Uploads</span>
+              <span class="detail-value" translate>100</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Video Recordings</span>
+              <span class="detail-value" [translateParams]="{n: '1000'}" translate>n min</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Active Automations</span>
+              <span class="detail-value">300</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Calendar</span>
+              <span class="detail-value">1</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>SMS</span>
+              <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+              <span class="detail-value ml-auto">250</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Virtual Assistant Seats</span>
+              <span class="detail-value">1</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Team</span>
+              <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+              <span class="detail-value ml-auto">-</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Dialer Add-On</span>
+              <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+              <span class="f-2 detail-value ml-auto" [translateParams]="{plan: '$19/mo'}" translate>
+                from plan
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="elite-plan" *ngIf="selectedPackage.package == evoElitePackage.package">
+          <div class="f-22 fw-600" translate>
+            EVO Elite
+          </div>
+          <div class="mt-2">
+            <span class="f-4 c-seablue">$ </span>
+            <span class="f-32 fw-600">99</span>
+            <span class="f-4 c-seablue"> /{{ 'Month' | translate }}</span>
+          </div>
+          <div class="f-4 plan-summary c-seablue mt-2" translate>
+            Best for Entrepreneurs, Influencers, and people looking to become Growth Leaders
+          </div>
+          <hr />
+          <div class="f-4 plan-detail">
+            <div class="v-center justify-content-between">
+              <span class="detail-title c-seablue" translate>Contacts</span>
+              <span class="detail-value" translate>Unlimited</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Material Uploads</span>
+              <span class="detail-value" translate>Unlimited</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Video Recordings</span>
+              <span class="detail-value" [translateParams]="{n: '1000'}" translate>n min</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Active Automations</span>
+              <span class="detail-value">2000</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Calendar</span>
+              <span class="detail-value">4</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>SMS</span>
+              <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+              <span class="detail-value ml-auto">1000</span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Virtual Assistant Seats</span>
+              <span class="detail-value">2</span>
+            </div>
+            <div class="v-center mt-2">
+              <span class="detail-title c-seablue" translate>Team</span>
+              <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+              <span class="detail-value ml-auto sp-only" [translateParams]="{price: '$49'}" translate>
+                price per sub account
+              </span>
+            </div>
+            <div class="text-right pc-only">
+              <span class="detail-value ml-auto" [translateParams]="{price: '$49'}" translate>
+                price per sub account
+              </span>
+            </div>
+            <div class="v-center justify-content-between mt-2">
+              <span class="detail-title c-seablue" translate>Dialer Add-On</span>
+              <i class="d-block i-icon i-information tooltip-icon sm ml-1"></i>
+              <span class="f-2 detail-value ml-auto" [translateParams]="{plan: '$19/mo'}" translate>
+                from plan
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="step == 4">
+    <div class="reason-wrapper">
+      <div class="d-flex justify-content-between">
+        <div class="f-6 font-weight-bold reason-title" translate>Why are you looking to cancel your account?</div>
+        <i class="i-icon i-close d-block bgc-dark c-seablue c-pointer" (click)="onBack()"></i>
+      </div>
+      <div class="reason-buttons mt-3">
+        <div class="button c-blue font-weight-bold f-3 ml-2 mb-2" *ngFor="let button of reasonButtons"
+          (click)="selectReason(button)" translate>
+          {{button}}
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="step == 5">
+    <div class="reason-wrapper">
+      <div class="d-flex justify-content-between">
+        <div class="f-6 font-weight-bold reason-title" [translateParams]="{reason: selectedReason}" translate>
+          What is the reason thing you really wish CRM Grow did better?
+        </div>
+        <i class="i-icon i-close d-block bgc-dark c-seablue c-pointer" (click)="onBack()"></i>
+      </div>
+      <div class="form-group mt-3">
+        <textarea class="f-3 p-2 form-control" name="feedback" #feedback="ngModel" [(ngModel)]="reasonFeedback">
+        </textarea>
+      </div>
+      <div class="v-center justify-content-end">
+        <button class="btn btn-white f-6 font-weight-bold c-blue" (click)="onBack()" translate>Cancel</button>
+        <button class="btn btn-primary f-6 font-weight-bold ml-2" [class.loading]="loadingCancelAccount"
+          (click)="sendFeedback()" translate>
+          Send feedback
+        </button>
+      </div>
+    </div>
+  </ng-container>
+</div>

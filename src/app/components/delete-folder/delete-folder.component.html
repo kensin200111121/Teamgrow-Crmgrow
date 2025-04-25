@@ -1,0 +1,76 @@
+<div class="v-center justify-content-between">
+  <h1 class="m-0" mat-dialog-title translate>
+    Delete folder
+  </h1>
+  <i class="d-block i-icon i-close bgc-dark" mat-dialog-close></i>
+</div>
+<mat-dialog-content>
+  <div class="f-3 font-weight-bold mt-4" translate>Please select options you want.</div>
+  <div class="mb-3">
+    <div class="v-center c-pointer" (click)="selectOption('remove-all')">
+      <div class="custom-radio-container mr-3">
+        <input class="custom-radio" type="radio" [checked]="isSelectedOption('remove-all')">
+        <label class="f-3 font-weight-bold"></label>
+      </div>
+      <div [attr.data-name]="'folder-delete-all-select'" class="f-3 ml-4 mt-3" translate>
+        Remove folder with sub materials
+      </div>
+    </div>
+    <div class="v-center c-pointer" (click)="selectOption('move-other')">
+      <div class="custom-radio-container mr-3">
+        <input class="custom-radio" type="radio" [checked]="isSelectedOption('move-other')">
+        <label class="f-3 font-weight-bold"></label>
+      </div>
+      <div [attr.data-name]="'folder-delete-move-select'" class="f-3 ml-4 mt-3" translate>
+        Remove folder and move sub materials to other
+      </div>
+    </div>
+    <ng-container *ngIf="currentOption == 'move-other'">
+      <div class="form-group mt-3">
+        <div class="v-center mb-1">
+          <div class="f-3 op-75">
+            Sub materials would be moved to this <b>{{currentFolder?.title || 'root'}}</b> folder.
+          </div>
+        </div>
+        <div class="border rounded mt-1">
+          <ng-container *ngIf="currentFolder">
+            <a class="v-center c-pointer material-main-info td-none" (click)="goToFolder()">
+              <div class="thumbnail">
+                <a>
+                  <div class="folder-thumb"></div>
+                </a>
+              </div>
+              <span class="font-weight-bold ci-dark">.. to root</span>
+            </a>
+            <a class="v-center c-pointer material-main-info td-none" (click)="goToFolder(parentFolder)">
+              <div class="thumbnail">
+                <a>
+                  <div class="folder-thumb"></div>
+                </a>
+              </div>
+              <span class="font-weight-bold ci-dark">.. to prev</span>
+            </a>
+          </ng-container>
+          <ng-container *ngFor="let folder of folders">
+            <a class="v-center c-pointer material-main-info td-none" (click)="goToFolder(folder)">
+              <div class="thumbnail">
+                <a>
+                  <div class="folder-thumb"></div>
+                </a>
+              </div>
+              <span class="font-weight-bold ci-dark">{{(folder.title || '') | shorten: 40: '...'}}</span>
+            </a>
+          </ng-container>
+          <ng-container *ngIf="isLoading && !folders.length">
+            <div class="loader"></div>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button class="btn btn-white f-6 font-weight-bold c-blue mr-2" mat-dialog-close translate>Cancel</button>
+  <button [attr.data-action]="'automations-folder-delete-all'" class="btn btn-danger f-6 font-weight-bold" [class.loading]="submitted" (click)="delete()" translate *ngIf="currentOption == 'remove-all'">Delete</button>
+  <button [attr.data-action]="'automations-folder-delete-move'" class="btn btn-danger f-6 font-weight-bold" [class.loading]="submitted" (click)="delete()" translate *ngIf="currentOption == 'move-other'">Delete & Move</button>
+</mat-dialog-actions>

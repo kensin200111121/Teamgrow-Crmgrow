@@ -1,0 +1,39 @@
+<h1 mat-dialog-title translate>Keep Actions</h1>
+<mat-dialog-content class="description">
+  <div class="f-6 c-dark mt-3">
+
+  </div>
+  <div class="mt-3">
+    <div class="v-center" *ngIf="type === 'email'">
+      <div class="custom-radio-container" (click)="selectOption('switch')">
+        <input class="custom-radio" type="radio" id="only-switch-branch" name="only-switch" [checked]="selectedOption == 'switch'">
+        <label class="f-5 font-weight-bold"></label>
+      </div>
+      <div class="f-5 font-weight-bold ml-2" translate>{{'Only Switch to' | translate}} {{switchType}}</div>
+    </div>
+    <div class="v-center mt-2">
+      <div class="custom-radio-container" (click)="selectOption('trueCase')">
+        <input class="custom-radio" type="radio" id="keep-yes-branch" name="keep-yes" [checked]="selectedOption == 'trueCase'">
+        <label class="f-5 font-weight-bold"></label>
+      </div>
+      <div class="f-5 font-weight-bold ml-2" translate>Keep Yes branch and Remove No branch</div>
+    </div>
+    <div class="v-center mt-2">
+      <div class="custom-radio-container" (click)="selectOption('falseCase')">
+        <input class="custom-radio" type="radio" id="keep-no-branch" name="keep-no" [checked]="selectedOption == 'falseCase'">
+        <label class="f-5 font-weight-bold"></label>
+      </div>
+      <div class="f-5 font-weight-bold ml-2" translate>Keep No branch and Remove Yes branch</div>
+    </div>
+    <div class="v-center mt-2">
+      <div class="custom-radio-container" (click)="selectOption('remove')">
+        <input class="custom-radio" type="radio" id="remove-all-branch" name="remove-all" [checked]="selectedOption == 'remove'">
+        <label class="f-5 font-weight-bold"></label>
+      </div>
+      <div class="f-5 font-weight-bold ml-2" translate>Remove all branch</div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="mx-0">
+  <button type="button" class="btn btn-primary" (click)="confirm()" translate>OK</button>
+</mat-dialog-actions>

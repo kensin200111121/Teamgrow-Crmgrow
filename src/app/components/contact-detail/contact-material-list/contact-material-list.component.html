@@ -1,0 +1,39 @@
+<ng-container>
+  <div class="material d-flex flex-wrap" *ngIf="!uniqueMaterial ; else oneMaterial">
+    <div *ngFor="let video of _materials.videos">
+      <a class="material-thumbnail" href="{{SITE}}/video/{{video._id}}" target="_blank" *ngIf="video">
+        <img src="{{video.preview}}" />
+      </a>
+    </div>
+    <div *ngFor="let pdf of _materials?.pdfs">
+      <a class="material-thumbnail" href="{{SITE}}/pdf/{{pdf._id}}" target="_blank" *ngIf="pdf">
+        <img src="{{pdf.preview}}" />
+      </a>
+    </div>
+    <div *ngFor="let image of _materials?.images">
+      <a class="material-thumbnail" href="{{SITE}}/image/{{image._id}}" target="_blank" *ngIf="image">
+        <img src="{{image.preview}}" />
+      </a>
+    </div>
+  </div>
+  <ng-template #oneMaterial>
+    <div class="material d-flex flex-wrap" *ngIf="uniqueMaterial">
+      <a class="material-thumbnail" href="{{SITE}}/{{uniqueMaterial.materialType}}/{{uniqueMaterial._id}}"
+        target="_blank">
+        <img src="{{uniqueMaterial.preview}}" />
+      </a>
+      <div class="material-content ml-2">
+        <div class="title font-weight-bold">
+          {{uniqueMaterial.title}}
+        </div>
+        <div class="description f-2">
+          {{uniqueMaterial.description || '' | stripTags | removeEntity | shorten: 100: '...'}}
+        </div>
+        <div class="time" *ngIf="uniqueMaterial.materialType === 'video'">
+          {{uniqueMaterial.duration | timeDuration}}
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+</ng-container>

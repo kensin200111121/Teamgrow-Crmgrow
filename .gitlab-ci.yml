@@ -1,0 +1,169 @@
+---
+stages:
+    - setup
+    - build
+    - deploy
+
+install:
+  image: greenseedtech/node:18-alpine
+  stage: setup
+  script:
+    - yarn install --non-interactive
+  artifacts:
+    paths:
+      - node_modules
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "redx"'
+
+build-review:
+  image: greenseedtech/node:18-alpine
+  stage: build
+  variables:
+    WEBPACK_PUBLIC_PATH: https://storage.googleapis.com/vortex-frontend-review/$CI_PROJECT_NAME/$CI_COMMIT_SHORT_SHA
+  script:
+  - yarn build:stage-sspa
+  dependencies:
+    - install
+  artifacts:
+    paths:
+      - dist/stage-sspa
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "redx"'
+
+build-demo:
+  image: greenseedtech/node:18-alpine
+  stage: build
+  variables:
+    WEBPACK_PUBLIC_PATH: https://storage.googleapis.com/vortex-frontend-dev/$CI_PROJECT_NAME/$CI_COMMIT_SHORT_SHA
+  script:
+  - yarn build:stage-sspa
+  dependencies:
+    - install
+  artifacts:
+    paths:
+      - dist/stage-sspa
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "redx"'
+  when: manual
+
+build-stage:
+  image: greenseedtech/node:18-alpine
+  stage: build
+  variables:
+    WEBPACK_PUBLIC_PATH: https://storage.googleapis.com/vortex-frontend-stage/$CI_PROJECT_NAME/$CI_COMMIT_SHORT_SHA
+  script:
+  - yarn build:stage-sspa
+  dependencies:
+    - install
+  artifacts:
+    paths:
+      - dist/stage-sspa
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "redx"'
+  when: manual
+
+build-prod:
+  image: greenseedtech/node:18-alpine
+  stage: build
+  variables:
+    WEBPACK_PUBLIC_PATH: https://storage.googleapis.com/vortex-frontend-prod/$CI_PROJECT_NAME/$CI_COMMIT_SHORT_SHA
+  script:
+  - yarn build:prod-sspa
+  dependencies:
+    - install
+  artifacts:
+    paths:
+      - dist/prod-sspa
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "redx"'
+  when: manual
+
+deploy-review-app:
+  image: google/cloud-sdk
+  stage: deploy
+  environment:
+    name: review
+    url: https://storage.googleapis.com/vortex-frontend-review/$CI_PROJECT_NAME/$CI_COMMIT_SHORT_SHA/redx-$CI_PROJECT_NAME.js
+  variables:
+    CDN_PUBLIC_URL: storage.googleapis.com/vortex-frontend-review
+  script:
+    - echo "Creating google application credentials json file"
+    - echo $GOOGLE_APPLICATION_CREDENTIALS_JSON > google-application-credentials.json
+    - gcloud auth activate-service-account --key-file google-application-credentials.json
+    - gsutil -m cp -rZ dist/stage-sspa/ gs://vortex-frontend-review/$CI_PROJECT_NAME/$CI_COMMIT_SHORT_SHA
+    - echo "Import map override @redx/crm-client == https://$CDN_PUBLIC_URL/$CI_PROJECT_NAME/$CI_COMMIT_SHORT_SHA/redx-$CI_PROJECT_NAME.js"
+    - python3 notify.py
+  dependencies:
+    - build-review
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "redx"'
+
+deploy-demo:
+  image: google/cloud-sdk
+  stage: deploy
+  environment:
+    name: dev
+  variables:
+    DEPLOYER_BUCKET: vortex-frontend-dev
+    CDN_PUBLIC_URL: storage.googleapis.com/vortex-frontend-dev
+  script:
+    - echo "Creating google application credentials json file"
+    - echo $GOOGLE_APPLICATION_CREDENTIALS_JSON > google-application-credentials.json
+    - gcloud auth activate-service-account --key-file google-application-credentials.json
+    - gsutil -m cp -rZ dist/stage-sspa/ gs://$DEPLOYER_BUCKET/$CI_PROJECT_NAME/$CI_COMMIT_SHORT_SHA
+    - echo "Updating import map"
+    - echo '{ "service":"@redx/'"$CI_PROJECT_NAME"'","url":"https://'"$CDN_PUBLIC_URL"'/'"$CI_PROJECT_NAME"'/'"$CI_COMMIT_SHORT_SHA"'/redx-'"$CI_PROJECT_NAME"'.js" }'
+    - curl -u $DEPLOYER_USERNAME:$DEPLOYER_PASSWORD -d '{ "service":"@redx/'"$CI_PROJECT_NAME"'","url":"https://'"$CDN_PUBLIC_URL"'/'"$CI_PROJECT_NAME"'/'"$CI_COMMIT_SHORT_SHA"'/redx-'"$CI_PROJECT_NAME"'.js" }' -X PATCH https://$DEPLOYER_HOST/services\?env=$CI_ENVIRONMENT_NAME -H "Accept:application/json" -H "Content-Type:application/json" --fail --insecure -i
+    - echo "Import map override @redx/crm-client == https://$CDN_PUBLIC_URL/$CI_PROJECT_NAME/$CI_COMMIT_SHORT_SHA/redx-$CI_PROJECT_NAME.js"
+  dependencies:
+    - build-demo
+  needs: ["build-demo"]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "redx"'
+
+deploy-stage:
+  image: google/cloud-sdk
+  stage: deploy
+  environment:
+    name: stage
+  variables:
+    DEPLOYER_BUCKET: vortex-frontend-stage
+    CDN_PUBLIC_URL: storage.googleapis.com/vortex-frontend-stage
+  script:
+    - echo "Creating google application credentials json file"
+    - echo $GOOGLE_APPLICATION_CREDENTIALS_JSON > google-application-credentials.json
+    - gcloud auth activate-service-account --key-file google-application-credentials.json
+    - gsutil -m cp -rZ dist/stage-sspa/ gs://$DEPLOYER_BUCKET/$CI_PROJECT_NAME/$CI_COMMIT_SHORT_SHA
+    - echo "Updating import map"
+    - echo '{ "service":"@redx/'"$CI_PROJECT_NAME"'","url":"https://'"$CDN_PUBLIC_URL"'/'"$CI_PROJECT_NAME"'/'"$CI_COMMIT_SHORT_SHA"'/redx-'"$CI_PROJECT_NAME"'.js" }'
+    - curl -u $DEPLOYER_USERNAME:$DEPLOYER_PASSWORD -d '{ "service":"@redx/'"$CI_PROJECT_NAME"'","url":"https://'"$CDN_PUBLIC_URL"'/'"$CI_PROJECT_NAME"'/'"$CI_COMMIT_SHORT_SHA"'/redx-'"$CI_PROJECT_NAME"'.js" }' -X PATCH https://$DEPLOYER_HOST/services\?env=$CI_ENVIRONMENT_NAME -H "Accept:application/json" -H "Content-Type:application/json" --fail --insecure -i
+    - echo "Import map override @redx/crm-client == https://$CDN_PUBLIC_URL/$CI_PROJECT_NAME/$CI_COMMIT_SHORT_SHA/redx-$CI_PROJECT_NAME.js"
+    - python3 notify.py
+  dependencies:
+    - build-stage
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "redx"'
+  when: manual
+
+deploy-prod:
+  image: google/cloud-sdk
+  stage: deploy
+  environment:
+    name: prod
+  variables:
+    DEPLOYER_BUCKET: vortex-frontend-prod
+    CDN_PUBLIC_URL: storage.googleapis.com/vortex-frontend-prod
+  script:
+    - echo "Creating google application credentials json file"
+    - echo $GOOGLE_APPLICATION_CREDENTIALS_JSON > google-application-credentials.json
+    - gcloud auth activate-service-account --key-file google-application-credentials.json
+    - gsutil -m cp -rZ dist/prod-sspa/ gs://$DEPLOYER_BUCKET/$CI_PROJECT_NAME/$CI_COMMIT_SHORT_SHA
+    - echo "Updating import map"
+    - echo '{ "service":"@redx/'"$CI_PROJECT_NAME"'","url":"https://'"$CDN_PUBLIC_URL"'/'"$CI_PROJECT_NAME"'/'"$CI_COMMIT_SHORT_SHA"'/redx-'"$CI_PROJECT_NAME"'.js" }'
+    - curl -u $DEPLOYER_USERNAME:$DEPLOYER_PASSWORD -d '{ "service":"@redx/'"$CI_PROJECT_NAME"'","url":"https://'"$CDN_PUBLIC_URL"'/'"$CI_PROJECT_NAME"'/'"$CI_COMMIT_SHORT_SHA"'/redx-'"$CI_PROJECT_NAME"'.js" }' -X PATCH https://$DEPLOYER_HOST/services\?env=$CI_ENVIRONMENT_NAME -H "Accept:application/json" -H "Content-Type:application/json" --fail --insecure -i
+    - echo "Import map override @redx/crm-client == https://$CDN_PUBLIC_URL/$CI_PROJECT_NAME/$CI_COMMIT_SHORT_SHA/redx-$CI_PROJECT_NAME.js"
+  dependencies:
+    - build-prod
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "redx"'
+  when: manual

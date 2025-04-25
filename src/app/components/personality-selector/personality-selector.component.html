@@ -1,0 +1,21 @@
+
+<div ngbDropdown class="px-1 py-2 sms-token token">
+  <div class="v-center no-carot c-pointer" ngbDropdownToggle>
+      <span class="f-1 font-weight-bold mr-1" >{{ _selected ? _selected.title : 'AI Personality' | translate }}</span>
+      <i class="d-block i-icon i-triangle-down bgc-dark"></i>
+      <i class="d-block i-icon i-triangle-up bgc-dark"></i>
+  </div>
+  <div ngbDropdownMenu class="light py-1">
+    <div class="f-2 py-1 px-2 c-pointer dropdown-item" (click)="selectPersonality(null)">
+      <span class="f-3 ">{{ 'None' | translate }}</span>
+    </div>
+    <ng-container *ngFor="let person of personList">
+        <div class="f-2 py-1 px-2 c-pointer dropdown-item" (click)="selectPersonality(person)" translate>{{person.title}}</div>
+    </ng-container>
+    <div class="f-2 py-1 px-2 c-pointer dropdown-item v-center d-flex flex-row justify-content-start" (click)="managePersonality()">
+      <i class="d-block i-icon i-person-manage bgc-black"></i>
+      <span class="f-3 font-weight-bold ml-1">{{ 'Manage' | translate }}</span>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,42 @@
+<div class="events-detail ">
+  <div class="v-center justify-content-between mb-3">
+    <div class="v-center">
+      <div class="history-icon mr-1">
+        <i class="act-icon act-events"></i>
+      </div>
+      <div class="d-flex v-center">
+        <span class="text-capitalize">{{ activity.activityOverView.content }}</span>
+        <ng-container *ngIf="activity?.activityOverView?.user">
+          <app-contact-action-user [user]="activity.activityOverView.user"></app-contact-action-user>
+        </ng-container>
+      </div>
+    </div>
+    <div class="v-center ml-auto">
+      <span class="f-3 op-56">
+        {{ activity.activityOverView.created_at | datetimeFormat }}
+      </span>
+    </div>
+  </div>
+  <div class="font-weight-bold subject">{{replaceContent(activity.action?.message)}}</div>
+  <ng-container *ngIf="activity.action?.property">
+    <div class="subject mt-2">
+      <a href="{{activity.action?.property.url}}" target="_blank">
+        Address {{activity.action?.property.street}} {{activity.action?.property.city}} {{activity.action?.property.state}}
+      </a>
+    </div>
+    <div class="subject mt-2">
+      {{activity.action?.property | property_format}}
+    </div>
+  </ng-container>
+  <ng-container *ngIf="activity.action?.propertySearch">
+    <div class="subject mt-2">
+        {{activity.action?.propertySearch | propertySearch_format}}
+    </div>
+  </ng-container>
+  <ng-container *ngIf="activity.action?.pageTitle">
+    <a class="subject mt-2" href="{{activity.action?.pageUrl}}" target="_blank">Page Title:
+      {{activity.action?.pageTitle}}
+    </a>
+  </ng-container>
+
+</div>

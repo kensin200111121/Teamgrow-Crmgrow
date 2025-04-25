@@ -1,0 +1,22 @@
+.upgrade-package-wrapper {
+  text-align: center;
+
+  .i-icon.header-icon {
+    width: 77px;
+    height: 77px;
+  }
+
+  p {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 0;
+    line-height: 32px;
+  }
+
+  .loader {
+    &.sm {
+      width: 30px;
+      height: 24px;
+    }
+  }
+}

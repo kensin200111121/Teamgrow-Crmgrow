@@ -1,0 +1,49 @@
+.drop-contain {
+  width: 90px !important;
+  display: flex;
+  justify-content: center !important;
+}
+
+.flag-container {
+  display: flex;
+  align-items: center;
+  background: #eee;
+  position: absolute !important;
+  top: 2px;
+  left: 2px;
+  height: calc(100% - 4px);
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+
+  .dropdown-toggle {
+    height: 100%;
+    width: 100%;
+    justify-content: left;
+  }
+}
+
+.countries-wrapper {
+  width: 230px;
+  background-color: white;
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+input {
+  padding-left: 104px;
+  font-size: 14px;
+}
+
+.prevent-event {
+  pointer-events: none;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.dropdown-toggle::after {
+  display: none;
+}

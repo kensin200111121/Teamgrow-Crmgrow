@@ -1,0 +1,241 @@
+<div class="v-center justify-content-between mb-3">
+  <h1 mat-dialog-title class="m-0" translate>{{deal && deal._id ? 'Edit' : 'Create'}} Deal</h1>
+</div>
+<form
+  #dealForm="ngForm"
+  (ngSubmit)="submitted = true; dealForm.form.valid ? saveDeal() : false"
+>
+  <mat-dialog-content cdkScrollable>
+    <div class="form-group">
+      <label translate>Deal Name*</label>
+      <input
+        data-name="title"
+        class="form-control"
+        type="text"
+        name="title"
+        #dealTitle="ngModel"
+        [(ngModel)]="deal.title"
+        required
+        cdkFocusInitial
+      />
+      <span
+        class="invalid-error f-3 c-secondary ml-auto"
+        *ngIf="deal.title == '' && submitted"
+        translate
+      >
+        *Required!
+      </span>
+    </div>
+    <app-select-stage
+      [pipeline]="selectedPipeline"
+      [stage]="deal.deal_stage"
+      [isSetDefault]="isSetDefault"
+      (onChange)="onChangeStage($event)"
+      [viewMode]="'row'"
+      [required]="true"
+      [submitted]="dealForm.submitted"
+      required
+    ></app-select-stage>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="d-block" translate>Price</label>
+          <div class="input-container">
+            <span class="prefix">$</span>
+            <input
+              data-name="price"
+              class="form-control currency-input"
+              type="number"
+              name="price"
+              [min]="0"
+              [(ngModel)]="deal.price"
+              placeholder="e.g.$100"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="d-block" translate>Close Date</label>
+          <app-date-input
+            type="append"
+            [(value)]="deal.close_date"
+            [placeholder]=""
+            [required]="true"
+            [hasTime]="false"
+            outFormat="date"
+          ></app-date-input>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label translate>Contacts*</label>
+      <app-input-contacts
+        [selectedContacts]="deal.contacts"
+        [onlyFromSearch]="true"
+        [display]="''"
+        [includeSharedContacts]="true"
+        (onRemove)="removeContacts($event)"
+        (onSelect)="selectContacts($event)"
+      >
+      </app-input-contacts>
+      <span
+        class="invalid-error f-3 c-secondary ml-auto"
+        *ngIf="!deal.contacts?.length && dealForm.submitted"
+        translate
+        >*Required</span
+      >
+    </div>
+    <div class="form-group">
+      <label translate>Primary Contact*</label>
+      <app-select-contact-list
+        (onSelect)="selectPrimary($event)"
+        [contacts]="deal.contacts"
+        [value]="deal.primary_contact"
+      ></app-select-contact-list>
+      <span
+        class="invalid-error f-3 c-secondary ml-auto"
+        *ngIf="!deal?.primary_contact && dealForm.submitted"
+        translate
+        >*Required</span
+      >
+    </div>
+    <div class="form-group" *ngIf="hasOrganization">
+      <label translate>Assigned Team Members</label>
+      <app-input-team-members
+        [onlyFromSearch]="true"
+        [selectedMembers]="deal.team_members || []"
+        (onSelect)="onTeamMemberSelected($event)"
+        required
+      >
+      </app-input-team-members>
+      <span
+        class="invalid-error f-3 c-secondary ml-auto"
+        *ngIf="hasOrganization && !deal.team_members?.length && dealForm.submitted"
+        translate
+        >*Required</span
+      >
+    </div>
+    <div class="form-group">
+      <label translate>Description</label>
+      <input
+        data-name="description"
+        class="form-control"
+        type="text"
+        name="description"
+        #dealTitle="ngModel"
+        [(ngModel)]="deal.description"
+      />
+    </div>
+    <div class="form-group">
+      <label translate>Commision</label>
+      <div class="space-between-row">
+        <div style="width: 160px; padding-top:5px">
+          <mat-radio-group
+            [(ngModel)]="deal.commission.unit"
+            name="commisionUnit"
+            class="mr-3"
+            (change)="onSelectionCommisionChange($event)"
+          >
+            <mat-radio-button value="$" [color]="'primary'" class="mr-3"
+              >$</mat-radio-button
+            >
+            <mat-radio-button value="%" [color]="'primary'">%</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <ng-container *ngIf="deal.commission.unit === '$'; else percentType">
+          <div class="input-container">
+            <span class="prefix">$</span>
+            <input
+              data-name="commisionCurrency"
+              class="form-control currency-input"
+              type="number"
+              name="commisionCurrency"
+              [(ngModel)]="deal.commission.value"
+              placeholder="e.g.$100"
+              [min]="0"
+              [max]="deal.price"
+            />
+          </div>
+        </ng-container>
+        <ng-template #percentType>
+          <div class="input-container" style="width: 180px">
+            <input
+              data-name="commisionPercent"
+              class="form-control percent-input"
+              type="number"
+              [min]="0"
+              [max]="100"
+              name="commisionPercent"
+              [(ngModel)]="deal.commission.value"
+            />
+            <span class="postfix">%</span>
+          </div>
+          <div class="percent-type">
+            <label class="ml-2"
+              >x {{ price | currency }} =
+              {{ calculatedCommissionValue | currency }}</label
+            >
+          </div>
+        </ng-template>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="d-block" translate>Agent Split</label>
+          <div class="input-container">
+            <span class="prefix">$</span>
+            <input
+              data-name="agentPrice"
+              class="form-control currency-input"
+              type="number"
+              name="agentPrice"
+              [min]="0"
+              [max]="deal.price"
+              [(ngModel)]="deal.agent_price"
+              placeholder="e.g.$100"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="d-block" translate>Team Split</label>
+          <div class="input-container">
+            <span class="prefix">$</span>
+            <input
+              data-name="teamPrice"
+              class="form-control currency-input"
+              type="number"
+              name="teamPrice"
+              [min]="0"
+              [max]="deal.price"
+              [(ngModel)]="deal.team_price"
+              placeholder="e.g.$100"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button
+      class="btn btn-white f-6 font-weight-bold mr-2"
+      type="button"
+      mat-dialog-close
+      translate
+    >
+      Cancel
+    </button>
+    <button
+      data-action="deal-create-confirm"
+      class="btn btn-primary f-6 font-weight-bold btn-font-bold"
+      type="submit"
+      [class.loading]="saving"
+      translate
+    >
+      save
+    </button>
+  </mat-dialog-actions>
+</form>

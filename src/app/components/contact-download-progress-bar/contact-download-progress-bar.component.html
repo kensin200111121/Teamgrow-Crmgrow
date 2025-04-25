@@ -1,0 +1,23 @@
+<div class="dialog-container">
+  <div class="v-center justify-content-between mx-0">
+      <div class="f-22 fw-600 c-black" translate>Download Result(downloading)</div>
+  </div>
+
+  <mat-dialog-content class="mt-3">
+      <div class="my-3">
+        <mat-progress-bar class="custom-progress" [value]="downloadPercent"></mat-progress-bar>
+        <div class="v-center justify-content-between w-100 mt-2">
+          <div class="f-3 fw-600" [translateParams]="{count1: downloadedContactsCount, count2: overallContacts}" translate>
+            download status
+          </div>
+          <div class="f-3 fw-600">{{downloadPercent}}%</div>
+        </div>
+      </div>
+      <div class="attention v-center justify-content-center py-2">
+        <i class="i-icon i-warning-red attention-icon d-block"></i>
+        <div class="f-4 fw-600 c-black ml-3" translate>
+          Don't close this tab while downloading contacts.
+        </div>
+      </div>
+  </mat-dialog-content>
+</div>

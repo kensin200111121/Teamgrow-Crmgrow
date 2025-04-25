@@ -1,0 +1,398 @@
+@import 'variables';
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  i {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+  }
+}
+
+:host ::ng-deep {
+  .custom-mat-field .mat-form-field-appearance-outline .mat-form-field-outline-start {
+    border: 0 !important;
+  }
+
+  .custom-mat-field .mat-form-field-appearance-outline .mat-form-field-outline-gap {
+    border: 0 !important;
+  }
+
+  .custom-mat-field .mat-form-field-appearance-outline .mat-form-field-outline-end {
+    border: 0 !important;
+  }
+}
+
+.main-info {
+  display: flex;
+  flex-direction: column; 
+  flex: 1;
+}
+
+.info-item {
+  min-height: 30px;
+  align-items: center;
+
+  .i-icon {
+    margin-top: 0px!important;
+  }
+
+  span {
+    font-size: 14px;
+    line-height: 22px;
+    margin-top: 0px!important;
+  }
+}
+
+.card-header {
+  position: relative;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  padding: 0.5rem 1.0rem !important;
+}
+
+.label-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(0.25turn, #0004, #0000);
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.assignee-avatar {
+  margin-top: 6px;
+  background-color: #b8b8b8;
+  color: #FFFFFF;
+  line-height: 28px !important;
+  text-align: center;
+  font-size: 12px;
+  border: none;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+}
+
+.card-body {
+  margin-top: -52px;
+  .contact-avatar {
+    position: relative;  
+    border: 3px solid #FFFFFF;
+    width: 56px;
+    height: 56px;
+    font-size: 20px;
+    line-height: 50px !important;
+    span {
+      position: absolute;
+      bottom: -4px;
+    }
+  }
+
+  .full-name {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 30px;
+    margin-top: 0px;
+  }
+
+  .maininfo-item {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+    margin-right: 8px;
+  }
+
+  hr {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.tags-section {
+  flex-wrap: wrap;
+  min-height: 26px;
+}
+
+.tag-el {
+  padding: 2px 6px;
+  background-color: gainsboro;
+  border-radius: 8px;
+  margin-right: 4px;
+  margin-bottom: 2px;
+  margin-top: 2px;
+  font-weight: 600;
+  display: inline-block;
+  overflow-wrap: anywhere;
+}
+
+.tag-plus {
+  display: inline-flex;
+}
+
+.i-tag-plus{
+  width: 32px;
+  height: 32px;
+}
+
+.rating-wrapper {
+  line-height: 20px;
+}
+
+.star-rate {
+  color: sandybrown;
+
+  &.no-fill {
+    color: #b0c4de;
+    opacity: 0.7;
+  }
+}
+
+.rates {
+  display: flex;
+
+  .rate {
+    margin: 4px;
+    display: block;
+
+    &.selected {
+      .i-icon {
+        background-color: #ff7900;
+      }
+    }
+
+    .i-icon {
+      background-color: gainsboro;
+    }
+  }
+
+  &.increasing {
+    .rate.indicated:not(.selected) {
+      .i-icon {
+        background-color: #f7b500;
+      }
+    }
+  }
+
+  &:not(.increasing) {
+    .rate.indicated {
+      .i-icon {
+        background-color: #f7b500;
+      }
+    }
+  }
+}
+
+.lock-status {
+  display: none;
+
+  &.locked {
+    display: block;
+  }
+}
+
+.general-panels .mat-expanded .toggle-icon {
+  transform: rotate(180deg) !important;
+}
+
+.secondary-type {
+  color: #989898;
+  font-size: 12px;
+}
+
+.secondary-type:not(:empty):before {
+  display: inline-block;
+  content: "";
+  width: 5px;
+  height: 5px;
+  background: #989898;
+  border-radius:50%;
+  margin: 0 8px;
+}
+
+.unsubscribed {
+  padding: 2px 6px;
+  background-color: #EEAF53;
+  border: 1px solid #EEAF53;
+  border-radius: 4px;
+  color: white;
+}
+
+.shared {
+  background-color: white;
+  border: 1px solid white;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 0 !important;
+}
+
+.contact-detail {
+  padding: 0 1rem;
+  span {
+    display: flex;
+    align-items: center;
+    min-height: 20px;
+  }
+}
+
+.contact-additional {
+  padding: 0 1rem;
+  span.info-body {
+    display: flex;
+    align-items: center;
+    min-height: 20px;
+  }
+}
+
+.lead-item:hover {
+  background-color: gainsboro;
+  border-radius: 4px;
+}
+
+:host ::ng-deep {
+  .back-button {
+    font-size: 13px;
+    margin-left: 0;
+    i {
+      width: 11px;
+      height: 11px;
+      min-width: 11px;
+    }
+  }
+  
+  .scrollbar {
+    background-color: rgba(90, 90, 90, 0.2);
+    border-radius: 4px;
+    margin-right: -10px;
+    // margin-right: -20px;
+  }
+
+  .dropdown-toggle::after {
+    display: none;
+  }
+
+  .assignee-input {
+    .custom-mat-field .mat-form-field-appearance-outline .mat-form-field-wrapper {
+      height: 40px;
+
+      .mat-form-field-flex {
+        padding-left: 0px!important;
+      }
+    }
+    .mat-form-field-infix {
+      width: 56px;
+      padding: 0px!important;
+  
+      .mat-chip-list-wrapper {
+        margin: 0px;
+  
+        .value-label.py-1 {
+          padding: 0px !important;
+        }
+  
+        .avartar-icon {
+          background: white;
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+  
+          img, .contact-avatar {
+            width: 40px;
+            height: 40px;
+            line-height: 40px !important;
+          }
+          
+          .empty-avatar {
+            width: 40px;
+            height: 40px;
+            line-height: 40px !important;
+            display: flex;
+            align-items: center;
+            background-color: #b8b8b8;
+            border-radius: 50%;
+            
+            .i-icon {
+              width: 24px;
+              height: 24px;
+              margin: 0 auto;
+            }
+          }
+        }
+  
+        .mat-autocomplete-trigger {
+          height: 100%;
+          padding: 0px;
+          margin: 0px;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1380px) {
+  
+}
+
+:host ::ng-deep {
+
+  .ng-scroll-content {
+    width: 100%;
+
+    * {
+      word-break: break-word;
+    }
+  }
+  
+  @media screen and (max-width: 960px) {
+    .main-scrollbar {
+      & > .ng-scrollbar-wrapper {
+        position: relative;
+        
+        & > .ng-scroll-viewport-wrapper {
+          position: relative;
+  
+          & > .ng-scroll-viewport {
+            position: relative;
+            contain: content;
+          }
+        }
+      }
+    }
+  }
+}
+
+.set-primary {
+  margin-left: auto;
+  font-size: 13px;
+  color: #066FD3;
+  font-weight: 600;
+  min-width: 72px;
+  opacity: 0;
+}
+
+.sencondary:hover .set-primary {
+  opacity: 1;
+}
+
+.assignment-label {
+  font-size: 12px;
+  opacity: 0.56;
+  margin-left: auto;
+  align-self: flex-end;
+}
+
+::ng-deep .maininfo-item.contact-source app-link span {
+  text-transform: uppercase;
+}
+
+.arrow-down-width {
+  width: 13px !important;
+  min-width: 13px !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

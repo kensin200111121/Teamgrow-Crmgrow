@@ -1,0 +1,78 @@
+@import 'variables';
+.conversation:hover {
+  background-color: #eee;
+}
+
+.mark-btn {
+  border: 1px solid $color-green-light;
+  border-radius: 8px;
+  color: $color-green-light;
+  text-decoration: none;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.phone {
+  color: $color-blue;
+}
+
+.score {
+  color: #383838 !important;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.score-1 {
+  background-color: $color-orange-weak;
+}
+
+.score-2 {
+  background-color: $color-green-light;
+}
+
+.score-3 {
+  background-color: $color-yellow-light;
+}
+
+.score-4 {
+  background-color: $color-azure-light;
+}
+
+.score-5 {
+  background-color: $color-red-pink;
+}
+
+.vip {
+  background-color: gainsboro;
+}
+
+
+.action-btn {
+  border: 1px solid gray;
+  padding: 6px;
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin: 2px;
+  cursor: pointer;
+
+  .i-call {
+    background-color: $color-red-pink;
+  }
+
+  .i-email {
+    background-color: $color-blue;
+  }
+
+  .i-text {
+    background-color: $color-azure-light;
+  }
+}
+
+.conversation.completed {
+  background-color: $color-green-weak;
+  transition: all .4s;
+}

@@ -1,0 +1,173 @@
+<div class="v-center justify-content-between bgc-blue text-header" [style.width.px]='dialogWidth'
+  [class.minimize-content]="dialogType == 'global_text' ? !(storeService.textWindowType$ | async) : !isMinimizable">
+  <div class="p-3 flex-grow-1">
+    <h1 class="f-6 font-weight-bold text-white m-0" *ngIf="dialogType !== 'deal_text'" translate>
+      Text
+    </h1>
+    <h1 class="f-6 font-weight-bold text-white m-0" *ngIf="dialogType === 'deal_text'" translate>
+      Deal Text
+    </h1>
+  </div>
+  <div class="v-center p-3">
+    <ng-container *ngIf="dialogType == 'global_text'; else subWindow">
+      <button type="button" class="v-center border-0 bgc-trans close-button px-0" (click)="minimizeDialog()">
+        <i class="i-icon i-minimize sm bgc-white" aria-hidden="true" *ngIf="storeService.textWindowType$ | async"></i>
+        <i class="i-icon i-maximize sm bgc-white" aria-hidden="true"
+          *ngIf="!(storeService.textWindowType$ | async)"></i>
+      </button>
+    </ng-container>
+    <ng-template #subWindow>
+      <button type="button" class="v-center border-0 bgc-trans close-button px-0" (click)="minimizeDialog()">
+        <i class="i-icon i-minimize sm bgc-white" aria-hidden="true" *ngIf="isMinimizable"></i>
+        <i class="i-icon i-maximize sm bgc-white" aria-hidden="true" *ngIf="!isMinimizable"></i>
+      </button>
+    </ng-template>
+    <button type="button" class="v-center border-0 bgc-trans close-button" (click)="closeDialog()">
+      <i class="i-icon i-close bgc-white" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+<div class="d-flex">
+  <div class="text-panel" [class.text-panel-height]="type == 'single'"
+    [class.minimize-content]="dialogType == 'global_text' ? !(storeService.textWindowType$ | async) : !isMinimizable">
+    <div class="contact-info border-bottom">
+      <div class="contact v-center py-2 px-3" *ngIf="type == 'single'">
+        <div class="avatar bgc-dark text-white text-center mr-2">
+          {{ contact.avatarName }}
+        </div>
+        <div class="info">
+          <span class="f-3 font-weight-bold">{{ contact.fullName }}</span>
+          <div class="c-blue font-weight-bold f-3">{{ contact.cell_phone }}</div>
+        </div>
+      </div>
+      <div class="address-wrapper pl-3 pr-2 py-1" *ngIf="type == 'multi'">
+        <div class="overflow-visible">
+          <div class="d-flex w-100" (click)="setFocus()">
+            <label class="f-6 op-56 m-0">{{ 'To' | translate }}:</label>
+            <ng-container *ngIf="dialogType !== 'deal_text'; else dealContactChip;">
+              <app-input-contact-chip [selectedContacts]="textContacts" [keepContacts]="mode =='create' ? [] : textContacts"
+              [shouldFromSearch]="false" [shouldBeSubscriber]="true" [unsubscribeType]="'text'" (onFocus)="setFocus()" [focus]="isFocus()" [display]="'cell_phone'"
+              [maxLimit]=10 class="w-100 ml-2"></app-input-contact-chip>
+            </ng-container>
+            <ng-template #dealContactChip>
+              <app-input-contact-chip [selectedContacts]="textContacts" [display]="'cell_phone'" [shouldFromSearch]="true"
+                [shouldBeSubscriber]="false" [unsubscribeType]="'text'" [isDealContact]="true" (onFocus)="setFocus()" [focus]="isFocus()" class="w-100" [maxLimit]=10>
+              </app-input-contact-chip>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="message-info px-0 pb-2 border-top">
+      <textarea rows="15" class="text-message" [style.height.px]="editorHeight" [(ngModel)]="message" (keydown)="keyTrigger($event)" [mention]="templateTokens"
+        (itemSelected)="onTokenSelected($event)" [mentionConfig]="mentionConfig" #messageText (ngModelChange)="messageChanged()"
+        data-name="deal-text-description" [disabled]="sending">
+      </textarea>
+    </div>
+    <div class="px-3 pt-0 text-setting">
+      <div class="v-center" *enableByFeatures="USER_FEATURES.MATERIAL">
+        <button type="button" class="v-center btn border-primary f-3 font-weight-bold c-blue p-2 mr-2 material-button"
+          (click)="openMaterialsDlg()">
+          <i class="d-block i-icon i-material bgc-blue"></i>
+          <span class="f-3 font-weight-bold c-blue mx-2" translate>Material</span>
+          <i class="d-block i-icon i-plus bgc-blue"></i>
+        </button>
+      </div>
+      <app-template-selector *enableByFeatures="USER_FEATURES.BETA" [type]="'text'" (selectTemplate)="selectTemplate($event)"></app-template-selector>
+      <div ngbDropdown class="insert-token ml-2" *enableByFeatures="USER_FEATURES.SCHEDULER">
+        <div class="v-center no-carot c-pointer" ngbDropdownToggle placement="top-left" ngbTooltip="{{ 'Schedule' | translate }}"
+          (click)="showSchedule()" style="width: fit-content;">
+          <i class="d-block i-icon i-schedule-send bgc-blue" *ngIf="scheduleCheck"></i>
+          <i class="d-block i-icon i-schedule-send bgc-dark" *ngIf="!scheduleCheck"></i>
+        </div>
+      </div>
+      <div class="insert-token ml-2 datetime" *ngIf="scheduleCheck">
+        <div class="v-center no-carot c-pointer">{{time_display}}</div>
+      </div>
+      <div class="insert-token ml-1 timezone" *ngIf="scheduleCheck">
+        <div class="v-center no-carot c-pointer">({{tz_display}})</div>
+      </div>
+      <i class="d-block i-icon i-close bgc-dark ml-3" style="cursor: pointer;" (click)="cancelSchedule()" *ngIf="scheduleCheck"></i>
+      <div ngbDropdown class="insert-token ml-2">
+        <div class="v-center no-carot c-pointer" ngbDropdownToggle placement="bottom" ngbTooltip="{{ 'Emoji' | translate }}"
+          style="width: fit-content;">
+          <img class="emoji-icon" [src]="sspaService.toAsset('img/emoji.png')">
+        </div>
+        <div ngbDropdownMenu class="light templates">
+          <emoji-mart class="emoji-mart" [set]="set" [darkMode]="false"
+            (emojiSelect)="insertTextContentValue($event.emoji.native)" title="{{ 'Pick your emoji' | translate }}">
+          </emoji-mart>
+        </div>
+      </div>
+      <div ngbDropdown class="insert-token ml-2" *ngIf="(scheduleService.eventTypes$ | async)?.length">
+        <div class="v-center no-carot c-pointer" ngbDropdownToggle placement="bottom" ngbTooltip="{{ 'Scheduler' | translate }}">
+          <i class="d-block i-icon i-event-note bgc-dark"></i>
+        </div>
+        <div ngbDropdownMenu class="light template-container">
+          <ng-container *ngFor="let eventType of (scheduleService.eventTypes$ | async)">
+            <div class="template dropdown-item border-top px-2" (click)="selectCalendly(eventType.link)">
+              <div class="v-center h-100">
+                <div class="f-3 font-weight-bold flex-grow-1 mr-1 h-100 v-center">
+                  {{(eventType.title || '') | shorten: 25: '...'}}
+                </div>
+                <a class="ml-auto" [href]="getRealEventTypeLink(eventType.link)" target="blank">
+                  <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                </a>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <div ngbDropdown class="insert-token ml-2" *ngIf="hasCalendly">
+        <div class="v-center no-carot c-pointer" ngbDropdownToggle placement="bottom" ngbTooltip="{{ 'Calendly' | translate }}">
+          <i class="d-block i-icon i-calendly bgc-dark"></i>
+        </div>
+        <div ngbDropdownMenu class="light template-container">
+          <ng-container *ngFor="let calendly of (connectService.calendlyAll$ | async)">
+            <div class="template dropdown-item border-top px-2" (click)="selectCalendly(calendly.scheduling_url)">
+              <div class="v-center h-100">
+                <div class="f-3 font-weight-bold flex-grow-1 mr-1 h-100 v-center">
+                  {{(calendly.name || '') | shorten: 35: '...'}}
+                </div>
+                <a class="ml-auto" [href]="calendly.scheduling_url" target="_blank">
+                  <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                </a>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <div ngbDropdown class="insert-token ml-2" *enableByFeature="USER_FEATURES.MATERIAL">
+        <div class="v-center no-carot c-pointer" ngbDropdownToggle placement="bottom" ngbTooltip="{{ 'Record' | translate }}">
+          <i class="d-block i-icon i-record-toolbar" (click)="record()"></i>
+        </div>
+      </div>
+      <app-token-selector (selectToken)="insertTextContentValue($event)"></app-token-selector>
+      <app-chatgpt-button [enabled]="!aiDialogExtendable" (setAiMode)="setAiMode($event)"></app-chatgpt-button>
+      <div class="v-center justify-content-between mt-2 mt-sm-0 w-100 ">
+        <button [attr.data-action]="'template-contact-text-send'" type="button" class="btn btn-blue text-white br-default py-1 f-6 font-weight-bold shadow ml-auto segment-width"
+          [class.loading]="sending" (click)="send()" *ngIf='!scheduleCheck'>
+          {{ 'Send' | translate }}
+        </button>
+        <button type="button" class="btn btn-blue text-white br-default py-1 f-6 font-weight-bold shadow ml-auto segment-width"
+          [class.loading]="sending" (click)="send()" *ngIf='scheduleCheck'>
+          {{ 'Schedule' | translate }}
+        </button>
+      </div>
+    </div>
+    <div class="ml-auto text-center reduce">
+      <span *ngIf="segments > 1" class="d-inline-flex ml-1 f-2 mr-1 segment-width">
+        {{segments}} Segments
+        <a href="{{redirectArticleURL}}" target="_blank">
+          <i class="d-block i-icon i-information bgc-dark"></i>
+        </a>
+      </span>
+    </div>
+  </div>
+  <app-chatgpt-extend
+    *ngIf="aiDialogExtendable && !aiTabMinimized"
+    [creatorResultContent]="presetText"
+    (getGptResponse)="writeGptResponseContent($event)"
+    (setVisible)="setDialogExtend(false)">
+  </app-chatgpt-extend>
+</div>

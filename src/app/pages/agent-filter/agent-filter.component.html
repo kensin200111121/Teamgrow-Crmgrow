@@ -1,0 +1,69 @@
+<div class="page-content">
+    <h1 class="page-title" translate>Agent Vending Machine</h1>
+    <div class="v-center justify-content-between mt-4">
+        <div class="f-22 font-weigth-bold" translate>Agent Filter</div>
+        <button class="v-center btn btn-primary f-6 font-weight-bold" (click)="create()">
+            <i class="d-block i-icon i-plus sm bgc-white"></i>
+            <span class="ml-2" translate>Create</span>
+        </button>
+    </div>
+    <div class="position-relative row mt-3">
+        <ng-container *ngIf="(agentFilterService.filters$ | async).length; else emptyFilter">
+            <div class="updating-status" *ngIf="(agentFilterService.loadStatus$ | async) === STATUS.REQUEST" translate>
+                LOADING
+            </div>
+            <div class="col-12 col-sm-12 col-md-4 col-xl-3 mt-3 px-3" *ngFor="let filter of agentFilterService.filters$ | async">
+                <div class="card p-3">
+                    <div class="v-center justify-content-between">
+                        <div class="f-22 c-dark title fw-600">
+                            {{ filter.state || 'ALL' }}
+                        </div>
+                        <div ngbDropdown #mainDrop="ngbDropdown" placement="bottom-right" class="action-dropdown mt-1 ml-1" (click)="$event.stopPropagation()">
+                            <a ngbDropdownToggle class="v-center c-pointer bgc-white c-dark f-4 no-carot px-0">
+                              <i class="d-block i-icon i-menu-more bgc-dark"></i>
+                            </a>
+                            <div ngbDropdownMenu class="light">
+                                <button class="v-center border-0 py-2 c-dark dropdown-item" (click)="edit(filter)">
+                                    <i class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i>
+                                    <span class="ml-3 f-4 c-dark font-weight-bold" translate>Edit</span>
+                                </button>
+                                <button class="v-center border-0 py-2 c-dark dropdown-item" (click)="delete(filter._id)">
+                                    <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+                                    <span class="ml-3 f-4 c-dark font-weight-bold" translate>Delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="v-center justify-content-between mt-2">
+                        <div class="f-4 c-dark" translate>agent_type_{{ filter.listing_type }}</div>
+                        <div class="f-4 font-weight-bold c-light-green" translate>Active</div>    
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+        <ng-template #emptyFilter>
+            <ng-container [ngSwitch]="agentFilterService.loadStatus$ | async">
+                <div class="empty-list mt-5 pt-5" *ngSwitchCase="STATUS.SUCCESS">
+                    <div class="object-icon v-center mt-5">
+                        <i class="i-icon i-information d-block bgc-dark"></i>
+                    </div>
+                    <h4 class="font-weight-bold mt-3 mb-3" translate>
+                        no_agent_filters
+                    </h4>
+                </div>
+                <div class="empty-list mt-5 pt-5" *ngSwitchCase="STATUS.FAILURE">
+                    <div class="object-icon v-center mt-5">
+                        <i class="i-icon i-information d-block bgc-dark"></i>
+                    </div>
+                    <h4 class="font-weight-bold mt-3 mb-3" translate>
+                        no_agent_filters
+                    </h4>
+                </div>
+                <div class="list-loading text-center mt-5 pt-5" *ngSwitchCase="STATUS.REQUEST">
+                    <div class="loader mt-5 pt-5 lg"></div>
+                    <h4 class="fw-600 mt-2" translate>Loading agent filters...</h4>
+                </div>
+            </ng-container>
+        </ng-template>
+    </div>
+</div>

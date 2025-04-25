@@ -1,0 +1,39 @@
+<form #form="ngForm" (ngSubmit)="form.form.valid ? update() : false;">
+  <div class="v-center justify-content-between">
+      <h1 style="text-transform: capitalize;" mat-dialog-title class="m-0" translate>New local custom field</h1>
+      <button type="button" class="v-center border-0 bgc-trans close-button" mat-dialog-close>
+          <i class="i-icon i-close bgc-black ml-1" aria-hidden="true"></i>
+      </button>
+  </div>
+  <mat-dialog-content class="pt-1">
+      <ng-container *ngFor="let field of fields; let i = index;">
+        <div class="row mt-2" [class.error-field]="errors[i]" [class.error-value]="valueErrors[i]">
+          <div class="col-5 pr-1">
+            <div class="form-group mb-0">
+              <input class="form-control field-name" [(ngModel)]="field.name" name="{{'fieldName' + i}}" placeholder="{{'Field Name' | translate}}" (ngModelChange)="checkField($event)" />
+            </div>
+          </div>
+          <div class="col-7 v-center pl-1">
+            <div class="form-group flex-grow-1 mb-0">
+              <input class="form-control field-value" [(ngModel)]="field.value" name="{{'fieldValue' + i}}" placeholder="{{'Field Value' | translate}}" (ngModelChange)="checkFieldValue($event, i)"/>
+            </div>
+            <div class="remove ml-1" [class.d-none]="fields.length === 1">
+              <a class="c-pointer" (click)="removeField(i)" *ngIf="lead_fields.indexOf(field.name) === -1">
+                <i class="i-icon i-trash bgc-red d-block"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="error" *ngIf="errors[i]">
+          {{errors[i]}}
+        </div> -->
+      </ng-container>
+      <div class="plus p-2 rounded border-primary border c-pointer mt-2" (click)="addField()" [class.d-none]="fields.length >= 30">
+        <i class="i-icon i-plus d-block bgc-blue mx-auto sm"></i>
+      </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+      <button type="button" mat-dialog-close class="btn c-primary btn-font-bold" translate>Cancel</button>
+      <button [attr.data-action]="'contact-new-custom-field-save'" type="submit" class="btn btn-primary btn-font-bold" translate>Save</button>
+  </mat-dialog-actions>
+</form>

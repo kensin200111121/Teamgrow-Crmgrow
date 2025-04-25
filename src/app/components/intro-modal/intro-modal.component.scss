@@ -1,0 +1,17 @@
+.step-bar {
+    margin: 0;
+    padding: 0;
+    .step {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #CCCCCC;
+        margin-left: 12px;
+        &.active {
+            background-color: #0000FF;
+        }
+        &:first-child {
+            margin-left: 0;
+        }
+    }
+}

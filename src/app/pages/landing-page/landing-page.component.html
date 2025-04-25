@@ -1,0 +1,415 @@
+<div class="page-content">
+  <app-back-button
+    [defaultTitle]="'Landing Pages'"
+    [defaultRoute]="'/lead-hub/landing-pages'"
+  ></app-back-button>
+  <div class="v-center justify-content-between mb-3" *ngIf="pageDetail">
+    <h1 class="page-title" translate>Page Details</h1>
+    <div [attr.data-action]="'publish'" class="ml-auto v-center custom-control custom-switch pl-0">
+      <label placement="top" class="custom-toggle mb-0">
+        <input type="checkbox"
+          name="publish"
+          [(ngModel)]="isPublished"
+          (change)="onPublish($event)"
+        >
+        <span class="custom-toggle-slider rounded-circle"></span>
+      </label>
+      <span class="ml-2">Publish</span>
+    </div>
+    <div class="border-left ml-4 pl-4 pr-4 pt-2 pb-2">
+      <a [attr.data-action]="'edit-lead-form'" class="v-center f-3 fw-600 c-blue c-pointer" [routerLink]="'/lead-hub/landing-pages/edit/' + pageDetail?._id">
+        <span translate>Edit</span>
+      </a>
+    </div>
+    <a [attr.data-action]="'preview'" class="btn btn-primary ml-4 bg-white c-blue" [href]="MaterialSiteBaseDomain + '/page/preview/' + pageDetail?._id" target="_blank">
+      <span translate class="f-6 font-weight-bold btn-font-bold">Preview</span>
+    </a>
+    <div [attr.data-action]="'send'" *ngIf="isPublished" class="btn v-center c-pointer pl-4 pr-4 btn-primary ml-4" (click)="openSend(pageDetail)">
+      <span translate> Send </span>
+    </div>
+    <div class="ml-4 d-flex justify-content-between">
+      <div
+        ngbDropdown
+        container="body"
+        #actionDropdown="ngbDropdown"
+        placement="bottom-right"
+      >
+        <a
+          class="d-flex c-pointer no-carot action-icon"
+          [ngClass]="{ 'bg-ccc': actionDropdown.isOpen() }"
+          ngbDropdownToggle
+        >
+          <i
+            class="i-icon i-menu-more bg-dark"
+            aria-hidden="true"
+          ></i>
+        </a>
+        <div ngbDropdownMenu class="light py-1">
+          <div *ngIf="isPublished">
+            <button
+              class="v-center border-0 py-1 c-dark dropdown-item"
+              (click)="copyLink(pageDetail?._id)"
+            >
+              <i
+                class="i-icon size-14 i-copy bgc-dark mr-2 d-block"
+                aria-hidden="true"
+              ></i>
+              <span class="num" translate>Copy Link</span>
+            </button>
+          </div>
+          <button
+            class="v-center border-0 py-1 c-dark dropdown-item"
+            (click)="handleDelete(pageDetail)"
+          >
+            <i
+              class="i-icon size-14 i-trash bgc-dark mr-2"
+              aria-hidden="true"
+            ></i>
+            <span class="num" translate>Delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="position-relative mt-2">
+    <ng-container *ngIf="pageDetail">
+      <div class="page-detail-wrapper">
+        <div class="f-24 font-weight-bold mb-1">{{ pageDetail.name }}</div>
+        <div class="f-4 mb-3 text-muted">{{ pageDetail.description }}</div>
+        <div class="v-center justify-content-between w-100">
+          <div class="flex-grow-1 pr-3">
+            <div class="f-4 c-dark font-weight-bold">Media</div>
+            <div class="f-4 text-muted font-weight-bold mt-1">
+              <a [routerLink]="['/materials/analytics/', pageDetail.material_type, pageDetail.material?._id]" class="td-none c-dark  d-flex" target="_blank" *ngIf="pageDetail.material?._id">
+                <img [src]="pageDetail.material.thumbnail || pageDetail.material.preview" class="title-thumbnail"
+                  (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+                <span>{{ pageDetail.material?.title || 'None' }}</span>
+              </a>
+            </div>
+          </div>
+          <div class="flex-grow-1">
+            <div class="f-4 c-dark font-weight-bold">Layout</div>
+            <div class="f-4 text-muted font-weight-bold mt-1">{{ getTheme() }}</div>
+          </div>
+        </div>
+        <div>
+          <div class="v-center mt-3">
+            <span class="f-4 c-dark font-weight-bold">Form</span>
+            <div class="ml-auto font-weight-bold c-dark f-2 form-type">{{ pageDetail.form_type === 1 ? 'Embed Form' : 'Popup Form' }}</div>
+          </div>
+          <div class="table-container" *ngIf="forms.length">
+            <table mat-table [dataSource]="forms" >
+              <!-- Name Column -->
+              <ng-container matColumnDef="form_name">
+                <th mat-header-cell *matHeaderCellDef class="pl-0 pr-2"> Form Name </th>
+                <td mat-cell *matCellDef="let element" class="pl-0 pr-2">
+                  <div class="v-center table-cell">
+                    <a class="font-weight-bold td-none c-dark" [routerLink]="'/lead-hub/lead-capture/' + element._id" target="_blank">{{ element.name }}</a>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Delay Time Column -->
+              <ng-container matColumnDef="second">
+                <th mat-header-cell *matHeaderCellDef >Delay Time</th>
+                <td mat-cell *matCellDef="let element" class="c-black">{{element.second}}</td>
+              </ng-container>
+
+              <!-- Created Column -->
+              <ng-container matColumnDef="automation">
+                <th mat-header-cell *matHeaderCellDef class="pl-0 pr-2"> Automation </th>
+                <td mat-cell *matCellDef="let element" class="pl-0 pr-2">
+                  <div class="v-center table-cell">
+                    <span>{{ element.automation?.title || 'None' }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Created Column -->
+              <ng-container matColumnDef="tags">
+                <th mat-header-cell *matHeaderCellDef class="pl-0 pr-2"> Tags </th>
+                <td mat-cell *matCellDef="let element" class="pl-0 pr-2">
+                  <div class="v-center table-cell">
+                    <span>{{ element.tags?.join(',') }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Header and Row Declarations -->
+              <tr mat-header-row *matHeaderRowDef="formColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: formColumns;"></tr>
+            </table>
+          </div>
+          <!-- Empty & Loading View -->
+          <ng-container *ngIf="forms.length === 0">
+            <hr class="mt-2" />
+            <div class="empty-view mt-3">
+              <div class="d-flex justify-content-center mb-2">
+                <i class="bgc-dark d-block i-icon mr-2 gray i-response"></i>
+              </div>
+              <div class="font-weight-bold mb-3 f-4 text-muted text-center">
+                There are no assigned lead capture forms on this landing page.
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <app-slide-tab [tabs]="tabs" [selected]="selectedTab" (onChange)="changeTab($event)" type="plain"
+          class="border-bottom pl-0 px-0 rounded-0 f-4">
+        </app-slide-tab>
+        <ng-container [ngSwitch]="selectedTab.id">
+          <div class="mat-table-container" *ngSwitchCase="'views'">
+            <table mat-table [dataSource]="views | paginate: {itemsPerPage: pageSizeMaterial.id, currentPage: pageMaterial, id: 'materialhistory', totalItems: totalCountMaterial}" *ngIf="views.length">
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef class="flex-1"> Name </th>
+                <td mat-cell *matCellDef="let element" class="sticky-column-first py-0 px-0">
+                  <a class="v-center c-pointer table-cell td-none" [routerLink]="'/contacts/' + element.contacts?._id" target="_blank">
+                    <div class="contact-avatar f-3 mr-2">
+                      {{ getAvatarName(element.contacts) }}
+                    </div>
+                    <span >{{ getContactName(element.contacts) }}</span>
+                  </a>
+                </td>
+              </ng-container>
+
+              <!-- Label Column -->
+              <ng-container matColumnDef="label">
+                <th mat-header-cell *matHeaderCellDef class="flex-1"> Status </th>
+                <td mat-cell *matCellDef="let element" class="sticky-column-first py-0 px-0">
+                  <app-label-select [value]="element.contacts?.label" [disabled]="true"></app-label-select>
+                </td>
+              </ng-container>
+
+              <!-- Email Column -->
+              <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef> Primary Email </th>
+                <td mat-cell *matCellDef="let element">
+                  <div class="v-center">
+                    <span>{{ element.contacts?.email }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Phone Column -->
+              <ng-container matColumnDef="cell_phone">
+                <th mat-header-cell *matHeaderCellDef> Primary Phone Number </th>
+                <td mat-cell *matCellDef="let element">
+                  <div class="v-center">
+                    <span>{{ element.contacts?.cell_phone }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Created Column -->
+              <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef> Media Title </th>
+                <td mat-cell *matCellDef="let element">
+                  <div class="v-center">
+                    <span>{{ element.title }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Created Column -->
+              <ng-container matColumnDef="progress">
+                <th mat-header-cell *matHeaderCellDef class="progress-cell"> Progress </th>
+                <td mat-cell *matCellDef="let element" class="progress-cell">
+                  <div class="v-center">
+                    <span>{{ getProgress(element) }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Created Column -->
+              <ng-container matColumnDef="watched_date">
+                <th mat-header-cell *matHeaderCellDef class="date-cell"> Watched Date </th>
+                <td mat-cell *matCellDef="let element" class="date-cell">
+                  <div class="v-center">
+                    <span>{{ element.created_at | date: 'MMM d, hh:mm a' }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Header and Row Declarations -->
+              <tr mat-header-row *matHeaderRowDef="viewsColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: viewsColumns;"></tr>
+            </table>
+            <ng-container *ngIf="totalCountMaterial > MIN_ROW_COUNT">
+              <div class="my-2 table-control mode-1">
+                <div class="pagination-wrapper m-auto">
+                  <pagination-controls
+                    (pageChange)="changeMaterialPage($event)"
+                    (pageBoundsCorrection)="onOverMaterialPages($event)"
+                    id="materialhistory"
+                    maxSize="5"
+                    previousLabel=""
+                    nextLabel="">
+                  </pagination-controls>
+                </div>
+                <div class="shadow-dropdown ml-auto page-size-control" ngbDropdown placement="top-right">
+                  <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+                    <span id="task-show-count-page" class="pr-2 c-dark">{{'Show' || translate}} {{pageSizeMaterial.id}} {{'rows per page' | translate}}</span>
+                  </div>
+                  <div ngbDropdownMenu aria-labelledby="materialPageSize">
+                    <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS; let i = index" (click)="changePageSize(type, 'material')">
+                      <span id="page-count-select-{{i}}" class="f-3 v-center" [class.font-weight-bold]="type.id === pageSizeMaterial.id">
+                        {{'Show' | translate}} {{type.label}} {{'rows per page' | translate}}
+                        <i class="i-icon i-check d-block bgc-dark sm ml-1 mb-1" *ngIf="type.id === pageSizeMaterial.id"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <!-- Empty & Loading View -->
+            <ng-container *ngIf="isLoadingMaterialTracks; else emptyViewedList">
+              <div class="list-loading text-center">
+                <div class="loader mt-1 sm"></div>
+                <h4 class="fw-600 f-3 mt-1" translate>Loading view details...</h4>
+              </div>
+            </ng-container>
+            <ng-template #emptyViewedList>
+              <div *ngIf="!views.length">
+                <div class="empty-view">
+                  <div class="d-flex justify-content-center mb-2">
+                    <i class="bgc-dark d-block i-icon mr-2 gray i-visibility"></i>
+                  </div>
+                  <div class="font-weight-bold mb-3 f-4 text-muted text-center">
+                    There are no members that viewed this page yet.
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+          <div class="mat-table-container" *ngSwitchCase="'response'">
+            <table mat-table [dataSource]="formTracks | paginate: {itemsPerPage: pageSizeForm.id, currentPage: pageForm, id: 'formhistory', totalItems: totalCountForm}" *ngIf="formTracks.length" >
+              <!-- Name Column -->
+              <ng-container matColumnDef="contact_name">
+                <th mat-header-cell *matHeaderCellDef class="sticky-column-first py-0 px-0"> Name </th>
+                <td mat-cell *matCellDef="let element" class="sticky-column-first py-0 px-0">
+                  <a class="v-center c-pointer table-cell td-none" [routerLink]="'/contacts/' + element.contact?._id" target="_blank">
+                    <div class="contact-avatar f-3 mr-2">
+                      {{ getAvatarName(element.contact) }}
+                    </div>
+                    <span >{{ getContactName(element.contact) }}</span>
+                  </a>
+                </td>
+              </ng-container>
+
+              <!-- Label Column -->
+              <ng-container matColumnDef="contact_label">
+                <th mat-header-cell *matHeaderCellDef class="sticky-column-first py-0 px-0"> Status </th>
+                <td mat-cell *matCellDef="let element" class="sticky-column-first py-0 px-0">
+                  <app-label-select [value]="element.contact?.label" [disabled]="true"></app-label-select>
+                </td>
+              </ng-container>
+
+              <!-- Created Column -->
+              <ng-container matColumnDef="created_at">
+                <th mat-header-cell *matHeaderCellDef class="sticky-column-second"> Created At </th>
+                <td mat-cell *matCellDef="let element" class="sticky-column-second">
+                  <div class="v-center table-cell">
+                    <span>{{ element.created_at | date: 'MMM d, hh:mm a' }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Form Name Column -->
+              <ng-container matColumnDef="form_name">
+                <th mat-header-cell *matHeaderCellDef class="pr-3"> Form Name </th>
+                <td mat-cell *matCellDef="let element" class="pr-3">
+                  <div class="v-center table-cell">
+                    <span>{{ element.lead_form?.name || 'No Title' }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Dynamic Column Headers -->
+              <ng-container *ngFor="let field of formFields" [matColumnDef]="field">
+                <th mat-header-cell *matHeaderCellDef class="pr-3"> {{ getFormHeader(field) | titlecase }} </th>
+                <td mat-cell *matCellDef="let element" class="pr-3">
+                  <div class="v-center table-cell" >
+                    <span>{{ element.data[field] || '' }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Header and Row Declarations -->
+              <tr mat-header-row *matHeaderRowDef="responseColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: responseColumns;"></tr>
+            </table>
+
+            <ng-container *ngIf="totalCountForm > MIN_ROW_COUNT">
+              <div class="my-2 table-control mode-1">
+                <div class="pagination-wrapper m-auto">
+                  <pagination-controls
+                    (pageChange)="changeFormPage($event)"
+                    (pageBoundsCorrection)="onOverFormPages($event)"
+                    id="formhistory"
+                    maxSize="5"
+                    previousLabel=""
+                    nextLabel="">
+                  </pagination-controls>
+                </div>
+                <div class="shadow-dropdown ml-auto page-size-control" ngbDropdown placement="top-right">
+                  <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+                    <span id="task-show-count-page" class="pr-2 c-dark">{{'Show' || translate}} {{pageSizeForm.id}} {{'rows per page' | translate}}</span>
+                  </div>
+                  <div ngbDropdownMenu aria-labelledby="formPageSize">
+                    <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS; let i = index" (click)="changePageSize(type, 'form')">
+                      <span id="page-count-select-{{i}}" class="f-3 v-center" [class.font-weight-bold]="type.id === pageSizeForm.id">
+                        {{'Show' | translate}} {{type.label}} {{'rows per page' | translate}}
+                        <i class="i-icon i-check d-block bgc-dark sm ml-1 mb-1" *ngIf="type.id === pageSizeForm.id"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <!-- Empty & Loading View -->
+            <ng-container *ngIf="isLoadingFormTracks; else emptyTrackedList">
+              <div class="list-loading text-center">
+                <div class="loader mt-1 sm"></div>
+                <h4 class="fw-600 f-3 mt-1" translate>Loading response details...</h4>
+              </div>
+            </ng-container>
+            <ng-template #emptyTrackedList>
+              <div *ngIf="!formTracks.length">
+                <div class="empty-view">
+                  <div class="d-flex justify-content-center mb-2">
+                    <i class="bgc-dark d-block i-icon mr-2 gray i-visibility"></i>
+                  </div>
+                  <div class="font-weight-bold mb-3 f-4 text-muted text-center">
+                    There are no members that submit the lead form on this page yet.
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+    <!-- Empty & Loading View -->
+    <ng-container *ngIf="!pageDetail">
+      <div class="errorContent py-5" *ngIf="!isLoading; else loadingPageDetail">
+        <h1 class="font-weight-bold mb-3 f-26" translate>
+          Oops! This Page is Currently Unavailable
+        </h1>
+        <span class="font-weight-bold mb-3 f-8">We’re sorry, but the page you were trying to view is currently disabled. This might be due to the link being temporarily inactive.</span><br>
+        <span class="text-muted f-4 mb-2 d-block mt-4">If you received this link from someone, kindly reach out to them and let them know so they can assist you further.</span>
+        <span class="font-weight-bold f-6">Thank you for your understanding!</span>
+      </div>
+      <ng-template #loadingPageDetail>
+        <div class="list-loading text-center">
+          <div class="loader mt-5 lg"></div>
+          <h4 class="fw-600 mt-2" translate>Loading page details...</h4>
+        </div>
+      </ng-template>
+    </ng-container>
+  </div>
+</div>
+

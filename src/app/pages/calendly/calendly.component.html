@@ -1,0 +1,23 @@
+<div class="page-content bg-white">
+  <div class="v-center mb-3 justify-content-between">
+    <h1 class="page-title" translate>Scheduler</h1>    
+    <div *ngIf="selectedTab.id=='types'">
+      <div ngbDropdown placement="bottom-right" class="v-center deals-header justify-content-end ml-auto">
+        <button [attr.data-action]="'leadHub-new-event'" class="btn btn-primary" id="dropdownBasic2" (click)="addNewEventType('one')" translate>New Event Type</button>
+      </div>
+    </div>
+
+  </div>
+  <div class="page-header mb-2">
+    <app-slide-tab [tabs]="tabs" [selected]="selectedTab" (onChange)="changeTab($event)" type="plain" class="border-bottom pl-0 rounded-0">
+    </app-slide-tab>
+  </div>
+  <div class="container-fluid" *ngIf="isChecked">
+    <ng-container [ngSwitch]="selectedTab.id">
+      <app-schedule-types *ngSwitchCase="'types'"></app-schedule-types>
+      <app-scheduled-events *ngSwitchCase="'schedules'"></app-scheduled-events>
+      <app-integrated-calendars *ngSwitchCase="'calendars'"></app-integrated-calendars>
+      <app-schedule-link *ngSwitchCase="'link'"></app-schedule-link>
+    </ng-container>
+  </div>
+</div>

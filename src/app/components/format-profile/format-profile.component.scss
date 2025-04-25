@@ -1,0 +1,6 @@
+:host ::ng-deep {
+  .custom-radio:checked, .custom-radio:not(:checked) {
+    left: unset!important;
+    position: relative!important;
+  }
+}

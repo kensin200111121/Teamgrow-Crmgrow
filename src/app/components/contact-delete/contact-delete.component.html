@@ -1,0 +1,18 @@
+<h4 mat-dialog-title class="m-0" translate>Deleting contacts</h4>
+<mat-dialog-content class="mt-3">
+  <div class="my-3">
+    <mat-progress-bar class="custom-progress" [value]="deletePercent"></mat-progress-bar>
+    <div class="v-center justify-content-between w-100 mt-2">
+      <div class="f-3 fw-600" [translateParams]="{count1: deletedCount, count2: allCount}" translate>
+        delete status
+      </div>
+      <div class="f-3 fw-600">{{deletePercent}}%</div>
+    </div>
+  </div>
+  <div class="attention v-center justify-content-center py-2">
+    <i class="i-icon i-warning-red attention-icon d-block"></i>
+    <div class="f-4 fw-600 c-black ml-3" translate>
+      Don't close this tab while deleting contacts
+    </div>
+  </div>
+</mat-dialog-content>

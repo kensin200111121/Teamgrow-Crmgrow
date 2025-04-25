@@ -1,0 +1,57 @@
+.plan {
+    border: 2px solid #0000ff;
+    border-radius: 4px;
+    .condition {
+        .time {
+            font-size: 20px;
+            font-weight: 900;
+            color: #222B45;
+        }
+        .summary {
+            font-size: 16px;
+            color: #6F7086;
+        }
+    }
+    .price {
+        font-size: 29px;
+        font-weight: 900;
+        color: #222B45;
+        .price-symbol {
+            font-size: 19px;
+            font-weight: 900;
+        }
+    }
+}
+
+.footer {
+    max-width: 454px;
+    width: 100%;
+    margin: auto;
+    margin-top: 2rem;
+    .mobile {
+        display: none;
+    }
+    .logo-exit {
+        height: 38px;
+    }
+    .logo-remax {
+        height: 45px;
+    }
+    .logo-cent21 {
+        height: 55px;
+    }
+    .logo-exp {
+        height: 40px;
+    }
+    .footer-text {
+        color: #797B8E; 
+    }
+    @media screen and (max-width: 454px) {
+        .desktop {
+            display: none;
+        }
+        .mobile {
+            display: block;
+        }
+    }
+}

@@ -1,0 +1,30 @@
+diff --git a/node_modules/quill-better-table/dist/quill-better-table.js b/node_modules/quill-better-table/dist/quill-better-table.js
+index 7e44cf0..75cd569 100644
+--- a/node_modules/quill-better-table/dist/quill-better-table.js
++++ b/node_modules/quill-better-table/dist/quill-better-table.js
+@@ -2976,8 +2976,8 @@ class quill_better_table_BetterTable extends Module {
+     // expected my binding callback excute first
+     // I changed the order of binding callbacks
+ 
+-    let thisBinding = quill.keyboard.bindings['Backspace'].pop();
+-    quill.keyboard.bindings['Backspace'].splice(0, 1, thisBinding); // add Matchers to match and render quill-better-table for initialization
++    let thisBinding = quill.keyboard?.bindings['Backspace']?.pop();
++    quill.keyboard?.bindings['Backspace']?.splice(0, 1, thisBinding); // add Matchers to match and render quill-better-table for initialization
+     // or pasting
+ 
+     quill.clipboard.addMatcher('td', matchTableCell);
+diff --git a/node_modules/quill-better-table/src/quill-better-table.js b/node_modules/quill-better-table/src/quill-better-table.js
+index e8d3ca7..3524f8e 100644
+--- a/node_modules/quill-better-table/src/quill-better-table.js
++++ b/node_modules/quill-better-table/src/quill-better-table.js
+@@ -145,8 +145,8 @@ class BetterTable extends Module {
+     // since only one matched bindings callback will excute.
+     // expected my binding callback excute first
+     // I changed the order of binding callbacks
+-    let thisBinding = quill.keyboard.bindings['Backspace'].pop()
+-    quill.keyboard.bindings['Backspace'].splice(0, 1, thisBinding)
++    let thisBinding = quill.keyboard?.bindings['Backspace']?.pop()
++    quill.keyboard?.bindings['Backspace']?.splice(0, 1, thisBinding)
+ 
+     // add Matchers to match and render quill-better-table for initialization
+     // or pasting

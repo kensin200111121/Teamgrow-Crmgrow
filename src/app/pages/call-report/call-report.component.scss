@@ -1,0 +1,154 @@
+.reports-section {
+    margin-top: 24px;
+    // max-width: 940px;
+
+    .title {
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 24px;
+    }
+}
+
+.sub-title {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.reports {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 6px;
+}
+
+// Mini devices (landscape phones, 576px and up)
+@media (max-width: 280px) {
+    .reports {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        grid-gap: 6px;
+    }
+}
+
+// Small devices (landscape phones, 576px and up)
+@media (min-width: 576px) {
+    .reports {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 6px;
+    }
+}
+
+// Medium devices (tablets, 768px and up)
+@media (min-width: 768px) {
+    .reports {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 6px;
+    }
+}
+
+// Large devices (desktops, 992px and up)
+@media (min-width: 992px) {
+    .reports {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-gap: 6px;
+    }
+}
+
+// X-Large devices (large desktops, 1200px and up)
+@media (min-width: 1200px) {
+    .reports {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-gap: 6px;
+    }
+}
+
+.report-item {
+    background-color: #FAFAFA;
+    border: 1px solid #E6E6E6;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    min-height: 75px;
+    margin-top: 5px;
+    margin-left: 5px;
+
+    .title {
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 20px;
+        color: #4D4D4D;
+    }
+
+    .value {
+        font-size: 18px;
+        color: #066FD3;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+
+        .loader {
+            width: 20px;
+            height: 20px;
+            margin-left: auto;
+            margin-right: 0px;;
+        }
+    }
+    &.total-info {
+        display: flex;
+        flex-direction: column;
+
+        .value {
+            margin-top: auto;
+        }
+    }
+
+    &.active {
+        background-color: #dee1ff;
+        border: 1px solid #0000ff96;
+    }
+}
+
+:host ::ng-deep {
+    .tooltip-inner {
+        max-width: 140px;
+        font-size: 13px;
+    }
+}
+
+.logs-list {
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+    white-space: nowrap;
+
+    .logs-wrapper {
+        border: 1px solid #e9ecef;
+        overflow: hidden;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow: auto;
+    }
+
+    .page-table {
+        tr.table-header th {
+            top: 0 !important;
+        }
+    }
+}
+
+@media screen and (max-width: 468px) {
+    .call-logs-list-controls {
+        flex-wrap: wrap;
+
+        .search-form {
+            width: 100%;
+            margin-top: 4px;
+        }
+    }
+}

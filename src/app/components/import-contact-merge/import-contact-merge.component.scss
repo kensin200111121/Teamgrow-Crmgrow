@@ -1,0 +1,84 @@
+.v-top {
+  display: flex;
+  align-items: flex-start;
+}
+
+.table thead th {
+  border-bottom: none;
+  opacity: 1;
+}
+
+.notes-label {
+  width: 70px;
+  min-width: 70px;
+}
+
+.selected-option-text {
+  color: #0000ff;
+}
+
+.contact-row {
+
+  .contact-header {
+    width: 30%;
+    max-width: 200px;
+  }
+
+  .contact-field {
+    width: 70%;
+    max-width: 300px;
+  }
+}
+
+:host ::ng-deep {
+  .check-wrapper {
+    .custom-radio:checked, .custom-radio:not(:checked) {
+      position: relative;
+      left: 0;
+    }
+
+    .custom-control-input:checked ~ .custom-control-label::before {
+      border-color: #0000ff;
+      background-color: #ffffff;
+    }
+
+    .custom-control label {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .custom-radio .custom-control-label::before {
+      border-radius: 50%;
+      top: 0;
+    }
+
+    .custom-radio .custom-control-input:checked ~ .custom-control-label::after {
+      background-image: none;
+      background-color: #0000ff;
+      border-radius: 50%;
+    }
+
+    .custom-control-label::after {
+      top: 0.25rem;
+      left: -1.5rem;
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+  }
+
+  .mat-select {
+    border: 1px solid #aaa;
+    padding: 8px 12px;
+    border-radius: 5px;
+  }
+
+  .mat-select-value-text {
+    color: #000;
+  }
+
+  .disabled .mat-select-arrow {
+    border-left: 0px solid transparent;
+    border-right: 0px solid transparent;
+    border-top: 0px solid;
+  }
+}

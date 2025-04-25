@@ -1,0 +1,81 @@
+<ng-container *ngIf="isCheckingWavvId; else content">
+  <div class="list-loading text-center">
+    <div class="loader mt-5 lg"></div>
+    <h4 class="fw-400 mt-2" translate>Loading...</h4>
+  </div>
+</ng-container>
+<ng-template #content>
+  <ng-container *ngIf="enable; else errorTemplate">
+    <div class="content p-4" [class.loading]="isLoading">
+      <ng-container *ngIf="isAllSet">
+        <div class="f-4 fw-600 c-primary" translate>
+          Current SMS limit details
+        </div>
+        <div class="f-4 fw-600 c-primary mt-2" [innerHTML]="'You have count SMS messages remaining' | translate:{count: leftSms || 0}">
+        </div>
+        <div>
+          <button data-action="purchase-messages" class="btn btn-primary f-4 mt-3" (click)="purchase()" translate>Purchase messages</button>
+        </div>
+        <hr class="my-4"/>
+      </ng-container>
+      <div class="d-flex flex-row align-items-center">
+        <span class="f-4 fw-600 mr-2 align-middle c-primary">Subscription</span>
+        <span class="rounded py-1 px-2 f-2 badge bg-success c-white" *ngIf="subscriptionState">Enabled</span>
+        <span class="rounded py-1 px-2 f-2 badge bg-secondary c-white" *ngIf="!subscriptionState">Disabled</span>
+      </div>
+      <div class="f-4 mt-2 c-secondary" *ngIf="!subscriptionState">
+        Please enable this subscription to send the sms. After enable this subscription, you can see the next steps.
+      </div>
+      <button *ngIf="!subscriptionState" data-action="settings-change-phone-number" class="v-center btn btn-white-blue py-1 mr-2 my-4" (click)="subscribe()"
+        [class.loading]="isSetting">
+        <span class="f-4 c-blue font-weight-bold" translate>Subscribe</span>
+      </button>
+      <div class="f-4 mt-2 c-secondary" *ngIf="subscriptionState">
+        You enabled the sms feature subscription. You can send the sms after completing the following steps completely.
+      </div>
+      <hr class="my-4"/>
+      <div [class.disabled]="!subscriptionState">
+        <div class="d-flex flex-row align-items-center">
+          <span class="f-4 fw-600 c-primary mr-2 align-middle">Brand Registration</span>
+          <span class="rounded py-1 px-2 f-2 badge bg-success c-white" *ngIf="isApprovedBrand">Enabled</span>
+          <span class="rounded py-1 px-2 f-2 badge c-white" *ngIf="!isApprovedBrand"
+            [class.bg-danger]="isFailedBrand"
+            [class.bg-secondary]="isNoneBrand"
+            [class.bg-info]="!isFailedBrand && !isNoneBrand">
+            {{ brandState }}
+          </span>
+        </div>
+        <div class="f-4 mt-2 c-secondary">
+          You can send the sms after this brand registration. It will help your deliver rate and prevent the spam activities.
+        </div>
+        <div class="v-center mt-2 my-4">
+          <button data-action="settings-change-phone-number" class="v-center btn btn-white-blue py-1 mr-2" (click)="openWavvSettings()">
+            <span class="f-4 c-blue font-weight-bold" translate>Setup Brand</span>
+          </button>
+        </div>
+        <hr class="my-4"/>
+        <div [class.disabled]="!isApprovedBrand">
+          <div class="d-flex flex-row align-items-end">
+            <span class="f-4 fw-600 c-primary mr-2 align-middle">Your Number </span>
+            <span class="rounded py-1 px-2 f-2 badge bg-success c-white">{{phoneNumber}}</span>
+          </div>
+          <div class="f-4 mt-2 c-secondary">
+            You can send the sms with this phone number. Please add phone number if you don't have it.
+          </div>
+          <div class="v-center mt-2 my-4" *ngIf="!phoneNumber">
+            <button data-action="settings-change-phone-number" class="v-center btn btn-white-blue py-1 mr-2" (click)="openWavvSettings()">
+              <span class="f-4 c-blue font-weight-bold" translate>Add</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>  
+  </ng-container>
+  <ng-template #errorTemplate>
+    <div class="errorContent p-4">
+      <img class="error-icon" [src]="sspaService.toAsset('img/emoji-funny.svg')" /><br />
+      <span class="mt-10 font-weight-bold f-32">You are not allowed.</span><br />
+      <span class="mt-10 f-6 description">You don't have permission to use the texting functionality because you don't have wavv dialer access. You need to upgrade to unlock this feature.</span>
+    </div>  
+  </ng-template>
+</ng-template>

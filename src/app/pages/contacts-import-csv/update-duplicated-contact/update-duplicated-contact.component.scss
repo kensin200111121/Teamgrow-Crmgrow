@@ -1,0 +1,57 @@
+// Added by Sylla
+@import 'variables.scss';
+
+.update-contact-page {
+    max-width: 660px;
+}
+
+.contact-form {
+    border-radius: 8px;
+    border: 1px solid $color-gray;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 20px;
+    padding-left: 20px;
+
+    &.selected {
+        border: 1px solid $color-blue;
+    }
+}
+
+.normal {
+    display: block;
+}
+
+.desktop {
+    display: block;
+}
+
+.mobile {
+    display: none;
+}
+
+@media screen and (max-width: 384px) {
+    .normal {
+        display: none;
+    }
+
+    .desktop {
+        display: none;
+    }
+
+    .mobile {
+        display: block;
+    }
+}
+
+.page-footer {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+}
+
+input.disabled {
+    pointer-events: none;
+    background-color: #ffffff;
+}
+// End by Sylla

@@ -1,0 +1,33 @@
+<div class="v-center justify-content-between">
+  <h1 mat-dialog-title class="m-0" translate>
+    Auto Complete Task
+  </h1>
+  <button class="v-center border-0 bgc-trans" mat-dialog-close>
+      <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</div>
+<mat-dialog-content>
+
+  <ng-container *ngIf="data.length; else noData" >
+    <div class="py-2" *ngFor="let element of data">
+      <span>
+        {{element.type}}
+      </span>
+      <span>
+        {{element.contact}}
+      </span>
+      <span>
+        {{element.due_date}}
+      </span>
+      
+    </div>
+  </ng-container>
+  <ng-template #noData>
+    <div>
+      <span>There are no data for auto completion</span>
+    </div>
+  </ng-template>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button class="btn btn-blue f-6 font-weight-bold text-white" (click)="close()" [class.loading]="saving" translate>Close</button>
+</mat-dialog-actions>

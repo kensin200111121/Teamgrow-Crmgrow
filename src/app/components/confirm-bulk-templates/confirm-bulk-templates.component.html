@@ -1,0 +1,56 @@
+<div class="v-center justify-content-between">
+  <h1 mat-dialog-title class="m-0" translate>
+    {{data.title}}
+  </h1>
+  <button class="v-center border-0 bgc-trans" mat-dialog-close>
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</div>
+<form #dealForm="ngForm">
+  <mat-dialog-content>
+    <div class="link-panel mt-2">
+      <div class="ml-2 c-dark" translate>
+        {{data.message}}
+      </div>
+      <ng-container *ngFor="let error_messages of data?.additional">
+        <div class="v-center justify-content-center secondary-contact c-pointer w-100 mt-1"
+          (click)="expandDetails(error_messages.id)">
+          <div class="automation-title">
+            <li class="ml-2 mt-2" translate>
+              {{error_messages.title}}
+            </li>
+          </div>
+          <div class="automation-action">
+            <i class="d-block i-icon bgc-blue"
+              [ngClass]="{'i-expand-less': d_status[error_messages.id], 'i-expand-more': !d_status[error_messages.id]}"></i>
+          </div>
+        </div>
+        <div *ngFor="let error of error_messages.error_message" [class.d-none]="!d_status[error_messages.id]">
+          <div *ngIf="error.reason === 'shared teams'">
+            <div class="mb-1 mt-1 automation-reason">
+              <div class="automation-reason-title">
+                <span class="ml-4 mr-4" translate>Reason:</span>
+              </div>
+              <div class="automation-reason-content ml-2">
+                <span class="ci-dark mr-1" translate>This automation is shared in these</span>
+                <span class="c-red"> {{ 'teams' | translate }} </span>
+              </div>
+            </div>
+            <div class="mb-1 mt-1 automation-reason">
+              <div class="automation-reason-title"></div>
+              <div class="automation-reason-content">
+                <ng-container *ngFor="let team of error.teams let i = index">
+                  <a class="c-pointer c-blue" [routerLink]="['/community/' + team._id + '/members/root']" target="_blank">
+                    "{{ team.name | translate }}"
+                  </a>
+                  <span *ngIf="i < error.teams.length - 1">, </span>
+                  <span *ngIf="i === error.teams.length - 1">. </span>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </mat-dialog-content>
+</form>

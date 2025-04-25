@@ -1,0 +1,49 @@
+<div class="v-center justify-content-between mb-3 f-3 fw-600 c-pointer text-center">
+  <div
+    [class]="includeUnsubscribed ? 'w-50 p-1 bgc-dark c-white rounded-left' : 'w-50 p-1 bgc-silver c-dark rounded-left'"
+    translate
+    (click)="toggleInclude()"
+  >
+    Include
+  </div>
+  <div
+    [class]="!includeUnsubscribed ? 'w-50 p-1 bgc-dark c-white  rounded-right' : 'w-50 p-1 bgc-silver c-dark rounded-right'"
+    translate
+    (click)="toggleInclude()"
+  >
+    Exclude
+  </div>
+</div>
+<div class="label-items-list">
+  <div class="custom-checkbox label-item">
+    <input
+      type="checkbox"
+      class="custom-control-input"
+      id="unsubscribed-email"
+      name="unsubscribed-email"
+      (change)="toggleOption('email')"
+      [checked]="option.email"
+    />
+    <label class="custom-control-label d-flex" for="unsubscribed-email">
+      <span class="f-3 fw-600 mt-1 label-name" translate>Email Unsubscribed</span>
+    </label>
+  </div>
+  <div class="custom-checkbox label-item">
+    <input
+      type="checkbox"
+      class="custom-control-input"
+      id="unsubscribed-text"
+      name="unsubscribed-text"
+      (change)="toggleOption('text')"
+      [checked]="option.text"
+    />
+    <label class="custom-control-label d-flex" for="unsubscribed-text">
+      <span class="f-3 fw-600 mt-1 label-name" translate>Text Unsubscribed</span>
+    </label>
+  </div>
+</div>
+<div class="d-flex align-items-end">
+  <button type="submit" class="btn btn-primary" (click)="save()" translate>
+    Apply
+  </button>
+</div>

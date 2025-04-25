@@ -1,0 +1,246 @@
+<!-- Added by Sylla -->
+<div class="page-content">
+  <div class="status-header v-center mt-3">
+    <h1 class="page-title" translate>Contacts</h1>
+    <div class="f-6 font-weight-bold op-64 contact-count mobile">
+      {{ 'contacts' | translate }}
+    </div>
+    <div class="ml-auto v-center create-actions upload-ready-btn mr-3">
+      <button
+        class="v-center btn btn-white border border-primary f-6 font-weight-bold rounded mr-2 px-3"
+        (click)="onBack()"
+      >
+        <span class="normal" translate>Cancel</span>
+        <span class="mobile" translate>Cancel</span>
+      </button>
+      <ng-container *ngIf="isMatched">
+        <button
+          [attr.data-action]="'contact-import-save-continue'"
+          type="button"
+          class="btn btn-primary f-6 font-weight-bold rounded px-3 text-white shadow"
+          [class.loading]="isSaving"
+          (click)="onContinue()"
+        >
+          {{ 'Save and Continue' | translate }}
+        </button>
+      </ng-container>
+    </div>
+  </div>
+
+  <div
+    class="f-6 font-weight-bold op-64 mb-2 contact-count desktop"
+    [translateParams]="{ count: lines.length }"
+    translate
+  >
+    contacts ready to import
+  </div>
+
+  <div class="disclaim" *ngIf="!isMatched">
+    Please match the
+    <span style="text-transform: capitalize">{{ misMatchField }}</span> to go to
+    next step.
+  </div>
+
+  <ng-container *ngIf="isLoading; else tableView">
+    <div class="updating-status">
+      {{ 'LOADING' | translate }}
+    </div>
+  </ng-container>
+
+  <ng-template #tableView>
+    <div class="match-column-wrapper">
+      <div class="match-column-table-wrapper">
+        <div class="upload-table-wrapper">
+          <table class="upload-table page-table mb-0">
+            <thead>
+              <tr>
+                <th *ngFor="let column of columns" [class]="column">
+                  <div
+                    class="v-center normal-field"
+                    [class.phone-field]="
+                      pcMatching[column] == 'cell_phone' ||
+                      pcMatching[column] == 'secondary_phone'
+                    "
+                    translate
+                  >
+                    {{ column }}
+                    <ng-container *ngIf="pcMatching[column]">
+                      <div class="v-center ml-1">
+                        <i class="i-icon i-round-check mr-2 round-check"></i>
+                      </div>
+                    </ng-container>
+                  </div>
+                </th>
+              </tr>
+              <tr class="column-row">
+                <th *ngFor="let column of columns" class="column-field">
+                  <div class="min-h-50 v-center justify-content-between">
+                    <ng-container
+                      *ngIf="
+                        pcMatching[column] == 'cell_phone' ||
+                        pcMatching[column] == 'secondary_phone'
+                      "
+                    >
+                      <div class="flag-container" ngbDropdown>
+                        <div
+                          ngbDropdownToggle
+                          class="v-center c-pointer no-carot"
+                        >
+                          <div
+                            class="iti__flag"
+                            [ngClass]="selectedCountry?.flagClass"
+                          ></div>
+                          <div class="selected-dial-code f-3 mx-1">
+                            +{{ selectedCountry?.dialCode }}
+                          </div>
+                          <div class="iti__arrow"></div>
+                        </div>
+                        <div ngbDropdownMenu class="countries-wrapper p-0">
+                          <div
+                            class="dropdown-item c-pointer"
+                            *ngFor="let country of COUNTRIES"
+                            (click)="onCountrySelect(country)"
+                          >
+                            <div class="v-center">
+                              <div
+                                class="iti__flag"
+                                [ngClass]="country.flagClass"
+                              ></div>
+                              <div class="iti__label mx-1">
+                                {{ country.name }}
+                              </div>
+                              <div class="dial-code op-75 f-3">
+                                +{{ country.dialCode }}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+                    <div class="form-group mb-1 header-select">
+                      <mat-select
+                        [(ngModel)]="pcMatching[column]"
+                        (selectionChange)="isMatchedRequiredFields()"
+                      >
+                        <mat-option value="">{{
+                          'Exclude Info' | translate
+                        }}</mat-option>
+                        <mat-option
+                          value="{{ pcMatching[column] }}"
+                          *ngIf="pcMatching[column]"
+                        >
+                          <div class="f-3 c-black selected-option-text">
+                            {{ properties[pcMatching[column]] }}
+                          </div>
+                        </mat-option>
+                        <mat-option
+                          *ngFor="let field of getColumnFields()"
+                          value="{{ field.value }}"
+                        >
+                          <div
+                            class="f-3 c-black"
+                            [class.selected-option-text]="
+                              pcMatching[column] == field.value
+                            "
+                          >
+                            {{ field.label }}
+                          </div>
+                        </mat-option>
+                        <mat-option class="mb-2" value="create_field">
+                          <button
+                            class="btn btn-blue f-3 font-weight-bold text-white w-100 my-2"
+                            (click)="createCustomField(column)"
+                          >
+                            {{ 'Create Custom Field' | translate }}
+                          </button>
+                        </mat-option>
+                      </mat-select>
+                    </div>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="
+                  let line of lines
+                    | paginate
+                      : {
+                          id: 'contactPages',
+                          itemsPerPage: pageSize.id,
+                          currentPage: page,
+                          totalItems: lines.length
+                        }
+                "
+              >
+                <td *ngFor="let column of columns" class="f-4 last-row">
+                  {{
+                    pcMatching[column] == 'cell_phone' ||
+                    pcMatching[column] == 'secondary_phone'
+                      ? getFormattedPhoneNumber(line[column])
+                      : (line[column] || ''
+                        | stripTags
+                        | removeEntity
+                        | shorten : 32 : '...')
+                  }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="my-2 table-control mode-1">
+      <div class="pagination-wrapper m-auto">
+        <pagination-controls
+          (pageChange)="changePage($event)"
+          (pageBoundsCorrection)="changePage($event)"
+          id="contactPages"
+          maxSize="5"
+          previousLabel=""
+          nextLabel=""
+        >
+        </pagination-controls>
+      </div>
+      <div
+        class="shadow-dropdown ml-auto page-size-control"
+        ngbDropdown
+        placement="top-right"
+      >
+        <div
+          class="v-center c-pointer f-3 p-3 font-weight-bold"
+          ngbDropdownToggle
+        >
+          <span
+            class="pr-2 c-blue"
+            [translateParams]="{ count: pageSize.id }"
+            translate
+            >pagination</span
+          >
+        </div>
+        <div ngbDropdownMenu aria-labelledby="contactPageSize">
+          <div
+            class="py-2"
+            ngbDropdownItem
+            *ngFor="let type of PAGE_COUNTS"
+            (click)="changePageSize(type)"
+          >
+            <span
+              class="f-3 v-center"
+              [class.font-weight-bold]="type.id === pageSize.id"
+            >
+              <span [translateParams]="{ count: type.id }" translate
+                >pagination</span
+              >
+              <i
+                class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                *ngIf="type.id === pageSize.id"
+              ></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</div>
+<!-- End by Sylla -->

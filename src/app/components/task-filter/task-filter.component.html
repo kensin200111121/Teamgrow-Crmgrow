@@ -1,0 +1,168 @@
+<div class="panel pt-4c pr-4c pl-4c pb-0">
+  <div class="v-center mb-4">
+    <h4 class="font-weight-bold mb-0" translate>Filters</h4>
+    <button class="v-center border-0 bgc-trans ml-auto" type="button" (click)="close()">
+      <i class="d-block i-icon i-close bgc-dark"></i>
+    </button>
+  </div>
+  <form #form="ngForm" (ngSubmit)="form.form.valid ? applyFilters() : false">
+    <div class="form-group">
+      <label for="task-search" translate>Global Search</label>
+      <input type="text" class="form-control" [(ngModel)]="search" [placeholder]="'Type in string' | translate"
+        name="taskSearch" #taskSearch="ngModel" id="task-search" (ngModelChange)="applyFilters()" />
+    </div>
+    <div class="form-group">
+      <label translate>task type</label>
+      <div>
+        <div class="task-types btn-group btn-group-toggle rounded">
+          <label class="btn px-2 rounded no-shadow" ngbButtonLabel placement="bottom"
+            ngbTooltip="{{ 'General' | translate }}" [class.active]="types.indexOf('task') !== -1">
+            <input type="checkbox" name="options" ngbButton (change)="toggleTypes('task')" />
+            <i class="i-icon i-task d-block bgc-dark"></i>
+          </label>
+          <label class="btn px-2 rounded no-shadow" ngbButtonLabel placement="bottom"
+            ngbTooltip="{{ 'Call' | translate }}" [class.active]="types.indexOf('call') !== -1">
+            <input type="checkbox" name="options" ngbButton (change)="toggleTypes('call')" />
+            <i class="i-icon i-phone d-block bgc-dark"></i>
+          </label>
+          <label class="btn px-2 rounded no-shadow" ngbButtonLabel placement="bottom"
+            ngbTooltip="{{ 'Meeting' | translate }}" [class.active]="types.indexOf('meeting') !== -1">
+            <input type="checkbox" name="options" ngbButton (change)="toggleTypes('meeting')" />
+            <i class="i-icon i-lunch d-block bgc-dark"></i>
+          </label>
+          <label class="btn px-2 rounded no-shadow" ngbButtonLabel placement="bottom"
+            ngbTooltip="{{ 'Email' | translate }}" [class.active]="types.indexOf('email') !== -1">
+            <input type="checkbox" name="options" ngbButton (change)="toggleTypes('email')" />
+            <i class="i-icon i-message d-block bgc-dark"></i>
+          </label>
+          <label class="btn px-2 rounded no-shadow" ngbButtonLabel placement="bottom"
+            ngbTooltip="{{ 'Text' | translate }}" [class.active]="types.indexOf('text') !== -1">
+            <input type="checkbox" name="options" ngbButton (change)="toggleTypes('text')" />
+            <i class="i-icon i-sms-sent d-block bgc-dark"></i>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label translate>status of task</label>
+      <div>
+        <app-tab-option [options]="STATUS_OPTIONS" [(value)]="status" (valueChange)="applyFilters()"></app-tab-option>
+      </div>
+    </div>
+    <!-- <div class="d-flex mt-4">
+      <label class="f-1 op-75 mb-0" translate>CONTACT STATUS</label>
+      <a class="f-1 c-blue ml-2 c-pointer undecoration" (click)="clearLabels()" translate>CLEAR</a>
+    </div>
+    <div class="labels-wrapper">
+      <div class="custom-checkbox label-item" *ngFor="let item of labelService.labels$ | async"
+        style="height: unset; line-height: unset;">
+        <input type="checkbox" class="custom-control-input" id="label-{{item._id}}" name="label-{{item._id}}"
+          (change)="selectedLabels.toggle(item._id); applyFilters();" [checked]="selectedLabels.isSelected(item._id)">
+        <label class="custom-control-label d-flex" for="label-{{item._id}}">
+          <i class="i-icon i-label d-block mr-2"
+            [style.backgroundColor]="item.color === '#FFF' ? '#000' : item.color"></i>
+          <span class="f-3 fw-600 mt-1">{{item.name}}</span>
+        </label>
+      </div>
+    </div> -->
+    <div class="form-group">
+      <label translate>filter_task_contact</label>
+      <app-select-contact [contact]="selectedContact" (onSelect)="selectContact($event)"></app-select-contact>
+    </div>
+    <div class="row pt-2">
+      <div class="col-6">
+        <mat-checkbox name="check-start-date" [color]="'primary'" (change)="toggleDateInput($event.checked, 'start')"
+          [checked]="showStartDate">
+          <span class="f-3" translate>filter_by_start</span>
+        </mat-checkbox>
+      </div>
+      <div class="col-6">
+        <mat-checkbox name="check-end-date" [color]="'primary'" (change)="toggleDateInput($event.checked, 'end')"
+          [checked]="showEndDate">
+          <span class="f-3" translate>filter_by_end</span>
+        </mat-checkbox>
+      </div>
+    </div>
+    <div class="row" [class.disable]="!showStartDate">
+      <div class="col-6">
+        <div class="form-group">
+          <label translate>start date</label>
+          <div class="start-date rounded" tabindex="0">
+            <app-date-input type="prepend" [clearable]="false" [(value)]="startDate"
+              (valueChange)="changeDate('start')">
+            </app-date-input>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="form-group">
+          <label translate>time</label>
+          <select class="form-control" name="start_time" #start_time="ngModel" [(ngModel)]="startTime"
+            (ngModelChange)="changeTime('start')">
+            <option *ngFor="let time of TIMES" [value]="time.id">
+              {{ time.text }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="row" [class.disable]="!showEndDate">
+      <div class="col-6">
+        <div class="form-group">
+          <label translate>end date</label>
+          <app-date-input type="prepend" [clearable]="false" [(value)]="endDate" (valueChange)="changeDate('end')">
+          </app-date-input>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="form-group">
+          <label translate>time</label>
+          <select class="form-control" name="end_time" #end_time="ngModel" [(ngModel)]="endTime"
+            (ngModelChange)="changeTime('end')">
+            <option *ngFor="let time of TIMES" [value]="time.id">
+              {{ time.text }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="form-group mt-4">
+      <label translate>country</label>
+      <app-input-country [selectedCountries]="selectedCountries" (onSelect)="applyFilters()"></app-input-country>
+    </div>
+    <div class="form-group mt-4">
+      <label translate>state</label>
+      <app-input-state [selectedRegions]="selectedStates" [selectedCountries]="selectedCountries"
+        (onSelect)="applyFilters()"></app-input-state>
+    </div>
+    <div class="form-group mt-4">
+      <label translate>zipcode</label>
+      <input type="text" class="form-control" [(ngModel)]="zipcode" [placeholder]="'Type in string' | translate"
+        name="contactZipcode" #contactZipcode="ngModel" id="contactZipcode" (ngModelChange)="applyFilters()" />
+    </div>
+    <div class="form-group mt-4">
+      <label translate>source</label>
+      <app-input-source [selectedTags]="selectedSources" [onlyFromSearch]="true"
+        (onSelect)="applyFilters()"></app-input-source>
+    </div>
+    <div class="form-group mt-4">
+      <label translate>company</label>
+      <app-input-company [selectedTags]="selectedCompanies" [onlyFromSearch]="true"
+        (onSelect)="applyFilters()"></app-input-company>
+    </div>
+    <div class="form-group mt-4">
+      <label translate>tags</label>
+      <app-input-tag [selectedTags]="selectedTags" [onlyFromSearch]="true" [hasNoTag]="true"
+        (onSelect)="applyFilters()"></app-input-tag>
+    </div>
+
+    <div class="d-flex py-4" #dateRef>
+      <button type="button" data-action="task-custom-filter-cancel" class="btn btn-white font-weight-bold ml-auto" type="button" (click)="close()" translate>
+        Cancel
+      </button>
+      <button type="button" class="btn btn-white-blue font-weight-bold ml-2" (click)="clearFilter()" translate>
+        Clear All Filters
+      </button>
+    </div>
+  </form>
+</div>

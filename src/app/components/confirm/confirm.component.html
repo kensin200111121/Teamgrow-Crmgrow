@@ -1,0 +1,245 @@
+<ng-container *ngIf="step === 1">
+  <div class="v-center justify-content-between">
+    <h1 class="m-0" mat-dialog-title translate>
+      {{data['title']}}
+    </h1>
+    <i class="d-block i-icon i-close bgc-dark" mat-dialog-close *ngIf="!submitting"></i>
+  </div>
+  <mat-dialog-content class="description mt-1">
+    <div class="f-4 c-dark mt-3 font-weight-bold" *ngIf="data['confirmLabel'] === 'Download'; else otherConfirmTitle;">
+      <span
+        *ngIf="data['relatedItemsCount'] > 0 || (data['unsharedItems'] && data['unsharedItems'].length > 0)"
+        [innerHTML]="data['message'] | translate"></span>
+    </div>
+    <ng-template #otherConfirmTitle>
+      <div class="f-4 c-dark mt-3 text-center" [innerHTML]="data['message'] | translate"></div>
+    </ng-template>
+
+    <div *ngIf="data['folders']?.length">
+      <div class="ml-1 f-5 c-dark mt-3">
+        <div translate>Shared folder:</div>
+        <ul style="list-style-type: disc;" class="mt-2 pl-1" *ngFor="let folder of data['folders']">
+          <li class="d-flex mr-2">
+            <div class="v-center c-pointer">
+              <i class="bgc-blue d-block i-folder i-icon mr-2 mt-1"></i>
+              <span>{{ folder?.title | translate }}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div *ngIf="data['titles']?.length">
+      <div class="ml-1 f-5 c-dark mt-3">
+        <div translate>Automation:</div>
+        <ul style="list-style-type: disc;" class="mt-2 pl-1" *ngFor="let title of data['titles']">
+          <li class="d-flex mr-2">
+            <a class="c-pointer c-blue text-decoration-none" [routerLink]="['/autoflow/edit/' + title._id]" target="_blank">
+              <div class="v-center c-pointer">
+                <i class="bgc-blue d-block i-automation i-icon mr-2 mt-1" style="width: 15px;height: 15px;"></i>
+                <span>{{ title?.title | translate }}</span>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div *ngIf="data['videos'] && data['videos'].length>0">
+      <div class="ml-1 f-5 c-dark mt-3">
+        <div translate>Video:</div>
+        <ul style="list-style-type: disc;" class="mt-2 pl-1" *ngFor="let video of data['videos']">
+          <li class="d-flex mr-2">
+            <img src="{{video.preview}}" class="mr-2 mt-1" (error)="sspaService.imgError($event,'img/video_thumb.jpg')">
+            {{ video.title | translate }}
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div *ngIf="data['images'] && data['images'].length>0">
+      <div class="ml-1 f-5 c-dark mt-3">
+        <div translate>Image:</div>
+        <ul style="list-style-type: disc;" class="mt-2 pl-1" *ngFor="let image of data['images']">
+          <li class="d-flex mr-2">
+            <img src="{{image.preview}}" class="mr-2 mt-1" (error)="sspaService.imgError($event,'img/image_overlay.png')">
+            {{ image.title | translate }}
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div *ngIf="data['pdfs'] && data['pdfs'].length>0">
+      <div class="ml-1 f-5 c-dark mt-3">
+        <div translate>Pdf:</div>
+        <ul style="list-style-type: disc;" class="mt-2 pl-1" *ngFor="let pdf of data['pdfs']">
+          <li class="d-flex mr-2">
+            <img src="{{pdf.preview}}" class="mr-2 mt-1" (error)="sspaService.imgError($event,'img/pdf_overlay.png')">
+            {{ pdf.title | translate }}
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div *ngIf="data['templates'] && data['templates'].length > 0">
+      <div class="ml-1 f-5 c-dark mt-3">
+        <div translate>Template:</div>
+        <ul style="list-style-type: disc;" class="mt-2 pl-1" *ngFor="let template of data['templates']">
+          <li class="d-flex mr-2">
+            <i class="bgc-blue d-block i-automation i-icon mr-2 mt-1" style="width: 15px;height: 15px;"></i>
+            {{ template?.title | translate }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div *ngIf="data['unsharedItems'] && data['unsharedItems'].length > 0">
+      <div class="ml-1 f-5 c-dark mt-3">
+        <div translate style="text-transform: capitalize;">{{ data['resourceType'] }}s:</div>
+        <ul style="list-style-type: disc;" class="mt-2 pl-1" *ngFor="let item of data['unsharedItems']">
+          <li class="d-flex mr-2">
+            <i class="bgc-blue d-block {{data['icon']}} i-icon mr-2 mt-1" style="width: 15px;height: 15px;"></i>
+            {{ item?.title | translate }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Comment Area -->
+    <div class="form-group mt-3" *ngIf="data['comment']">
+      <label class="d-block mb-0" translate>{{ data['comment']['label'] || 'Comment' }}</label>
+      <textarea class="form-control" [(ngModel)]="comment"></textarea>
+    </div>
+
+    <!-- Additional Action -->
+    <div class="additional f-3 text-center fw-600" *ngIf="data['additional']">
+      <a class="c-pointer c-blue" (click)="doAdditionalAction()" translate>Click here</a> {{ 'to' | translate }}
+      {{data['additional']}}
+    </div>
+
+    <!-- Option Select  -->
+    <div class="d-flex flex-column mt-2">
+      <ng-container *ngFor="let answer of data.answers; let i=index;">
+        <button class="btn btn-primary f-6 font-weight-bold btn-font-bold text-white m-1" (click)="closeWithAnswer(answer)">
+          {{ answer['label'] || ('Answer' | translate) + (i + 1) }}
+        </button>
+      </ng-container>
+    </div>
+  </mat-dialog-content>
+</ng-container>
+<ng-container *ngIf="step === 2">
+  <div class="v-center justify-content-between">
+    <h1 class="m-0" mat-dialog-title translate>
+      Match Stages
+    </h1>
+    <i class="d-block i-icon i-close bgc-dark" mat-dialog-close *ngIf="!submitting"></i>
+  </div>
+  <mat-dialog-content class="description mt-1">
+    <div class="v-center justify-content-end my-3">
+      <div class="shadow-dropdown ml-auto" ngbDropdown>
+        <div class="v-center c-pointer f-3 px-3 py-2 justify-content-end" ngbDropdownToggle>
+          <span class="font-weight-bold pr">{{ dealsService.selectedPipeline.getValue()?.title | translate}}</span>
+        </div>
+        <div ngbDropdownMenu aria-labelledby="pipelines">
+          <div class="py-2" ngbDropdownItem *ngFor="let pipeline of (dealsService.pipelines$ | async)"
+            (click)="onChangePipeline(pipeline)">
+            <span class="f-3 v-center"
+              [class.font-weight-bold]="pipeline._id === dealsService.selectedPipeline.getValue()?._id">
+              {{ pipeline.title | translate }}
+              <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                *ngIf="pipeline._id === dealsService.selectedPipeline.getValue()?._id"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="my-2 w-100">
+      <div class="row mb-2">
+        <div class="col-6 f-3 font-weight-bold" translate>Automation Stages</div>
+        <div class="col-6 f-3 font-weight-bold" translate>Match To</div>
+      </div>
+      <div class="row align-items-center mt-2" *ngFor="let dealStage of dealStages">
+        <div class="col-6 f-5 c-dark" translate>{{dealStage.title}}</div>
+        <div class="colo-6 option-selector">
+          <mat-select [(ngModel)]="mapDealStage[dealStage._id]">
+            <mat-option *ngFor="let stage of stages" value="{{stage._id}}">
+              <div class="f-3 c-black" [class.selected-option-text]="mapDealStage[dealStage._id] == stage._id">
+                {{ stage.title | translate }}
+              </div>
+            </mat-option>
+            <mat-option [value]="''">{{ 'Create Stage' | translate }}</mat-option>
+          </mat-select>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+</ng-container>
+<ng-container *ngIf="hasDealStages; else normalConfirm">
+  <mat-dialog-actions align="end" class="mx-0">
+    <button class="btn btn-white f-6 font-weight-bold mr-2" [mat-dialog-close]="false"
+      [class.disabled]="submitting"
+      translate
+      *ngIf="!data?.hideCancel"
+    >
+      {{ data['cancelLabel'] || 'Cancel' }}
+    </button>
+    <ng-container *ngIf="step == 1">
+      <button class="btn btn-primary f-6 font-weight-bold btn-font-bold text-white" (click)="goNext()" cdkFocusInitial translate>
+        Next
+      </button>
+    </ng-container>
+    <ng-container *ngIf="step == 2">
+      <div class="v-center">
+        <button class="btn btn-primary f-6 font-weight-bold btn-font-bold text-white" (click)="doConfirm()"
+          cdkFocusInitial translate>
+          Confirm
+        </button>
+      </div>
+    </ng-container>
+  </mat-dialog-actions>
+</ng-container>
+<ng-template #normalConfirm>
+  <mat-dialog-actions align="end" class="mx-0" *ngIf="!data.case; else caseActions">
+    <ng-container *ngIf="data.type == 'stop share'; else closeButton">
+      <button class="btn btn-white f-6 font-weight-bold c-blue mr-2" (click)="cancel()"
+        [class.disabled]="submitting" translate
+      >
+        {{ data['cancelLabel'] || 'Cancel' }}
+      </button>
+    </ng-container>
+    <ng-template #closeButton>
+      <button class="btn btn-white f-6 font-weight-bold c-blue mr-2" [mat-dialog-close]="false"
+        [class.disabled]="submitting" translate
+        *ngIf="!data?.hideCancel"
+      >
+        {{ data['cancelLabel'] || 'Cancel' }}
+      </button>
+    </ng-template>
+    <ng-container *ngIf="!data.onConfirm; else confirmButton">
+      <button class="btn f-6 font-weight-bold btn-font-bold text-white" 
+        [ngClass]="{'btn-primary': mode === 'normal', 'btn-danger' : mode === 'warning' }"
+        (click)="close()" 
+        [disabled]="checkDownloadItems()" 
+        data-action="confirm-downgrade"
+        cdkFocusInitial translate>
+        {{ data['confirmLabel'] || 'OK' }}
+      </button>
+    </ng-container>
+    <ng-template #confirmButton>
+      <button class="btn f-6 font-weight-bold btn-font-bold text-white" 
+        [class.loading]="submitting" 
+        [ngClass]="{'btn-primary': mode === 'normal', 'btn-danger' : mode === 'warning' }"
+        type="button" 
+        data-action="confirm-downgrade"
+        (click)="doConfirm()" cdkFocusInitial translate>
+        {{ data['confirmLabel'] || 'OK' }}
+      </button>
+    </ng-template>
+  </mat-dialog-actions>
+  <ng-template #caseActions>
+    <mat-dialog-actions align="end" class="mx-0">
+      <button class="btn btn-white f-6 font-weight-bold mr-2"
+        [mat-dialog-close]="false"
+        translate
+        *ngIf="!data?.hideCancel"
+      >
+        {{ data['cancelLabel'] || 'Cancel' }}
+      </button>
+    </mat-dialog-actions>
+  </ng-template>
+</ng-template>

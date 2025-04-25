@@ -1,0 +1,30 @@
+.case {
+  border: 2px solid #aaa;
+  border-radius: 5px;
+
+  &.selected {
+    border: 2px solid #0000ff;
+  }
+}
+.invalid{
+
+  color:red;
+
+}
+
+.custom-radio-container {
+  width: 20px;
+  height: 20px;
+
+  label {
+    height: 20px;
+    opacity: 1;
+
+    &::before {
+      right: -20px!important;
+    }
+    &::after {
+      right: -16px!important;
+    }
+  }
+}

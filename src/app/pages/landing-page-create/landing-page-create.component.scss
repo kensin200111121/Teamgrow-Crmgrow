@@ -1,0 +1,249 @@
+@import 'variables';
+
+::ng-deep {
+  .form-group {
+    margin-bottom: 1rem;
+  }
+}
+
+.back-header {
+  position: sticky;
+  top: $table-header-top;
+  background-color: white;
+  z-index: 10;
+}
+.status-header {
+  position: sticky;
+  top: $table-header-top + 18;
+  background-color: white;
+  z-index: 10;
+  @media screen and (max-width: 610px) {
+    display: block;    
+    .action-header {
+      justify-content: end;
+      margin-top: 20px;
+    }
+  }  
+}
+
+.landing-page-form {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 600;
+}
+
+.placeholder {
+  font-size: 12px;
+  color: #989898;
+}
+
+.content-description {
+  font-size: 13px;
+  color: #989898;
+}
+
+.select-layout {
+  display: flex;
+  justify-content: space-between;
+
+  .layout-item {
+    width: 240px;
+    min-width: 200px;
+    border: 1px solid #E6E6E6;
+    border-radius: 4px;
+    min-height: 300px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.16);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+  }
+
+  @media screen and (max-width: 600px) {
+    display: block; 
+    .layout-item {
+      width: 80%;
+      margin: 16px auto;
+    }
+  }
+
+  .selected-layout {
+    border-color: $color-blue;
+  }
+}
+
+.select-view-mode {
+  display: flex;
+  justify-content: start;
+  gap: 16px;
+  
+  .mode-item {
+    flex: 1;
+    border: 1px solid #E6E6E6;
+    border-radius: 4px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.16);
+    padding: 12px;
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    
+    img {
+      width: 90px;
+      margin-right: 16px;
+    }
+  }
+
+  @media screen and (max-width: 300px) {
+    display: block; 
+    .mode-item {
+      width: 80%;
+      margin: 16px auto;
+    }
+  }
+
+  .selected-mode {
+    border-color: $color-blue;
+  }
+}
+
+.layout-title {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.layout-description {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #989898;
+}
+
+.select-material {
+  width: 100%;
+  background-color: #f5f5f5;
+  border: 1px solid #f5f5f5;
+  border-radius: 4px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+
+  button {
+    background-color: #f5f5f5;
+    width: 200px;
+    color: $color-blue;
+    margin: 0 auto;
+  }
+}
+
+.btn-form-type {
+  border-color: #989898;
+}
+
+.material-preview {
+  width: 60%;
+  margin: 0 auto;
+}
+
+.edit-material {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top:30px;
+  right: 30px;
+  background-color: $color-blue;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;  
+}
+
+.form-type {
+  .form-type-item {
+    width: 50%;
+  }
+  @media screen and (max-width: 576px) {
+    display: block;
+    .form-type-item {
+      width: 100%;
+      margin-top: 16px;
+    }
+  }
+}
+
+.highlights{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.img-comp {
+  width: 100px;
+  height: 100px;
+  border-radius: 4px;
+  border: 1px dashed $color-border;
+  padding: 5px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  position: relative;
+
+  img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+  }
+
+  .plus {
+      font-size: 36px;
+      text-align: center;
+      line-height: 90px;
+      cursor: pointer;
+  }
+
+  .remove-link {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: black;
+    top: -5px;
+    right: -5px;
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity .2s;
+
+    &::after {
+        width: 16px;
+        height: 2px;
+        background-color: white;
+        content: "";
+        transform: rotate(45deg);
+        position: absolute;
+        top: 9px;
+        left: 2px;
+    }
+    &::before {
+        width: 16px;
+        height: 2px;
+        background-color: white;
+        content: "";
+        transform: rotate(-45deg);
+        top: 9px;
+        left: 2px;
+        display: block;
+        position: absolute;
+    }
+  }
+
+  &:hover .remove-link {
+    opacity: 1;
+  }
+}
+
+img.cdk-drag-preview {
+  width: 80px;
+  height: 80px;
+}

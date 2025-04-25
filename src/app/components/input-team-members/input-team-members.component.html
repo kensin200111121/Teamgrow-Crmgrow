@@ -1,0 +1,81 @@
+<div class="custom-mat-field">
+    <mat-form-field appearance="outline" floatLabel="never" class="d-block">
+      <mat-chip-list aria-label="member Selection" #memberList>
+        <mat-basic-chip
+          *ngFor="let member of selectedMembers"
+          [selectable]="selectable"
+          [removable]="true"
+          (removed)="remove(member)"
+        >
+          <ng-container *ngIf="chipType === 'block'; else inlineTemplate">
+            <div class="d-flex chip p-1">
+              <div class="mr-1">
+                <img *ngIf="member.picture_profile; else avatarNameTemplate"
+                    [src]="member.picture_profile" (error)="sspaService.imgError($event,'img/user_avatar.svg')"
+                    class="form-avatar rounded-circle" />
+                <ng-template #avatarNameTemplate>
+                    <div class="form-avatar bg-dark text-white f-2 text-center rounded-circle c-pointer">
+                        {{member.avatarName}}
+                    </div>
+                </ng-template>
+              </div>
+              <div class="info">
+                <div class="f-2 font-weight-bold">{{ member.user_name || 'Undefined' }}</div>
+                <div class="f-1">{{ member.email || 'Undefined' }}</div>
+              </div>
+              <div class="icon-close" matChipRemove></div>
+            </div>
+          </ng-container>
+          <ng-template #inlineTemplate>
+            <div class="d-flex chip p-1">
+              <div class="info v-center">
+                <div class="f-2 font-weight-bold">{{ member.user_name || 'Undefined' }}</div>
+                <div class="f-1">{{ member.email || 'Undefined' }}</div>
+              </div>
+              <div class="icon-close" matChipRemove></div>
+            </div>
+          </ng-template>
+        </mat-basic-chip>
+        <i class="d-block i-icon i-search bgc-dark"></i>
+        <input
+          #inputField
+          [formControl]="formControl"
+          [matChipInputFor]="memberList"
+          [matAutocomplete]="auto"
+          [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
+          [matChipInputAddOnBlur]="false"
+          data-name = "deal-member-to-assign"
+        />
+      </mat-chip-list>
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        (optionSelected)="onSelectOption($event)"
+        (optionActivated)="onActiveOption($event)"
+        [autoActiveFirstOption]="onlyFromSearch"
+      >
+        <mat-option
+          *ngFor="let member of filteredResults | async"
+          [value]="member"
+          class="{{ optionClass }}"
+        >
+          <div class="d-flex chip py-2" data-name="task-member-assign">
+            <div class="mr-3 mt-1">
+              <img *ngIf="member.picture_profile; else avatarNameTemplate"
+                    [src]="member.picture_profile" (error)="sspaService.imgError($event,'img/user_avatar.svg')"
+                    class="form-avatar rounded-circle bg-dark" />
+                <ng-template #avatarNameTemplate>
+                    <div class="form-avatar bgc-secondary bg-dark text-white f-2 text-center rounded-circle">
+                        {{member.avatarName}}
+                    </div>
+                </ng-template>
+            </div>
+            <div class="info">
+              <div class="f-5 font-weight-bold">{{ member.user_name || 'Undefined' }}</div>
+              <div class="f-2">{{ member.email || 'Undefined' }}</div>
+            </div>
+          </div>
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </div>
+  

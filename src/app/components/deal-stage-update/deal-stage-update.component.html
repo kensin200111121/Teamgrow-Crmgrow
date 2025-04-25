@@ -1,0 +1,37 @@
+<div class="v-center justify-content-between">
+    <h1 mat-dialog-title class="m-0" translate>
+      Update Stage Name
+    </h1>
+    <button class="v-center border-0 bgc-trans" mat-dialog-close>
+        <i class="d-block i-icon i-close bgc-dark"></i>
+    </button>
+</div>
+<form #dealForm="ngForm" (ngSubmit)="dealForm.form.valid ? updateStages() : false">
+    <mat-dialog-content>
+        <div class="form-group mt-2">
+            <div class="v-center">
+                <label translate>Name</label>
+                <span
+                    class="invalid-error f-3 c-red ml-auto"
+                    *ngIf="(title == '' || title.trim() == '') && dealForm.submitted"
+                    translate
+                >
+                    Required!
+                </span>
+            </div>
+
+            <input
+                class="form-control"
+                type="text"
+                name="dealTitle"
+                #dealTitle="ngModel"
+                [(ngModel)]="title"
+                required
+            >
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button class="btn btn-white f-6 font-weight-bold mr-2" type="button" mat-dialog-close translate>Cancel</button>
+        <button data-action="deal-stage-rename-confirm" class="btn btn-primary f-6 font-weight-bold btn-font-bold" type="submit" [class.loading]="saving" translate>Rename</button>
+    </mat-dialog-actions>
+</form>

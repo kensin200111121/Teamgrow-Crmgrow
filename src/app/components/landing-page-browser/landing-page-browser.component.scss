@@ -1,0 +1,343 @@
+@import "variables";
+
+
+.browser-container{
+  .contact-list-controls{
+    .is_root {
+      visibility: hidden;
+    }
+    .search-form {
+      max-width: 250px;
+    }
+    .material-options {
+      font-size: 13px;
+      font-weight: bold;
+    }
+  }
+
+  .title-file-selected {
+    background-color: #FAFAFA;
+    color: $color-blue;
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  .form-group {
+    .custom-control-label {
+      text-transform: none;
+    }
+  }
+
+  .file-thumbnail {
+    padding: 0px;
+    width: 100%;
+    object-fit: cover;
+    overflow: hidden;
+    margin: 0px;
+    border-radius: 8px;
+    aspect-ratio: 1/1;
+
+    .title-thumbnail {
+      width: 100%;
+      object-fit: cover;
+      margin: 0px;
+      aspect-ratio: 1/1;
+      overflow: hidden;
+      border-radius: 8px;
+
+    }
+
+    .title-thumbnail img {
+      border: 0;
+    }
+
+
+    .preview-active {
+      position: relative;
+      display: inline-block; /* Or use any appropriate display property */
+    }
+    .preview-active::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(88, 86, 222, 0.5); /* Change color and opacity as needed */
+      z-index: 1; /* Adjust the z-index if necessary */
+    }
+
+    .preview-active img {
+      display: block;
+      width: 100%;
+      height: auto;
+      z-index: 2; /* Make sure the image appears above the overlay */
+    }
+
+    .thumb-prev-wrapper img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+    }
+
+    .thumb-prev-wrapper .preview {
+      display: none;
+    }
+
+    .thumb-prev-wrapper {
+      &:hover .preview {
+        display: block;
+      }
+      &:hover .thumbnail {
+        display: none;
+      }
+    }
+  }
+  .file-info-title {
+    color: gray;
+    font-size: 12px;
+    text-transform: capitalize;
+  }
+
+  .material-list {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-gap: 4px;
+  }
+
+  .half-material-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 4px;
+  }
+
+  .folder {
+    width: 120px;
+    text-align: center;
+  }
+
+  .file-item{
+    width: 100%;
+    padding: 8px;
+
+    &.selected {
+      background-color: #0d1ff92b;
+      border: 1px solid blue;
+      border-radius: 6px;
+    }
+  }
+
+  .title-folder {
+    height: 40px;
+    text-align: center;
+  }
+
+
+    .preview-active {
+      position: relative;
+      display: inline-block; /* Or use any appropriate display property */
+    }
+    .preview-active::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(88, 86, 222, 0.5); /* Change color and opacity as needed */
+      z-index: 1; /* Adjust the z-index if necessary */
+    }
+
+    .preview-active img {
+      display: block;
+      width: 100%;
+      height: auto;
+      z-index: 2; /* Make sure the image appears above the overlay */
+    }
+
+  .thumb-prev-wrapper img {
+    // width: 56px;
+    // height: 32px;
+    object-fit: cover;
+    // margin-right: 12px;
+  }
+
+  .thumb-prev-wrapper .preview {
+    display: none;
+  }
+
+  .thumb-prev-wrapper {
+    &:hover .preview {
+        display: block;
+    }
+    &:hover .title-thumbnail {
+        display: none;
+    }
+  }
+
+  .file-title-label {
+    overflow-wrap: anywhere;
+    text-align: left;
+    font-size: 14px;
+  }
+
+  .visible {
+    visibility: show;
+  }
+
+  .invisible {
+    visibility: hidden;
+  }
+}
+
+@media screen and (max-width: 1140px) {
+  .material-list {
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 12px;
+  }
+  .title-tag-div {
+    top: 10px;
+    left: 10px;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .material-list {
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 12px;
+  }
+}
+
+@media screen and (max-width: 720px) {
+}
+
+@media screen and (max-width: 400px) {
+  .material-list {
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 12px;
+  }
+}
+
+
+.selected {
+  color: #066FD3;
+  font-weight: 700;
+  border-bottom: 2px solid #066FD3;
+}
+
+.tab-container {
+  width: 100%;
+  border-bottom: 1px solid #E6E6E6;
+}
+
+.page-card {
+  width: 100%;
+  border: 1px solid #E6E6E6;
+  border-radius: 8px;
+}
+
+.card-img {
+  max-width: 360px;
+  max-height: 156px;
+}
+
+.card-img-not-supported {
+  padding: 35px 35px;
+}
+
+.action-icon {
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.bg-ccc {
+  background-color: #cccccc;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.title {
+  color: #4D4D4D;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.desc {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  min-height: 60px;
+  color: #989898;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Limit to 3 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.label {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: #989898;
+}
+
+.divider {
+  background-color: #E6E6E6;
+  height: 1px;
+  margin-bottom: 0 !important;
+}
+
+.w-half {
+  width: 50%;
+}
+
+.num {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #4D4D4D
+}
+
+.size-14 {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.one-more {
+  padding: 0 8px;
+  background-color: #E6E6E6;
+  border: 1px solid #E6E6E6;
+  color: #4D4D4D;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  border-radius: 14px;
+}
+
+.material-list {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-gap: 4px;
+}
+
+.half-material-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 4px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}

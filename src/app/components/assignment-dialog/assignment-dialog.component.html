@@ -1,0 +1,38 @@
+<form #form="ngForm" (ngSubmit)="form.form.valid ? submit() : false" class="leads-assignment-form">
+  <div mat-dialog-title class="title">
+    <h1 class="mb-0 f-22" translate>
+       {{ data?.title || 'Assginment' }}
+    </h1>
+  </div>
+
+  <mat-dialog-content cdkScrollable>
+    <span translate>
+       {{ data?.label || 'Assgin to' }}
+    </span>
+    <app-assignee-select
+      #assigneeSelect
+      class="w-50"
+      [disabled]="false"
+      type="form"
+      (valueChange)="changeAssignee($event)"
+    >
+    </app-assignee-select>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <div class="d-flex mt-3 ml-auto">
+      <button type="button" mat-dialog-close class="btn c-dark mr-2" translate>
+        Cancel
+      </button>
+      <button
+        type="submit"
+        data-action="assign-btn"
+        class="btn btn-primary"
+        [class.loading]="isAssigning"
+        translate
+      >
+        {{ submitButtonLabel }}
+      </button>
+    </div>
+  </mat-dialog-actions>
+</form>

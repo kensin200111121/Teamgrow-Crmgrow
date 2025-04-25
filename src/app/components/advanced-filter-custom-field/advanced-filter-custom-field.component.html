@@ -1,0 +1,104 @@
+<div [ngSwitch]="selectedColumn?.type">
+  <ng-container *ngSwitchCase="'dropdown'">
+    <div class="v-center include-section">
+      <div class="v-center mb-2" style="float: right">
+        <div class="f-3 fw-600 c-dark" translate>Include</div>
+        <label class="custom-toggle mb-0 mx-2" placement="top">
+          <input
+            type="checkbox"
+            id="custom_check"
+            name="custome_check"
+            [checked]="!selectedColumnFilter.include"
+            (change)="toggleInclude()"
+          />
+          <span class="custom-toggle-slider rounded-circle"></span>
+        </label>
+        <div class="f-3 fw-600 c-dark" translate>Exclude</div>
+      </div>
+    </div>
+    <div class="source-select">
+      <div class="custom-mat-field">
+        <mat-form-field appearance="outline" floatLabel="never" class="d-block">
+          <mat-chip-list aria-label="Option Selection" #optionList>
+            <mat-basic-chip
+              *ngFor="let option of selectedColumnFilter.options"
+              [selectable]="selectable"
+              [removable]="true"
+              (removed)="remove(option)">
+              <div class="v-center chip p-1 rounded-pill mr-1">
+                <div class="info c-dark font-weight-bold ml-1">
+                  {{ getStage(option) }}
+                </div>
+                <div class="close-icon-wrapper rounded-circle bg-white ml-1">
+                  <div class="i-icon i-close bgc-dark" matChipRemove></div>
+                </div>
+              </div>
+            </mat-basic-chip>
+            <input
+              [placeholder]="placeholder"
+              #inputField
+              [formControl]="formControl"
+              [matChipInputFor]="optionList"
+              [matAutocomplete]="auto"
+              [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
+              [matChipInputAddOnBlur]="false"
+              (matChipInputTokenEnd)="onAdd($event)"
+            >
+          </mat-chip-list>
+          <mat-autocomplete
+            #auto="matAutocomplete"
+            (optionSelected)="onSelectOption($event)"
+            (optionActivated)="onActiveOption($event)"
+            [autoActiveFirstOption]="onlyFromSearch"
+          >
+            <mat-option *ngFor="let option of selectedColumn.options" [value]="option.value">
+              <div class="d-flex chip py-2" *ngIf="option.label">
+                <div class="info">
+                  <div class="f-4 fw-600">{{option.label}}</div>
+                </div>
+              </div>
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>  
+    </div>    
+  </ng-container>
+  <ng-container *ngSwitchCase="'date'">
+    <div class="form-group mb-0 v-center mb-2">
+      <div class="v-center">
+        <app-date-input
+          type="prepend"
+          [clearable]="true"
+          [(value)]="selectedColumnFilter.start"
+          [markToday]="true"
+        ></app-date-input>
+        <div class="mx-2">-</div>
+        <app-date-input
+          type="prepend"
+          [clearable]="true"
+          [minDate] = "selectedColumnFilter.start"
+          [(value)]="selectedColumnFilter.end"
+          [markToday]="true"
+        ></app-date-input>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchDefault>
+    <div class="custom-input">
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="selectedColumnFilter.condition"
+        placeholder=""
+        id="custome_input"
+        name="custome_input"
+        cdkFocusInitial
+      />
+    </div>
+  </ng-container>
+</div>
+<div class="d-flex align-items-end">
+  <button type="submit" class="btn btn-primary" (click)="save()" translate>
+    Apply
+  </button>
+</div>

@@ -1,0 +1,27 @@
+<!-- <div id="storm-dialer-bar"></div> -->
+<div id="wavv-dialer-mini"></div>
+<!--
+<div class="call-init-bar" *ngIf="callIniting" translate>LOADING CALL SERVICE</div>
+<div class="call-init-bar" *ngIf="rvmIniting" translate>LOADING RVM SERVICE</div>
+ -->
+ <div class="deal-dialer-controller"
+  *ngIf="currentDeal && (siblingDeals?.prev || siblingDeals?.next)"
+  [class.disabled]="currentDeal !== siblingDeals?.current"
+>
+ <div
+   class="v-center c-pointer mr-3"
+   *ngIf="siblingDeals?.prev"
+   (click)="goToPrevDeal()"
+ >
+   <i class="d-block i-icon i-triangle-left bgc-dark mr-2"></i>
+   <span class="f-4 fw-600">{{callCommand?.deal === currentDeal ? 'Call ' : ''}}Prev Deal</span>
+ </div>
+ <div
+   class="v-center c-pointer"
+   *ngIf="siblingDeals?.next"
+   (click)="goToNextDeal()"
+ >
+   <span class="f-4 fw-600 mr-2">{{callCommand?.deal === currentDeal ? 'Call ' : ''}}Next Deal</span>
+   <i class="d-block i-icon i-triangle-right bgc-dark"></i>
+ </div>
+</div>

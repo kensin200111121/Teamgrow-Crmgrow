@@ -1,0 +1,44 @@
+<h1 mat-dialog-title translate>
+  Edit photo
+</h1>
+<mat-dialog-content>
+  <div class="v-center justify-content-center edit-photo mt-3">
+    <lib-cropper
+      [imageFile]="fileInput"
+      [options]="config"
+      (fail)="onFail($event)"
+      (init)="onCropperInit($event)"
+      (fileChange)="updateFile()"
+      (ready)="readyCropper()"
+      (zoom)="onZoom($event)"
+      #imageCropper
+    ></lib-cropper>
+  </div>
+  <div class="form-group mt-3 mb-0">
+    <label for="zoomSlider" translate>size</label>
+    <input
+      type="range"
+      class="custom-range"
+      min="0.5"
+      max="2"
+      step="0.1"
+      id="zoomSlider"
+      [(ngModel)]="zoomValue"
+      (ngModelChange)="zoomImage($event)"
+    >
+  </div>
+  <div class="v-center justify-content-between mt-3 mb-3">
+    <button class="v-center btn btn-white pl-0" (click)="removePhoto()">
+      <i class="d-block i-icon i-trash bgc-red mr-2"></i>
+      <span class="f-6 font-weight-bold c-red" translate>Remove photo</span>
+    </button>
+    <button class="btn btn-white-blue f-6 font-weight-bold" (click)="changePhoto()">
+      <input type="file" style="display:none" #fileSrc (change)="openPhotoChange($event)" accept="image/jpg, image/png, image/jpeg, image/webp, image/bmp"  translate/>
+      Change photo
+    </button>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button class="btn btn-white f-6 font-weight-bold c-blue mr-2" mat-dialog-close translate>Cancel</button>
+  <button class="btn btn-primary f-6 font-weight-bold" (click)="cropEmit()" [class.loading]="saving" translate>Save</button>
+</mat-dialog-actions>

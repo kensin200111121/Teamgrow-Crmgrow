@@ -1,0 +1,88 @@
+.i-triangle-left {
+  width: 10px;
+  min-width: 10px;
+}
+.card-header {
+  background: white;
+  justify-content: space-between;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-bottom: 8px;
+  padding-top: 8px;
+  .theme-title-wrapper {
+      input.form-control {
+          height: 38px;
+          border-radius: 3px;
+      }
+  }
+  .btn-wrapper {
+      margin-bottom: 0px;
+      .btn {
+          height: 38px;
+      }
+  }
+}
+.page-content {
+  height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.card-body email-editor {
+  height: 100%;
+}
+
+#preview-thumbnail {
+  position: fixed;
+  top: -5000px;
+}
+
+.theme-title-wrapper {
+  flex: 1;
+}
+.theme-subject-wrapper {
+  flex: 2;
+}
+
+:host ::ng-deep {
+  .has-topbar .page-content{
+    height: calc(100vh - 114px);
+  }
+  .has-stormbar .page-content {
+    height: calc(100vh - 119px);
+  }
+  .has-topbar.has-stormbar .page-content {
+    height: calc(100vh - 169px);
+  }
+}
+
+.insert-token {
+  cursor: pointer;
+  .dropdown-toggle {
+    .i-triangle-up {
+      display: none !important;
+    }
+    .i-icon {
+      width: 8px;
+      height: 8px;
+      min-width: 8px;
+    }
+  }
+  &.show {
+    .dropdown-toggle {
+      .i-triangle-down {
+        display: none !important;
+      }
+      .i-triangle-up {
+        display: block !important;
+      }
+    }
+  }
+  .menu-item:hover {
+    background-color: gainsboro;
+  }
+  .menu-item:active {
+    background-color: blue;
+    color: white;
+  }
+}

@@ -1,0 +1,41 @@
+@import "variables";
+
+textarea {
+    background-color: $color-wheat;
+    resize: none;
+    &.form-control {
+        &:focus {
+            background-color: $color-wheat;
+            color: $color-dark;
+        }
+    }
+}
+.datepicker
+{
+    width: 100%;
+    padding: 7px;
+    
+
+}
+.datepicker:hover
+{
+    background-color: darkgray;
+    cursor: pointer;
+    
+}
+.schedule td
+{
+
+    padding:10px;
+
+}
+.schedule:hover
+{   
+    background-color: darkgray;
+    cursor: pointer;
+}
+.schedule_table
+{
+    font-size:16px;
+
+}

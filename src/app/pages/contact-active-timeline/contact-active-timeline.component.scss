@@ -1,0 +1,101 @@
+@import 'variables';
+
+.automation {
+  app-input-automation {
+    flex: 1;
+    min-width: 0px;
+  }
+  .automation-action {
+    i {
+      width: 40px !important;
+      height: 40px !important;
+      min-width: 40px !important;
+    }
+  }
+  .automation-detail {
+    mat-tree {
+      li {
+        list-style-type: none;
+        img {
+          width: 24px;
+          height: 24px;
+          min-width: 24px;
+        }
+        .badge.status {
+          &.completed {
+            color: $color-green-weak;
+          }
+          &.checking {
+            color: $color-orange-weak;
+          }
+          &.pending {
+            color: $color-orange-weak;
+          }
+          &.executed {
+            color: $color-orange-weak;
+          }
+          &.progress {
+            color: $color-orange-weak;
+          }
+          &.active {
+            color: $color-blue;
+          }
+          &.disabled {
+            color: $color-red;
+          }
+          &.error {
+            color: $color-red;
+          }
+          &.warning {
+            color: $color-pink-red;
+          }
+          &.paused {
+            color: $color-orange;
+          }
+        }
+      }
+      .line {
+        width: 1px;
+        height: 25px;
+        margin-left: 11px;
+      }
+      .condition {
+        img {
+          width: 24px;
+          height: 20px;
+        }
+      }
+      .timeline-content {
+        height: 24px;
+        div {
+          line-height: 1;
+        }
+      }
+      mat-nested-tree-node {
+        .mat-tree-node {
+          min-height: 24px;
+          min-width: 150px;
+        }
+      }
+      .timeline-tree-invisible {
+        mat-tree-node {
+          &.mat-tree {
+            &.first {
+              order: 1;
+            }
+            order: 2;
+          }
+          align-items: flex-start;
+        }
+        mat-nested-tree-node {
+          &.mat-nested-tree {
+            &.first {
+              order: 1;
+            }
+            order: 2;
+          }
+        }
+      }
+    }
+  }
+}

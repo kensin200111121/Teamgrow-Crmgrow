@@ -1,0 +1,52 @@
+@import 'variables';
+.panel {
+  max-width: 480px;
+  width: 100vw;
+}
+
+.labels-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+
+  .label-item {
+    margin: 0.75rem 0.5rem 0.75rem 1.75rem;
+  }
+}
+
+.task-types {
+  border: 1px solid $color-trans28;
+  label {
+    opacity: 1;
+    margin: -1px;
+    &.active {
+      border: 1px solid $color-blue;
+    }
+
+    i {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+    }
+
+    &:nth-child(n + 2) {
+      margin-left: 0px;
+    }
+  }
+}
+
+.start-date:focus {
+  border: 0.1px solid #0000ff;
+  outline: 0;
+}
+
+:host ::ng-deep {
+  .mat-checkbox-layout {
+    margin: 0px;
+  }
+}
+
+@media screen and (max-width: 370px) {
+  .labels-wrapper {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}

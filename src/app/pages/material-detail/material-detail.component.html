@@ -1,0 +1,7 @@
+<div class="page-content">
+  <ng-container *ngIf="!!material_id && !!material_type">
+      <app-material-preview-v2 [previewId]="{_id:material_id, type:material_type}"
+      [contentType]="'page'"></app-material-preview-v2>
+
+  </ng-container>
+</div>

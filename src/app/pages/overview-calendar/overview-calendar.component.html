@@ -1,0 +1,119 @@
+<div class="card">
+  <div
+    class="card-header d-flex justify-content-between align-items-center c-pointer"
+    translate
+  >
+    <div ngbDropdown *ngIf="isSspa; else other_title" placement="bottom-start">
+      <div class="d-flex align-items-center dropdown-toggle" ngbDropdownToggle>
+        <span>Calendar</span>
+      </div>
+      <div
+        ngbDropdownMenu
+        aria-labelledby="taskSortTypes"
+      >
+        <div 
+          ngbDropdownItem 
+          *ngFor="let item of calendars | keyvalue" 
+          (click)="onSelectCalendar(item)" 
+          [attr.data-name]="'calendar-email-' + item.key"
+        >
+          <span>{{ item.value.account }}</span>
+          <i *ngIf="selectedCalendars.includes(item.value.id)" class="d-block i-icon bgc-dark i-check"></i>
+        </div>
+      </div>
+    </div>
+    <ng-template #other_title>Calendar</ng-template>
+    <div (click)="goToCalendar()">
+      <a class="c-pointer v-center btn-card-header" translate>
+        See All
+        <i class="d-block i-icon bgc-blue i-chev-right"></i>
+      </a>
+    </div>
+  </div>
+  <div class="card-body" style="overflow-y: scroll;" #dailyCard>
+    <div class="global-events day-events" #dayAllDayEventView>
+      <div class="event" *ngFor="let event of getDayEvent(viewDate)">
+        <div
+          (click)="openDetail(event, dayAllDayEventView)"
+          class="event-cell c-pointer p-1 f-1"
+          [ngStyle]="{
+            'background-color': calendars[event.meta.calendar_id]?.color
+          }"
+        >
+          {{ event.title || '' | shorten : 40 : '...' }}
+        </div>
+      </div>
+    </div>
+    <mwl-calendar-day-view
+      [viewDate]="viewDate"
+      [events]="showingEvents"
+      [hourSegmentHeight]="60"
+      [hourSegments]="1"
+      [hourSegmentTemplate]="dayHourTemplate"
+      [eventTemplate]="dayEventTemplate"
+    >
+    </mwl-calendar-day-view>
+    <ng-template
+      #dayEventTemplate
+      let-dayEvent="weekEvent"
+      let-locale="locale"
+      let-eventClicked="eventClicked"
+    >
+      <div
+        class="cal-event"
+        #dayEventView
+        [ngStyle]="{
+          'background-color': calendars[dayEvent.event.meta.calendar_id]?.color
+        }"
+        (mwlClick)="openDetail(dayEvent.event, dayEventView)"
+      >
+        <div class="f-2 font-weight-bold c-white cal-event-title">
+          {{ dayEvent.event.title }}
+        </div>
+        <div class="f-2 font-weight-bold c-white cal-event-title">
+          {{ dayEvent.event.start | date : 'HH:mm' }}-{{
+            dayEvent.event.end | date : 'HH:mm'
+          }}
+        </div>
+      </div>
+    </ng-template>
+    <ng-template
+      #dayHourTemplate
+      let-segment="segment"
+      let-locale="locale"
+      let-isTimeLabel="isTimeLabel"
+    >
+      <div
+        class="h-100"
+        #createDay
+        (click)="openOverlay(segment.date, createDay)"
+      >
+        <div class="cal-day-timelabel">
+          <div class="cal-hour-segment">
+            <span class="cal-time f-1 font-weight-bold op-64">
+              {{ segment.date | calendarDate : 'dayViewHour' : locale }}
+            </span>
+            <div class="time-line ml-3">
+              <div class="line"></div>
+              <div class="line"></div>
+              <div class="line"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+  <ng-template #creatPortalContent>
+    <app-calendar-event-dialog
+      mode="overlay"
+      (onClose)="closeOverlay()"
+      (onCreate)="createEvent($event)"
+      [start_date]="selectedDate"
+      [user_email]="user.email">
+    </app-calendar-event-dialog>
+  </ng-template>
+  <ng-template #detailPortalContent>
+    <app-calendar-event [event]="event" (onClose)="closeOverlay($event)" class="w-100">
+    </app-calendar-event>
+  </ng-template>
+</div>

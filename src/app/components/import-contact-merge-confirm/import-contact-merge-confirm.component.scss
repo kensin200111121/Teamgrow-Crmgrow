@@ -1,0 +1,37 @@
+:host ::ng-deep {
+  .check-wrapper {
+    .custom-radio:checked, .custom-radio:not(:checked) {
+      position: relative;
+      left: 0;
+    }
+
+    .custom-control-input:checked ~ .custom-control-label::before {
+      border-color: #0000ff;
+      background-color: #ffffff;
+    }
+
+    .custom-control label {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .custom-radio .custom-control-label::before {
+      border-radius: 50%;
+      top: 0;
+    }
+
+    .custom-radio .custom-control-input:checked ~ .custom-control-label::after {
+      background-image: none;
+      background-color: #0000ff;
+      border-radius: 50%;
+    }
+
+    .custom-control-label::after {
+      top: 0.25rem;
+      left: -1.5rem;
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+  }
+}
+

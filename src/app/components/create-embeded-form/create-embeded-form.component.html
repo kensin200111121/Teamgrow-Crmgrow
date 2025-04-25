@@ -1,0 +1,38 @@
+<h4 mat-dialog-title>Embed on your web page</h4>
+<mat-dialog-content>
+  <p class="pl-1">Please follow these steps to embed our form in your web page.</p>
+  <ul>
+    <li class="pl-1">
+      <span class="d-flex mb-2 f-5">
+        1. Please insert this iframe code to your html. <a class="copy-icon" (click)="copyHTMLCode()"><i class="d-block i-icon i-copy bgc-dark"></i></a>
+      </span>
+      <code (click)="copyHTMLCode()">{{ htmlCode }}</code>
+    </li>
+    <mat-expansion-panel class="mt-4 custom-expansion-panel">
+      <mat-expansion-panel-header >
+        <mat-panel-title>
+          <ng-container>
+            <span>
+              2. Do you want to embed the custom style or custom script? If yes, please check this.
+            </span>
+          </ng-container>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>
+        <li>
+          - Please insert this code to know the source of the page when this form would be submitted. When you copy this script code, you need to place this script code above the iframe code. <a class="copy-icon" (click)="copyScriptCode()"><i class="d-block i-icon i-copy bgc-dark"></i></a>
+          <code (click)="copyScriptCode()">{{ scriptCode }}</code>
+        </li>
+        <li>
+          - You can embed your custom style to this lead form by adding following code. You need to insert the above js code. And please place the styles in the head part or before iframe. <a class="copy-icon" (click)="copyStyleCode()"><i class="d-block i-icon i-copy bgc-dark"></i></a>
+          <code (click)="copyStyleCode()">{{ styleDemoCode }}</code>
+        </li>
+      </div>
+    </mat-expansion-panel>
+  </ul>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button class="btn btn-secondary font-weight-bold ml-auto" mat-dialog-close>
+    Close
+  </button>
+</mat-dialog-actions>

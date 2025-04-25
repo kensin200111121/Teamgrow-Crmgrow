@@ -1,0 +1,21 @@
+:host ::ng-deep {
+  mat-select {
+    border: 1px solid gainsboro;
+    border-radius: 4px;
+    padding: 6px 14px;
+    margin-top: 4px;
+
+    span {
+      font-size: 13px;
+    }
+  }
+  .mat-select-panel .mat-option {
+    line-height: 2em!important;
+    height: 2em!important;
+  }
+}
+
+.info {
+  display: flex;
+  width: 100%;
+}

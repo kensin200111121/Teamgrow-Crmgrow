@@ -1,0 +1,94 @@
+@import "variables";
+
+.page-content {
+  padding: 0;
+}
+
+:host ::ng-deep {
+  thead tr.selected {
+    th {
+      background-color: #f5f6fd;
+    }
+  }
+  thead tr.selection-info th {
+    background-color: #f5f6fd;
+    border-bottom: none;
+  }
+
+  .filter-check-item {
+    padding-left: 28px;
+  }
+  .shared-member-contact .dropdown-toggle::after {
+    display: none;
+  }
+
+  .share-action {
+    min-width: 60px;
+    max-width: 60px;
+
+    button {
+      opacity: 0;
+      margin-left: auto;
+    }
+  }
+
+  tr:hover {
+    .share-action button {
+      opacity: 1;
+    }
+  }
+}
+
+.status-header .create-actions .mobile {
+  display: none;
+}
+@media screen and (max-width: 480px) {
+  .status-header {
+    display: block!important;
+
+    .create-actions {
+      margin-top: 6px;
+      & > * {
+        width: 50%;
+        text-align: center;
+        justify-content: center;
+        font-size: 13px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 384px) {
+  .status-header {
+    .create-actions {
+      .normal {
+        display: none;
+      }
+      .mobile {
+        display: block;
+      }
+    }
+  }
+}
+
+
+@media screen and (max-width: 468px) {
+  .contact-list-controls {
+    flex-wrap: wrap;
+    .search-form {
+      width: 100%;
+      margin-top: 4px;
+    }
+  }
+}
+
+.address-col a{
+  max-width: 75px;
+  width: 75px;
+  font-size: 12px;
+}
+
+.shared-member-contact a:hover {
+  color: $color-dark;
+}
+

@@ -1,0 +1,264 @@
+<div class="campaign-bulk-mailing-page">
+  <a [attr.data-action]="'add-new-bulk-email'" class="v-center f-6 font-weight-bold btn btn-primary d-block position-relative ml-auto create-button"
+    style="z-index: 2;" [routerLink]="['/bulk-mail/bulk/create']" translate>
+    New Bulk Email
+  </a>
+  <div class="d-flex table-control-header v-center align">
+    <div class="form-group mb-0 search-form">
+      <div class="input-group-prepend">
+        <i class="i-icon i-search d-block bgc-dark"></i>
+      </div>
+      <input type="text" class="form-control" placeholder="{{'Search' | translate}}" aria-label="search"
+        aria-describedby="search-addon" [(ngModel)]="searchStr" (ngModelChange)="changeSearchStr()"
+        [class.disabled]="(campaignService.loadStatus | async) === STATUS.REQUEST">
+      <ng-container *ngIf="searchStr">
+        <div class="cancel-action c-pointer" (click)="clearSearchStr()">
+          <i class="i-icon i-close d-block bgc-dark"></i>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div class="custom-mat-table list-table-container mt-3">
+    <div class="mat-table-wrapper mode-2 len_{{filteredResult.length}}" [class.empty]="!filteredResult.length">
+      <table class="w-100 template-table page-table" mat-table
+        [dataSource]="filteredResult | paginate: {itemsPerPage: pageSize.id, currentPage: page, id: 'bulkMailTable', total: bulkLists.length}">
+        <ng-container matColumnDef="loader-cell">
+          <th mat-header-cell *matHeaderCellDef colspan="12" class="loader-cell">
+            <div class="updating-status"
+              *ngIf="filteredResult.length && (campaignService.loading$ | async) === STATUS.REQUEST" translate>
+              LOADING
+            </div>
+          </th>
+        </ng-container>
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef class="pl-0 checkbox-col">
+            <div class="custom-control custom-checkbox"
+              [class.indeterminate]="selectedLists.selected.length && !isAllSelected()">
+              <input type="checkbox" class="custom-control-input" id="selectAllBulkMailing"
+                (change)="$event ? selectAllPage() : null" [checked]="isSelectedPage()" />
+              <label class="custom-control-label" for="selectAllBulkMailing"></label>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let element" class="pl-0 checkbox-col">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="bulk-mailing-{{element._id}}"
+                (change)="selectedLists.toggle(element._id)" [checked]="selectedLists.isSelected(element._id)" />
+              <label class="custom-control-label" for="bulk-mailing-{{element._id}}"></label>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="title">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell *ngIf="!selectedLists.selected.length; else toolHeader" class="title-col ml-1">
+              <div class="v-center c-pointer head-sort" (click)="sort('title')">
+                <span [class]="selectedSort == 'title' ? 'fw-600 c-dark' : ''" translate>Title</span>
+                <i class="i-icon d-block bgc-black ml-2" [class]="!searchCondition.title ? 'i-sort-down' : 'i-sort-up'"
+                  *ngIf="selectedSort == 'title'"></i>
+              </div>
+            </th>
+            <ng-template #toolHeader>
+              <th mat-header-cell colspan="10">
+                <div class="v-center">
+                  <span class="c-dark f-3 text-lowercase font-weight-bold">{{selectedLists.selected.length}}
+                    {{'selected' | translate}}</span>
+                  <app-actions-header [actions]="ACTIONS" (doCommand)="doAction($event)"></app-actions-header>
+                </div>
+              </th>
+            </ng-template>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="title-col ml-1">
+            <ng-container *ngIf="element.status === 'draft' || element.status === 'closed'; else progressingTemplate">
+              <a [routerLink]="['/bulk-mail/bulk/draft/' + element._id]" class="hover-bottom font-weight-bold c-dark">
+                {{element.title}}
+              </a>
+            </ng-container>
+            <ng-template #progressingTemplate>
+              <a [routerLink]="['/bulk-mail/bulk/' + element._id]" class="hover-bottom font-weight-bold c-dark">
+                {{element.title}}
+              </a>
+            </ng-template>
+          </td>
+        </ng-container>
+
+        <!-- Broadcast Column -->
+        <ng-container matColumnDef="broadcast">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell *ngIf="!selectedLists.selected.length" class="broadcast-col">
+              <span translate>Broadcast</span>
+            </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="broadcast-col">
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell class="status-col" *ngIf="!selectedLists.selected.length">
+              <div class="v-center c-pointer head-sort" (click)="sort('status')">
+                <span [class]="selectedSort == 'status' ? 'fw-600 c-dark' : ''" translate>Status</span>
+                <i class="i-icon d-block bgc-black ml-2" [class]="!searchCondition.status ? 'i-sort-down' : 'i-sort-up'"
+                  *ngIf="selectedSort == 'status'"></i>
+              </div>
+            </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="status-col text-capitalize">
+            {{element.status}}
+          </td>
+        </ng-container>
+
+        <!-- Send time Column -->
+        <ng-container matColumnDef="send-time">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell class="time-col" *ngIf="!selectedLists.selected.length">
+              <div class="v-center c-pointer head-sort" (click)="sort('due_start')">
+                <span [class]="selectedSort == 'due_start' ? 'fw-600 c-dark' : ''" translate>Send Time</span>
+                <i class="i-icon d-block bgc-black ml-2"
+                  [class]="!searchCondition.due_start ? 'i-sort-down' : 'i-sort-up'"
+                  *ngIf="selectedSort == 'due_start'"></i>
+              </div>
+            </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="time-col">
+            {{ element.due_start | datetimeFormat : 'MM/DD/yyyy hh:mm a' }}
+          </td>
+        </ng-container>
+
+        <!-- Delivered Column -->
+        <ng-container matColumnDef="delivered">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell class="count-col" *ngIf="!selectedLists.selected.length">
+              <span translate>Contacts</span>
+            </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="count-col">
+            {{element.contacts}}
+          </td>
+        </ng-container>
+
+        <!-- Opened Column -->
+        <ng-container matColumnDef="opened">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell class="count-col" *ngIf="!selectedLists.selected.length">
+              <span translate>Sent</span>
+            </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="count-col">
+            {{element.sent}}
+          </td>
+        </ng-container>
+
+        <!-- Clicked Column -->
+        <ng-container matColumnDef="clicked">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell class="count-col" *ngIf="!selectedLists.selected.length">
+              <span translate>Failed</span>
+            </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="count-col">
+            {{element.failed}}
+          </td>
+        </ng-container>
+
+        <!-- Action Column -->
+        <ng-container matColumnDef="action">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell></th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element">
+            <i class="i-icon i-trash d-block bgc-dark ml-auto c-pointer" (click)="closeCampaign(element)"></i>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="selection_info">
+          <th mat-header-cell *matHeaderCellDef colspan="12" class="text-center">
+            <span *ngIf="!isAllSelected(); else deselectTemplate">
+              {{selectedLists.selected.length}} {{'lists are selected.' | translate}}
+              <span class="c-blue font-weight-bold c-pointer" (click)="selectAll()">
+                {{'Select all' | translate}} {{bulkLists.length}} {{'lists' | translate}}
+              </span>
+            </span>
+            <ng-template #deselectTemplate>
+              {{'All' | translate}} {{bulkLists.length}} {{'lists are selected.' | translate}} <span
+                class="c-blue c-pointer font-weight-bold" (click)="deselectAll()" translate>Clear selection</span>
+            </ng-template>
+          </th>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="DISPLAY_COLUMNS" [class.selected]="selectedLists.selected.length"
+          class="table-header"></tr>
+        <tr mat-header-row *matHeaderRowDef="['selection_info']" [class.d-none]="!selectedLists.selected.length"
+          class='selection-info'></tr>
+        <tr mat-row *matRowDef="let row; columns: DISPLAY_COLUMNS;"></tr>
+      </table>
+
+      <ng-container *ngIf="filteredResult.length > MIN_ROW_COUNT">
+        <div class="my-2 table-control mode-1">
+          <div class="pagination-wrapper m-auto">
+            <pagination-controls (pageChange)="changePage($event)" (pageBoundsCorrection)="changePage($event)"
+              id="bulkMailTable" maxSize="5" previousLabel="" nextLabel="">
+            </pagination-controls>
+          </div>
+          <div class="shadow-dropdown ml-auto page-size-control" ngbDropdown placement="top-right">
+            <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+              <span class="pr-2 c-blue" [translateParams]="{count: pageSize.id}" translate>pagination</span>
+            </div>
+            <div ngbDropdownMenu aria-labelledby="contactPageSize">
+              <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS" (click)="changePageSize(type)">
+                <span class="f-3 v-center" [class.font-weight-bold]="type.id === pageSize.id">
+                  <span [translateParams]="{count: type.id}" translate>pagination</span>
+                  <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1" *ngIf="type.id === pageSize.id"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="!(campaignService.bulkLists$| async).length; else showingStatusTemplate">
+        <ng-container [ngSwitch]="(campaignService.loadStatus | async)">
+          <div class="empty-list py-5" *ngSwitchCase="STATUS.SUCCESS">
+            <ng-container *ngIf="smtpConnected && smtpVerified; else connectCommandTemplate">
+              <div class="object-icon v-center">
+                <i class="i-icon i-delivered-mail d-block bgc-dark"></i>
+              </div>
+              <h4 class="font-weight-bold mt-4 mb-3" translate>
+                There is no Bulk Email event activity.
+              </h4>
+            </ng-container>
+            <ng-template #connectCommandTemplate>
+              <ng-container *ngIf="!smtpConnected">
+                <div class="font-weight-bold mt-4 mb-3 text-center" translate>
+                  Please connect your SMTP server to create the campaign broadcast.
+                </div>
+                <button class="btn btn-primary mt-2" (click)="connectSMTP()" translate>Connect SMTP</button>
+              </ng-container>
+              <ng-container *ngIf="smtpConnected && !smtpVerified">
+                <div class="font-weight-bold mt-4 mb-3 text-center" translate>
+                  You have already connected with SMTP server. But you did not verify your sender email address yet.
+                  Please verify it to create the campaign broadcast.
+                </div>
+                <button class="btn btn-primary mt-2" (click)="verifyEmail()" translate>Verify Sender Email</button>
+              </ng-container>
+            </ng-template>
+          </div>
+          <div class="list-loading text-center" *ngSwitchCase="STATUS.REQUEST">
+            <div class="loader mt-5 lg"></div>
+            <h4 class="fw-600 mt-2" translate>Loading broadcasts...</h4>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-template #showingStatusTemplate>
+        <ng-container *ngIf="!filteredResult?.length">
+          <div class="empty-list py-5">
+            <div class="object-icon v-center">
+              <i class="i-icon i-template d-block bgc-dark"></i>
+            </div>
+            <h4 class="font-weight-bold text-center mt-4 mb-3" translate>
+              There is no broadcast to match your filter conditions.
+            </h4>
+          </div>
+        </ng-container>
+      </ng-template>
+    </div>
+  </div>
+</div>

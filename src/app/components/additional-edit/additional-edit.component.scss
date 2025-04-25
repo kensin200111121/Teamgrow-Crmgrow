@@ -1,0 +1,40 @@
+.remove a {
+  display: block;
+  background: grey;
+
+  border-radius: 50%;
+  padding: 2px;
+
+  .i-remove {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+  }
+}
+
+.additional-fields {
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  .additional-field-label {
+    font-size: 14px;
+    text-transform: none;
+    margin-bottom: 0;
+  }
+}
+
+
+form.was-validated .form-group :not(.ng-invalid) + .error {
+  display: none;
+}
+form.was-validated .form-group:not(.invalid-phone) app-phone-input .error {
+  display: none;
+}
+form.was-validated .form-group.invalid-phone .error {
+  display: block!important;
+}
+:host ::ng-deep {
+  form.was-validated .form-group.invalid-phone input.form-control {
+    border-color: red;
+  }
+}

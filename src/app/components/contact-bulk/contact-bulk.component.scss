@@ -1,0 +1,47 @@
+.panel {
+  max-width: 360px;
+  width: 100vw;
+}
+
+:host ::ng-deep {
+  .mat-select {
+    border: 1px solid #ced4da;
+    padding: 0.5em 0.6em 0.5em 1em;
+    border-radius: 5px;
+  }
+
+  .mat-select-arrow {
+    color: blue;
+  }
+
+  .mat-select-value-text {
+    font-size: 14px;
+  }
+}
+
+form.was-validated .form-group :not(.ng-invalid) + .error {
+  display: none;
+}
+form.was-validated .form-group:not(.invalid-phone) app-phone-input .error {
+  display: none;
+}
+form.was-validated .form-group.invalid-phone .error {
+  display: block!important;
+}
+:host ::ng-deep {
+  form.was-validated .form-group.invalid-phone input.form-control {
+    border-color: red;
+  }
+}
+
+:host ::ng-deep {
+  form.was-validated .form-group.invalid-phone input.form-control {
+    border-color: red;
+  }
+}
+.content {
+  height: calc(100vh - 180px);
+  overflow-y: auto;
+  margin-right: -32px !important;
+  padding-right: 32px;
+}

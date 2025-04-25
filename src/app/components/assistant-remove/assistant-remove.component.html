@@ -1,0 +1,10 @@
+<h1 mat-dialog-title translate>Delete Assistant</h1>
+<mat-dialog-content>
+  <div class="text-center f-6" translate>
+    confirm_to_delete_assistant
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-dialog-close class="btn c-red" translate>Cancel</button>
+  <button [attr.data-action]="'assistant-delete'" class="btn btn-danger c-white" (click)="delete()" [class.loading]="deleting" translate>Delete</button>
+</mat-dialog-actions>

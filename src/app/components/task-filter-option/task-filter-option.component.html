@@ -1,0 +1,94 @@
+<h2 class="v-center d-flex">
+  <span translate>{{ data.title }}</span>
+  <button class="border-0 bgc-trans ml-auto" (click)="closeDialog()">
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</h2>
+<div [ngSwitch]="data.filter_id">
+  <app-task-global-filter
+    *ngSwitchCase="'search'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+  ></app-task-global-filter>
+
+  <app-task-type-filter
+    *ngSwitchCase="'types'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+  ></app-task-type-filter>
+
+  <app-task-status-filter
+    *ngSwitchCase="'status'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+  ></app-task-status-filter>
+
+  <app-advanced-filter-label
+    *ngSwitchCase="'contact_status'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+    [target]="'task'"
+  ></app-advanced-filter-label>
+
+  <app-task-description-contact-filter
+    *ngSwitchCase="'task_description_contact'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+  ></app-task-description-contact-filter>
+
+  <app-task-datetime-filter
+    *ngSwitchCase="'datetime'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+  ></app-task-datetime-filter>
+
+  <app-advanced-filter-country
+    *ngSwitchCase="'country'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+    [target]="'task'"
+  ></app-advanced-filter-country>
+
+  <app-advanced-filter-state
+    *ngSwitchCase="'state'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+    [target]="'task'"
+  ></app-advanced-filter-state>
+
+  <app-advanced-filter-zipcode
+    *ngSwitchCase="'zipcode'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+    [target]="'task'"
+  ></app-advanced-filter-zipcode>
+
+  <app-advanced-filter-source
+    *ngSwitchCase="'source'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+    [target]="'task'"
+  ></app-advanced-filter-source>
+
+  <app-advanced-filter-company
+    *ngSwitchCase="'company'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+    [target]="'task'"
+  ></app-advanced-filter-company>
+
+  <app-advanced-filter-tag
+    *ngSwitchCase="'tag'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+    [target]="'task'"
+  ></app-advanced-filter-tag>  
+
+  <app-advanced-filter-assignee
+    *ngSwitchCase="'assignee'"
+    (close)="closeDialog()"
+    (filter)="applyFilter($event)"
+    [target]="'task'"
+  ></app-advanced-filter-assignee>
+</div>
+

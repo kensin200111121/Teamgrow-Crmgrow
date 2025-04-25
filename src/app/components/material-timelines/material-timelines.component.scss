@@ -1,0 +1,55 @@
+.material {
+  .material-thumbnail {
+    img {
+      width: 120px;
+      border-radius: 10px;
+    }
+  }
+  .material-content {
+    .description {
+      color: gray;
+
+      @media screen and (max-width: 400px) {
+        display: none;
+      }
+    }
+    time {
+      margin-top: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      color: gray;
+    }
+  }
+}
+
+.act-icon {
+  width: 18px;
+  height: 18px;
+}
+
+label.session {
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #949393;
+}
+
+.timelines {
+  position: relative;
+
+  .timeline {
+    margin-top: 4px;
+    margin-bottom: 12px;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 0px;
+    height: calc(100% - 16px);
+    border-left: 2px dashed gainsboro;
+    left: 7px;
+    z-index: -1;
+    top: 10px;
+  }
+}

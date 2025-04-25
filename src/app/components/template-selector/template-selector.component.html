@@ -1,0 +1,58 @@
+  <div ngbDropdown #mainDrop="ngbDropdown" class="sms-template" placement="top-left" [autoClose]="'outside'" (openChange)="toggleSearchFocus($event)">
+    <div class="v-center no-carot c-pointer" ngbDropdownToggle placement="top" ngbTooltip="{{ 'Template' | translate }}"
+      style="width: fit-content;">
+      <i class="d-block i-icon i-template bgc-dark"></i>
+    </div>
+    <div ngbDropdownMenu class="light template-container">
+      <button type="button" class="border-0 bgc-trans ml-auto closeButton" (click)="closeDropMenu()">
+        <i class="d-block i-icon i-close bgc-dark"></i>
+      </button>
+      <div class="template dropdown-item" (click)="createNewTemplate()">
+        <a class="f-3 font-weight-bold">{{ 'Create New Template' | translate }}</a>
+      </div>
+      <div class="form-group search-form">
+        <div class="input-group-prepend">
+          <i class="i-icon i-search d-block bgc-dark"></i>
+        </div>
+        <input type="text" class="form-control" [placeholder]="'Search' | translate" aria-label="search" name="search"
+          #search="ngModel" aria-describedby="search-addon" [(ngModel)]="templateSearchStr"
+          (ngModelChange)="this.changeTemplateSearchStr.next($event)">
+        <ng-container *ngIf="templateSearchStr">
+          <div class="cancel-action c-pointer" (click)="clearTemplateSearchStr()">
+            <i class="i-icon i-close d-block bgc-dark"></i>
+          </div>
+        </ng-container>
+      </div>
+      <div class="v-center flex-row template dropdown-item" (click)="goToFolder('')" *ngIf="currentFolder">
+        <i class="i-icon bgc-dark i-folder mr-1"></i>
+        <div class="f-3 font-weight-bold w-100 text-ellipse template-title">.. to root</div>
+      </div>
+      <div class="v-center flex-row template dropdown-item" (click)="goToFolder(parentFolder)" *ngIf="currentFolder">
+        <i class="i-icon bgc-dark i-folder mr-1"></i>
+        <div class="f-3 font-weight-bold w-100 text-ellipse template-title">.. to prev</div>
+      </div>
+      <ng-container *ngFor="let template of templates">
+        <div class="v-center position-relative template-wrapper">
+          <ng-container class="v-center" *ngIf="template.item_type == 'folder'; else goTemplate">
+            <div class="v-center flex-row template dropdown-item" (click)="goToFolder(template._id)">
+              <i class="i-icon bgc-dark i-folder mr-1"></i>
+              <div class="f-3 font-weight-bold w-100 text-ellipse template-title">{{template.title}}</div>
+            </div>
+          </ng-container>
+          <ng-template #goTemplate>
+            <div class="v-center template dropdown-item v-center" (click)="selectTemplateData(template)">
+              <div class="f-3 font-weight-bold w-100 text-ellipse template-title">{{template.title}}</div>
+            </div>
+          </ng-template>
+          <a class="abrc-y" [routerLink]="['/templates/edit/' + template._id]" target="_blank">
+            <i class="d-block i-icon i-expand bgc-dark"></i>
+          </a>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <ng-template #createNewContent>
+    <app-template-create class="w-100" [type]="type" [value]="value" (onClose)="closeOverlay($event)"
+      [subject]="subject">
+    </app-template-create>
+  </ng-template>

@@ -1,0 +1,27 @@
+@import 'variables';
+.content {
+  background-color: #F5F5F5;
+  justify-items: center;
+  border-radius: 8px;
+}
+
+.material-view {
+  position: relative;
+  height: 256px;
+  width: 100%;
+}
+
+.thumbnail {
+  max-height: 256px;
+  width: 100%;
+  border-radius: 8px;
+}
+
+.edit-thumbnail {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  top: 5px;
+  right: 5px;
+}

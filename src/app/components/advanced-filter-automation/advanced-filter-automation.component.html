@@ -1,0 +1,13 @@
+<div class="label-items-list">
+  <label for="automation-options" class="label-name">Select Automation Option</label>
+  <select id="automation-options" class="custom-select" (change)="toggleOption($event.target.value)">
+    <option value="on_automation" [selected]="option === 'on_automation'">On Automation</option>
+    <option value="recent_off_automation" [selected]="option === 'recent_off_automation'">Recently Off Automation</option>
+    <option value="never_automated" [selected]="option === 'never_automated'">Never Automated</option>
+  </select>
+</div>
+<div class="d-flex align-items-end">
+  <button type="submit" class="btn btn-primary" (click)="save()" translate>
+    Apply
+  </button>
+</div>

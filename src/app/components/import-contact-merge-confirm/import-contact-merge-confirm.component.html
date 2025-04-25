@@ -1,0 +1,20 @@
+<h1 mat-dialog-title>{{'Secondary' | translate}} {{type}}</h1>
+<mat-dialog-content>
+  <div class="my-3">
+    <div class="f-3 c-black">{{'Please select a secondary' | translate}} {{type}}.</div>
+    <div class="f-2 c-dark">({{'other' | translate}} {{type}} {{'will be stored as additional information' | translate}})</div>
+    <div class="mt-3">
+      <div class="check-wrapper mt-2" *ngFor="let value of values let row = index">
+        <div class="custom-control custom-radio ml-auto">
+          <input type="radio" class="custom-control-input" id="select-{{row}}" name="value-select"
+                 [checked]="selected == row" (change)="changeValue(row)">
+          <label class="custom-control-label f-4 font-weight-bold" for="select-{{row}}">{{value}}</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button type="button" class="btn c-blue" mat-dialog-close translate>Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="confirm()" translate>Confirm</button>
+</mat-dialog-actions>

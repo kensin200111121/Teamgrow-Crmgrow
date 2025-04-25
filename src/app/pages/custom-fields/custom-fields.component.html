@@ -1,0 +1,259 @@
+<div class="page-content d-flex">
+  <div class="custom-field-panel p-0">
+    <button
+      data-action="contacts-add-custom-field"
+      class="v-center btn btn-blue f-3 font-weight-bold text-white my-3 add-button"
+      (click)="onCreateField()"
+    >
+      {{ type === 'contact' ? 'New Custom Field' : 'New Custom Deal Field' | translate }}
+    </button>
+    <div class="form-group">
+      <ng-container
+        *ngIf="
+          (customFields && customFields.length && customFields.length > 0) ||
+            !isLoading;
+          else loadingTemplate
+        "
+      >
+        <div
+          class="fields-header required-field v-center pt-0 mb-2 px-3"
+          [class.selected]="isPartialSelected()"
+        >
+          <div class="f-3 field-checkbox">
+            <div class="v-center">
+              <div class="custom-control custom-checkbox">
+                <input
+                  type="checkbox"
+                  class="custom-control-input"
+                  id="selectAllFields"
+                  (change)="$event ? onSelectAllPage() : null"
+                  [checked]="isAllSelectedPage()"
+                />
+                <label
+                  class="custom-control-label"
+                  for="selectAllFields"
+                ></label>
+              </div>
+              <ng-container *ngIf="isPartialSelected()">
+                <span
+                  class="c-black f-3 text-lowercase font-weight"
+                  translate
+                  [translateParams]="{ count: selectedFields.length }"
+                >
+                  items are selected
+                </span>
+              </ng-container>
+            </div>
+          </div>
+          <ng-container *ngIf="isPartialSelected(); else tableHeader">
+            <app-actions-header
+              [actions]="actions"
+              [disableActions]="disabledActions"
+              (doCommand)="onAction($event)"
+            >
+            </app-actions-header>
+          </ng-container>
+          <ng-template #tableHeader>
+            <div class="f-3 field-name op-75">{{ 'NAME' | translate }}</div>
+            <div class="f-3 field-type op-75">{{ 'TYPE' | translate }}</div>
+            <div class="f-3 field-type op-75" *ngIf="type=='contact'" >{{ 'MERGE FIELD' | translate }}</div>
+            <div class="f-3 field-info op-75 text-center" *ngIf="type=='contact'">
+              {{ 'CONTACTS' | translate }}
+            </div>
+            <div class="f-3 op-75 field-action"></div>
+          </ng-template>
+        </div>
+        <div class="load-status" *ngIf="isLoading">
+          {{ 'LOADING' | translate }}
+        </div>
+        <div
+          class="v-center required-field mb-2 field-item py-2 c-pointer px-3"
+          *ngFor="
+            let field of customFields
+              | paginate
+                : {
+                    id: 'customFieldsPage',
+                    itemsPerPage: pageSize.id,
+                    currentPage: page,
+                    totalItems: customFields.length
+                  }
+          "
+        >
+          <div class="f-3 field-checkbox">
+            <div class="v-center checkbox-col">
+              <div class="custom-control custom-checkbox">
+                <input
+                  type="checkbox"
+                  class="custom-control-input"
+                  id="field-{{ field._id }}"
+                  (change)="$event ? onSelect(field) : null"
+                  [checked]="isSelected(field)"
+                />
+                <label
+                  class="custom-control-label"
+                  for="field-{{ field._id }}"
+                ></label>
+              </div>
+            </div>
+          </div>
+          <div class="f-3 field-name text-capitalize">{{ field.name }}</div>
+          <div class="f-3 field-type c-blue" translate>{{ field.type }}</div>
+          <div class="f-3 field-type c-blue" *ngIf="type=='contact'" translate>{{ field.merge_field }}</div>
+          <div
+            class="f-3 field-info c-blue text-center"
+            *ngIf="type=='contact'"
+            (click)="onShowContacts(field)"
+          >
+            {{ field.count }}
+          </div>
+          <div class="f-3 field-action">
+            <div
+              ngbDropdown
+              placement="bottom-right"
+              class="ml-auto additional-action"
+            >
+              <a
+                ngbDropdownToggle
+                class="v-center justify-content-end btn c-dark f-3 no-carot py-0 pl-0 pr-2"
+              >
+                <i class="d-block i-icon i-menu-more bgc-dark"></i>
+              </a>
+              <div ngbDropdownMenu class="light">
+                <button
+                  [attr.data-action]="'contact-custom-field-edit'"
+                  class="v-center border-0 py-2 c-dark dropdown-item"
+                  (click)="onEditField(field)"
+                >
+                  <i
+                    class="d-block i-icon i-edit bgc-dark mr-2"
+                    aria-hidden="true"
+                  ></i>
+                  <span class="f-3 font-weight-bold" translate>Edit</span>
+                </button>
+                <button
+                  [attr.data-action]="'contact-custom-field-delete'"
+                  class="v-center border-0 py-2 c-dark dropdown-item"
+                  (click)="onDeleteField(field)"
+                >
+                  <i
+                    class="d-block i-icon i-trash bgc-red mr-2"
+                    aria-hidden="true"
+                  ></i>
+                  <span class="f-3 font-weight-bold c-red" translate
+                    >Delete</span
+                  >
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container
+        *ngIf="
+          customFields &&
+          customFields.length &&
+          customFields.length > MIN_ROW_COUNT
+        "
+      >
+        <div
+          class="pagination-wrapper m-auto d-flex justify-content-center w-100"
+        >
+          <pagination-controls
+            (pageChange)="onChangePage($event)"
+            (pageBoundsCorrection)="onChangePage($event)"
+            id="customFieldsPage"
+            maxSize="5"
+            previousLabel=""
+            nextLabel=""
+          >
+          </pagination-controls>
+          <div
+            class="shadow-dropdown ml-auto page-size-control"
+            ngbDropdown
+            placement="top-right"
+          >
+            <div
+              class="v-center c-pointer f-3 p-1 font-weight-bold"
+              ngbDropdownToggle
+            >
+              <span
+                [attr.data-name]="'contact-custom-fields-page-size'"
+                class="pr-2 c-blue"
+                [translateParams]="{ count: pageSize.id }"
+                translate
+                >pagination</span
+              >
+            </div>
+            <div ngbDropdownMenu aria-labelledby="customFieldsPageSize">
+              <div
+                [attr.data-name]="'contact-custom-fields-page-size-' + type.id"
+                class="py-2"
+                ngbDropdownItem
+                *ngFor="let type of PAGE_COUNTS"
+                (click)="onChangePageSize(type)"
+              >
+                <span
+                  class="f-3 v-center"
+                  [class.font-weight-bold]="type.id === pageSize.id"
+                >
+                  <span [translateParams]="{ count: type.id }" translate
+                    >pagination</span
+                  >
+                  <i
+                    class="i-icon i-check d-block bgc-dark sm ml-1 mb-1"
+                    *ngIf="type.id === pageSize.id"
+                  ></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    <ng-template #loadingTemplate>
+      <div class="flex-column d-flex mt-5">
+        <ng-container *ngIf="isLoading">
+          <div class="empty-list py-5">
+            <div class="loader mt-2"></div>
+            <h6 class="fw-600 mt-2">{{ 'Loading' | translate }}...</h6>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="!isLoading">
+          <div class="empty-list py-5">
+            <div class="object-icon v-center">
+              <i class="i-icon i-lunch d-block bgc-dark"></i>
+            </div>
+            <h4 class="fw-600 mt-3 mb-3" style="font-size: 12px" translate>
+              There is no custom contact field.
+            </h4>
+          </div>
+        </ng-container>
+      </div>
+    </ng-template>
+    <ng-container *ngIf="customFields.length === 0 && !isLoading">
+      <div class="text-center">
+        <div class="empty-list mt-5">
+          <div class="object-icon v-center">
+            <i class="d-block i-icon i-custom-field bgc-dark"></i>
+          </div>
+        </div>
+        <h4 class="font-weight-bold mt-4 mb-3" translate>
+          empty_custom_list
+        </h4>
+      </div>
+    </ng-container>
+  </div>
+  <mat-drawer-container [hasBackdrop]="true">
+    <mat-drawer
+      #cdrawer
+      position="end"
+      (openedStart)="toggleBody(true)"
+      (closedStart)="toggleBody(false)"
+    >
+      <ng-container *ngIf="selectedField">
+        <app-custom-field-contacts-list [customField]="selectedField">
+        </app-custom-field-contacts-list>
+      </ng-container>
+    </mat-drawer>
+  </mat-drawer-container>
+</div>

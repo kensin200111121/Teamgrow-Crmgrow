@@ -1,0 +1,108 @@
+<div class="v-center justify-content-between">
+    <h1 mat-dialog-title class="m-0">
+        Start your dialer 14 day FREE trial today
+    </h1>
+    <button class="v-center border-0 bgc-trans" mat-dialog-close>
+        <i class="d-block i-icon i-close bgc-dark"></i>
+    </button>
+</div>
+<mat-dialog-content>
+    <div class="package-wrapper mt-4">
+        <div class="package-item"
+            [class.highlight]="litePackage.package == selectedPackage.package"
+            (click)="clickPackage(litePackage)"
+        >
+            <img class="popular-img" [src]="sspaService.toAsset('img/popular.svg')">
+            <div class="package-level">Preview line dialer</div>
+            <div class="package-feature">
+                <span class="mb-1 d-block">Single Line</span>
+                <div class="package-price mb-4">
+                    <span class="dollar">$</span>
+                    <span class="price mx-1">{{litePackage.price}}</span>
+                    <span class="month mx-1"> / month</span>
+                </div>
+            </div>
+            <div class="package-line"></div>
+            <ul class="package-description">
+                <li>1 Call Line</li>
+                <li>1,500 Minutes Talk Time</li>
+                <li>Call with Computer on Phone</li>
+                <li>Usage Log</li>
+                <li>Timezone Protection</li>
+                <li>Free Support</li>
+            </ul>
+            <button class="btn btn-package mb-3 mt-auto w-100 c-blue"
+                [class.active]="litePackage.package == currentPackage.package"
+                [class.highlight]="litePackage.package == selectedPackage.package"
+                [class.loading]="connecting && litePackage.package == selectedPackage.package"
+                [class.disabled]="connecting && litePackage.package != selectedPackage.package"
+                (click)="selectPlan(litePackage.package)"
+            >
+                START FREE TRIAL
+            </button>
+        </div>
+        <div class="package-item active"
+            [class.highlight]="proPackage.package == selectedPackage.package"
+            (click)="clickPackage(proPackage)"
+        >
+            <img class="popular-img" [src]="sspaService.toAsset('img/popular.svg')">
+            <div class="package-level">Power dialer sl</div>
+            <div class="package-feature">
+                <span class="mb-1 d-block">Single Line</span>
+                <div class="package-price mb-4">
+                    <span class="dollar">$</span>
+                    <span class="price mx-1">{{proPackage.price}}</span>
+                    <span class="month mx-1"> / month</span>
+                </div>
+            </div>
+            <div class="package-line"></div>
+            <ul class="package-description">
+                <li>All in Preview Line Dialer</li>
+                <li>1 Call Line</li>
+                <li>7,500 Minutes Talk Time</li>
+                <li>Call Recording</li>
+            </ul>
+            <button class="btn btn-package mb-3 mt-auto w-100 c-blue"
+                [class.active]="proPackage.package == currentPackage.package"
+                [class.highlight]="proPackage.package == selectedPackage.package"
+                [class.loading]="connecting && proPackage.package == selectedPackage.package"
+                [class.disabled]="connecting && proPackage.package != selectedPackage.package"
+                (click)="selectPlan(proPackage.package)"
+            >
+                START FREE TRIAL
+            </button>
+        </div>
+        <div class="package-item"
+            [class.highlight]="elitePackage.package == selectedPackage.package"
+            (click)="clickPackage(elitePackage)"
+        >
+            <img class="popular-img" [src]="sspaService.toAsset('img/popular.svg')">
+            <div class="package-level">Power dialer ml</div>
+            <div class="package-feature">
+                <span class="mb-1 d-block">Multiple Lines</span>
+                <div class="package-price mb-4">
+                    <span class="dollar">$</span>
+                    <span class="price mx-1">{{elitePackage.price}}</span>
+                    <span class="month mx-1"> / month</span>
+                </div>
+            </div>
+            <div class="package-line"></div>
+            <ul class="package-description">
+                <li>All in Power Dialer SL</li>
+                <li>3 Call Line</li>
+                <li>Upload Callback Messages</li>
+            </ul>
+            <button class="btn btn-package mb-3 mt-auto w-100 c-blue"
+                [class.active]="elitePackage.package == currentPackage.package"
+                [class.highlight]="elitePackage.package == selectedPackage.package"
+                [class.loading]="connecting && elitePackage.package == selectedPackage.package"
+                [class.disabled]="connecting && elitePackage.package != selectedPackage.package"
+                (click)="selectPlan(elitePackage.package)"
+            >
+                START FREE TRIAL
+            </button>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+</mat-dialog-actions>

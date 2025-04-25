@@ -1,0 +1,771 @@
+<div class="d-flex table-control-header v-center">
+    <app-folder-tree
+      [setFolder]="currentFolder"
+      [teamId]="teamId"
+      [baseRoute] = "BASE_URL + '/' + LIST_TYPE" >
+    </app-folder-tree>
+
+    <div class="ml-auto form-group mb-0 search-form">
+      <div class="input-group-prepend">
+        <i class="i-icon i-search d-block bgc-dark"></i>
+      </div>
+      <input type="text" class="form-control" [placeholder]="'Search' | translate" aria-label="search"
+        aria-describedby="search-addon" [(ngModel)]="filterParam.search"
+        (ngModelChange)="this.onChangeKeyword.next($event)">
+      <ng-container *ngIf="filterParam.search">
+        <div class="cancel-action c-pointer" (click)="this.onChangeKeyword.next('')">
+          <i class="i-icon i-close d-block bgc-dark"></i>
+        </div>
+      </ng-container>
+    </div>
+  <div ngbDropdown placement="bottom-right" class="ml-2">
+    <div class="v-center c-pointer f-3 p-2 mr-2 font-weight-bold hover" ngbDropdownToggle>
+      <span data-name="material-list-sortby" class="pr-2">
+        <!-- <ng-container *ngIf="!sortType || sortType.label === 'All types'; else deadlineTemplate">
+          <span class="font-weight-bold" translate>Sort by</span>
+        </ng-container>
+        <ng-template #deadlineTemplate>
+          <span class="font-weight-bold">{{sortType.label | translate}}</span>
+        </ng-template> -->
+        <ng-container>
+          <span class="font-weight-bold" translate>Sort by</span>
+        </ng-container>
+      </span>
+    </div>
+    <div ngbDropdownMenu aria-labelledby="taskSortTypes">
+      <div class="py-2" ngbDropdownItem *ngFor="let type of SORT_TYPES" [attr.data-name]="'material-list-sortby-' + type.label" (click)="onChangeSort(type)">
+        <span class="f-3 v-center" [class.font-weight-bold]="type.id === sortType.id">
+          {{type.label | translate}}
+          <i class="i-icon i-check d-block bgc-dark sm ml-1 mb-1" *ngIf="type.id === sortType.id"></i>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="border-left pl-3 pr-0 py-1 text-center ml-3 mr-2">
+    <a data-action="material-filter" class="ml-3 f-3 font-weight-bold c-dark td-none c-pointer v-center" (click)="drawer.toggle()">
+      <img class="mr-1" [src]="sspaService.toAsset('img/filter.svg')" alt="filter-icon"
+        style="width: 16px; height: 16px;" />
+      <span translate>Filter</span>
+    </a>
+  </div>
+</div>
+
+<div *ngIf="selectedView === 'tile_view'; else list_view">
+  <div class="updating-status" *ngIf="filteredItems.length && isLoading" translate>
+    LOADING
+  </div>
+  <div class="row" *ngIf="filteredItems.length">
+    <!-- Folders -->
+    <div class="col-md-12" data-name="material-folders" *ngIf="folders.length;">
+      <mat-expansion-panel class="mat-elevation-z mt-2" hideToggle [expanded]="true">
+        <mat-expansion-panel-header (click)="$event.stopPropagation()">
+          <mat-panel-title>
+            <div class="d-flex justify-content-between folders-header">
+              <div class="d-flex align-items-center pointer-events-auto">
+                <span class="font-weight-bold mr-3" translate>Folders</span>
+                <ng-container *ngIf="selectedFolders.length">
+                  <div class="v-center title-file-selected">
+                    <span class="c-dark f-3 text-lowercase font-weight-bold" translate
+                      [translateParams]="{count: selectedFolders.length}">
+                      count selected
+                    </span>
+                    <app-actions-header [actions]="FOLDER_ACTIONS" (doCommand)="doFolderAction($event)"></app-actions-header>
+                  </div>
+                </ng-container>
+              </div>
+              <div class="d-flex align-items-center">
+                <div
+                  class="btn btn-white f-4 font-weight-bold btn-font-bold c-blue c-pointer px-3 mr-2"
+                >
+                  <div class="d-flex pointer-events-auto" (click)="changeView($event)">
+                    <span translate *ngIf="isAll">See Less</span>
+                    <span translate *ngIf="!isAll">See All</span>
+                  </div>
+                </div>
+                <div
+                  *ngIf="LIST_TYPE === 'OWN'"
+                  class="btn btn-white border border-primary f-4 font-weight-bold btn-font-bold c-blue c-pointer px-3"
+                >
+                  <div class="d-flex pointer-events-auto" (click)="createFolder($event)">
+                    <i class="sm i-icon i-plus bgc-blue font-weight-normal mr-2 mt-1"></i>
+                    <span translate>Folder</span>
+                  </div>
+                </div>
+                <i class="i-icon i-arrow-down bgc-black sm toggle-icon op-40 ml-4 pointer-events-auto"></i>
+              </div>
+            </div>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="mt-2">
+          <div class="folder-list" *ngIf="isAll; else lessView">
+            <div class="p-2 m-2" *ngFor="let element of folders">
+              <div class="title-folder-thumb c-pointer" (click)="goToSubFolder($event, element)"></div>
+              <div class="title-folder d-flex justify-content-center">
+                <div class="custom-control custom-checkbox mt-3" [class.no-checkbox]="LIST_TYPE !== 'OWN'">
+                  <input *ngIf="LIST_TYPE === 'OWN'" type="checkbox" class="custom-control-input" id="material-{{element._id}}"
+                    (change)="toggleItem(element)" [checked]="isSelected(element)" />
+                  <label *ngIf="LIST_TYPE === 'OWN'" class="custom-control-label" for="material-{{element._id}}"></label>
+                  <span class="file-title-label c-pointer" [ngbTooltip]="element.title || ''" (click)="goToSubFolder($event, element)">
+                    {{(element.title || '') | shorten: 14: '...'}}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ng-template #lessView>
+            <div class="carousel-container w-100">
+              <div *ngIf="showLeftButton" class="carousel-button left" (click)="scrollLeft()">
+                <i class="sm i-icon i-back bgc-dark font-weight-normal"></i>
+              </div>
+              <div class="carousel-wrapper w-100">
+                <div class="carousel-content" #carouselContent>
+                  <div class="p-2 m-2 folder-w" *ngFor="let element of folders">
+                    <div class="title-folder-thumb c-pointer" (click)="goToSubFolder($event, element)"></div>
+                    <div class="title-folder d-flex justify-content-center">
+                      <div class="custom-control custom-checkbox mt-3" [class.no-checkbox]="LIST_TYPE !== 'OWN'">
+                        <input *ngIf="LIST_TYPE === 'OWN'" type="checkbox" class="custom-control-input" id="material-{{element._id}}"
+                          (change)="toggleItem(element)" [checked]="isSelected(element)" />
+                        <label *ngIf="LIST_TYPE === 'OWN'" class="custom-control-label" for="material-{{element._id}}"></label>
+                        <span class="file-title-label c-pointer" [ngbTooltip]="element.title || ''" (click)="goToSubFolder($event, element)">
+                          {{(element.title || '') | shorten: 14: '...'}}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="showRightButton" class="carousel-button right" (click)="scrollRight()">
+                <i class="sm i-icon i-right bgc-dark font-weight-normal"></i>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </mat-expansion-panel>
+    </div>
+
+    <!-- Files -->
+    <div class="col-md-12" data-name="material-files" *ngIf="files.length">
+      <ng-container *ngIf="selectedFiles.length; else filesHeader">
+        <div class="v-center mt-2 title-file-selected">
+          <div class="custom-control custom-checkbox" [class.indeterminate]="selectedCount && !isAllSelected()">
+            <input type="checkbox" class="custom-control-input" id="selectAllMaterials" (change)="toggleAllItems()"
+              [checked]="isPageSelected()" />
+            <label class="custom-control-label" for="selectAllMaterials"></label>
+          </div>
+          <span class="c-dark f-3 text-lowercase font-weight-bold" translate
+            [translateParams]="{count: selectedFiles.length}">
+            count selected
+          </span>
+          <app-actions-header [actions]="BULK_ACTIONS" (doCommand)="doAction($event)"
+            [disableActions]="disableActions"></app-actions-header>
+        </div>
+      </ng-container>
+      <ng-template #filesHeader>
+        <div class="d-flex mt-2 justify-content-between files-header">
+          <span class="font-weight-bold" translate>Files</span>
+          <div
+            *ngIf="LIST_TYPE === 'OWN'"
+            class="btn btn-white border border-primary f-4 font-weight-bold btn-font-bold c-blue c-pointer px-3"
+          >
+            <div class="d-flex" (click)="createMaterial('video')">
+              <i class="i-icon i-upload bgc-blue font-weight-normal mr-2"></i>
+              <span translate>Upload</span>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+      <div class="title-list">
+        <div class="mt-2" *ngFor="let element of files | paginate: {id: 'materialfiles', itemsPerPage: pageSize.id, currentPage: page, totalItems: files.length}" [class.selected]="element._id === previewingMaterialId">
+          <div class="title-thumbnail">
+            <div style="position: relative;">
+              <a (click)="openFilePreview($event, element)">
+                <img [src]="element.thumbnail || element.preview" class="title-thumbnail"
+                  (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+              </a>
+              <div class="title-tag-div d-flex"
+                *ngIf="element.sharedTeamCount || element.type === 'youtube' || element.type === 'vimeo'">
+                <span class="tag rounded mr-2" *ngIf="element.sharedTeamCount" translate>Shared</span>
+                <span class="tag rounded youtube-tag v-center" *ngIf="element.type === 'youtube'">
+                  <i class="i-icon i-link-track bgc-white mr-2"></i>
+                  <span translate>Youtube</span>
+                </span>
+                <span class="tag rounded vimeo-tag v-center" *ngIf="element.type === 'vimeo'">
+                  <i class="i-icon i-link-track bgc-white mr-2"></i>
+                  <span translate>Vimeo</span>
+                </span>
+              </div>
+              <div class="title-more-action">
+                <ng-container
+                  *ngTemplateOutlet="materialActions; context: { $implicit: element }"></ng-container>
+              </div>
+            </div>
+          </div>
+          <div class="mt-1">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="material-{{element._id}}"
+                (change)="toggleItem(element)" [checked]="isSelected(element)" />
+              <label class="custom-control-label" for="material-{{element._id}}"></label>
+              <span (click)="openFilePreview($event, element)" class="file-title-label c-pointer" [ngbTooltip]="element.title || ''">
+                {{(element.title || '') | shorten: 30: '...'}}
+              </span>
+            </div>
+          </div>
+          <div class="mt-1 file-info-title v-center c-pointer" (click)="openFilePreview($event, element)" *ngIf="LIST_TYPE === 'OWN'">
+            <i class="i-icon i-material-send bgc-dark mr-2" aria-hidden="true"></i>
+            <span class="f-4 c-dark mr-4" ngbTooltip="Sent Count" placement="top">{{element.sent}}</span>
+            <i class="i-icon i-material-eye bgc-dark mr-2" aria-hidden="true"></i>
+            <span class="f-4 c-dark" ngbTooltip="Viewed Count" placement="top">{{element.views}}</span>
+          </div>
+          <div class="mt-1 file-info-title">
+            {{ element.item_type }} .
+            {{ element.created_at | datetimeFormat : 'mediumDate' }}
+          </div>
+        </div>
+      </div>
+      <div class="my-2 table-control mode-1">
+        <div class="pagination-wrapper m-auto" [class.invisible]="files.length < pageSize.id">
+          <pagination-controls id="materialfiles" maxSize="5" previousLabel="" nextLabel=""
+            (pageChange)="changePage($event)" (pageBoundsCorrection)="changePage($event)">
+          </pagination-controls>
+        </div>
+        <div *ngIf="files.length > PAGE_COUNTS[0].id" class="shadow-dropdown ml-auto page-size-control"
+          ngbDropdown placement="top-right">
+          <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+            <span [attr.data-name]="'material-list-pagination-rows'" class="pr-2 c-blue" translate [translateParams]="{count: pageSize.id}">
+              pagination
+            </span>
+          </div>
+          <div ngbDropdownMenu aria-labelledby="contactPageSize">
+            <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS" [attr.data-name]="'material-list-pagination-rows-' + type.label" (click)="changePageSize(type)">
+              <span class="f-3 v-center" [class.font-weight-bold]="type.id === pageSize.id">
+                <span translate [translateParams]="{count: type.label}">
+                  pagination
+                </span>
+                <i class="i-icon i-check d-block bgc-dark sm ml-1 mb-1" *ngIf="type.id === pageSize.id"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- List View -->
+<ng-template #list_view>
+  <div class="position-relative mt-2">
+    <!-- List View -->
+    <div class="mat-table-wrapper" [class.empty]="!filteredItems.length">
+      <table class="w-100 page-table" mat-table
+        [dataSource]="filteredItems | paginate: {id: 'materials', itemsPerPage: pageSize.id, currentPage: page, totalItems: filteredItems.length}"
+        [class.selected-files]="selectedFiles.length">
+        <ng-container matColumnDef="loader-cell">
+          <th mat-header-cell *matHeaderCellDef colspan="12" class="loader-cell">
+            <div class="updating-status" *ngIf="filteredItems.length && isLoading" translate>
+              LOADING
+            </div>
+          </th>
+        </ng-container>
+
+        <!-- Selection Info & Master Toggle Actions -->
+        <ng-container matColumnDef="selection_info">
+          <th mat-header-cell *matHeaderCellDef colspan="12" class="text-center">
+            <span *ngIf="!isAllSelected(); else deselectTemplate" [translateParams]="{count: selectedFiles.length}"
+              translate>
+              n materials are selected
+              <span class="c-blue font-weight-bold c-pointer ml-2" (click)="toggleAllItems()"
+                [translateParams]="{count: fileCount}" translate>
+                select all materials
+              </span>
+            </span>
+            <ng-template #deselectTemplate>
+              <span [translateParams]="{count: selectedFiles.length}" translate>all materials are selected</span>
+              <span class="c-blue c-pointer font-weight-bold ml-2" (click)="toggleAllItems()" translate>Clear
+                selection</span>
+            </ng-template>
+          </th>
+        </ng-container>
+
+        <!-- Select Box -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef class="checkbox-col">
+            <div class="custom-control custom-checkbox" [class.indeterminate]="selectedCount && !isAllSelected()">
+              <input type="checkbox" class="custom-control-input" id="selectAllMaterials"
+                (change)="$event ? togglePageItems() : null" [checked]="isPageSelected()" />
+              <label class="custom-control-label" for="selectAllMaterials"></label>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let element" class="checkbox-col">
+            <div
+              *ngIf="LIST_TYPE === 'OWN' || (LIST_TYPE === 'LIBRARY' && element.item_type !== 'folder')"
+              class="custom-control custom-checkbox"
+            >
+              <input type="checkbox" class="custom-control-input" id="material-{{element._id}}"
+                (change)="toggleItem(element)" [checked]="isSelected(element)" />
+              <label class="custom-control-label" for="material-{{element._id}}"></label>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Thumbnail & Title -->
+        <ng-container matColumnDef="name">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell *ngIf="!selectedCount else toolHeader" class="name-col">
+              <div class="v-center c-pointer head-sort" (click)="changeSort('title')">
+                <span [class]="sortField == 'title' ? 'fw-600 c-dark' : ''" translate>Name</span>
+                <i class="i-icon d-block bgc-black ml-2" [class]="sortDir ? 'i-sort-down' : 'i-sort-up'"
+                  *ngIf="sortField == 'title'">
+                </i>
+              </div>
+            </th>
+            <ng-template #toolHeader>
+              <th mat-header-cell colspan="12">
+                <div class="v-center">
+                  <ng-container *ngIf="selectedFiles.length; else folderSelectedStatus">
+                    <span class="c-dark f-3 text-lowercase font-weight-bold" translate
+                      [translateParams]="{count: selectedFiles.length}">
+                      count selected
+                    </span>
+                    <app-actions-header [actions]="BULK_ACTIONS" (doCommand)="doAction($event)"
+                      [disableActions]="disableActions"></app-actions-header>
+                  </ng-container>
+                  <ng-template #folderSelectedStatus>
+                    <span class="c-dark f-3 text-lowercase font-weight-bold" translate
+                      [translateParams]="{count: selectedFolders.length}">
+                      count selected
+                    </span>
+                    <app-actions-header [actions]="FOLDER_ACTIONS"
+                      (doCommand)="doFolderAction($event)"></app-actions-header>
+                  </ng-template>
+                </div>
+              </th>
+            </ng-template>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="name-col">
+            <ng-container *ngIf="element.item_type === 'folder'; else materialInfoTemplate">
+              <a class="v-center c-pointer material-main-info td-none" (click)="goToSubFolder($event, element)">
+                <div class="thumbnail">
+                  <a>
+                    <div class="folder-thumb"></div>
+                  </a>
+                </div>
+                <span class="f-4 font-weight-bold ci-dark" [ngbTooltip]="element.title || ''">
+                  {{(element.title || '') | shorten: 40: '...'}}
+                </span>
+              </a>
+            </ng-container>
+            <ng-template #materialInfoTemplate>
+              <div class="v-center c-pointer material-main-info">
+                <div class="thumbnail" *ngIf="element.user else adminVideo">
+                  <a href="{{siteUrl}}/{{element.item_type}}/{{element._id}}" target="_blank">
+                    <div [class.thumb-prev-wrapper]="element.item_type === 'video'">
+                      <img [src]="element.thumbnail || element.preview" class="thumbnail"
+                        (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+                      <img [src]="element.preview" *ngIf="element.item_type === 'video'" class="preview"
+                        (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+                    </div>
+                  </a>
+                </div>
+                <ng-template #adminVideo>
+                  <div class="thumbnail">
+                    <a href="{{siteUrl}}/{{element.item_type}}?{{element.item_type}}={{element._id}}&user={{userId}}" target="_blank">
+                      <div [class.thumb-prev-wrapper]="element.item_type === 'video'">
+                        <img [src]="element.thumbnail || element.preview" class="thumbnail"
+                          (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+                        <img [src]="element.preview" *ngIf="element.item_type === 'video'" class="preview"
+                          (error)="sspaService.imgError($event,'img/video_thumb.jpg')" />
+                      </div>
+                    </a>
+                  </div>
+                </ng-template>
+                <span class="f-4 c-dark font-weight-bold" (click)="openFilePreview($event, element)">
+                  {{(element.title || '') | shorten: 40: '...'}}
+                  <div *ngIf="element.capture_form" class="font-weight-normal">
+                    {{element.forms?.firstForm}}
+                    <span *ngIf="element.forms.secondForm">, </span>
+                    {{element.forms?.secondForm}}
+                    <span *ngIf="element.forms.rest">, {{element.forms?.rest}} more</span>
+                  </div>
+                </span>
+
+              </div>
+              <div class="responsive-data">
+                <div class="type">
+                  <span class="info-title">type:</span>
+                  <span class="info-value">{{element.item_type}}</span>
+                </div>
+                <div class="time">
+                  <span class="info-title">created at:</span>
+                  <span class="info-value">{{element.created_at | datetimeFormat : 'mediumDate'}}</span>
+                </div>
+                <div class="analytics v-center">
+                  <span class="info-title">views:</span>
+                  <div class="info-value">
+                    <a (click)="openFilePreview($event, element)" class="text-decoration-none c-pointer">
+                      <div class="v-center justify-content-end">
+                        <span class="f-3 c-dark">{{element.views}}</span>
+                        <i class="i-icon i-analytics bgc-blue ml-1 sm" aria-hidden="true"></i>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </td>
+        </ng-container>
+
+        <!-- Sent -->
+        <ng-container matColumnDef="sent">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell *ngIf="!selectedCount" class="analytics-col">
+              <div class="v-center c-pointer head-sort" (click)="changeSort('sent')">
+                <span [class]="sortField == 'sent' ? 'fw-600 c-dark' : ''" translate>Sent</span>
+                <i class="i-icon d-block bgc-black ml-2" [class]="sortDir ? 'i-sort-down' : 'i-sort-up'"
+                  *ngIf="sortField == 'sent'"></i>
+              </div>
+            </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="analytics-col">
+            <ng-container *ngIf="element.item_type !== 'folder'">
+              <a (click)="openFilePreview($event, element)" class="text-decoration-none c-pointer">
+                <div class="v-center py-2" placement="bottom">
+                  <i class="i-icon i-material-send bgc-dark mr-1" aria-hidden="true" ></i>
+                  <span class="f-4 c-dark">{{element.sent}}</span>
+                </div>
+              </a>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <!-- Views -->
+        <ng-container matColumnDef="views">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell *ngIf="!selectedCount" class="analytics-col">
+              <div class="v-center c-pointer head-sort" (click)="changeSort('views')">
+                <span [class]="sortField == 'views' ? 'fw-600 c-dark' : ''" translate>Views</span>
+                <i class="i-icon d-block bgc-black ml-2" [class]="sortDir ? 'i-sort-down' : 'i-sort-up'"
+                  *ngIf="sortField == 'views'"></i>
+              </div>
+            </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="analytics-col">
+            <ng-container *ngIf="element.item_type !== 'folder'">
+              <a (click)="openFilePreview($event, element)" class="text-decoration-none c-pointer">
+                <div class="v-center py-2" placement="bottom">
+                  <i class="i-icon i-material-eye bgc-dark mr-1" aria-hidden="true"></i>
+                  <span class="f-4 c-dark">{{element.views}}</span>
+                </div>
+              </a>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <!-- Type -->
+        <ng-container matColumnDef="type">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell *ngIf="!selectedCount" class="type-col">
+              <div class="v-center c-pointer head-sort" (click)="changeSort('type')">
+                <span [class]="sortField == 'type' ? 'fw-600 c-dark' : ''" translate>Type</span>
+                <i class="i-icon d-block bgc-black ml-2" [class]="sortDir ? 'i-sort-down' : 'i-sort-up'"
+                  *ngIf="sortField == 'type'"></i>
+              </div>
+            </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="type-col {{element.item_type}}">
+            <ng-container *ngIf="element.item_type !== 'folder'">
+              <span class="f-4 c-dark" translate>{{element.item_type}}</span>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <!-- Created -->
+        <ng-container matColumnDef="created_at">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell class="time-col" *ngIf="!selectedCount">
+              <div class="v-center c-pointer head-sort" (click)="changeSort('created_at')">
+                <span [class]="sortField == 'created_at' ? 'fw-600 c-dark' : ''" translate>Added</span>
+                <i class="i-icon d-block bgc-black ml-2" [class]="sortDir ? 'i-sort-down' : 'i-sort-up'"
+                  *ngIf="sortField == 'created_at'"></i>
+              </div>
+            </th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="time-col">
+            <span class="f-4 c-dark">{{element.created_at | datetimeFormat : 'mediumDate'}}</span>
+          </td>
+        </ng-container>
+
+        <!-- Shared With -->
+        <ng-container matColumnDef="share">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell *ngIf="!selectedCount && !isSspa" class="share-col" translate>shared with</th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element" class="share-col">
+            <ng-container *ngIf="element.sharedTeamCount && !isSspa">
+              <span class="f-4 tag rounded mr-2">{{element.sharedTeamInfo}}</span>
+              <span class="f-2 op-56" *ngIf="element.sharedTeamCount > 1">+{{element.sharedTeamCount - 1}} more</span>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="sub_actions">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell *ngIf="!selectedCount" class="sub-item-action"></th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element; let index=index;" class="sub-item-action">
+            <div *ngIf="LIST_TYPE === 'OWN'" class="v-center justify-content-between items pr-3">
+              <ng-container *ngIf="element.item_type !== 'folder'">
+                <!-- Video Converting Status -->
+                <app-material-progress-status [material] = "element" [displayType]="'list'" (sendMaterial)="sendMaterial(element, 'email')"></app-material-progress-status>
+
+              </ng-container>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- More Actions -->
+        <ng-container matColumnDef="actions">
+          <ng-container *matHeaderCellDef>
+            <th mat-header-cell *ngIf="!selectedCount" class="item-action"></th>
+          </ng-container>
+          <td mat-cell *matCellDef="let element;" class="item-action">
+            <ng-container *ngTemplateOutlet="materialActions; context: { $implicit: element }"></ng-container>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['loader-cell']" class="loader-row">
+        </tr>
+        <tr mat-header-row *matHeaderRowDef="DISPLAY_COLUMNS"
+          [class.selected]="selectedFiles.length + selectedFolders.length" class="table-header">
+        </tr>
+        <tr mat-header-row *matHeaderRowDef="['selection_info']" [class.d-none]="!selectedFiles.length"
+          class='selection-info'>
+        </tr>
+        <tr mat-row *matRowDef="let row; let index=index; columns: DISPLAY_COLUMNS;"
+          [class.folder-row]="row.material_type === 'folder'" id="material-video-{{row._id}}" [class.selected]="row._id === previewingMaterialId">
+        </tr>
+      </table>
+      <div class="my-2 table-control mode-1">
+        <div class="pagination-wrapper m-auto" [class.invisible]="filteredItems.length < pageSize.id">
+          <pagination-controls id="materials" maxSize="5" previousLabel="" nextLabel=""
+            (pageChange)="changePage($event)" (pageBoundsCorrection)="changePage($event)">
+          </pagination-controls>
+        </div>
+        <div *ngIf="filteredItems.length > PAGE_COUNTS[0].id" class="shadow-dropdown ml-auto page-size-control"
+          ngbDropdown placement="top-right">
+          <div class="v-center c-pointer f-3 p-3 font-weight-bold" ngbDropdownToggle>
+            <span [attr.data-name]="'material-list-pagination-rows'" class="pr-2 c-blue" translate [translateParams]="{count: pageSize.id}">
+              pagination
+            </span>
+          </div>
+          <div ngbDropdownMenu aria-labelledby="contactPageSize">
+            <div class="py-2" ngbDropdownItem *ngFor="let type of PAGE_COUNTS" [attr.data-name]="'material-list-pagination-rows-' + type.label" (click)="changePageSize(type)">
+              <span class="f-3 v-center" [class.font-weight-bold]="type.id === pageSize.id">
+                <span translate [translateParams]="{count: type.label}">
+                  pagination
+                </span>
+                <i class="i-icon i-check d-block bgc-dark sm ml-1 mb-1" *ngIf="type.id === pageSize.id"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- Empty & Loading View -->
+<ng-container *ngIf="!filteredItems.length">
+  <div class="empty-list py-5" *ngIf="!isLoading else loadingTemplate">
+    <div class="object-icon v-center">
+      <i class="i-icon i-material d-block bgc-dark"></i>
+    </div>
+    <h4 class="font-weight-bold mt-4 mb-3" translate>
+      no_materials_in_account
+    </h4>
+  </div>
+  <ng-template #loadingTemplate>
+    <div class="list-loading text-center">
+      <div class="loader mt-5 lg"></div>
+      <h4 class="fw-600 mt-2" translate>Loading materials...</h4>
+    </div>
+  </ng-template>
+</ng-container>
+<mat-drawer-container [hasBackdrop]="true">
+  <mat-drawer #drawer position="end">
+    <div class="p-4c panel">
+      <div class="v-center mb-3">
+        <h4 class="font-weight-bold mb-0 title" translate>Advanced Filter</h4>
+        <div [attr.data-name]="'material-filter-clear'" class="c-blue f-1 text-uppercase ml-2 mt-2 c-pointer" (click)="clearFilterOptions()" translate>Clear All
+          Filters</div>
+        <button class="v-center border-0 bgc-trans ml-auto" type="button" (click)="drawer.toggle()">
+          <i class="d-block i-icon i-close bgc-dark"></i>
+        </button>
+      </div>
+      <app-resource-filters
+        [mode]="FilterMode.TEAM"
+        [teamOptions]="filterParam.teamOptions"
+        [typeOptions]="filterParam.typeOptions"
+        [resourTypes]="FILTER_TYPES"
+        (onChangeTeamOptions)="onChangeTeamOptions($event)"
+        (onChangeTypeOptions)="onChangeTypeOptions($event)"
+      >
+      </app-resource-filters>
+    </div>
+  </mat-drawer>
+</mat-drawer-container>
+
+<ng-template #materialActions let-element>
+  <div *ngIf="LIST_TYPE === 'OWN' else downloadAction" class="v-center material-actions" #menuWrapper>
+    <div ngbDropdown class="ml-auto" #mainDrop="ngbDropdown" display="dynamic" placement="bottom-end top-end">
+      <ng-container *ngIf="loadingStatus.indexOf(element._id) === -1">
+        <a ngbDropdownToggle class="v-center tile-action-dropdown c-dark f-3 no-carot px-0">
+          <i class="d-block i-icon i-menu-more bgc-dark"></i>
+        </a>
+      </ng-container>
+      <ng-container *ngIf="loadingStatus.indexOf(element._id) !== -1">
+        <a ngbDropdownToggle class="v-center tile-action-dropdown c-dark f-3 no-carot px-0">
+          <i class="small-spinner"></i>
+        </a>
+      </ng-container>
+
+      <div ngbDropdownMenu class="light" (mouseleave)="mainDrop.close()">
+        <ng-container *ngIf="element.material_type === 'folder'; else materialActionsTemplate">
+          <button class="v-center border-0 py-2 c-dark" ngbDropdownItem (click)="editFolder(element)">
+            <i class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i>
+            <span class="ml-3 f-3 font-weight-bold" translate>Edit</span>
+          </button>
+          <button class="v-center border-0 py-2 c-dark" ngbDropdownItem (click)="deleteFolder(element)">
+            <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+            <span class="ml-3 f-3 font-weight-bold" translate>Delete</span>
+          </button>
+          <button class="v-center border-0 py-2 c-dark" ngbDropdownItem (click)="stopShare(element)"
+            *ngIf="element.role === 'team' && !isSspa">
+            <i class="i-icon i-share-team d-block bgc-dark" aria-hidden="true"></i>
+            <span class="f-3 ml-3 font-weight-bold" translate>Stop Share</span>
+          </button>
+          <button class="v-center border-0 py-2 c-dark" *ngIf="!isSspa" ngbDropdownItem (click)="share(element)">
+            <i class="i-icon i-share-team d-block bgc-dark" aria-hidden="true"></i>
+            <span class="f-3 ml-3 font-weight-bold" translate>Share</span>
+          </button>
+          <button *ngIf="!rootFolderInfo?.folders?.includes(element._id)"
+            class="v-center border-0 py-2 c-dark" ngbDropdownItem (click)="gotoParentFolder(element)">
+            <i class="i-icon i-share-team d-block bgc-dark" aria-hidden="true"></i>
+            <span class="f-3 ml-3 font-weight-bold" translate>Goto Folder</span>
+          </button>
+        </ng-container>
+        <ng-template #materialActionsTemplate>
+          <button class="v-center border-0 py-2 c-dark" ngbDropdownItem (click)="sendMaterial(element, 'email')">
+            <i class="i-icon i-material-send bgc-dark ml-1" aria-hidden="true"></i>
+            <span class="ml-3 f-3" translate>Send</span>
+          </button>
+          <button class="v-center border-0 py-2 c-dark" ngbDropdownItem (click)="copyLink(element)">
+            <i class="i-icon i-copy bgc-dark ml-1" aria-hidden="true"></i>
+            <span class="ml-3 f-3" translate>Copy Link</span>
+          </button>
+          <button class="v-center border-0 py-2 c-dark" ngbDropdownItem (click)="getEmbededCode(element)"
+            *ngIf="element.material_type == 'video'">
+            <i class="i-icon i-code bgc-dark ml-1" aria-hidden="true"></i>
+            <span class="ml-3 f-3" translate>Get Embed Code</span>
+          </button>
+          <ng-container *ngIf="!isSspa">
+
+            <button class="v-center border-0 py-2 c-dark" ngbDropdownItem
+              (click)="getTrackableLink(element)">
+              <i class="i-icon i-link-track bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-3 " translate>Trackable Link</span>
+            </button>
+          </ng-container>
+          <hr class="hr-action-dropdow">
+          <button class="v-center border-0 py-2 c-dark" ngbDropdownItem (click)="editDetail(element)">
+            <i class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i>
+            <span class="ml-3 f-3" translate>Rename</span>
+          </button>
+          <ng-container *ngIf="!isSspa">
+            <button class="v-center border-0 py-2 c-dark" ngbDropdownItem (click)="editTheme(element)">
+              <i class="i-icon i-template bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-3 " translate>Edit Theme</span>
+            </button>
+            <button class="v-center border-0 py-2 c-dark" ngbDropdownItem
+              (click)="editLeadCapture(element)">
+              <i class="i-icon i-lead-capture bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-3 " translate>Lead Form</span>
+            </button>
+          </ng-container>
+          <button class="v-center border-0 py-2 c-dark" ngbDropdownItem
+            (click)="moveToOtherFolder(element)">
+            <i class="i-icon i-move-to bgc-dark ml-1" aria-hidden="true"></i>
+            <span class="ml-3 f-3" translate>Move To</span>
+          </button>
+          <button class="v-center border-0 py-2 c-dark" ngbDropdownItem *ngIf="element.isDownloadable"
+            (click)="downloadSource(element)">
+            <i class="i-icon i-download bgc-dark ml-1" aria-hidden="true"></i>
+            <span class="ml-3 f-3" translate>Download</span>
+          </button>
+          <div *ngIf="!isSspa">
+            <hr class="hr-action-dropdow">
+            <div class="fw-600 c-grey px-3 py-2">
+              <span class="f-4">Share</span>
+            </div>
+            <button class="v-center border-0 py-2 c-dark" ngbDropdownItem (click)="socialShare(element)">
+              <i class="i-icon i-shared-by bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-3" translate>Social</span>
+            </button>
+            <button class="v-center border-0 py-2 c-dark" ngbDropdownItem (click)="share(element)">
+              <i class="i-icon i-webpage bgc-dark ml-1" aria-hidden="true"></i>
+              <span class="ml-3 f-3" translate>Community</span>
+            </button>
+          </div>
+          <hr class="hr-action-dropdow">
+          <button class="v-center border-0 py-2 c-dark" ngbDropdownItem (click)="deleteMaterial(element)">
+            <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+            <span class="ml-3 f-3" translate>Delete</span>
+          </button>
+          <ng-container *ngIf="!rootFolderInfo?.[element.material_type+'s']?.includes(element._id)">
+            <hr class="hr-action-dropdow">
+            <button
+              class="v-center border-0 py-2 c-dark" ngbDropdownItem (click)="gotoParentFolder(element)">
+              <i class="i-icon i-share-team d-block bgc-dark" aria-hidden="true"></i>
+              <span class="f-3 ml-3" translate>Goto Folder</span>
+            </button>
+          </ng-container>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <ng-template #downloadAction>
+    <div class="v-center justify-content-between items pr-3" *ngIf="element.hasTeamAction">
+      <!-- Download Button -->
+      <ng-containter *ngIf="element.role === 'admin' || element.user !== userId; else stopShareBtn">
+        <span class="c-dark font-weight-bold" *ngIf="d_status === element._id">
+          <i class="small-spinner"></i>
+        </span>
+        <button
+          *ngIf="d_status !== element._id"
+          class="v-center btn p-1 c-dark material-action"
+          (click)="download(element)"
+          placement="left right bottom"
+          [ngbTooltip]="'Download to my material list'"
+        >
+          <i
+            class="i-icon i-download bgc-dark material-download"
+            aria-hidden="true"
+          ></i>
+        </button>
+      </ng-containter>
+      <ng-template #stopShareBtn>
+        <span class="c-dark font-weight-bold" *ngIf="!parentFolder && s_status === element._id">
+          <i class="small-spinner"></i>
+        </span>
+        <button
+          class="v-center btn p-1 c-dark material-action"
+          (click)="stopShare(element, teamInfo?._id)"
+          placement="bottom"
+          [ngbTooltip]="'Stop Share'"
+          *ngIf="!parentFolder && s_status !== element._id"
+        >
+          <i class="i-icon i-share-off bgc-dark" aria-hidden="true"></i>
+        </button>
+      </ng-template>
+    </div>
+  </ng-template>
+</ng-template>

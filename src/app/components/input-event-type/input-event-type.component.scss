@@ -1,0 +1,18 @@
+.event-name {
+  flex-grow: 1;
+  // max-width: calc(100% - 90px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.selected-value {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    @media screen and (max-width: 576px) {
+        width: 90%;
+    }
+    width: 100%;
+}
+.icon-close {
+  min-width: 16px;
+}

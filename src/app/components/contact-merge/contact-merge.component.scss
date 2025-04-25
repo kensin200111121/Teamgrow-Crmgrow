@@ -1,0 +1,23 @@
+.selected-option-text {
+  color: #0000ff;
+}
+
+:host ::ng-deep {
+  .contact-fields {
+    .mat-select {
+      border: 1px solid #aaa;
+      padding: 8px 12px;
+      border-radius: 5px;
+    }
+
+    .mat-select-value-text {
+      color: #000;
+    }
+  }
+
+  .disabled .mat-select-arrow {
+    border-left: 0px solid transparent;
+    border-right: 0px solid transparent;
+    border-top: 0px solid;
+  }
+}

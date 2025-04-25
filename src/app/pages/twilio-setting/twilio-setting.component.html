@@ -1,0 +1,204 @@
+<div class="page-content p-2">
+  <ng-container [ngSwitch]="step">
+      <!-- Begin: Step 1 : Ask the own twilio account -->
+      <ng-container *ngSwitchCase="STEPS.HAS_TWILIO">
+        <div class="step">
+          <div class="step-title">
+            Twilio Account
+          </div>
+          <div class="step-description">
+            Do you have twilio account now? If you are going to use your twilio account, please click yes.
+          </div>
+          <div class="step-actions v-center justify-content-end">
+            <button class="btn primary" (click)="step = STEPS.TWILIO_FORM">Yes</button>
+            <button class="btn btn-primary ml-1" (click)="step = STEPS.CAPACITY_FORM">No</button>
+          </div>
+        </div>
+      </ng-container>
+      <!-- End: Step 1 -->
+
+      <!-- Begin: Step 2-1: Twilio account information -->
+      <ng-container *ngSwitchCase="STEPS.TWILIO_FORM">
+        <div class="step">
+          <div class="step-title">
+            Twilio Account Information
+          </div>
+          <div class="step-description">
+            Please input your credential(accountSid and authToken) of your twilio account?
+          </div>
+          <div class="step-body">
+            <form id="twilio-account" (ngSubmit)="twilioAccount.form.valid ? saveOwnTwilio() : null" #twilioAccount="ngForm">
+              <div class="form-group">
+                <label for="">Account ID</label>
+                <input type="text" class="form-control" name="twilio-account-id" [(ngModel)]="twilio_account.accountSid" required>
+              </div>
+              <div class="form-group">
+                <label for="">Auth Token</label>
+                <input type="text" class="form-control" name="twilio-token" [(ngModel)]="twilio_account.authToken" required>
+              </div>
+              <div class="form-group">
+                <label for="">Sender Phone Number</label>
+                <input type="text" class="form-control" name="twilio-sender" [(ngModel)]="twilio_account.sender" required>
+              </div>
+            </form>
+          </div>
+          <div class="step-actions v-center justify-content-end">
+            <button class="btn" (click)="step = STEPS.HAS_TWILIO">Prev</button>
+            <button class="btn btn-primary ml-1">Save</button>
+          </div>
+        </div>
+      </ng-container>
+      <!-- End: Step 2-1 -->
+
+      <!-- Begin: Step 2-2: SMS monthly capacity confrim -->
+      <ng-container *ngSwitchCase="STEPS.CAPACITY_FORM">
+        <div class="step">
+          <div class="step-title">
+            Sms Capacity
+          </div>
+          <div class="step-description">
+            How many sms are you going to send every month?
+          </div>
+          <div class="step-body">
+            <div class="d-flex">
+              <mat-slider
+                class="w-100"
+                thumbLabel
+                [displayWith]="formatLabel"
+                step="1000"
+                min="3000"
+                max="300000"
+                [(ngModel)]="monthlyCapacity">
+              </mat-slider>
+            </div>
+            <div>
+              Are you going to send up to {{monthlyCapacity}} texts per month?
+            </div>
+          </div>
+          <div class="step-actions v-center justify-content-end">
+            <!-- <button class="btn" (click)="step = STEPS.HAS_TWILIO">Prev</button> -->
+            <button class="btn btn-primary ml-1" (click)="saveCapacity()" [class.loading]="savingCapacity">Next</button>
+          </div>
+        </div>
+      </ng-container>
+      <!-- End: Step 2-3 -->
+
+      <ng-container *ngSwitchCase="STEPS.LOW_CAPACITY">
+        <div class="step">
+          <div class="step-title">
+            Create starter brand
+          </div>
+          <div class="step-description">
+            Are you going to create starter brand or use our service?
+          </div>
+          <div class="step-body"></div>
+          <div class="step-actions">
+            <button class="btn" (click)="step = STEPS.CAPACITY_FORM">Prev</button>
+            <button class="btn btn-primary ml-1" (click)="useCrmgrow()">Use crmgrow service</button>
+            <button class="btn btn-primary ml-1" (click)="step = STEPS.TWILIO_SUB_ACCOUNT">Next</button>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="STEPS.HIGH_CAPACITY">
+        <div class="step">
+          <div class="step-title">
+            Getting start with standard brand
+          </div>
+          <div class="step-description">
+            If you are going send 100000 texts per month, you have to create standard brand for your business.
+          </div>
+          <div class="step-body"></div>
+          <div class="step-actions">
+            <button class="btn" (click)="step = STEPS.CAPACITY_FORM">Prev</button>
+            <button class="btn btn-primary ml-1" (click)="step = STEPS.TWILIO_SUB_ACCOUNT">Next</button>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="STEPS.TWILIO_SUB_ACCOUNT">
+        <div class="step">
+          <div class="step-title">
+            Create Twilio Subaccount
+          </div>
+          <div class="step-description">
+            To create the brand, please create your twilio sub account.
+          </div>
+          <div class="step-actions">
+            <button class="btn" (click)="goToPrevStep()">Prev</button>
+            <ng-container *ngIf="!hasSubAccount; else nextAccountBtn">
+              <button class="btn btn-primary ml-1" (click)="createSubAccount()" [class.loading]="creatingSubaccount">Create Sub Account</button>
+            </ng-container>
+            <ng-template #nextAccountBtn>
+              <button class="btn btn-primary ml-1" (click)="step = STEPS.SELECT_NUMBER">Next</button>
+            </ng-template>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="STEPS.SELECT_NUMBER">
+        <div class="step">
+          <div class="step-title">
+            Phone number
+          </div>
+          <div class="step-description">
+            Your current number is {{twilio_number}}.<br/>
+            <ng-container *ngIf="numberScope === 'primary'; else subAccountNumber">
+              This number is placed in the primary account.<br/>
+              Are you going to move this number to your sub account?<br/>
+              Or are you going to buy new number (the original number would be released)?
+            </ng-container>
+            <ng-template #subAccountNumber>
+              Are you going to buy new number (the original number would be released)?
+            </ng-template>
+          </div>
+          <div class="step-actions">
+            <button class="btn" (click)="step = STEPS.TWILIO_SUB_ACCOUNT">Prev</button>
+            <ng-container *ngIf="numberScope === 'primary'; else subAccountNumberBtn">
+              <button class="btn btn-primary ml-1" (click)="selectNewNumber()">Buy new number</button>
+              <button class="btn btn-primary ml-1" (click)="useCurrentNumber()" [class.loading]="movingNumber">Move current number</button>
+            </ng-container>
+            <ng-template #subAccountNumberBtn>
+              <button class="btn btn-primary ml-1" (click)="selectNewNumber()">Change number</button>
+              <button class="btn btn-primary ml-1" (click)="goToBrandStep()">Next</button>
+            </ng-template>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="STEPS.STARTER_BRAND_FORM">
+        <div class="step">
+          <div class="step-title">
+            
+          </div>
+          <div class="step-description">
+            To send the 10000 emails every month, you have to create standard brand.
+          </div>
+          <app-starter-brand (cancelled)="step = STEPS.SELECT_NUMBER" (created)="createdBrand()"></app-starter-brand>
+        </div>
+      </ng-container>
+
+
+      <ng-container *ngSwitchCase="STEPS.STANDARD_BRAND_FORM">
+        <div class="step">
+          <div class="step-title">
+            Standard Brand
+          </div>
+          <div class="step-description">
+            To send the 10000 emails every month, you have to create standard brand.
+          </div>
+          <app-standard-brand (cancelled)="step = STEPS.SELECT_NUMBER" (created)="createdBrand()"></app-standard-brand>
+        </div>
+      </ng-container>
+
+      <!-- Begin: Step 6: Create Campaign template with use case -->
+      <ng-container *ngSwitchCase="STEPS.CAMPAIGN_FORM">
+        <div class="step">
+          <div class="step-title">Create campaign usecase</div>
+          <div class="step-description">Please fill the form with the appropriate information to create new brand.</div>
+          <app-brand-campaigns [campaignId]="twilio_brand_info?.campaign" (created)="savedCampaign()" (cancelled)="goToBrandStep()" [campaign]="campaign"></app-brand-campaigns>
+        </div>
+      </ng-container>
+      <!-- End: Step 6 -->
+  </ng-container>
+</div>

@@ -1,0 +1,118 @@
+.material-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 10px;
+  grid-row-gap: 15px;
+  overflow: auto;
+  height: calc(65vh - 190px);
+
+  @media screen and (max-width: 450px) {
+    grid-template-columns: repeat(1, 1fr);
+
+    .material-item {
+      margin: 0 auto;
+    }
+  }
+
+  .thumb-wrapper.video-wrapper .preview {
+    display: none;
+  }
+
+  .thumb-wrapper.video-wrapper {
+    &:hover .preview {
+      display: block;
+    }
+    &:hover .thumbnail {
+      display: none;
+    }
+  }
+
+  .material-item {
+    width: 180px;
+    position: relative;
+    cursor: pointer;
+
+    .confirm {
+      position: absolute;
+      top: 16px;
+      right: 8px;
+      width: 16px;
+      height: 16px;
+      object-fit: cover;
+      z-index: 11;
+    }
+
+    .thumbnail {
+      width: 180px;
+      height: 100px;
+      object-fit: cover;
+    }
+
+    .preview {
+      width: 180px;
+      height: 100px;
+      object-fit: cover;
+    }
+
+    .material-title {
+      line-height: 15px;
+      color: #101336;
+    }
+
+    .material-description {
+      line-height: 15px;
+      word-break: break-all;
+      color: #101336;
+    }
+
+    &.active {
+      .thumbnail {
+        border: 7px solid #0000ff;
+        border-radius: 4px;
+        background-color: #0700FF;
+        box-shadow: 0 5px 16px -5px rgba(56,48,93,0.61);
+      }
+
+      .thumb-wrapper::after {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 180px;
+        height: 100px;
+        border-radius: 8px;
+        background: rgba(0, 0, 255, 0.4);
+        z-index: 10;
+        content: '';
+      }
+    }
+  }
+}
+
+.table {
+  td {
+    padding: 10px 0px;
+  }
+  .action {
+    text-align: right;
+  }
+  .media-count {
+    min-width: 18px;
+    height: 18px;
+    padding: 1px 0px;
+    text-align: center;
+  }
+}
+
+.selected-materials {
+  height: 100px;
+  overflow: auto;
+}
+
+:host ::ng-deep {
+  @media screen and (max-width: 420px) {
+    .tab-container .tab {
+      padding-left: 8px!important;
+      padding-right: 8px!important;
+    }
+  }
+}

@@ -1,0 +1,39 @@
+@import 'variables';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  h6 {
+    margin: 0;
+  }
+  .mat-dialog-content {
+    & .onboarding-content-container {
+      display: flex;
+      max-height: 520px;
+      overflow: hidden;
+      gap: 32px;
+
+      & div:first-child {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+    }
+  }
+  .mat-dialog-actions {
+    .btn-white {
+      &:hover {
+        background-color: $color-light-gray !important;
+        color: $color-white !important;
+      }
+    }
+    .btn-primary {
+      &:hover {
+        background-color: $color-white !important;
+        color: $color-blue !important;
+      }
+    }
+  }
+}

@@ -1,0 +1,84 @@
+<div class="page_calendar-types">
+  <ng-container *ngIf="(appointmentService.calendars$ | async )?.length; else emptyCalendar">
+    <div class="d-flex calendar-types">
+      <div class="updating-status" *ngIf="updating">
+        {{ 'LOADING' | translate }}
+      </div>
+
+      <!-- <ng-template> -->
+      <div class="col-12 col-sm-6">
+        <div class="calendar-type mt-2 m-2 p-4 h-100">
+          <div class="v-center">
+            <i class="d-block i-icon i-calendar-conflicts bgc-dark calendar-icons"></i>
+            <h5 class="f-22 ml-2 font-weight-bold mb-0" translate>Check for conflicts</h5>
+          </div>
+          <div class="calendars-container">
+            <div class="f-4 c-light-dark mb-4 mt-1">
+              {{ 'Set the calendar email(s) to check for conflicts to prevent double bookings' | translate }}
+            </div>
+
+            <div *ngFor="let item of calendarList; index as key">
+              <div class="custom-control custom-checkbox my-1">
+                <input type="checkbox" class="custom-control-input" id="calendar-conflict-{{key }}"
+                  (change)="changeCalendarsForConflicts($event,key,item)" [checked]="item.check_conflict_scheduler !== false" />
+                <label class="custom-control-label email-for-calendars" for="calendar-conflict-{{ key }}">{{ item.connected_email
+                  }}</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6">
+        <div class="calendar-type mt-2 m-2 p-4 h-100">
+          <div class="v-center">
+            <i class="d-block i-icon i-calendar-add bgc-dark calendar-icons"></i>
+            <h5 class="f-22 ml-2 font-weight-bold mb-0" translate>Add to the calendar</h5>
+          </div>
+          <div class="calendars-container">
+            <div class="f-4 c-light-dark mb-4 mt-1" translate>
+              Set the calendar you would like to add new events to as they're scheduled
+            </div>
+
+            <div *ngFor="let item of calendars | keyvalue">
+              <div class="mt-2 email-for-calendars">{{ item.key }}</div>
+              <div class="custom-control custom-checkbox ml-3 my-2" *ngFor="let calendar of item.value">
+                <input type="radio" class="custom-control-input c-pointer" name="calendar_to_add" id="calendar-add-{{ calendar.id }}"
+                  (change)="changeCalendarToAdd(calendar)" [(ngModel)]="calendarToAdd" [value]="calendar.id" />
+                <label class="custom-control-label c-pointer" for="calendar-add-{{ calendar.id }}">{{ calendar.title }}</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- </ng-template> -->
+    </div>
+  </ng-container>
+
+  <ng-template #emptyCalendar>
+    <ng-container [ngSwitch]="appointmentService.loadingCalendars$ | async">
+      <div class="empty-list mt-5" *ngSwitchCase="STATUS.SUCCESS">
+        <div class="object-icon v-center mt-5">
+          <i class="i-icon i-event-note d-block bgc-dark"></i>
+        </div>
+        <h4 class="font-weight-bold mt-3 mb-3" translate>
+          There are no integrated calendars yet
+        </h4>
+        <button class="btn btn-primary" (click)="addCalendar()" translate>Connect your calendar</button>
+      </div>
+      <div class="empty-list mt-5 pt-5" *ngSwitchCase="STATUS.FAILURE">
+        <div class="object-icon v-center mt-5">
+          <i class="i-icon i-event-note d-block bgc-dark"></i>
+        </div>
+        <h4 class="font-weight-bold mt-3 mb-3" translate>
+          There are no integrated calendars yet
+        </h4>
+        <button class="btn btn-primary" (click)="addCalendar()" translate>Connect your calendar</button>
+      </div>
+      <div class="list-loading text-center mt-5 pt-5" *ngSwitchCase="STATUS.REQUEST">
+        <div class="loader mt-5 pt-5 lg"></div>
+        <h4 class="fw-600 mt-2" translate>Loading calendars</h4>
+      </div>
+    </ng-container>
+  </ng-template>
+</div>

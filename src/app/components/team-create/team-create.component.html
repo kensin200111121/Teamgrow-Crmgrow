@@ -1,0 +1,57 @@
+<h1 mat-dialog-title translate>create_community_title</h1>
+<form
+  #teamForm="ngForm"
+  (ngSubmit)="submitted = true; teamForm.form.valid ? create() : false"
+  [class.was-validated]="submitted"
+>
+  <mat-dialog-content>
+    <div class="form-group">
+      <div>
+        <ng-container *ngIf="team.picture; else emptyAvatar">
+          <div class="avatar-button selected">
+            <img
+              class="avatar"
+              [src]="team.picture"
+            />
+            <div class="f-4 font-weight-bold ml-2 c-dark" translate>{{filename}}</div>
+            <i class="i-icon i-close bgc-dark d-block ml-3" (click)="closeAvatar()"></i>
+          </div>
+        </ng-container>
+        <ng-template #emptyAvatar>
+          <div class="avatar-button" (click)="openAvatar()">
+            <i class="i-icon i-upload sm bgc-blue d-block"></i>
+            <div class="f-4 font-weight-bold ml-2 c-blue" translate>Upload Community Logo</div>
+          </div>
+        </ng-template>
+        <div class="f-2 mt-2 c-dark" translate>upload_policy</div>
+      </div>
+      <div class="my-3">
+        <label translate>community_name</label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="team.name"
+          [placeholder]="'new_community_name' | translate"
+          name="callSubject"
+          #callSubject="ngModel"
+          required
+        />
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <div class="v-center justify-content-end">
+      <button class="btn bt-white" type="button" mat-dialog-close translate>
+        Cancel
+      </button>
+      <button
+        class="btn btn-primary ml-2"
+        [class.loading]="creating"
+        type="submit"
+        translate
+      >
+        Create community
+      </button>
+    </div>
+  </mat-dialog-actions>
+</form>

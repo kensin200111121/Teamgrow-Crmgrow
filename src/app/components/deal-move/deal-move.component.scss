@@ -1,0 +1,35 @@
+.deal-stage {
+    .stage-title {
+        min-width: 150px;
+    }
+    i {
+        width: 10px;
+        height: 10px;
+        min-width: 10px;
+    }
+    .stage-status {
+        border: 3px solid #04B800;
+        border-radius: 5px;
+        flex: 1;
+        height: 2px;
+        &:last-child {
+            margin-right: 0;
+        }
+        &.active ~ .stage-status {
+          border: 3px solid #D9D9DF;
+        }
+    }
+
+  .stage-status-items:not(.loaded) .stage-status {
+    border-color:#D9D9DF;
+  }
+}
+
+:host ::ng-deep {
+  mat-dialog-content {
+    overflow: visible;
+  }
+  .dropdown-toggle::after {
+    display: none;
+  }
+}

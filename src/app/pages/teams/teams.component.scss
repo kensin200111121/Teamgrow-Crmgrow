@@ -1,0 +1,20 @@
+@import "variables";
+
+.teams-tab-container {
+  position: sticky;
+  top: 64px;
+  z-index: 4;
+  background: white;
+}
+
+.team-container {
+  margin-top: -38px;
+}
+
+:host ::ng-deep {
+  .has-sticky-header thead tr:first-child th {
+    position: initial;
+  }
+}
+
+

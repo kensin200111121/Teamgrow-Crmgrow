@@ -1,0 +1,221 @@
+.notification-item > .icon {
+  mat-icon {
+    width: 40px;
+    font-size: 40px;
+    color: red;
+  }
+}
+.notification-item {
+  &:hover {
+    background-color: #f0f8ff54;
+  }
+
+  .content {
+    .time {
+      font-size: 12px;
+      opacity: 0.56;
+    }
+    a {
+      font-weight: 700;
+    }
+  }
+
+  .n-icon .i-icon{
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    margin-left: 5px;
+  }
+
+  &:not(.readed) {
+    background-color: aliceblue;
+  }
+
+  .creator {
+    margin-right: 10px;
+    img {
+      width: 40px;
+      height: 40px;
+      display: block;
+      border-radius: 20px;
+    }
+  }
+}
+
+:host ::ng-deep {
+  .notification-item {
+    .content {
+      a {
+        color: blue;
+        font-weight: 600;
+      }
+      .creator {
+        color: blue;
+      }
+    }
+  }
+}
+
+.table-header {
+  height: unset;
+
+  &.selected {
+    // height: 48px;
+    border-bottom: 1px solid gainsboro;
+
+    th {
+      border-bottom: none;
+    }
+  }
+}
+
+.empty-header {
+  height: unset!important;
+}
+
+.icon-cell {
+  width: 60px;
+}
+td.icon-cell {
+  vertical-align: top;
+}
+.select-cell {
+  width: 44px;
+}
+td.select-cell {
+  vertical-align: top;
+}
+.notification-col {
+  font-size: 14px;
+
+  @media screen and (max-width: 400px) {
+    font-size: 12px;
+  }
+}
+td.notification-col {
+  vertical-align: top;
+}
+tr.mat-row {
+  height: 60px;
+}
+td.mat-cell:last-of-type{
+  padding-right: 0px;
+  width: 30px;
+}
+
+tr.showing-detail-row {
+  height: 10px;
+}
+.notification-detail {
+  margin-left: 80px;
+  border-top: 1px solid gainsboro;
+  margin-right: 32px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  padding-left: 8px;
+}
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 8px;
+
+  .info-title {
+    margin-right: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: gray;
+    text-transform: capitalize;
+  }
+  .info-content {
+    font-size: 13px;
+    color: #aaa;
+    margin-top: 2px;
+
+    &.material {
+      padding: 8px;
+      border: 1px solid gainsboro;
+      border-radius: 6px;
+      width: 260px;
+
+      img {
+        width: 100%;
+      }
+    }
+  }
+}
+
+:host ::ng-deep  {
+  .info-content.material {
+    .watch-tracker {
+      display: grid!important;
+      grid-template-columns: auto 106px;
+      color: #aaa;
+      font-size: 12px;
+  
+      .from-to {
+        grid-column: 1/2;
+      }
+      .tracker-timeline {
+        grid-row: 2/3;
+        grid-column: 1/3;
+        margin: 0px;
+        width: 240px;
+      }
+      .completion {
+        grid-column: 2/3;
+        text-align: right;
+      }
+    }
+  }
+  .info-content {
+    img {
+      width: 260px;
+      height: 140px;
+    }
+  }
+  th.mat-header-cell.header-row {
+    border-color: #dee2e6;
+    height: 44px;
+
+    &.disabled {
+      .select-status {
+        display: none;
+      }
+      .actions-header {
+        border-left: none;
+        margin-left: 0px;
+        padding-left: 0px;
+        opacity: 0.4;
+        pointer-events: none;
+      }
+    }
+  }
+}
+
+.dialer_notifications li:last-child .spliter {
+  display: none;
+}
+.dialer_notifications li {
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+}
+.call-note-content.expanded .call-summary {
+  display: none;
+}
+
+.call-note-content.expanded .expand-action {
+  display: none;
+}
+.call-note-content.expanded .collapse-action {
+  display: contents;
+}
+.call-note-content.expanded .call-full-desc {
+  display: contents;
+}
+.call-note-content .collapse-action {
+  display: none;
+}
+.call-note-content .call-full-desc {
+  display: none;
+}

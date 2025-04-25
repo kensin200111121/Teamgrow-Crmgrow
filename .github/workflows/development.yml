@@ -1,0 +1,162 @@
+name: development pipeline
+on:
+  push:
+    branches: [development]
+    paths:
+      - 'src/**'
+      - '*.json'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: build frontend artifacts
+    runs-on: self-hosted
+    environment: development
+    container:
+      image: ubuntu:focal
+    env:
+      WEBPACK_PUBLIC_PATH: https://storage.googleapis.com/vortex-frontend-review/crm-client/${{ github.sha }}
+    outputs:
+      deploy_crmgrow: ${{ steps.crmgrow-build.outputs.deploy_crmgrow }}
+    steps:
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: install yarn
+        run: npm install yarn -g
+
+      - name: Project Checkout
+        uses: actions/checkout@v3
+
+      - name: create cache keys
+        run: |
+          md5sum *.json yarn.lock > modules_cache_key
+          find src -type f -exec md5sum {} \; > artifact_cache_key
+
+      - name: cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node_modules-${{ hashFiles('modules_cache_key') }}
+          restore-keys: |
+            node_modules-
+      - name: yarn install --non-interactive --frozen-lockfile
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --non-interactive --frozen-lockfile
+
+
+      - name: cache crmgrow artifacts
+        id: cache-crmgrow
+        uses: actions/cache/@v3
+        with:
+          path: dist/crmgrow
+          key: crmgrow-${{ hashFiles('artifact_cache_key') }}
+          restore-keys: |
+            crmgrow-
+      - name: build crmgrow frontend
+        id: crmgrow-build
+        if: steps.cache-crmgrow.outputs.cache-hit != 'true'
+        run: |
+          node --max-old-space-size=8192 node_modules/@angular/cli/bin/ng build --configuration=dev
+          echo "deploy_crmgrow=true" >> "$GITHUB_OUTPUT"
+
+      - name: cache stage-sspa artifacts
+        if: github.event_name == 'workflow_dispatch'
+        id: cache-stage-sspa
+        uses: actions/cache/@v3
+        with:
+          path: dist/stage-sspa
+          key: stage-sspa-${{ github.sha }}
+          restore-keys: |
+            stage-sspa-
+      - name: build single spa frontend
+        if: github.event_name == 'workflow_dispatch'
+        id: sspa-build
+        run: yarn build:stage-sspa
+
+  crmgrow-push-s3:
+    name: crmgrow-push-s3
+    needs: build
+    if: ${{ needs.build.outputs.deploy_crmgrow == 'true' }}
+    runs-on: self-hosted
+    environment: development
+    container:
+      image: ubuntu:focal
+    steps:
+      - name: install awscli
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          export TZ=America/Denver
+          apt update && apt install awscli npm nodejs -y
+
+      - name: restore crmgrow artifacts
+        id: restore-crmgrow
+        uses: actions/cache/restore@v3
+        with:
+          path: dist/crmgrow
+          key: crmgrow-${{ hashFiles('cache_key') }}
+          restore-keys: |
+            crmgrow-
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-1
+
+      - name: upload-to-s3
+        run: |
+          aws s3 rm s3://crmgrow-upgrade/ --recursive
+          aws s3 cp dist/crmgrow s3://crmgrow-upgrade/ --recursive --acl public-read
+
+      - name: deploy
+        uses: lbertenasco/s3-deploy@v1
+        with:
+          folder: dist/crmgrow
+          bucket: crmgrow-upgrade
+          dist-id: ENCYQU936XUEJ
+          invalidation: / *
+
+  deploy-sspa-review-app:
+    name: deploy-sspa-review-app
+    needs: build
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: self-hosted
+    environment: development
+    container:
+      image: ubuntu:focal
+    steps:
+      - name: restore stage-sspa artifacts
+        id: restore-stage-sspa
+        uses: actions/cache/restore@v3
+        with:
+          path: dist/stage-sspa
+          key: stage-sspa-${{ github.sha }}
+          restore-keys: |
+            stage-sspa-
+
+      - name: upload frontend review
+        id: upload-frontend-review
+        uses: actions-hub/gcloud@master
+        env:
+          PROJECT_ID: vortex-247722
+          APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        with:
+          args: -m cp -rZ dist/stage-sspa gs://vortex-frontend-review/crm-client/${{ github.sha }}
+          cli: gsutil
+
+      - name: print info
+        run: echo "Import map override @redx/crm-client == https://storage.googleapis.com/vortex-frontend-review/crm-client/${{ github.sha }}/redx-crm-client.js"
+
+      - name: install python3
+        run: apt update && apt install -y curl python3
+
+      - name: notify slack
+        env:
+          GSHA: ${{ github.sha }}
+          SA: ${{ vars.SA }}
+        run: python3 notify.py

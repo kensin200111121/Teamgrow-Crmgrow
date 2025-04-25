@@ -1,0 +1,16 @@
+<div class="v-center">
+  <div class="rates" #rates [class.increasing]="tempRate > currentRate">
+    <div class="rate c-pointer"
+      *ngFor="let rate of [1,2,3,4,5]"
+      (mouseover)="setTempRate(rate)"
+      (click)="onChangeRate(rate)"
+      [class.selected]="currentRate >= rate"
+      [class.indicated]="tempRate >= rate"
+    >
+      <i class="d-block i-icon i-star"></i>
+    </div>
+  </div>
+  <a class="lock-status ml-auto f-3 c-pointer" [class]="{locked: locked}" (click)="toggleLock()" [ngbTooltip]="'Unlock' | translate">
+    Locked
+  </a>
+</div>

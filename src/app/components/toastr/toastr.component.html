@@ -1,0 +1,82 @@
+<div class="custom-toast-wrapper">
+  <ng-container *ngIf="notification">
+    <ng-container *ngIf="type === 'watch_video'">
+      <div class="notification-title v-center">
+        <div class="f-3 title">
+          <b>{{contact?.fullName}}</b> watched video
+        </div>
+      </div>
+      <div class="content mt-2  v-center">
+        <div class="f-3">{{material.title | shorten: 60: '...'}}</div>
+      </div>
+
+
+    </ng-container>
+    <ng-container *ngIf="MAT_NOTIFICATIONS.indexOf(type) !== -1">
+      <div class="notification-title v-center">
+        <div class="f-3 title">
+          <b>{{contact?.fullName || 'Undefined contact'}}</b> {{TITLES[type]}}
+        </div>
+      </div>
+      <div class="material v-center">
+        <div class="f-3">{{material.title | shorten: 24: '...'}}</div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="type === 'open_email' || type === 'click_link'">
+      <div class="notification-title v-center">
+        <div class="f-3 title">
+          <b>{{contact?.fullName || 'Undefined contact'}}</b> {{TITLES[type]}}
+        </div>
+      </div>
+      <!--
+        <div class="link f-2" *ngIf="type === 'click_link' && detail.link">
+        <a href="{{detail.link}}" target="_blank">{{detail.link}}</a>
+      </div>
+      -->
+      <div class="email" *ngIf="email">
+        <div class="subject f-3">{{email.subject}}</div>
+        <div class="content f-0 op-75">{{email.content | stripTags | removeEntity | shorten: 60: '...' }}</div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="type === 'unsubscribe_email' || type === 'unsubscribe_text'">
+      <div class="notification-title v-center">
+        <div class="f-3 title">
+          <b>{{contact?.fullName || 'Undefined contact'}}</b> {{TITLES[type]}}
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="type === 'task_reminder'">
+      <div class="notification-title v-center">
+        <div class="f-3 title">
+          Reminder for task with <b>{{contact?.fullName || 'Undefined contact'}}</b>
+        </div>
+      </div>
+      <div class="email mt-2" *ngIf="detail">
+        <div class="subject f-3"><b class="mr-1">Task:</b> {{detail.content}}</div>
+        <div class="content f-0 op-75 v-center">Due Date: <span class="ml-auto">{{detail.due_date | datetimeFormat : 'hh:mm a, dd MMM' }}</span></div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="type === 'scheduler_reminder'">
+      <div class="notification-title v-center">
+        <div class="f-3 title">
+          Reminder for schedule with <b>{{contact?.fullName || 'Undefined contact'}}</b>
+        </div>
+      </div>
+      <div class="email mt-2" *ngIf="detail">
+        <div class="subject f-3"><b class="mr-1">Title:</b> {{detail.title}}</div>
+        <div class="content f-0 op-75 v-center">Due Start: <span class="ml-auto">{{detail.due_start | datetimeFormat : 'hh:mm a, dd MMM' }}</span>
+      </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="type === 'receive_text'">
+      <div class="notification-title v-center">
+        <div class="f-3 title">
+          Text from <b>{{contact?.fullName || 'Undefined contact'}}</b>
+        </div>
+      </div>
+      <div class="email mt-2" *ngIf="detail">
+        <div class="content f-1">{{detail.text}}</div>
+      </div>
+    </ng-container>
+  </ng-container>
+</div>

@@ -1,0 +1,66 @@
+<form #profileForm="ngForm" (ngSubmit)="profileForm.form.valid ? saveChange(profileForm) : false">
+  <div class="form-group mt-2 mt-sm-0"
+    [ngClass]="{invalid: profileForm.submitted && oldPassword.invalid && (oldPassword.dirty || oldPassword.touched || profileForm.submitted)}"
+    *ngIf="(userService.profile$ | async).hasPassword">
+    <div class="d-flex">
+      <label for="oldPassword" class="mr-auto" translate>Current Password</label>
+      <span class="error" *ngIf="oldPassword.errors">
+        <ng-container *ngIf="oldPassword.errors.required">
+          {{ 'Required!' | translate }}
+        </ng-container>
+        <ng-container *ngIf="oldPassword.errors.minlength">
+          {{ 'At least 6 characters!' | translate }}
+        </ng-container>
+      </span>
+    </div>
+    <input type="password" class="form-control" [(ngModel)]="old_password" id="oldPassword" name="oldPassword"
+      #oldPassword="ngModel" required minlength="6">
+  </div>
+  <div class="form-group"
+    [ngClass]="{invalid: profileForm.submitted && newPassword.invalid && (newPassword.dirty || newPassword.touched || profileForm.submitted)}">
+    <div class="d-flex">
+      <label for="newPassword" class="mr-auto" translate>New Password</label>
+      <span class="error" *ngIf="newPassword.errors">
+        <ng-container *ngIf="newPassword.errors.required">
+          {{ 'Required!' | translate }}
+        </ng-container>
+        <ng-container *ngIf="newPassword.errors.minlength">
+          {{ 'At least 6 characters!' | translate }}
+        </ng-container>
+      </span>
+    </div>
+    <input type="password" class="form-control" [(ngModel)]="new_password" id="newPassword" name="newPassword"
+      #newPassword="ngModel" required minlength="6">
+  </div>
+  <div class="form-group"
+    [ngClass]="{invalid: profileForm.submitted && ((confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched || profileForm.submitted)) || confirm_password != new_password)}">
+    <div class="d-flex">
+      <label for="confirmPassword" class="mr-auto" translate>Confirm Password</label>
+      <span class="error" *ngIf="confirmPassword.errors; else misMatch">
+        <ng-container *ngIf="confirmPassword.errors.required">
+          {{ 'Confirm!' | translate }}
+        </ng-container>
+        <ng-container *ngIf="confirmPassword.errors.minlength">
+          {{ 'At least 6 characters!' | translate }}
+        </ng-container>
+      </span>
+      <ng-template #misMatch>
+        <span class="error" *ngIf="confirm_password !== new_password" translate>
+          No match!
+        </span>
+      </ng-template>
+    </div>
+    <input type="password" class="form-control" [(ngModel)]="confirm_password" id="confirmPassword"
+      name="confirmPassword" #confirmPassword="ngModel" required minlength="6">
+  </div>
+  <div class="row">
+    <button data-action="change-password" type="submit" class="btn btn-primary font-weight-bold ml-auto mr-2 mt-4" [class.loading]="saving">
+      <ng-container *ngIf="(userService.profile$ | async).hasPassword; else createTemplate">
+        {{ 'Save changes' | translate }}
+      </ng-container>
+      <ng-template #createTemplate>
+        {{ 'Create Password' | translate }}
+      </ng-template>
+    </button>
+  </div>
+</form>

@@ -1,0 +1,221 @@
+@import "variables";
+
+:host ::ng-deep{
+  .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
+    background-color: blue;
+  }
+
+  .mat-tab-label .mat-tab-label-content {
+    font-size: 16px;
+    font-weight: bold;
+    color: blue;
+  }
+
+  @media screen and (min-width: 1060px){
+    .vertical-tab {
+      flex-direction: row;
+      min-height: calc(100vh - 200px);
+      .mat-tab-label-container{
+        width: 200px;
+        flex-grow: unset;
+      }
+      .mat-tab-labels{
+        flex-direction: column;
+
+        .mat-tab-label{
+          height: unset;
+          opacity: 1;
+
+          &.mat-tab-label-active {
+            background-color: $color-white;
+            .i-icon {
+              background-color: $color-blue;
+            }
+            .tab-title {
+              color: $color-blue;
+            }
+          }
+        }
+
+        .mat-tab-label-content{
+          display: block;
+          text-align: left;
+          width: 100%;
+          padding-top: 15px;
+          padding-bottom: 15px;
+
+          .i-icon {
+            background-color: gray;
+          }
+
+          .tab-title {
+            color: gray;
+          }
+        }
+      }
+      .mat-ink-bar{
+        display: none;
+      }
+      .mat-tab-body-wrapper{
+        flex-grow: 1;
+      }
+      .mat-tab-list{
+        width: 100%;
+      }
+    }
+  }
+
+  @media screen and (max-width: 1060px) {
+    .vertical-tab {
+      .mat-tab-label {
+        height: 54px;
+      }
+      .mat-tab-label-content {
+        .d-flex {
+          flex-direction: column;
+          align-items: center;
+          h5 {
+            margin-top: 2px;
+            margin-bottom: 2px;
+
+            & + span {
+              display: none!important;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 800px) {
+    .vertical-tab {
+      .mat-tab-label {
+        height: 54px;
+        min-width: 60px;
+      }
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .vertical-tab {
+      .mat-tab-label {
+        height: 54px;
+        min-width: 60px;
+        .mat-tab-label-content {
+          .d-flex {
+            h5 {
+              display: none!important;
+              & + span {
+                display: none!important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 440px) {
+    .mat-tab-body {
+      .p-4 {padding: 8px;}
+      .col-md-6 {padding: 0px;}
+    }
+  }
+
+
+  #ngxEditor{
+    display: flex!important;
+    flex-direction: column-reverse;
+    border-radius: 3px;
+
+    app-ngx-editor-message{
+      display: none!important;
+    }
+
+    app-ngx-grippie{
+      display: none!important;
+    }
+
+    .ngx-editor-textarea{
+      overflow: auto;
+      background: $color-white;
+      border-radius: 3px;
+      max-height: 250px;
+      min-height: 150px!important;
+      border-bottom: 1px solid gainsboro;
+    }
+  }
+
+  .ngx-toolbar{
+    display: flex;
+    flex-direction: row;
+    background: transparent!important;
+    border: none!important;
+
+    .ngx-toolbar-set{
+      width: unset;
+    }
+
+    .ngx-toolbar-set:nth-of-type(2){
+      display: none!important;
+    }
+    .ngx-toolbar-set:nth-of-type(3){
+      display: none!important;
+    }
+    .ngx-toolbar-set:nth-of-type(4){
+      display: none!important;
+    }
+    .ngx-toolbar-set:nth-of-type(5){
+      button:nth-of-type(1){
+        display: none!important;
+      }
+      button:nth-of-type(2){
+        display: none!important;
+      }
+      button:nth-of-type(3){
+        display: none!important;
+      }
+      button:nth-of-type(4){
+        display: none!important;
+      }
+    }
+    button{
+      font-size: 15px;
+      padding: 5px;
+    }
+    button[title="Unlink"]{
+      display: none;
+    }
+    button[title="Insert Video"]{
+      display: none;
+    }
+    button[title="Insert Image"]{
+      border-right: 1px solid gainsboro;
+      border-top-right-radius: 5px;
+      border-bottom-right-radius: 5px;
+    }
+  }
+  .mat-tab-nav-bar, .mat-tab-header {
+    border-bottom: none;
+  }
+}
+
+.campaign-list-table {
+  th, td {
+    text-align: right;
+
+    &.name, &.check-cell {
+      text-align: left;
+    }
+  }
+}
+
+.bulk-list-table {
+  th, td {
+    text-align: right;
+
+    &.check-cell, &.broadcast {
+      text-align: left;
+    }
+  }
+}

@@ -1,0 +1,109 @@
+@import "variables";
+.title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.description {
+  font-size: 15px;
+  color: #555;
+}
+img{
+  width: 54px;
+  height: 30px;
+}
+
+button {
+  border: none;
+
+  &.cancel:hover {
+    background-color: $color-silver;
+  }
+}
+
+.pipeline-action {
+  border: 1px solid $color-blue;
+}
+
+.option-selector {
+  flex-grow: 1
+}
+
+:host ::ng-deep {
+  .duplicate-check-table {
+
+    .radio-cell {
+      .custom-radio:checked, .custom-radio:not(:checked) {
+        position: relative;
+        left: 0;
+      }
+
+      .custom-control-input:checked ~ .custom-control-label::before {
+        border-color: #0000ff;
+        background-color: #ffffff;
+        left: 60px;
+      }
+
+      .custom-control label {
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .custom-radio .custom-control-label::before {
+        border-radius: 50%;
+        left: 60px;
+      }
+
+      .custom-radio .custom-control-input:checked ~ .custom-control-label::after {
+        background-image: none;
+        background-color: #0000ff;
+        border-radius: 50%;
+        left: 64px;
+      }
+
+      .custom-control-label::after {
+        top: 0.4rem;
+        left: 64px;
+        width: 0.75rem;
+        height: 0.75rem;
+      }
+    }
+  }
+
+  .mat-select {
+    border: 1px solid #aaa;
+    padding: 10px 12px;
+    border-radius: 5px;
+  }
+
+  .automation-wrapper {
+    .mat-select {
+      border: none;
+      padding: 0;
+      border-radius: 5px;
+    }
+  }
+
+  .mat-select-value-text {
+    color: #000;
+    font-weight: 500;
+  }
+
+  mat-pseudo-checkbox {
+    background-color: #0000ff;
+  }
+
+  .sticky-check-col {
+    .custom-radio:checked + label:before, .custom-radio:not(:checked) + label:before {
+      top: -5px;
+    }
+
+    .custom-radio:checked + label:after, .custom-radio:not(:checked) + label:after {
+      top: -1px;
+    }
+  }
+
+  .mat-dialog-content {
+    overflow: visible;
+  }
+}

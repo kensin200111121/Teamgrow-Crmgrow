@@ -1,0 +1,111 @@
+i.done-status {
+  width: 20px;
+  height: 20px;
+}
+.table-control-header {
+  z-index: 4;
+  position: relative;
+}
+.done-cell {
+  width: 40px;
+}
+th.checkbox-col {
+  width: 40px;
+}
+tr.completed-extension {
+  height: 0px;
+  .completed-cell {
+    position: relative;
+  }
+  .completed-cell .completed-mark {
+    width: 0px;
+    position: absolute;
+    height: 2px;
+    background: #888;
+    bottom: 24px;
+    left: 70px;
+    transition: width 0.6s;
+  }
+}
+tr.completed + tr.completed-extension .completed-cell .completed-mark {
+  width: calc(100% - 70px);
+}
+
+@media screen and (min-width: 484px) {
+  .table-control-header {
+    width: fit-content;
+    margin-left: auto;
+    margin-bottom: 16px;
+  }
+}
+
+.address-col a {
+  max-width: 75px;
+  width: 75px;
+  font-size: 12px;
+}
+
+tr.completed td span {
+  color: #6b6b6b;
+  text-decoration: line-through;
+}
+tr.completed .label-cell {
+  color: #6b6b6b;
+  text-decoration: line-through;
+}
+
+tr {
+  .actions {
+    width: 42px;
+    opacity: 0;
+  }
+  &:hover {
+    .actions {
+      opacity: 1;
+    }
+  }
+}
+
+:host ::ng-deep {
+  .custom-toggle {
+    height: 25px;
+  }
+  .setting-panel {
+    width: 200px;
+  }
+  .dropdown-toggle::after {
+    display: none;
+  }
+}
+
+.mat-column-contact_name .empty-content {
+  margin-left: 40px;
+}
+
+.tooltip {
+  position: absolute;
+  top:30px;
+}
+
+.tooltip-inner {
+  width: 120px;
+  word-wrap: break-word;
+}
+
+.custom-tooltip {
+  position: fixed !important;
+  top: 100px;
+  left: 200px;
+}
+.mat-column-description {
+  max-width: 470px;
+}
+.mat-column-contact_phone {
+  min-width: 110px;
+}
+.mat-column-deadline {
+  min-width: 150px;
+}
+.mat-column-subject {
+  max-width: 200px;
+}

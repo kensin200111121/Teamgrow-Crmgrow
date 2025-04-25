@@ -1,0 +1,335 @@
+<div class="page-content">
+  <mat-drawer-container [hasBackdrop]="false">
+    <div class="page-content-inner">
+      <div class="v-center pb-2">
+        <h1 class="page-title" translate>TO-DO</h1>
+      </div>
+      <div class="tasks-list">
+        <div class="task-type email-task" (click)="openDrawer('Email')">
+          <div class="d-flex">
+            <i class="d-block i-icon act-emails md mr-2"></i>
+            <div class="f-8 font-weight-bold c-dark v-center" translate>Email</div>
+          </div>
+          <div class="f-6 task-count">{{ emailTasks?.length || 0 }}</div>
+          <div class="task-desc op-75" translate>
+            Scheduled Emails include manually scheduled emails on a contact record, pipeline deal card, or mass email of up to 200 recipients in Contacts.  This does not include Automations or Bulk Email/Newsletters.
+          </div>
+        </div>
+        <div *enableByFeatures="USER_FEATURES.TEXT" class="task-type text-task" (click)="openDrawer('Text')">
+          <div class="d-flex">
+            <i class="d-block i-icon act-texts md mr-2"></i>
+            <div class="f-8 font-weight-bold c-dark v-center" translate>Text</div>
+          </div>
+          <div class="f-6 task-count">{{ textTasks?.length || 0 }}</div>
+          <div class="task-desc" translate>
+            Scheduled Texts include manually scheduled texts on a contact record or pipeline deal card. This does not include Automations.
+          </div>
+        </div>
+        <!-- <div class="task-type campaign-task" (click)="openDrawer('Campaign')">
+          <div class="d-flex">
+            <i class="d-block i-icon i-broadcasts md mr-2"></i>
+            <div class="f-8 font-weight-bold c-dark v-center" translate>Bulk Email</div>
+          </div>
+          <div class="f-6 task-count">{{ campaignTasks?.length || 0 }}</div>
+          <div class="task-desc" translate>
+            Campaign includes tasks that will be trigger in the future.
+          </div>
+        </div>
+        <div class="task-type automation-task" (click)="openDrawer('Automation')">
+          <div class="d-flex">
+            <i class="d-block i-icon i-automation md mr-2"></i>
+            <div class="f-8 font-weight-bold c-dark v-center" translate>Automation</div>
+          </div>
+          <div class="f-6 task-count">{{ automationCount }}</div>
+          <div class="task-desc" translate>
+            Automation includes tasks that will be assigned to the contacts in the future.
+          </div>
+        </div> -->
+      </div>
+    </div>
+    <mat-drawer #drawer position="end" [mode]="typeName !== 'Automation' ? 'side' : null" (openedStart)="toggleBody(true)" (closedStart)="toggleBody(false)">
+      <div class="sidebar-panel">
+        <h6 class="fw-600 pt-4 px-3 panel-header pb-2 d-flex">
+          <span>{{ typeName }} {{'Tasks' | translate}}</span>
+          <a class="ml-auto c-pointer" (click)="closeDrawer()"><i class="i-icon i-close d-block bgc-dark"></i></a>
+        </h6>
+
+        <ng-container *ngIf="typeName == 'Automation'">
+          <div class="v-center mx-3 my-1">
+            <div class="form-group mb-0 search-form">
+              <div class="input-group-prepend">
+                <i class="i-icon i-search d-block bgc-dark"></i>
+              </div>
+              <input type="text" class="form-control" placeholder="Search" aria-label="search" aria-describedby="search-addon"
+                [(ngModel)]="searchStr" (ngModelChange)="changeSearchStr()">
+              <ng-container *ngIf="searchStr">
+                <div class="cancel-action c-pointer" (click)="clearSearchStr()">
+                  <i class="i-icon i-close d-block bgc-dark"></i>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </ng-container>
+
+        <div class="detail-panel" *ngIf="typeName == 'Text'">
+          <ng-container *ngIf="textTasks && textTasks.length > 0; else noTextTask">
+            <div class="detail-panel-content">
+              <div class="panel">
+                <div class="process-item c-pointer" *ngFor="let task of textTasks" (click)="goToQueuePage(task, 'text')">
+                  <div class="email-subject fw-600 f-4 mb-2 d-flex">
+                    <span class="c-blue">{{task.details?.content | shorten: 30: '...'}}</span>
+                    <span class="ml-auto detail-type">{{task.draft ? 'Paused' : task.task_type}}</span>
+                    <a class="ml-2" (click)="removeTask($event, 'text', task)">
+                      <i class="i-icon i-trash bgc-dark d-block"></i>
+                    </a>
+                  </div>
+                  <div class="sending-status f-3">
+                    <span class="title mr-2">Type: {{ task.deal ? 'Deal' : 'Contact' }}</span>
+                    <span class="title op-56" translate>Contacts:</span> <span class="value">{{task.contacts}}</span>
+                    <span class="title op-56 ml-3" translate>Plan at: </span>
+                    <span class="value">{{task.exp_start | date: 'hh:mm M/dd'}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #noTextTask>
+            <div class="empty-list pt-4">
+              <div class="object-icon v-center">
+                <i class="i-icon act-texts d-block bgc-dark"></i>
+              </div>
+              <h5 class="font-weight-bold mt-3 mb-3" translate>
+                There are no text tasks.
+              </h5>
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="detail-panel" *ngIf="typeName == 'Email'">
+          <ng-container *ngIf="emailTasks && emailTasks.length > 0; else noEmailTask">
+            <ng-container *ngFor="let task of emailTasks">
+              <div class="process-item c-pointer" (click)="goToQueuePage(task)">
+                <div class="email-subject fw-600 f-4 mb-2 d-flex">
+                  <span class="c-blue">{{task.details?.subject | shorten: 30: '...'}}</span>
+                  <span class="ml-auto detail-type">{{task.draft ? 'Paused' : task.task_type}}</span>
+                  <a class="ml-2" (click)="removeTask($event, 'email', task)">
+                    <i class="i-icon i-trash bgc-dark d-block"></i>
+                  </a>
+                </div>
+                <ng-container>
+                  <!-- Awaiting Process -->
+                  <div class="sending-status f-3">
+                    <span class="title mr-2">Type: {{ task.deal ? 'Deal' : 'Contact' }}</span>
+                    <span class="title op-56 ml-2" translate>Contacts:</span> <span class="value">{{task.contacts}}</span>
+                  </div>
+                  <div class="end-time f-3">
+                    <span class="title op-56" translate>Planned at: </span>
+                    <span class="value">{{task.exp_start | date: 'hh:mm MM/dd'}} - {{task.exp_end | date: 'hh:mm MM/dd'}}</span>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+          </ng-container>
+          <ng-template #noEmailTask>
+            <div class="empty-list pt-4">
+              <div class="object-icon v-center">
+                <i class="i-icon act-emails d-block bgc-dark"></i>
+              </div>
+              <h5 class="font-weight-bold mt-3 mb-3" translate>
+                There are no email tasks.
+              </h5>
+            </div>
+          </ng-template>
+        </div>
+
+
+        <div class="detail-panel" *ngIf="typeName == 'Automation'">
+          <div class="action-panel-header d-flex" >
+            <ng-container *ngIf="automationLoading && automations.length">
+              <div class="updating-status" translate>
+                LOADING...
+              </div>
+            </ng-container>
+          </div>
+
+          <table class="w-100"
+            mat-table
+            [dataSource]="automations | paginate: {id: 'automationPage', itemsPerPage: automationPageSize, currentPage: automationPage, totalItems: automationTotal}"
+          >
+            <ng-container matColumnDef="contact_name">
+              <th mat-header-cell *matHeaderCellDef translate>Contact/Deal</th>
+              <td mat-cell *matCellDef="let element">
+                <div *ngIf="!element.contact?._id && !element.deal; else performerContent">
+
+                </div>
+                <ng-template #performerContent>
+                  <div class="v-center c-pointer" (click)="openDeal(element)" *ngIf="element.deal?._id; else contactContent">
+                    <i class="i-icon d-block i-deals mr-2 bgc-dark"></i>
+                    <span class="contact-name">
+                      {{element.deal?.title}}
+                    </span>
+                  </div>
+                  <ng-template #contactContent>
+                    <div class="v-center c-pointer" (click)="openContact(element)">
+                      <div class="contact-avatar f-3 mr-2">
+                        {{element.contact?.avatarName}}
+                      </div>
+                      <span class="contact-name">
+                        <ng-container>
+                          {{element.contact?.fullName}}
+                        </ng-container>
+                      </span>
+                    </div>
+                  </ng-template>
+                </ng-template>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="contact_label">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell>Status</th>
+              </ng-container>
+              <ng-container *matCellDef="let element">
+                <ng-container *ngIf="!element.contact; else normalTemplate;">
+                  <td mat-cell colspan="10" translate>
+                    This contact has been deleted.
+                  </td>
+                </ng-container>
+                <ng-template #normalTemplate>
+                  <td mat-cell>
+                    <app-label-select
+                      [value]="element.contact?.label"
+                    ></app-label-select>
+                  </td>
+                </ng-template>
+              </ng-container>
+            </ng-container>
+            <ng-container matColumnDef="automation">
+              <ng-container *matHeaderCellDef="let element">
+                <th mat-header-cell translate>
+                  Automation
+                </th>
+              </ng-container>
+              <ng-container *matCellDef="let element">
+                <td mat-cell>
+                  <div class="v-center c-pointer" (click)="openAutomation(element)">
+                    {{element.detail?.title}}
+                  </div>
+                </td>
+              </ng-container>
+            </ng-container>
+            <ng-container matColumnDef="due_date">
+              <ng-container *matHeaderCellDef="let element">
+                <th mat-header-cell translate>
+                  Next Action Time
+                </th>
+              </ng-container>
+              <ng-container *matCellDef="let element">
+                <td mat-cell>
+                  <div class="v-center p-12">
+                    {{element.due_date | date: 'MMM dd yyyy, hh:mm a'}}
+                  </div>
+                </td>
+              </ng-container>
+            </ng-container>
+
+            <ng-container matColumnDef="action">
+              <ng-container *matHeaderCellDef="let element">
+                <th mat-header-cell class="action-col"></th>
+              </ng-container>
+              <ng-container *matCellDef="let element">
+                <td mat-cell class="action-col">
+                  <ng-container>
+                    <div class="icon-button v-center justify-content-center c-pointer" (click)="cancelAutomation(element)" placement="left" ngbTooltip="Stop automation">
+                      <i class="i-icon bgc-dark i-trash"></i>
+                    </div>
+                  </ng-container>
+                </td>
+              </ng-container>
+            </ng-container>
+
+            <tr mat-header-row
+                *matHeaderRowDef="DISPLAY_COLUMNS" class="table-header"></tr>
+            <tr mat-row
+                *matRowDef="let row; columns: DISPLAY_COLUMNS;"></tr>
+          </table>
+
+          <ng-container *ngIf="!automations.length">
+            <ng-container *ngIf="automationLoading; else emptyContactList">
+              <div class="list-loading text-center">
+                <div class="loader mt-2"></div>
+                <h6 class="fw-600 mt-2" translate>Loading...</h6>
+              </div>
+            </ng-container>
+            <ng-template #emptyContactList>
+              <div class="empty-list pt-4">
+                <div class="object-icon v-center">
+                  <i class="i-icon i-lunch d-block bgc-dark"></i>
+                </div>
+                <h5 class="font-weight-bold mt-3 mb-3" translate>
+                  There are no running automations.
+                </h5>
+              </div>
+            </ng-template>
+          </ng-container>
+
+          <div class="my-2 table-control mode-1">
+            <div class="pagination-wrapper m-auto v-center justify-content-center">
+              <pagination-controls (pageChange)="loadAutomationTasks($event)"
+                (pageBoundsCorrection)="loadAutomationTasks($event)"
+                id="automationPage"
+                maxSize="5"
+                previousLabel=""
+                nextLabel=""
+              >
+              </pagination-controls>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="detail-panel" *ngIf="typeName == 'Campaign'">
+          <ng-container *ngIf="campaignTasks?.length; else noCampaignTask">
+            <div class="detail-panel-content">
+              <div class="panel">
+                <div class="process-item c-pointer" *ngFor="let task of campaignTasks" (click)="goToQueuePage(task, 'campaign')">
+                  <div class="email-subject fw-600 f-4 mb-2 c-blue d-flex">
+                    <span>{{task?.title | shorten: 40: '...'}}</span>
+                    <a class="ml-auto" (click)="removeTask($event, 'campaign', task)">
+                      <i class="i-icon i-trash bgc-dark d-block"></i>
+                    </a>
+                  </div>
+                  <div class="sending-status f-3">
+                    <span class="title mr-2">Type: {{ task.deal ? 'Deal' : 'Contact' }}</span>
+                    <span class="title op-56" translate>Contacts:</span> <span class="value">{{task.contacts}}</span>
+                    <span class="title op-56 ml-3" translate>Start date: </span>
+                    <span class="value">{{task.due_start | date: 'hh:mm M/dd'}}</span>
+                  </div>
+                  <div class="f-3">
+                    <span class="title op-56" translate>Sent:</span> <span class="value mr-2">{{task.sent || 0}}</span>
+                    <span class="title op-56" translate>Failed:</span> <span class="value mr-2">{{task.failed || 0}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #noCampaignTask>
+            <div *ngIf="isLoading; else emptyCampaignsView">
+              <div class="loader"></div>
+              <div class="loadingStatusText" translate>Loading campaing tasks...</div>
+            </div>
+            <ng-template #emptyCampaignsView>
+              <div class="empty-list pt-4">
+                <div class="object-icon v-center">
+                  <i class="i-icon i-broadcasts d-block bgc-dark"></i>
+                </div>
+                <h5 class="font-weight-bold mt-3 mb-3" translate>
+                  There are no campaign tasks.
+                </h5>
+              </div>
+            </ng-template>
+          </ng-template>
+        </div>
+      </div>
+    </mat-drawer>
+  </mat-drawer-container>
+</div>

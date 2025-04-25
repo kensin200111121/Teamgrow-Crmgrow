@@ -1,0 +1,35 @@
+<div class="page-content">
+  <div class="status-header v-center">
+    <h1 class="page-title" translate>Sphere</h1>
+    <div class="ml-auto v-center create-actions">
+      <a
+        class="btn text-decoration-none c-pointer c-blue mr-2 px-3 py-1"
+        data-action="open-preference"
+        (click)="openPreference()" translate
+      >Preference</a>
+      <a
+        class="v-center btn btn-blue f-6 fw-600 text-white rounded shadow mr-2 px-3"
+        [routerLink]="['/contacts/sorting']"
+      >
+        <span class="normal" translate>Sort Contacts</span>
+       </a>
+    </div>
+  </div>
+  <div>
+    <div class="my-4">
+      <app-conversation-list [title]="'Priority Contact List' | translate" [type]="ListType.ACTIVE"></app-conversation-list>
+    </div>
+    <div class="my-4">
+      <app-conversation-list [title]="'First Conversations' | translate" [type]="ListType.FIRST"></app-conversation-list>
+    </div>
+    <div class="my-4">
+      <app-conversation-list [title]="'Missed Conversations' | translate" [type]="ListType.MISSED"></app-conversation-list>
+    </div>
+  </div>
+</div>
+
+<mat-drawer-container [hasBackdrop]="true">
+  <mat-drawer #preferenceDrawer position="end">
+    <app-bucket-list (close)="closePreference()"></app-bucket-list>
+  </mat-drawer>
+</mat-drawer-container>

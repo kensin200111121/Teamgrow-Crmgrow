@@ -1,0 +1,96 @@
+<ng-container *ngIf="!material; else template">
+  <div class="v-center op-56">
+    <mat-icon class="mr-2" translate>warning</mat-icon>
+    <span translate>This material had been removed.</span>
+  </div>
+</ng-container>
+<ng-template #template>
+  <ng-container *ngIf="sendActivity">
+    <div class="mb-2">
+      <div *ngIf="sendActivity?.subject" class="font-weight-bold subject mb-1">{{sendActivity?.subject}}</div>
+      <ng-container *ngIf="expanded && sendActivity?.description">
+        <ng-container *ngIf="!more; else fullDesc">
+          <span class="email-content"
+            [innerHTML]="sendActivity?.description || '' | stripTags | removeEntity | shorten: 200: '...'"></span>
+          <a class="more ml-2 f-3 c-pointer" *ngIf="sendActivity?.description?.length > 195" (click)="more = true"
+            translate>More</a>
+        </ng-container>
+        <ng-template #fullDesc>
+          <div class="email-content" [innerHTML]="(sendActivity?.description || '') | makeRedirect"></div>
+          <a class="more f-3 mt-2 c-pointer fw-600 d-block w-fit" (click)="more = false" translate>Less</a>
+        </ng-template>
+      </ng-container>
+    </div>
+  </ng-container>
+  <div class="material d-flex">
+    <ng-container [ngSwitch]="type">
+      <a *ngSwitchCase="'videos'" class="material-thumbnail"
+        href="{{SITE}}/video?video={{material._id}}&user={{user_id}}" target="_blank">
+        <img src="{{material.preview}}" />
+      </a>
+      <a *ngSwitchCase="'pdfs'" class="material-thumbnail" href="{{SITE}}/pdf?pdf={{material._id}}&user={{user_id}}"
+        target="_blank">
+        <img src="{{material.preview}}" />
+      </a>
+      <a *ngSwitchCase="'images'" class="material-thumbnail"
+        href="{{SITE}}/image?image={{material._id}}&user={{user_id}}" target="_blank">
+        <img src="{{material.preview}}" />
+      </a>
+    </ng-container>
+    <div class="material-content ml-2">
+      <div class="title font-weight-bold">
+        {{material.title}}
+      </div>
+      <div class="description f-2">
+        {{material.description || '' | stripTags | removeEntity | shorten: 100: '...'}}
+      </div>
+      <div class="time" *ngIf="type === 'videos'">
+        {{material.duration | timeDuration}}
+      </div>
+    </div>
+  </div>
+
+
+  <ng-container *ngIf="_timelines && _timelines.length > 1">
+    <div class="collapsed" *ngIf="!expanded">
+      <ng-container *ngIf="main[main.type]?.type === 'watch'">
+        <app-play-timelines [data]="main[main.type]" [type]="main.type" [duration]="material.duration">
+        </app-play-timelines>
+      </ng-container>
+      <ng-container *ngIf="main[main.type]?.type === 'review'">
+        <app-play-timelines [data]="main[main.type]" [type]="main.type" [duration]="material.duration">
+        </app-play-timelines>
+      </ng-container>
+      <a class="more f-3 mt-3 c-pointer fw-600 d-block w-fit" (click)="expand()">Expand</a>
+    </div>
+    <div class="expanded" *ngIf="expanded">
+      <label class="session" translate>Sessions</label>
+      <div class="timelines">
+        <div class="timeline" *ngFor="let activity of _timelines">
+          <div class="header v-center">
+            <i class="act-icon act-{{activity.type}} {{activity[activity.type]?.type}} d-block mr-2"></i>
+            <span>{{activity.content}}</span>
+            <span class="time f-3 ml-auto op-56">
+              {{ activity.created_at | datetimeFormat }}
+            </span>
+          </div>
+          <div class="content ml-4">
+            <ng-container *ngIf="activity.type === 'video_trackers' && activity[activity.type]?.type === 'watch'">
+              <app-play-timelines [data]="activity[activity.type]" [type]="activity.type"
+                [duration]="material.duration"></app-play-timelines>
+            </ng-container>
+            <ng-container *ngIf="activity.type === 'pdf_trackers' && activity[activity.type]?.type === 'review'">
+              <app-play-timelines [data]="activity[activity.type]" [type]="activity.type"
+                [duration]="material.duration"></app-play-timelines>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <a class="more f-3 mt-3 c-pointer fw-600 d-block w-fit" (click)="collapse()" translate>Collapse</a>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="_timelines && _timelines.length === 1 && sendActivity">
+    <a class="more f-3 mt-3 c-pointer fw-600 d-block w-fit" *ngIf="!expanded" (click)="expand()" translate>Expand</a>
+    <a class="more f-3 mt-3 c-pointer fw-600 d-block w-fit" *ngIf="expanded" (click)="collapse()" translate>Collapse</a>
+  </ng-container>
+</ng-template>

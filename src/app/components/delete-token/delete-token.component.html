@@ -1,0 +1,62 @@
+<div class="v-center justify-content-between">
+    <div class="warning d-flex">
+        <h1 class="m-0 ml-2" mat-dialog-title translate>
+            Delete template Merge field
+        </h1>
+    </div>
+    <div>
+        <i class="d-block i-icon i-close bgc-dark" mat-dialog-close></i>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="c-dark mt-3 ml-3">
+        <ng-container *ngIf="step == 1; else failedDesc">
+            <div class="loader"></div>
+            <div class="attention v-center justify-content-center py-2">
+                <i class="i-icon i-warning-red attention-icon d-block"></i>
+                <div class="f-4 fw-600 c-black ml-3" translate>
+                    Don't close while removing the Merge fields.
+                </div>
+            </div>
+        </ng-container>
+        <ng-template #failedDesc>
+            <p class="f-5" translate>delete_template_merge_field_failed</p>
+            <ng-container *ngFor="let item of failedData">
+                <div class="v-center justify-content-between c-pointer my-1 mx-1 w-100" (click)="showDetails(item)">
+                    <span class="font-weight-bold f-5 c-black">{{ item.token.name }}</span>
+                    <i class="d-block i-icon bgc-blue"
+                        [ngClass]="{'i-expand-less': status[item.token.id], 'i-expand-more': !status[item.token.id]}"></i>
+                </div>
+                <div [class.d-none]="!status[item.token.id]">
+                    <ng-container *ngFor="let reason of item.data | keyvalue">
+                        <ng-container *ngIf="reason.value.length">
+                            <div class="v-center">
+                                <div class="reason-title px-1" translate>Reason:</div>
+                                <div class="reason-content v-center px-1">
+                                    <span class="c-dark f-4" translate>This merge field is being used in the below</span>
+                                    <span class="c-red f-4 ml-1" translate>{{ reasonTargetName(reason.key) }}</span>
+                                </div>
+                            </div>
+                            <div class="v-center">
+                                <div class="reason-title px-1"></div>
+                                <div class="reason-content px-1">
+                                    <ng-container *ngFor="let value of reason.value; let row = index">
+                                        <a class="c-pointer c-blue f-3 ml-1" (click)="openReason(reason.key, value)">
+                                            {{ getTitle(reason.key, value) ||
+                                            'No Content'
+                                            | stripTags
+                                            | shorten: 20:'...' }}
+                                        </a>
+                                        <ng-container *ngIf="row < reason.value.length - 1">,</ng-container>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </ng-template>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+</mat-dialog-actions>

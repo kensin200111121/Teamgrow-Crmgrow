@@ -1,0 +1,38 @@
+.search-button {
+  height: 40px;
+}
+
+.phones-container {
+  max-height: 400px;
+  overflow: auto;
+}
+
+.search-phone-wrapper {
+  position: relative;
+
+  i {
+    position: absolute;
+    top: 12px;
+    left: 20px;
+  }
+
+  .flag-container {
+    display: flex;
+    align-items: center;
+    background: #eee;
+    position: absolute !important;
+    top: 3px;
+    left: 44px;
+    height: calc(100% - 6px);
+  
+    .dropdown-toggle {
+      height: 100%;
+      width: 96px;
+      justify-content: center;
+    }
+  }
+
+  input {
+    padding-left: 140px !important;
+  }
+}

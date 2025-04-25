@@ -1,0 +1,264 @@
+<div class="page-content p-0">
+  <form
+    #actionForm="ngForm"
+    (ngSubmit)="actionForm.form.valid ? onCreateNewTag(actionForm) : false"
+    [class.was-validated]="actionForm.submitted"
+  >
+    <div class="form-group mt-4">
+      <div class="d-flex align-items-end justify-content-start w-100">
+        <div>
+          <input
+            type="text"
+            class="form-control tag-name-input text-capitalize"
+            [(ngModel)]="newTag"
+            name="edit_tag_name"
+            #edit_tag_name="ngModel"
+            required
+          />
+        </div>
+        <div class="v-center">
+          <button
+            type="submit"
+            [attr.data-action]="'contact-tag-save'"
+            class="v-center btn btn-primary ml-2 px-3 save-btn"
+            [class.loading]="isSavingNewTag"
+          >
+            <span class="f-3 font-weight-bold" translate>New Tag</span>
+          </button>
+        </div>
+        <span
+          class="error ml-2 pt-1"
+          *ngIf="edit_tag_name.errors"
+          style="height: 0px"
+          translate
+        >
+          {{ 'Tag name is required' | translate }}
+        </span>
+      </div>
+    </div>
+  </form>
+  <div class="table">
+    <div
+      class="v-center pt-3 pb-2 table-header"
+      [class.selected]="isPartialSelected()"
+    >
+      <div class="f-1 checkbox-col">
+        <div class="v-center">
+          <div class="custom-control custom-checkbox">
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              id="selectAllTags"
+              (change)="$event ? onSelectAll() : null"
+              [checked]="pageTags.length && isAllSelected()"
+            />
+            <label class="custom-control-label" for="selectAllTags"></label>
+          </div>
+          <ng-container *ngIf="isPartialSelected()">
+            <span
+              class="c-black f-3 text-lowercase font-weight"
+              [translateParams]="{ count: selectedTags.length }"
+              translate
+            >
+              items are selected
+            </span>
+          </ng-container>
+        </div>
+      </div>
+      <ng-container *ngIf="isPartialSelected(); else tableHeader">
+        <app-actions-header
+          [actions]="actions"
+          [disableActions]="disabledActions"
+          (doCommand)="onAction($event)"
+        >
+        </app-actions-header>
+      </ng-container>
+      <ng-template #tableHeader>
+        <div class="f-1 tag-col">
+          {{ 'Name' | translate }}
+        </div>
+        <div class="f-1 time-col">
+          {{ 'Contacts' | translate }}
+        </div>
+        <div class="f-1 action-col text-right px-1"></div>
+      </ng-template>
+    </div>
+    <div class="table-body pt-3 pb-2">
+      <ng-container *ngIf="tags.length; else noTags">
+        <div
+          *ngFor="
+            let tag of pageTags
+              | paginate
+                : {
+                    id: 'tagPage',
+                    itemsPerPage: pageSize.id,
+                    currentPage: page,
+                    totalItems: tags.length
+                  }
+          "
+          class="v-center px-2 py-2 tag-item"
+        >
+          <div class="v-center checkbox-col">
+            <div class="custom-control custom-checkbox">
+              <input
+                type="checkbox"
+                class="custom-control-input"
+                id="tag-{{ tag._id }}"
+                (change)="$event ? onSelect(tag) : null"
+                [checked]="isSelected(tag)"
+              />
+              <label
+                class="custom-control-label"
+                for="tag-{{ tag._id }}"
+              ></label>
+            </div>
+          </div>
+          <div class="v-center tag-col">
+            <div class="f-3 bgc-pale px-2 py-1 tag-label text-capitalize">{{ tag._id }}</div>
+          </div>
+          <div
+            class="f-3 c-blue my-auto time-col c-pointer"
+            (click)="onShowTagContacts(tag)"
+          >
+            {{ tag.count }}
+          </div>
+          <div
+            ngbDropdown
+            placement="bottom-right"
+            class="ml-auto additional-action"
+          >
+            <a
+              ngbDropdownToggle
+              class="v-center justify-content-end btn c-dark f-3 no-carot py-0 pl-0 pr-2"
+            >
+              <i
+                *ngIf="tag._id == 'lead capture'"
+                class="d-block i-icon tooltip-icon i-information bgc-dark"
+                ngbTooltip="You can not delete this tag"
+              ></i>
+              <i class="d-block i-icon i-menu-more bgc-dark"></i>
+            </a>
+            <div ngbDropdownMenu class="light">
+              <button
+                [attr.data-action]="'contact-tag-edit'"
+                class="v-center border-0 py-2 c-dark dropdown-item"
+                (click)="onEditTag(tag)"
+              >
+                <i
+                  class="d-block i-icon i-edit bgc-dark mr-2"
+                  aria-hidden="true"
+                ></i>
+                <span class="f-3 font-weight-bold" translate>Edit</span>
+              </button>
+              <button
+                [attr.data-action]="'contact-tag-merge'"
+                class="v-center border-0 py-2 c-dark dropdown-item"
+                (click)="onMergeTag(tag)"
+              >
+                <i
+                  class="d-block i-icon i-merge bgc-dark mr-2"
+                  aria-hidden="true"
+                ></i>
+                <span class="f-3 font-weight-bold" translate>Merge</span>
+              </button>
+              <button
+                [attr.data-action]="'contact-tag-delete'"
+                class="v-center border-0 py-2 c-dark dropdown-item"
+                (click)="onDeleteTag([tag._id])"
+              >
+                <i
+                  class="d-block i-icon i-trash bgc-red mr-2"
+                  aria-hidden="true"
+                ></i>
+                <span class="f-3 font-weight-bold c-red" translate>Delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #noTags>
+        <ng-container *ngIf="isLoadingTags; else emptyResult">
+          <div class="empty-list py-5">
+            <div class="loader mt-2"></div>
+            <h6 class="fw-600 mt-2" translate>LOADING</h6>
+          </div>
+        </ng-container>
+        <ng-template #emptyResult>
+          <div class="empty-list py-5">
+            <h4 class="font-weight-bold mt-4 mb-3" translate>
+              There is no tags
+            </h4>
+          </div>
+        </ng-template>
+      </ng-template>
+    </div>
+  </div>
+  <ng-container *ngIf="tags.length > MIN_ROW_COUNT">
+    <div class="pagination-wrapper m-auto d-flex justify-content-center w-100">
+      <pagination-controls
+        (pageChange)="onChangePage($event)"
+        (pageBoundsCorrection)="onChangePage($event)"
+        id="tagPage"
+        maxSize="5"
+        previousLabel=""
+        nextLabel=""
+      >
+      </pagination-controls>
+      <div
+        class="shadow-dropdown ml-auto page-size-control"
+        ngbDropdown
+        placement="top-right"
+      >
+        <div
+          class="v-center c-pointer f-3 p-1 font-weight-bold"
+          ngbDropdownToggle
+        >
+          <span
+            [attr.data-name]="'contact-tag-manager-page-size'"
+            class="pr-2 c-blue"
+            [translateParams]="{ count: pageSize.id }"
+            translate
+          >
+            pagination
+          </span>
+        </div>
+        <div ngbDropdownMenu aria-labelledby="tagPageSize">
+          <div
+            class="py-2"
+            ngbDropdownItem
+            *ngFor="let type of PAGE_COUNTS"
+            (click)="onChangePageSize(type)"
+            [attr.data-name]="'contact-tag-manager-page-size-' + type.id"
+          >
+            <span
+              class="f-3 v-center"
+              [class.font-weight-bold]="type.id === pageSize.id"
+            >
+              <span [translateParams]="{ count: type.id }" translate
+                >pagination</span
+              >
+              <i
+                class="i-icon i-check d-block bgc-dark sm ml-1 mb-1"
+                *ngIf="type.id === pageSize.id"
+              ></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <mat-drawer-container [hasBackdrop]="true">
+    <mat-drawer
+      #tdrawer
+      position="end"
+      (openedStart)="toggleBody(true)"
+      (closedStart)="toggleBody(false)"
+    >
+      <app-tag-contacts-list
+        *ngIf="selectedTag !== undefined"
+        [tag]="selectedTag._id"
+      >
+      </app-tag-contacts-list>
+    </mat-drawer>
+  </mat-drawer-container>
+</div>

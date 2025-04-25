@@ -1,0 +1,115 @@
+<div class="title-container">
+  <div class="v-center justify-content-between">
+    <h4 class="font-weight-bold m-0 deal-title">
+      {{ deal?.main?.title }}
+    </h4>
+    <div class="row align-items-center">
+      <div
+        class="v-center f-3 fw-600 mr-3 c-blue c-pointer"
+        (click)="editDeal($event)"
+      >
+        <i class="d-block i-icon i-edit bgc-blue mr-2"></i>
+        <span translate>Edit Deal</span>
+      </div>
+      <div
+        ngbDropdown
+        class="button-more p-0 f-3 fw-600 v-center"
+        placement="bottom-end"
+      >
+        <div
+          class="v-center c-pointer"
+          ngbDropdownToggle
+          data-name="contact-dropdown-toggle"
+        >
+          <i class="d-block i-icon i-menu-more bgc-blue mr-1"></i>
+          <span class="c-blue" translate>More</span>
+        </div>
+        <div ngbDropdownMenu class="light action-menu">
+          <button
+            data-action="deal-action-new-meeting"
+            class="v-center border-0 c-dark dropdown-item m-1"
+            (click)="openAppointmentDlg()"
+          >
+            <i class="i-icon i-appointments bgc-dark"></i>
+            <span class="ml-3 f-3 font-weight-bold" translate>New Meeting</span>
+          </button>
+          <hr class="my-1" />
+          <button
+            data-action="deal-action-new-email"
+            class="v-center border-0 c-dark dropdown-item m-1"
+            (click)="openSendEmail()"
+          >
+            <i class="i-icon i-message bgc-dark"></i>
+            <span class="ml-3 f-3 font-weight-bold" translate>New Email</span>
+          </button>
+          <button
+            data-action="deal-action-new-text"
+            class="v-center border-0 c-dark dropdown-item m-1"
+            *enableByFeatures="USER_FEATURES.TEXT"
+            (click)="openSendText()"
+          >
+            <i class="i-icon i-sms-sent bgc-dark"></i>
+            <span class="ml-3 f-3 font-weight-bold" translate>New Text</span>
+          </button>
+          <button
+            data-action="deal-action-new-call"
+            class="v-center border-0 c-dark dropdown-item m-1"
+            (click)="openCall()"
+            *enableByFeatures="USER_FEATURES.DIALER"
+          >
+            <i class="i-icon i-phone bgc-dark"></i>
+            <span class="ml-3 f-3 font-weight-bold" translate>New Call</span>
+          </button>
+          <button
+            data-action="deal-action-new-task"
+            class="v-center border-0 c-dark dropdown-item m-1"
+            (click)="openTaskDlg()"
+          >
+            <i class="i-icon i-task bgc-dark"></i>
+            <span class="ml-3 f-3 font-weight-bold" translate>New Task</span>
+          </button>
+          <button
+            data-action="deal-action-new-note"
+            class="v-center border-0 c-dark dropdown-item m-1"
+            (click)="openNoteDlg()"
+          >
+            <i class="i-icon i-notes bgc-dark"></i>
+            <span class="ml-3 f-3 font-weight-bold" translate>New Note</span>
+          </button>
+          <hr class="my-1" />
+          <button
+            data-action="deal-action-delete"
+            class="v-center border-0 c-red dropdown-item m-1"
+            (click)="removeDeal()"
+          >
+            <i class="i-icon i-trash bgc-red"></i>
+            <span class="ml-3 f-3 font-weight-bold c-red" translate
+              >Delete</span
+            >
+          </button>
+        </div>
+      </div>
+      <button
+        class="v-center border-0 bgc-trans p-0 ml-3 btn-close"
+        (click)="closeDrawer()"
+      >
+        <i class="d-block i-icon i-close bgc-dark"></i>
+      </button>
+    </div>
+  </div>
+</div>
+<div>
+  <mat-tab-group class="tab-group-container">
+    <mat-tab label="Details" class="tab-label">
+      <app-deal-info [deal]="deal"></app-deal-info>
+    </mat-tab>
+    <mat-tab label="Deal History">
+      <app-deal-history
+        [deal]="deal"
+        [labels]="allLabels"
+        [reload]="reload"
+        (onSetReload)="setReload($event)"
+      ></app-deal-history>
+    </mat-tab>
+  </mat-tab-group>
+</div>

@@ -1,0 +1,16 @@
+.label-color {
+    position: relative;
+    .check-icon {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        top: 15px;
+        left: 15px;
+        i {
+            width: 8px;
+            height: 6px;
+            min-width: 8px;
+        }
+    }
+}

@@ -1,0 +1,180 @@
+<div class="insight-container">
+    <div class="insight-body">
+        <ng-container [ngSwitch]="step">
+            <ng-container *ngSwitchCase="1">
+                <h1 class="page-title mt-2" translate>Welcome to crmgrow!</h1>
+                <h4 class="page-sub-title mt-4" translate>What's your main goal while using crmgrow?</h4>
+                <div class="type-list mt-4">
+                    <div class="type mb-3 c-pointer" *ngFor="let useType of useTypes" [class.active]="selectedType == useType.type" (click)="setType(useType.type)">
+                        <div class="v-center">
+                            <img [src]="sspaService.toAsset('img/onboarding/' + useType.type + '.png')">
+                            <span>{{useType.label}}</span>
+                            <div class="custom-control custom-checkbox ml-auto">
+                                <input type="checkbox" class="custom-control-input" [id]="useType.type"
+                                    (change)="changeType($event, useType.type)" [checked]="selectedType == useType.type">
+                                <label class="custom-control-label" [for]="useType.type"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="other-type form-group mt-4 mb-0">
+                    <h4 class="page-sub-title" translate>If you have another goal, please describe it here:</h4>
+                    <textarea class="form-control" [(ngModel)]="otherType"></textarea>
+                </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="2">
+                <h1 class="page-title" translate>Complete your profile</h1>
+                <h4 class="page-sub-title" translate>To get the most out of crmgrow, enter your details.</h4>
+                <div class="profile-wrapper mt-4">
+                    <div class="avatar-wrapper mb-4">
+                        <img [src]="sspaService.toAsset(picture_profile || 'img/onboarding/avatar.svg')" class="avatar"/>
+                        <button type="button" class="bgc-blue btn rounded-circle btn-icon" (click)="openProfilePhoto()">
+                          <i class="i-icon i-plus bg-white d-block"></i>
+                        </button>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 col-12">
+                            <div class="form-group" [ngClass]="{invalid: user_name.invalid && (user_name.dirty || user_name.touched)}">
+                                <div class="d-flex">
+                                    <label for="user_name" class="mr-auto" translate>full name</label>
+                                </div>
+                                <input type="text" class="form-control" [(ngModel)]="name" id="user_name" name="user_name" #user_name="ngModel">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-12">
+                            <div class="form-group" [ngClass]="{invalid: email.invalid && (email.dirty || email.touched)}">
+                                <div class="d-flex">
+                                    <label for="email" class="mr-auto" translate>email</label>
+                                    <span class="error" *ngIf="email.errors">
+                                        <ng-container *ngIf="email.errors.pattern" translate>Wrong email format!</ng-container>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" [(ngModel)]="userEmail" id="email" name="email" #email="ngModel" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 col-12">
+                            <div class="form-group phone-form">
+                                <div class="d-flex">
+                                    <label for="phone" class="mr-auto" translate>phone</label>
+                                </div>
+                                <app-phone-input
+                                    [cssClass]="'form-control phone-form'"
+                                    [onlyCountries]="countries"
+                                    [selectedCountryISO]="CountryISO.UnitedStates"
+                                    [(ngModel)]="phoneNumber"
+                                    (ngModelChange)="confirmPhone($event)"
+                                    name="phone"
+                                    #phoneControl
+                                >
+                                </app-phone-input>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-12">
+                            <div class="form-group" [ngClass]="{invalid: company.invalid && (company.dirty || company.touched)}">
+                                <div class="d-flex">
+                                    <label for="company_info" class="mr-auto" translate>your company</label>
+                                </div>
+                                <select
+                                    class="form-control c-blue f-5"
+                                    [(ngModel)]="userCompany"
+                                    name="company"
+                                    id="company"
+                                    #company="ngModel"
+                                    (ngModelChange)="confirmCompany()"
+                                >
+                                    <option *ngFor="let company_info of companies" value="{{company_info}}">
+                                        {{company_info}}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 col-12">
+                            <div class="form-group">
+                                <div class="d-flex">
+                                    <label for="learn_more" class="mr-auto" translate>landing page learn more redirect link</label>
+                                </div>
+                                <input type="text" class="form-control" [(ngModel)]="website" id="learn_more" name="learn_more" #learn_more="ngModel">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-12">
+                            <div class="form-group" [ngClass]="{invalid: time_zone_info.invalid && (time_zone_info.dirty || time_zone_info.touched)}">
+                                <div class="d-flex">
+                                    <label for="time_zone_info" class="mr-auto" translate>time zone</label>
+                                </div>
+                                <mat-form-field class="timezone-select">
+                                    <mat-select class="form-control c-blue f-5" [(ngModel)]="timezone" name="time_zone_info" id="timezone" #time_zone_info="ngModel">
+                                        <ng-container *ngIf="defaultTimeZone; else otherTimeZone">
+                                            <ng-container *ngFor="let timezone_group of timezones">
+                                                <mat-optgroup *ngIf="timezone_group.country == 'US' || timezone_group.country == 'CA'" label="{{timezone_group.country}}">
+                                                    <mat-option class="timezone" *ngFor="let timezone of timezone_group.timezones" value="{{timezone | json}}">
+                                                        {{timezone.name}}
+                                                    </mat-option>
+                                                </mat-optgroup>
+                                            </ng-container>
+                                            <mat-option class="p-0">
+                                                <div class="v-center justify-content-center other-timezone c-pointer" (click)="defaultTimeZone = !defaultTimeZone">
+                                                    <span class="f-3 font-weight-bold c-blue text-uppercase mr-2" translate>
+                                                        other timezones
+                                                    </span>
+                                                    <i class="d-block i-icon i-plus bgc-blue"></i>
+                                                </div>
+                                            </mat-option>
+                                        </ng-container>
+                                        <ng-template #otherTimeZone>
+                                            <mat-optgroup *ngFor="let timezone_group of timezones" label="{{timezone_group.country}}">
+                                                <mat-option class="timezone" *ngFor="let timezone of timezone_group.timezones" value="{{timezone | json}}">
+                                                    {{timezone.name}}
+                                                </mat-option>
+                                            </mat-optgroup>
+                                            <mat-option class="p-0">
+                                                <div class="v-center justify-content-center other-timezone c-pointer" (click)="defaultTimeZone = !defaultTimeZone">
+                                                    <span class="f-3 font-weight-bold c-blue text-uppercase mr-2" translate>
+                                                        other timezones
+                                                    </span>
+                                                    <i class="d-block i-icon i-minus bgc-blue"></i>
+                                                </div>
+                                            </mat-option>
+                                        </ng-template>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-12">
+                            <div class="form-group" [ngClass]="{invalid: location.invalid && (location.dirty || location.touched)}">
+                                <div class="d-flex">
+                                    <label for="location" class="mr-auto" translate>location</label>
+                                </div>
+                                <input class="form-control" [placeholder]="'Add location' | translate" [(ngModel)]="address" name="location"
+                                    #location="ngModel" ngx-google-places-autocomplete #addressplacesRef="ngx-places"
+                                    [options]="{ types: [] }" (onAddressChange)="handleAddressChange($event)" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="3">
+                <h1 class="page-title" translate>About you</h1>
+                <h4 class="page-sub-title" translate>Which industry do you work in?</h4>
+                <span class="industry mt-2 c-pointer" *ngFor="let industry of industries" (click)="selectIndustry(industry)" [class.active]="selectIndustries.indexOf(industry) !== -1">
+                    {{industry}}
+                </span>
+                <h4 class="page-sub-title mt-5" translate>What’s your role?</h4>
+                <span class="user-role mt-2 c-pointer" *ngFor="let role of roles" (click)="selectRole(role)" [class.active]="selectRoles.indexOf(role) !== -1">
+                    {{role}}
+                </span>
+            </ng-container>
+        </ng-container>
+    </div>
+    <div class="insight-footer">
+        <div class="v-center justify-content-between footer-wrapper">
+            <button class="btn btn-green font-weight-bold" (click)="skip()" translate>Skip</button>
+            <button class="btn btn-white font-weight-bold ml-auto mr-2" *ngIf="step != 1" (click)="back()" translate>Back</button>
+            <button class="font-weight-bold btn btn-primary shadow" *ngIf="step != 3" (click)="next()" translate>Next</button>
+            <button class="font-weight-bold btn btn-primary shadow" *ngIf="step == 3" (click)="finish()" translate>Finish</button>
+        </div>
+    </div>
+</div>

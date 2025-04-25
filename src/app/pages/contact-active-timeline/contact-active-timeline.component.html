@@ -1,0 +1,258 @@
+<mat-expansion-panel
+  class="mat-elevation-z"
+  [class.disable]="!isPackageAutomation"
+  hideToggle
+  displayMode="flat"
+  [expanded]="true"
+>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <div class="v-center justify-content-between w-100">
+        <div class="v-center">
+          <i class="i-icon i-triangle-right bgc-dark sm toggle-icon op-40"></i>
+          <span class="f-6 font-weight-bold ml-2" translate>Automation</span>
+        </div>
+      </div>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <div class="automation">
+    <div class="v-center">
+      <app-input-automation
+        (automationChange)="selectAutomation($event)"
+        [emptyInput]="automationUnAssigned"
+      ></app-input-automation>
+      <div class="v-center automation-action ml-2">
+        <ng-container *ngIf="!assigning; else assigningTemplate">
+          <i
+            class="d-block i-icon i-automation-start bgc-green-weak c-pointer"
+            (click)="assignAutomation()"
+          ></i>
+        </ng-container>
+        <ng-template #assigningTemplate>
+          <i class="d-block assigning loader"></i>
+        </ng-template>
+        <ng-container *ngIf="!canceling; else cancelingTemplate">
+          <i
+            class="d-block i-icon i-automation-cancel bgc-blue ml-2 c-pointer"
+            #closeContactAutomation
+            (click)="closeAutomation()"
+          ></i>
+        </ng-container>
+        <ng-template #cancelingTemplate>
+          <i class="d-block canceling loader ml-2"></i>
+        </ng-template>
+      </div>
+    </div>
+    <ng-container *ngIf="allContactDataSources?.length > 0">
+      <div
+        class="automation-detail mt-3"
+      >
+        <span class="f-6 fw-600 op-40 info-title mt-3" translate>Contact Timeline</span>
+        <div *ngFor="let dataContactSource of dataContactSources;
+        let index = index">
+          <mat-tree
+            [dataSource]="dataContactSource"
+            [treeControl]="treeControl"
+            class="timeline timeline-one-side time-line mt-3"
+          >
+            <mat-tree-node
+              class="mat-tree"
+              [class.first]="
+                node['condition'] && node['isFirst']
+              "
+              *matTreeNodeDef="let node"
+              matTreeNodeToggle
+            >
+              <li class="mat-tree-node timeline-block {{ node.status }}">
+                <div class="timeline w-100">
+                  <div
+                    class="v-center justify-content-between w-100 condition"
+                    *ngIf="
+                      node['condition'] &&
+                      node['condition']['answer'] == true
+                    "
+                  >
+                    <img src="../../assets/img/automations/yes.svg" />
+                    <span
+                      class="f-1 font-weight-bold text-center w-100"
+                      *ngIf="node['condition'] && node['isFirst']"
+                      translate
+                    >{{ ActionName[node['condition']['case']] }}?</span
+                    >
+                  </div>
+                  <div
+                    class="v-center justify-content-between w-100 condition"
+                    *ngIf="
+                      node['condition'] &&
+                      node['condition']['answer'] == false
+                    "
+                  >
+                    <img src="../../assets/img/automations/no.svg" />
+                    <span
+                      class="f-1 font-weight-bold text-center w-100"
+                      *ngIf="node['condition'] && node['isFirst']"
+                      translate
+                    >{{ ActionName[node['condition']['case']] }}?</span
+                    >
+                  </div>
+                  <div class="bgc-green-weak line"></div>
+                  <div
+                    class="v-center c-pointer"
+                    #treeNode
+                    (click)="easyView(node, treeNode, treeOverlay)"
+                  >
+                    <span class="timeline-step {{ node.action?.type }}">
+                      <img [attr.src]="ICONS[node.action?.type]" />
+                    </span>
+                    <div class="timeline-content ml-1">
+                      <div class="f-1 font-weight-bold title m-0" translate>
+                        {{ ActionName[node.action?.type] }}
+                      </div>
+                      <ng-container
+                        *ngIf="
+                          updatingTimeline &&
+                            updatingTimeline._id == node._id &&
+                            isUpdatingTimeline;
+                          else normalTimeline
+                        "
+                      >
+                        <i class="small-spinner"></i>
+                      </ng-container>
+                      <ng-template #normalTimeline>
+                        <div
+                          class="f-1 font-weight-bold text-left text-uppercase p-0 badge status {{
+                            node.status
+                          }}"
+                        >
+                          {{ node.status }}
+                        </div>
+                        <div
+                          class="f-1 c-dark text-left"
+                          *ngIf="node.status == 'active'"
+                        >
+                          {{
+                            node.due_date | datetimeFormat : DueDateTimeFormat
+                          }}
+                        </div>
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            </mat-tree-node>
+            <mat-nested-tree-node
+              class="mat-nested-tree"
+              [class.first]="
+                node['condition'] && node['isFirst'] == true
+              "
+              *matTreeNodeDef="let node; when: hasChild"
+            >
+              <div
+                class="timeline-condition"
+                *ngIf="node['condition'] && node['condition']['case']"
+              >
+                <div
+                  class="v-center justify-content-between w-100 condition"
+                  *ngIf="
+                    node['condition'] && node['condition']['answer'] == true
+                  "
+                >
+                  <img [src]="sspaService.toAsset('img/automations/yes.svg')" />
+                  <span
+                    class="f-1 font-weight-bold text-center w-100"
+                    *ngIf="node['condition'] && node['isFirst']"
+                    translate
+                  >{{ ActionName[node['condition']['case']] }}?</span
+                  >
+                </div>
+                <div
+                  class="v-center justify-content-between w-100 condition"
+                  *ngIf="
+                    node['condition'] &&
+                    node['condition']['answer'] == false
+                  "
+                >
+                  <img [src]="sspaService.toAsset('img/automations/no.svg')" />
+                  <span
+                    class="f-1 font-weight-bold text-center w-100"
+                    *ngIf="node['condition'] && node['isFirst']"
+                    translate
+                  >{{ ActionName[node['condition']['case']] }}?</span
+                  >
+                </div>
+                <div class="bgc-green-weak line"></div>
+              </div>
+              <li>
+                <div
+                  class="d-flex mat-tree-node timeline-block c-pointer"
+                  #nestedTreeNode
+                  (click)="easyView(node, nestedTreeNode, treeOverlay)"
+                >
+                  <span class="timeline-step {{ node.action?.type }}">
+                    <img [attr.src]="ICONS[node.action?.type]" />
+                  </span>
+                  <div class="timeline-content ml-1">
+                    <div class="f-1 font-weight-bold title m-0" translate>
+                      {{ ActionName[node.action?.type] }}
+                    </div>
+                    <ng-container
+                      *ngIf="
+                          updatingTimeline &&
+                            updatingTimeline._id == node._id &&
+                            isUpdatingTimeline;
+                          else normalTimeline
+                        "
+                    >
+                      <i class="small-spinner"></i>
+                    </ng-container>
+                    <ng-template #normalTimeline>
+                      <div
+                        class="f-1 font-weight-bold text-left text-uppercase p-0 badge status {{
+                            node.status
+                          }}"
+                      >
+                        {{ node.status }}
+                      </div>
+                      <div
+                        class="f-1 c-dark text-left"
+                        *ngIf="node.status == 'active'"
+                      >
+                        {{
+                          node.due_date | datetimeFormat : DueDateTimeFormat
+                        }}
+                      </div>
+                    </ng-template>
+                  </div>
+                </div>
+                <div class="bgc-green-weak line"></div>
+                <div
+                  class="d-flex p-0"
+                  [class.timeline-tree-invisible]="
+                    !treeControl.isExpanded(node)
+                  "
+                >
+                  <ng-container matTreeNodeOutlet></ng-container>
+                </div>
+              </li>
+            </mat-nested-tree-node>
+            <ng-template #treeOverlay let-data>
+              <app-automation-detail-overlay
+                [fullDataSource]="data.data"
+                [type]="'control'"
+                [automationType]="'contact'"
+              >
+              </app-automation-detail-overlay>
+            </ng-template>
+          </mat-tree>
+          <div
+            class="v-center justify-content-center f-6 font-weight-bold c-blue c-pointer my-4"
+            (click)="showFullAutomation('contact', index)"
+            translate
+          >
+            Show full automation
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</mat-expansion-panel>

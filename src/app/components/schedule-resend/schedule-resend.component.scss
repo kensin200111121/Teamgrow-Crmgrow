@@ -1,0 +1,93 @@
+.dialog-wrapper {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.operation {
+  text-transform: capitalize;
+}
+.detail-list {
+  max-height: 240px;
+  overflow: auto;
+}
+button {
+  position: relative;
+  img {
+    width: 24px;
+    height: 24px;
+  }
+  .social-text {
+    position: absolute;
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+.close-button {
+  position: absolute;
+  top: -25px;
+  right: -25px;
+  width: 20px;
+  height: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  padding: 0;
+  background-color: #f7fafc;
+  border: 1px solid #f7fafc;
+  box-shadow: 0 4px 6px rgb(50 50 93 / 11%), 0 1px 3px rgb(0 0 0 / 11%);
+  &:hover, &:focus, &:active {
+    box-shadow: 0 7px 14px rgb(50 50 93 / 20%), 0 3px 6px rgb(0 0 0 / 20%);
+    transform: translateY(-1px);
+  }
+}
+
+.search-button {
+  height: 40px;
+}
+
+.phones-container {
+  max-height: 400px;
+  overflow: auto;
+}
+
+.plan {
+  border: 1px solid #D9D9DF;
+  cursor: pointer;
+  &.selected {
+    border: 1px solid #0000ff;
+  }
+
+  .check-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+
+  .description {
+    color: #797B8E;
+  }
+}
+
+.summary {
+  margin-bottom: 2rem;
+}
+
+.connect-button {
+  width: 90%;
+}
+
+.upgrade-package-wrapper {
+  text-align: center;
+
+  .i-icon {
+    width: 77px;
+    height: 77px;
+  }
+
+  p {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 0;
+    line-height: 32px;
+  }
+}

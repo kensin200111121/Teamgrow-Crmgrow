@@ -1,0 +1,74 @@
+<div style="max-width: 500px;">
+    <span class="f-4 c-dark font-weight-bold" translate>Business Hour Settings</span>
+    <div class="f-4 c-light-dark" translate>
+      Sending emails and texts will work during business hours.
+    </div>
+    <div class="mt-3">
+        <div [class.disabled]="!isBusiness">
+            <div class="row mt-3">
+                <div class="col-sm-6 col-12">
+                    <div class="form-group has-feedback">
+                        <label class="f-4 c-dark theme-label" translate>Start Time</label>
+                        <select
+                            class="form-control theme-control"
+                            [(ngModel)]="startTime"
+                            name="emailStart"
+                            #emailStart="ngModel"
+                        >
+                            <option value="" disabled translate>Due Time</option>
+                            <ng-container *ngFor="let time of times">
+                                <option value="{{time.id}}" *ngIf="time.id < endTime">{{time.text}}</option>
+                            </ng-container>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-12">
+                    <div class="form-group has-feedback">
+                        <label class="f-4 c-dark theme-label" translate>End Time</label>
+                        <select
+                            class="form-control theme-control"
+                            [(ngModel)]="endTime"
+                            name="emailEnd"
+                            #emailEnd="ngModel"
+                        >
+                            <option value="" disabled translate>Due Time</option>
+                            <ng-container *ngFor="let time of times;">
+                                <option value="{{time.id}}" *ngIf="time.id > startTime">{{time.text}}</option>
+                            </ng-container>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="business-day mt-3">
+          <div class="f-4 c-dark" translate>
+            Please choose your business day.
+          </div>
+          <div class="v-center mt-3">
+            <ng-container *ngFor="let weekday of WeekDays; let i = index">
+              <div class="weekday mr-4">
+                <div class="row-h-min">
+                  <div class="f-6 font-weight-bold weekday-text text-center">{{ weekday[0] | translate }}</div>
+                  <mat-checkbox class="example-margin" [checked]="businessDay[weekday]" [color]="'primary'"
+                                name="business-day-{{ weekday }}" [(ngModel)]="businessDay[weekday]">
+                  </mat-checkbox>
+                </div>
+               </div>
+            </ng-container>
+          </div>
+        </div>
+        <div class="mt-4 pt-2" *ngIf="isSspa">
+            <div class="row">
+                <div class="col-sm-6 col-12">
+                    <div class="form-group has-feedback">
+                        <label class="f-4 c-dark theme-label" translate>Profile Timezone</label>
+                        <app-select-timezone [(timezone)]="userTimezone"></app-select-timezone>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex mt-5">
+        <button data-action="business-hour-save" class="btn btn-primary ml-auto mr-0" type="button" [class.loading]="saving" (click)="saveSetting()" translate>Save</button>
+    </div>
+</div>

@@ -1,0 +1,2183 @@
+<div class="billing-container">
+  <ng-container *ngIf="step == 1">
+    <ng-container *ngIf="!isSuspended">
+      <div class="mb-3">
+        <span class="f-3 font-weight-bold">Subscription</span>
+      </div>
+      <div class="plan-select-wrapper">
+        <div class="plan-description">
+          <p class="f-3 font-weight-bold">{{getPackageLabel()}}</p>
+          <ng-container *ngIf="currentPackage.package == litePackage.package">
+            <p class="f-1 c-dark op-64 mb-2">$29 / month</p>
+            <div class="features">
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.contact_info?.is_limit ? user.contact_info.max_count : 'Unlimited'}} contacts</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.material_info?.is_limit ? user.material_info.upload_max_count : 'Unlimited'}} material uploads</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.material_info?.is_limit ? getRecordingDuration(user.material_info.record_max_duration) : 'Unlimited'}} video recording</span>
+              </div>
+              <div class="my-3 f-5 font-weight-bold">
+                Available on all plans:
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Deal Pipeline Tracking</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Custom Statuses</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Activity Tracker</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Advanced Filters</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Tag Management</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Mail Templates</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Merge fields</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Teams</span>
+                <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Lite plan you can be part of a team but not a team leader." ngbButtonLabel></i>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Online Support</span>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="currentPackage.package == proPackage.package">
+            <p class="f-1 c-dark op-64 mb-2">$49 / month</p>
+            <div class="features">
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.contact_info?.is_limit ? user.contact_info.max_count : 'Unlimited'}} contacts</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.material_info?.is_limit ? user.material_info.upload_max_count : 'Unlimited'}} material uploads</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.material_info?.is_limit ? getRecordingDuration(user.material_info.record_max_duration) : 'Unlimited'}} video recording</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.automation_info?.is_limit ? user.automation_info.max_count : 'Unlimited'}} active automations</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.calendar_info?.is_limit ? user.calendar_info.max_count : 'Unlimited'}} calendar connection</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.text_info?.is_limit ? user.text_info.max_count : 'Unlimited'}} sms</span>
+                <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Texts per month. More can be purchased per month from within settings" ngbButtonLabel></i>
+              </div>
+              <div class="my-3 f-5 font-weight-bold">
+                Everything in Lite, plus:
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Lead Form</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.assistant_info?.is_limit ? user.assistant_info.max_count : 'Unlimited'}} assistant access</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Email 'Click' Tracking</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Group/Mass Email</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Automations</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Teams</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Email Support</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">$49 One on One Training</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Early Beta Access</span>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="currentPackage.package == elitePackage.package">
+            <p class="f-1 c-dark op-64 mb-2">$99 / month</p>
+            <div class="features">
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.contact_info?.is_limit ? user.contact_info.max_count : 'Unlimited'}} contacts</span>
+                <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="20,000 or 10,000 per Profile/Business" ngbButtonLabel></i>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.material_info?.is_limit ? user.material_info.upload_max_count : 'Unlimited'}} material uploads</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.material_info?.is_limit ? getRecordingDuration(user.material_info.record_max_duration) : 'Unlimited'}} video recording</span>
+                <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="1,000 or 500 min per Profile/Business" ngbButtonLabel></i>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.automation_info?.is_limit ? user.automation_info.max_count : 'Unlimited'}} active automations</span>
+                <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="2,000 or 1,000 per Profile/Business" ngbButtonLabel></i>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.calendar_info?.is_limit ? user.calendar_info.max_count : 'Unlimited'}} calendar connections</span>
+                <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="4 or 2 per Profile/Business" ngbButtonLabel></i>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.text_info?.is_limit ? user.text_info.max_count : 'Unlimited'}} sms</span>
+                <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="1,000 or 500 per Profile/Business" ngbButtonLabel></i>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.organization_info?.is_limit ? user.organization_info.max_count : 'Unlimited'}} multi profile/business</span>
+                <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Run two businesses from one account. Each profile has unique email linked, calendar linked, contacts, materials, automations, and templates" ngbButtonLabel></i>
+              </div>
+              <div class="my-3 f-5 font-weight-bold">
+                Everything in Pro, plus:
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.assistant_info?.is_limit ? user.assistant_info.max_count : 'Unlimited'}} assistant access</span>
+                <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="2 seat per Profile/Business" ngbButtonLabel></i>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Priority & Chat Support</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">$49 One on One Training</span>
+                <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="1 hour free session" ngbButtonLabel></i>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Roadmap & Mastermind</span>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="currentPackage.package == customPackage.package">
+            <p class="f-1 c-dark op-64 mb-2">Let's chat</p>
+          </ng-container>
+          <ng-container *ngIf="currentPackage.package == evoProPackage.package">
+            <p class="f-1 c-dark op-64 mb-2">$49 / month</p>
+            <div class="features">
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.contact_info?.is_limit ? user.contact_info.max_count : 'Unlimited'}} contacts</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.material_info?.is_limit ? user.material_info.upload_max_count : 'Unlimited'}} material uploads</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.material_info?.is_limit ? getRecordingDuration(user.material_info.record_max_duration) : 'Unlimited'}} min video recording</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.automation_info?.is_limit ? user.automation_info.max_count : 'Unlimited'}} active automations</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.calendar_info?.is_limit ? user.calendar_info.max_count : 'Unlimited'}} calendar connection</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.text_info?.is_limit ? user.text_info.max_count : 'Unlimited'}} sms</span>
+                <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Texts per month. More can be purchased per month from within settings" ngbButtonLabel></i>
+              </div>
+              <div class="my-3 f-5 font-weight-bold">
+                Available on all plans:
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Deal Pipeline Tracking</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Custom Statuses</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Activity Tracker</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Lead Form</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Advanced Filters</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Tag Management</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.assistant_info?.is_limit ? user.assistant_info.max_count : 'Unlimited'}} assistant access</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Mail Templates</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Merge fields</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Email 'Click' Tracking</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Group/Mass Email</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Automations</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Teams</span>
+                <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Lite plan you can be part of a team but not a team leader." ngbButtonLabel></i>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">$ Dialer(Optional)</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Online Support</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Email Support</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">$49 One on One Training</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Early Beta Access</span>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="currentPackage.package == evoElitePackage.package">
+            <p class="f-1 c-dark op-64 mb-2">$99 / month</p>
+            <div class="features">
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.contact_info?.is_limit ? user.contact_info.max_count : 'Unlimited'}} contacts</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.material_info?.is_limit ? user.material_info.upload_max_count : 'Unlimited'}} material uploads</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.material_info?.is_limit ? getRecordingDuration(user.material_info.record_max_duration) : 'Unlimited'}} video recording</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.automation_info?.is_limit ? user.automation_info.max_count : 'Unlimited'}} active automations</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.calendar_info?.is_limit ? user.calendar_info.max_count : 'Unlimited'}} calendar connections</span>
+              </div>
+              <div class="feature-item v-center mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.text_info?.is_limit ? user.text_info.max_count : 'Unlimited'}} sms</span>
+                <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Texts per month. More can be purchased per month from within settings" ngbButtonLabel></i>
+              </div>
+              <div class="my-3 f-5 font-weight-bold">
+                Everything in EVO Pro, plus:
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">{{user.assistant_info?.is_limit ? user.assistant_info.max_count : 'Unlimited'}} assistant access</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Priority & Chat Support</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">$49 One on One Training</span>
+              </div>
+              <div class="feature-item d-flex mb-2">
+                <i class="i-icon i-check bgc-blue sm"></i>
+                <span class="f-3 ml-2">Roadmap & Mastermind</span>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <div class="plan-buttons" *ngIf="user.is_primary">
+          <button class="btn btn-primary font-weight-bold w-100" (click)="changePlan()">Change plan</button>
+          <button class="btn btn-white-gray d-block mt-2 border-0 c-dark op-28 w-100" (click)="cancelAccount()">Cancel account</button>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="user.is_primary">
+      <ng-container *ngIf="loadingPayment || loadingInvoice; else showPayment">
+          <div class="text-center">
+            <div class="loader mt-5"></div>
+            <div class="f-8 fw-600">Loading payment informations...</div>
+          </div>
+      </ng-container>
+      <ng-template #showPayment>
+          <div class="stripe-wrapper mt-5">
+            <div class="f-3 font-weight-bold">Payment details</div>
+            <div class="f-1 my-3">Credit or debit card</div>
+            <div class="v-center form-group">
+              <div class="stripe-card v-center justify-content-between">
+                <div class="f-3 font-weight-bold">{{previewCardNumber}}</div>
+                <div class="card-img">
+                  <ng-container [ngSwitch]="card.card_brand">
+                    <img [src]="sspaService.toAsset('img/card_visa.svg')" *ngSwitchCase="'Visa'">
+                    <img [src]="sspaService.toAsset('img/card_amex.svg')" *ngSwitchCase="'amex'">
+                    <img [src]="sspaService.toAsset('img/card_master.svg')" *ngSwitchCase="'mastercard'">
+                    <img [src]="sspaService.toAsset('img/card_jcb.svg')" *ngSwitchCase="'jcb'">
+                    <img [src]="sspaService.toAsset('img/card_discover.svg')" *ngSwitchCase="'discover'">
+                    <img [src]="sspaService.toAsset('img/card_diners.svg')" *ngSwitchCase="'diners'">
+                  </ng-container>
+                </div>
+              </div>
+              <button class="btn btn-package f-3 ml-2" (click)="editCard()">Change card</button>
+            </div>
+          </div>
+          <div class="mt-5" *ngIf="invoices.length > 0">
+            <div class="f-3 font-weight-bold">Invoices</div>
+            <table class="table mt-2">
+              <thead>
+              <tr>
+                <th class="number-col border-top-0 pl-0">
+                  <span class="f-1 c-dark"></span>
+                </th>
+                <th class="gross border-top-0">
+                  <span class="f-1 c-dark"></span>
+                </th>
+                <th class="download-col border-top-0 pr-0">
+                  <span class="f-1 c-dark"></span>
+                </th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let invoice of invoices; let index=index;">
+                <td class="number-col f-3 font-weight-bold pt-3 pb-0 pl-0">
+                  Invoice for CRM Grow {{invoice.date | date: 'dd/MM/yyyy'}}
+                </td>
+                <td class="gross-col f-3 font-weight-bold text-right pr-0  pt-3 pb-0">
+                  $ {{invoice.amount}}
+                </td>
+                <td class="download-col f-3 font-weight-bold c-blue pr-0 pt-3 pb-0">
+                  <a class="download-invoice v-center justify-content-end c-pointer" [href]="invoice.invoice_pdf" *ngIf="invoice.invoice_pdf">
+                    <i class="i-icon i-download bgc-blue d-block"></i>
+                    <span class="ml-2">Download invoice</span>
+                  </a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+      </ng-template>
+  </ng-container>
+  </ng-container>
+  <ng-container *ngIf="step == 2">
+    <div class="d-flex justify-content-between">
+      <h1 class="f-26">Upgrade and get more out of CRM Grow</h1>
+      <i class="i-icon i-close d-block bgc-dark c-seablue c-pointer" (click)="onBack()"></i>
+    </div>
+    <ng-container *ngIf="loadingCheckDowngrade; else checkedDowngrade">
+      <div class="text-center">
+        <div class="loader mt-3"></div>
+        <div class="f-8 fw-600">Checking downgradable...</div>
+      </div>
+    </ng-container>
+    <ng-template #checkedDowngrade>
+      <div class="notification-area mt-4" *ngIf="isOverflow">
+        <span class="f-6 font-weight-bold">Ooops</span>
+        <span class="f-6 ml-2">Before you can downgrade you will have to do the following:</span>
+        <ul class="overflow">
+          <li class="f-6 c-red" *ngFor="let message of overflowMessage">
+            <span>{{error_messages[message.type]}} Please confirm in</span>
+            <span>
+              <ng-container [ngSwitch]="message.type">
+                <ng-container *ngSwitchCase="'limit_contacts'">
+                   <a class="ml-1" [routerLink]="['/contacts']" target="_blank">here.</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'limit_materials'">
+                  <a class="ml-1" [routerLink]="['/materials']" target="_blank">here.</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'limit_automations'">
+                  <a class="ml-1" [routerLink]="['/automations']" target="_blank">here.</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'remove_automations'">
+                  <a class="ml-1" [routerLink]="['/automations']" target="_blank">here.</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'limit_assistants'">
+                  <a class="ml-1" [routerLink]="['/settings/assistant']" target="_blank">here.</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'remove_assistants'">
+                  <a class="ml-1" [routerLink]="['/settings/assistant']" target="_blank">here.</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'limit_calendars'">
+                  <a class="ml-1" [routerLink]="['/calendar']" target="_blank">here.</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'remove_calendars'">
+                  <a class="ml-1" [routerLink]="['/calendar']" target="_blank">here.</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'remove_teams'">
+                  <a class="ml-1" [routerLink]="['/community']" target="_blank">here.</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'remove_multi_profile'">
+                  <a class="ml-1" [routerLink]="['/profile/account']" target="_blank">here.</a>
+                </ng-container>
+              </ng-container>
+            </span>
+          </li>
+        </ul>
+      </div>
+    </ng-template>
+
+    <div class="package-wrapper mt-4" *ngIf="getPackageType() == 'CRMGROW'">
+      <div class="package-item"
+           [class.highlight]="litePackage.package == selectedPackage.package"
+           (click)="clickPackage(litePackage)"
+      >
+        <img class="popular-img" [src]="sspaService.toAsset('img/popular.svg')">
+        <div class="package-level">Lite</div>
+        <div class="package-description">Best for business and growth leaders newer to their business.</div>
+        <button class="btn btn-package my-3 w-100"
+                [class.active]="litePackage.package == currentPackage.package"
+                [class.highlight]="litePackage.package == selectedPackage.package"
+                [class.suspended]="selectedPackage.package == litePackage.package && isOverflow"
+                (click)="selectPlan(litePackage)"
+        >
+          {{planButtonLabel(litePackage.package)}}
+        </button>
+        <div class="package-price mb-4">
+          <span class="dollar">$</span>
+          <span class="price mx-1">29</span>
+          <span class="month mx-1"> / month</span>
+        </div>
+        <div class="features">
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">200 contacts</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">10 material uploads</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">10 min video recording</span>
+          </div>
+          <div class="my-3 f-5 font-weight-bold">
+            Available on all plans:
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Deal Pipeline Tracking</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Custom Statuses</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Activity Tracker</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Advanced Filters</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Tag Management</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Mail Templates</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Merge fields</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">Teams</span>
+            <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Lite plan you can be part of a team but not a team leader." ngbButtonLabel></i>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Online Support</span>
+          </div>
+        </div>
+      </div>
+      <div class="package-item active"
+       [class.highlight]="proPackage.package == selectedPackage.package"
+       (click)="clickPackage(proPackage)"
+      >
+        <img class="popular-img" [src]="sspaService.toAsset('img/popular.svg')">
+        <div class="package-level">Pro</div>
+        <div class="package-description">Best for business leaders and entrepreneurs with one business and focus.</div>
+        <button class="btn btn-package my-3 w-100"
+                [class.active]="proPackage.package == currentPackage.package"
+                [class.highlight]="proPackage.package == selectedPackage.package"
+                [class.suspended]="selectedPackage.package == proPackage.package && isOverflow"
+                (click)="selectPlan(proPackage)"
+        >
+          {{planButtonLabel(proPackage.package)}}
+        </button>
+        <div class="package-price mb-4">
+          <span class="dollar">$</span>
+          <span class="price mx-1">49</span>
+          <span class="month mx-1"> / month</span>
+        </div>
+        <div class="features">
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">2,000 contacts</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">100 material uploads</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">120 min video recording</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">300 active automations</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">1 calendar connection</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">250 sms</span>
+            <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Texts per month. More can be purchased per month from within settings" ngbButtonLabel></i>
+          </div>
+          <div class="my-3 f-5 font-weight-bold">
+            Everything in Lite, plus:
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Lead Form</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">1 assistant access</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue sm"></i>
+            <span class="f-3 ml-2">Email 'Click' Tracking</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Group/Mass Email</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Automations</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Teams</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Email Support</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">$49 One on One Training</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Early Beta Access</span>
+          </div>
+        </div>
+      </div>
+      <div class="package-item"
+         [class.highlight]="elitePackage.package == selectedPackage.package"
+         (click)="clickPackage(elitePackage)"
+      >
+        <img class="popular-img" [src]="sspaService.toAsset('img/popular.svg')">
+        <div class="package-level">Elite</div>
+        <div class="package-description">Best for Entrepreneurs, Influencers, and people looking to become Growth Leaders or those aspiring to be.</div>
+        <button class="btn btn-package my-3 w-100"
+                [class.active]="elitePackage.package == currentPackage.package"
+                [class.highlight]="elitePackage.package == selectedPackage.package"
+                [class.suspended]="selectedPackage.package == elitePackage.package && isOverflow"
+                (click)="selectPlan(elitePackage)"
+        >
+          {{planButtonLabel(elitePackage.package)}}
+        </button>
+        <div class="package-price mb-4">
+          <span class="dollar">$</span>
+          <span class="price mx-1">99</span>
+          <span class="month mx-1"> / month</span>
+        </div>
+        <div class="features">
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">Unlimited contacts</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">Unlimited material uploads</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">1,000 min video recording</span>
+            <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="1,000 or 500 min per Profile/Business" ngbButtonLabel></i>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">2,000 active automations</span>
+            <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="2,000 or 1,000 per Profile/Business" ngbButtonLabel></i>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">4 calendar connection</span>
+            <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="4 or 2 per Profile/Business" ngbButtonLabel></i>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">1,000 sms</span>
+            <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Texts per month. More can be purchased per month from within settings" ngbButtonLabel></i>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">2 multi profile/business</span>
+            <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Run two businesses from one account. Each profile has unique email linked, calendar linked, contacts, materials, automations, and templates" ngbButtonLabel></i>
+          </div>
+          <div class="my-3 f-5 font-weight-bold">
+            Everything in Pro
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">2 assistant access</span>
+            <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="2 seat per Profile/Business" ngbButtonLabel></i>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Priority & Chat Support</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">$49 One on One Training</span>
+            <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="1 hour free session" ngbButtonLabel></i>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Roadmap & Mastermind</span>
+          </div>
+        </div>
+      </div>
+      <div class="package-item" [class.highlight]="customPackage.package == selectedPackage.package">
+        <img class="popular-img" [src]="sspaService.toAsset('img/popular.svg')">
+        <div class="package-level">Custom</div>
+        <div class="package-description">Don't see a match for your specific need?  No worries, just reach out to see if we have a good solution for your needs.</div>
+        <a href="mailto:support@crmgrow.com"><div class="btn btn-package my-3 w-100">
+          {{planButtonLabel(customPackage.package)}}
+        </div></a>
+        <div class="package-price mb-4">
+          <span class="price mx-1">Let's chat</span>
+        </div>
+      </div>
+    </div>
+    <div class="package-wrapper evo-package-wrapper mt-4" *ngIf="getPackageType() == 'EVO'">
+      <div class="package-item active"
+           [class.highlight]="evoProPackage.package == selectedPackage.package"
+           (click)="clickPackage(evoProPackage)"
+      >
+        <img class="popular-img" [src]="sspaService.toAsset('img/popular.svg')">
+        <div class="package-level">EVO Pro</div>
+        <div class="package-description">Best for business leaders and entrepreneurs with one business and focus.</div>
+        <button class="btn btn-package my-3 w-100"
+                [class.active]="evoProPackage.package == currentPackage.package"
+                [class.highlight]="evoProPackage.package == selectedPackage.package"
+                [class.suspended]="selectedPackage.package == evoProPackage.package && isOverflow"
+                (click)="selectPlan(evoProPackage)"
+        >
+          {{planButtonLabel(evoProPackage.package)}}
+        </button>
+        <div class="package-price mb-4">
+          <span class="dollar">$</span>
+          <span class="price mx-1">49</span>
+          <span class="month mx-1"> / month</span>
+        </div>
+        <div class="features">
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">5,000 contacts</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">100 material uploads</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">120 min video recording</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">300 active automations</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">1 calendar connection</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">250 sms</span>
+            <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Texts per month. More can be purchased per month from within settings" ngbButtonLabel></i>
+          </div>
+          <div class="my-3 f-5 font-weight-bold">
+            Available on all plans:
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Deal Pipeline Tracking</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Custom Statuses</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Activity Tracker</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Lead Form</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Advanced Filters</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Tag Management</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">1 assistant access</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Mail Templates</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Merge fields</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue sm"></i>
+            <span class="f-3 ml-2">Email 'Click' Tracking</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Group/Mass Email</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Automations</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Teams</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">$ Dialer (Optional)</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Online Support</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Email Support</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">$49 One on One Training</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Early Beta Access</span>
+          </div>
+        </div>
+      </div>
+      <div class="package-item"
+           [class.highlight]="evoElitePackage.package == selectedPackage.package"
+           (click)="clickPackage(evoElitePackage)"
+      >
+        <img class="popular-img" [src]="sspaService.toAsset('img/popular.svg')">
+        <div class="package-level">EVO Elite</div>
+        <div class="package-description">Best for Entrepreneurs, Influencers, and people looking to become Growth Leaders or those aspiring to be.</div>
+        <button class="btn btn-package my-3 w-100"
+                [class.active]="evoElitePackage.package == currentPackage.package"
+                [class.highlight]="evoElitePackage.package == selectedPackage.package"
+                [class.suspended]="selectedPackage.package == evoElitePackage.package && isOverflow"
+                (click)="selectPlan(evoElitePackage)"
+        >
+          {{planButtonLabel(evoElitePackage.package)}}
+        </button>
+        <div class="package-price mb-4">
+          <span class="dollar">$</span>
+          <span class="price mx-1">99</span>
+          <span class="month mx-1"> / month</span>
+        </div>
+        <div class="features">
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">50,000 contacts</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">Unlimited material uploads</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">1,000 min video recording</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">2,000 active automations</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">4 calendar connection</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">1,000 sms</span>
+            <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Texts per month. More can be purchased per month from within settings" ngbButtonLabel></i>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">5 profiles</span>
+          </div>
+          <div class="my-3 f-5 font-weight-bold">
+            Everything in EVO Pro
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">2 assistant access</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Priority & Chat Support</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2 flex-grow-1">$49 One on One Training</span>
+          </div>
+          <div class="feature-item d-flex mb-2">
+            <i class="i-icon i-check bgc-blue"></i>
+            <span class="f-4 ml-2">Roadmap & Mastermind</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="more-feature c-blue my-5 f-4 font-weight-bold" (click)="showAllFeatures()">
+      See all features and benifits
+    </div>
+    <div class="all-features" *ngIf="isShowAll">
+      <div class="site-pricing-table-container" *ngIf="getPackageType() == 'CRMGROW'">
+        <div class="site-pricing-table">
+          <div class="site-pricing-table-header">
+            <div class="site-pricing-table-header-col--label site-pricing-table-header-col feature-type">
+              Popular features
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              Lite
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              Pro
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              Elite
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Contacts
+            </div>
+            <div class="site-pricing-table-col">
+              200
+            </div>
+            <div class="site-pricing-table-col">
+              2,000
+            </div>
+            <div class="site-pricing-table-col">
+              Unlimited
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Material Uploads
+            </div>
+            <div class="site-pricing-table-col">
+              10
+            </div>
+            <div class="site-pricing-table-col">
+              100
+            </div>
+            <div class="site-pricing-table-col">
+              Unlimited
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Video Recordings
+            </div>
+            <div class="site-pricing-table-col">
+              10 min
+            </div>
+            <div class="site-pricing-table-col">
+              120 min
+            </div>
+            <div class="site-pricing-table-col">
+              <span>1,000 min</span>
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom" ngbTooltip="1,000 or 500 min per Profile/Business" ngbButtonLabel></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Active Automations
+            </div>
+            <div class="site-pricing-table-col">
+
+            </div>
+            <div class="site-pricing-table-col">
+              300
+            </div>
+            <div class="site-pricing-table-col">
+              <span>2,000</span>
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom" ngbTooltip="2,000 or 1,000 per Profile/Business" ngbButtonLabel></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Calendar
+            </div>
+            <div class="site-pricing-table-col">
+
+            </div>
+            <div class="site-pricing-table-col">
+              1
+            </div>
+            <div class="site-pricing-table-col">
+              <span>4</span>
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom" ngbTooltip="4 or 2 per Profile/Business" ngbButtonLabel></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              <span>SMS</span>
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom" ngbTooltip="Texts per month. More can be purchased per month from within settings" ngbButtonLabel></i>
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <span>250</span>
+            </div>
+            <div class="site-pricing-table-col">
+              <span>1,000</span>
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom" ngbTooltip="1,000 or 500 per Profile/Business" ngbButtonLabel></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              <span>Multi Profile/Business</span>
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom" ngbTooltip="Run two businesses from one account. Each profile has unique email linked, calendar linked, contacts, materials, automations, and templates" ngbButtonLabel></i>
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              2
+            </div>
+          </div>
+          <div class="site-pricing-table-header">
+            <div class="site-pricing-table-header-col--label site-pricing-table-header-col feature-type">
+              Additional features
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              Lite
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              Pro
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              Elite
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Deal Pipeline Tracking
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Custom Statuses
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Activity Tracker
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Lead Form
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Advanced Filters
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Tag Management
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Assistant Access
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <div>
+                <i class="i-icon i-check bgc-blue d-block mx-auto"></i>
+                <div>1 seat</div>
+              </div>
+            </div>
+            <div class="site-pricing-table-col">
+              <div>
+                <i class="i-icon i-check bgc-blue d-block mx-auto"></i>
+                <div class="v-center align-items-center">
+                  2 seat
+                  <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom" ngbTooltip="2 seat per Profile/Business" ngbButtonLabel></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Mail Templates
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Merge fields
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Email 'Click' Tracking
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Group/Mass Email
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Automations
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Teams
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom" ngbTooltip="Lite plan you can be part of a team but not a team leader" ngbButtonLabel></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-header">
+            <div class="site-pricing-table-header-col--label site-pricing-table-header-col feature-type">
+              Add-on features
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              Lite
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              Pro
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              Elite
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Dialer (Optional)
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              $
+            </div>
+            <div class="site-pricing-table-col">
+              $
+            </div>
+          </div>
+          <div class="site-pricing-table-header">
+            <div class="site-pricing-table-header-col--label site-pricing-table-header-col feature-type">
+              Crmgrow Support
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              Lite
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              Pro
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              Elite
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Online Support
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Email Support
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Priority & Chat Support
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              One on One Training
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom" ngbTooltip="This is a one on one session to help users become successful faster and have custom one on one training." ngbButtonLabel></i>
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              $49
+            </div>
+            <div class="site-pricing-table-col">
+              $49
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom" ngbTooltip="1 hour free session" ngbButtonLabel></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Early Beta Access
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Roadmap & Mastermind
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="site-pricing-table-container" *ngIf="getPackageType() == 'EVO'">
+        <div class="site-pricing-table evo-pricing-table">
+          <div class="site-pricing-table-header">
+            <div class="site-pricing-table-header-col--label site-pricing-table-header-col feature-type">
+              Popular features
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              EVO Pro
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              EVO Elite
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Contacts
+            </div>
+            <div class="site-pricing-table-col">
+              5,000
+            </div>
+            <div class="site-pricing-table-col">
+              <span>50,000</span>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Material Uploads
+            </div>
+            <div class="site-pricing-table-col">
+              100
+            </div>
+            <div class="site-pricing-table-col">
+              Unlimited
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Video Recordings
+            </div>
+            <div class="site-pricing-table-col">
+              120 min
+            </div>
+            <div class="site-pricing-table-col">
+              1,000 min
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Active Automations
+            </div>
+            <div class="site-pricing-table-col">
+              300
+            </div>
+            <div class="site-pricing-table-col">
+              <span>2,000</span>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Calendar
+            </div>
+            <div class="site-pricing-table-col">
+              1
+            </div>
+            <div class="site-pricing-table-col">
+              <span>4</span>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              <span>SMS</span>
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom" ngbTooltip="Texts per month. More can be purchased per month from within settings" ngbButtonLabel></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <span>250</span>
+            </div>
+            <div class="site-pricing-table-col">
+              <span>1,000</span>
+            </div>
+          </div>
+          <div class="site-pricing-table-header">
+            <div class="site-pricing-table-header-col--label site-pricing-table-header-col feature-type">
+              Additional features
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              EVO Pro
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              EVO Elite
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Deal Pipeline Tracking
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Custom Statuses
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Activity Tracker
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Lead Form
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Advanced Filters
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Tag Management
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Assistant Access
+            </div>
+            <div class="site-pricing-table-col">
+              <div>
+                <i class="i-icon i-check bgc-blue d-block mx-auto"></i>
+                <div>1 seat</div>
+              </div>
+            </div>
+            <div class="site-pricing-table-col">
+              <div>
+                <i class="i-icon i-check bgc-blue d-block mx-auto"></i>
+                <div class="v-center align-items-center">
+                  2 seat
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Mail Templates
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Merge fields
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Email 'Click' Tracking
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Group/Mass Email
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Automations
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Teams
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom" ngbTooltip="Lite plan you can be part of a team but not a team leader" ngbButtonLabel></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-header">
+            <div class="site-pricing-table-header-col--label site-pricing-table-header-col feature-type">
+              Add-on features
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              EVO Pro
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              EVO Elite
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Dialer (Optional)
+            </div>
+            <div class="site-pricing-table-col">
+              $
+            </div>
+            <div class="site-pricing-table-col">
+              $
+            </div>
+          </div>
+          <div class="site-pricing-table-header">
+            <div class="site-pricing-table-header-col--label site-pricing-table-header-col feature-type">
+              Crmgrow Support
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              EVO Pro
+            </div>
+            <div class="site-pricing-table-header-col plan-type">
+              EVO Elite
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Online Support
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Email Support
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Priority & Chat Support
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              One on One Training
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom" ngbTooltip="This is a one on one session to help users become successful faster and have custom one on one training." ngbButtonLabel></i>
+            </div>
+            <div class="site-pricing-table-col">
+              $49
+            </div>
+            <div class="site-pricing-table-col">
+              $49
+              <i class="i-icon tooltip-icon i-information bgc-dark d-block" placement="bottom" ngbTooltip="1 hour free session" ngbButtonLabel></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Early Beta Access
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="site-pricing-table-row">
+            <div class="site-pricing-table-col site-pricing-table-col--label">
+              Roadmap & Mastermind
+            </div>
+            <div class="site-pricing-table-col">
+            </div>
+            <div class="site-pricing-table-col">
+              <i class="i-icon i-check bgc-blue d-block"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="step == 3">
+    <div class="v-center justify-content-between">
+      <div class="f-26 font-weight-bold">Confirm your subscription</div>
+      <i class="i-icon i-close d-block bgc-dark c-seablue c-pointer" (click)="onBack()"></i>
+    </div>
+    <div class="confirm-wrapper mt-3">
+      <div class="upgrade-plan-wrapper">
+        <div class="f-4 op-64 my-4">Enter payment details to subscribe</div>
+        <div class="stripe-wrapper">
+          <div class="f-3 font-weight-bold">Payment details</div>
+          <div class="f-1 my-3">Credit or debit card</div>
+          <div class="v-center form-group">
+            <div class="stripe-card v-center justify-content-between">
+              <div class="f-3 font-weight-bold">•••• •••• •••• {{card.last4}}</div>
+              <div class="card-img">
+                <ng-container [ngSwitch]="card.card_brand">
+                  <img [src]="sspaService.toAsset('img/card_visa.svg')" *ngSwitchCase="'Visa'">
+                  <img [src]="sspaService.toAsset('img/card_amex.svg')" *ngSwitchCase="'amex'">
+                  <img [src]="sspaService.toAsset('img/card_master.svg')" *ngSwitchCase="'mastercard'">
+                  <img [src]="sspaService.toAsset('img/card_jcb.svg')" *ngSwitchCase="'jcb'">
+                  <img [src]="sspaService.toAsset('img/card_discover.svg')" *ngSwitchCase="'discover'">
+                  <img [src]="sspaService.toAsset('img/card_diners.svg')" *ngSwitchCase="'diners'">
+                </ng-container>
+              </div>
+            </div>
+            <button class="btn btn-package f-3 ml-2" (click)="editCard()">Change card</button>
+          </div>
+          <button class="btn btn-primary f-16 font-weight-bold my-4 w-100"
+                 [class.disabled]="selectedPackage.package == currentPackage.package"
+                 [class.suspended]="loadingCheckDowngrade"
+                 [class.loading]="loadingUpdatePackage"
+                 (click)="updatePackage()"
+          >
+            Upgrade plan
+          </button>
+          <div class="v-center justify-content-center mb-4">
+            <i class="i-icon i-lock bgc-black d-block"></i>
+            <span class="mx-2 f-1">Guaranteed safe and secure checkout</span>
+          </div>
+          <div class="h-line"></div>
+          <p class="f-2 c-seablue font-italic mt-3 mb-2">
+            “Since I implemented Crmgrow 6 months ago, we've had an exponential return”
+          </p>
+          <div class="v-center">
+            <img class="reivew-avatar" [src]="sspaService.toAsset('img/review_avatar.svg')" alt="review">
+            <span class="f-1 c-dark font-weight-bold ml-2">Larry White</span>
+          </div>
+        </div>
+      </div>
+      <div class="selected-package ml-5">
+        <div class="package-item" *ngIf="selectedPackage.package == litePackage.package">
+          <div class="package-level">Lite</div>
+          <div class="package-description confirm">Best for business and growth leaders newer to their business.</div>
+          <div class="package-price my-4">
+            <span class="dollar">$</span>
+            <span class="price mx-1">29</span>
+            <span class="month mx-1"> / month</span>
+          </div>
+          <div class="features">
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">200 contacts</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">10 material uploads</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">10 min video recording</span>
+            </div>
+            <div class="my-3 f-5 font-weight-bold">
+              Available on all plans:
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Deal Pipeline Tracking</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Custom Statuses</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Activity Tracker</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Advanced Filters</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Tag Management</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Mail Templates</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Merge fields</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Teams</span>
+              <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Lite plan you can be part of a team but not a team leader." ngbButtonLabel></i>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Online Support</span>
+            </div>
+          </div>
+        </div>
+        <div class="package-item" *ngIf="proPackage.package == selectedPackage.package">
+          <div class="package-level">Pro</div>
+          <div class="package-description confirm">Best for business leaders and entrepreneurs with one business and focus.</div>
+          <div class="package-price my-4">
+            <span class="dollar">$</span>
+            <span class="price mx-1">49</span>
+            <span class="month mx-1"> / month</span>
+          </div>
+          <div class="features">
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">2,000 contacts</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">100 material uploads</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">120 min video recording</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">300 active automations</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">1 calendar connection</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">250 sms</span>
+              <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Texts per month. More can be purchased per month from within settings" ngbButtonLabel></i>
+            </div>
+            <div class="my-3 f-5 font-weight-bold">
+              Everything in Lite, plus:
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Lead Form</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">1 assistant access</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Email 'Click' Tracking</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Group/Mass Email</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Automations</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Email Support</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">$49 One on One Training</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Early Beta Access</span>
+            </div>
+          </div>
+        </div>
+        <div class="package-item" *ngIf="elitePackage.package == selectedPackage.package">
+          <div class="package-level">Elite</div>
+          <div class="package-description confirm">Best for Entrepreneurs, Influencers, and people looking to become Growth Leaders or those aspiring to be.</div>
+          <div class="package-price my-4">
+            <span class="dollar">$</span>
+            <span class="price mx-1">99</span>
+            <span class="month mx-1"> / month</span>
+          </div>
+          <div class="features">
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2 flex-grow-1">Unlimited contacts</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Unlimited material uploads</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2 flex-grow-1">1,000 min video recording</span>
+              <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="1,000 or 500 min per Profile/Business" ngbButtonLabel></i>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2 flex-grow-1">2,000 active automations</span>
+              <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="2,000 or 1,000 per Profile/Business" ngbButtonLabel></i>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2 flex-grow-1">4 calendar connection</span>
+              <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="4 or 2 per Profile/Business" ngbButtonLabel></i>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2 flex-grow-1">1,000 sms</span><i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Texts per month. More can be purchased per month from within settings" ngbButtonLabel></i>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2 flex-grow-1">2 multi profile/business</span>
+              <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Run two businesses from one account. Each profile has unique email linked, calendar linked, contacts, materials, automations, and templates" ngbButtonLabel></i>
+            </div>
+            <div class="my-3 f-5 font-weight-bold">
+              Everything in Pro
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2 flex-grow-1">2 assistant access</span>
+              <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="2 seat per Profile/Business" ngbButtonLabel></i>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Priority & Chat Support</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2 flex-grow-1">$49 One on One Training</span>
+              <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="1 hour free session" ngbButtonLabel></i>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Roadmap & Mastermind</span>
+            </div>
+          </div>
+        </div>
+        <div class="package-item" *ngIf="customPackage.package == selectedPackage.package">
+          <div class="package-level">Custom</div>
+          <div class="package-description confirm">Don't see a match for your specific need?  No worries, just reach out to see if we have a good solution for your needs.</div>
+          <div class="package-price my-4">
+            <span class="price mx-1">Let's chat</span>
+          </div>
+        </div>
+        <div class="package-item" *ngIf="selectedPackage.package == evoProPackage.package">
+          <div class="package-level">EVO Pro</div>
+          <div class="package-description confirm">Best for business leaders and entrepreneurs with one business and focus.</div>
+          <div class="package-price my-4">
+            <span class="dollar">$</span>
+            <span class="price mx-1">49</span>
+            <span class="month mx-1"> / month</span>
+          </div>
+          <div class="features">
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">5,000 contacts</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">100 material uploads</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">120 min video recording</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">300 active automations</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">1 calendar connection</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">250 sms</span>
+              <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Texts per month. More can be purchased per month from within settings" ngbButtonLabel></i>
+            </div>
+            <div class="my-3 f-5 font-weight-bold">
+              Available on all plans:
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Deal Pipeline Tracking</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Custom Statuses</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Activity Tracker</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Lead Form</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Advanced Filters</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Tag Management</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">1 assistant access</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Mail Templates</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Merge fields</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Email 'Click' Tracking</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Group/Mass Email</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Automations</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Teams</span>
+              <i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Lite plan you can be part of a team but not a team leader." ngbButtonLabel></i>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Online Support</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Email Support</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">$49 One on One Training</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Early Beta Access</span>
+            </div>
+          </div>
+        </div>
+        <div class="package-item" *ngIf="evoElitePackage.package == selectedPackage.package">
+          <div class="package-level">EVO Elite</div>
+          <div class="package-description confirm">Best for Entrepreneurs, Influencers, and people looking to become Growth Leaders or those aspiring to be.</div>
+          <div class="package-price my-4">
+            <span class="dollar">$</span>
+            <span class="price mx-1">99</span>
+            <span class="month mx-1"> / month</span>
+          </div>
+          <div class="features">
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2 flex-grow-1">50,000 contacts</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Unlimited material uploads</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2 flex-grow-1">1,000 min video recording</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2 flex-grow-1">2,000 active automations</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2 flex-grow-1">4 calendar connection</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2 flex-grow-1">1,000 sms</span><i class="i-icon i-information bgc-dark d-block ml-1" placement="right" ngbTooltip="Texts per month. More can be purchased per month from within settings" ngbButtonLabel></i>
+            </div>
+            <div class="my-3 f-5 font-weight-bold">
+              Everything in EVO Pro
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2 flex-grow-1">2 assistant access</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Priority & Chat Support</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2 flex-grow-1">$49 One on One Training</span>
+            </div>
+            <div class="feature-item d-flex mb-2">
+              <i class="i-icon i-check bgc-blue"></i>
+              <span class="f-4 ml-2">Roadmap & Mastermind</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="step == 4">
+    <div class="reason-wrapper">
+      <div class="d-flex justify-content-between">
+        <div class="f-6 font-weight-bold reason-title">Why are you looking to cancel your account?</div>
+        <i class="i-icon i-close d-block bgc-dark c-seablue c-pointer" (click)="onBackFirst()"></i>
+      </div>
+      <div class="reason-buttons mt-3">
+        <div class="button c-blue font-weight-bold f-3 ml-2 mb-2"
+             *ngFor="let button of reasonButtons"
+             (click)="selectReason(button)"
+        >
+          {{button}}
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="step == 5">
+    <div class="reason-wrapper">
+      <div class="d-flex justify-content-between">
+        <div class="f-6 font-weight-bold reason-title">What is the {{selectedReason}} thing you really wish CRM Grow did better?</div>
+        <i class="i-icon i-close d-block bgc-dark c-seablue c-pointer" (click)="onBack()"></i>
+      </div>
+      <div class="form-group mt-3">
+        <textarea
+          class="f-3 p-2 form-control"
+          name="feedback"
+          #feedback="ngModel"
+          [(ngModel)]="reasonFeedback"
+        >
+        </textarea>
+      </div>
+      <div class="v-center justify-content-end">
+        <button class="btn btn-white f-6 font-weight-bold c-blue" (click)="onBack()">Cancel</button>
+        <button class="btn btn-primary f-6 font-weight-bold ml-2"
+            [class.loading]="loadingCancelAccount"
+            (click)="sendFeedback()"
+        >
+          Send feedback
+        </button>
+      </div>
+    </div>
+  </ng-container>
+</div>

@@ -1,0 +1,47 @@
+<div class="custom-mat-field">
+  <mat-form-field appearance="outline" floatLabel="never" class="d-block">
+    <mat-chip-list aria-label="Contact Selection" #userList>
+      <mat-basic-chip
+        *ngFor="let user of selectedMembers"
+        [selectable]="selectable"
+        [removable]="true"
+        (removed)="remove(user._id)">
+        <div class="v-center chip">
+          <img *ngIf="user.picture_profile; else avatarNameTemplate" [src]="user.picture_profile" (error)="sspaService.imgError($event,'img/user_avatar.svg')" class="form-avatar rounded-circle mr-1" />
+          <ng-template #avatarNameTemplate>
+            <div class="form-avatar rounded-circle bg-dark mr-1">{{user.avatarName}}</div>
+          </ng-template>
+          <div class="info f-3">
+            {{(user.user_name || '') | shorten: 20: '...'}}
+          </div>
+          <div class="i-icon i-close bg-dark" matChipRemove></div>
+        </div>
+      </mat-basic-chip>
+      <input
+        [placeholder]="placeholder"
+        #inputField
+        [formControl]="formControl"
+        [matChipInputFor]="userList"
+        [matAutocomplete]="auto"
+        [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
+      >
+    </mat-chip-list>
+    <mat-autocomplete
+      #auto="matAutocomplete"
+      (optionSelected)="onSelectOption($event)"
+      [autoActiveFirstOption]="true"
+    >
+      <mat-option *ngFor="let item of filteredResults | async" [value]="item">
+        <div class="v-center chip py-2" *ngIf="item._id">
+          <img *ngIf="item.picture_profile; else avatarNameTemplate" [src]="item.picture_profile" (error)="sspaService.imgError($event,'img/user_avatar.svg')" class="form-avatar rounded-circle mr-1" />
+          <ng-template #avatarNameTemplate>
+            <div class="form-avatar rounded-circle bg-dark mr-1">{{item.user_name[0]}}</div>
+          </ng-template>
+          <div class="info f-3">
+            {{(item.user_name || '') | shorten: 36: '...'}}
+          </div>
+        </div>
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+</div>

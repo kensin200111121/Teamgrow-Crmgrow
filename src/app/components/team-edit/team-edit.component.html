@@ -1,0 +1,85 @@
+<h1 mat-dialog-title translate>Edit Community</h1>
+<form
+  #teamForm="ngForm"
+  (ngSubmit)="submitted = true; teamForm.form.valid ? update() : false"
+  [class.was-validated]="submitted"
+>
+  <mat-dialog-content>
+    <div class="form-group">
+      <div>
+        <ng-container *ngIf="picture; else emptyAvatar">
+          <div class="avatar-button selected">
+            <img
+              class="avatar"
+              [src]="team.picture"
+            />
+            <div class="f-4 font-weight-bold ml-2 c-dark" translate>{{filename}}</div>
+            <i class="i-icon i-close bgc-dark d-block ml-3" (click)="closeAvatar()"></i>
+          </div>
+        </ng-container>
+        <ng-template #emptyAvatar>
+          <div class="avatar-button" (click)="openAvatar()">
+            <i class="i-icon i-upload sm bgc-blue d-block"></i>
+            <div class="f-4 font-weight-bold ml-2 c-blue" translate>Upload Community Logo</div>
+          </div>
+        </ng-template>
+        <div class="f-2 mt-2 c-dark" translate>upload_policy</div>
+      </div>
+      <div class="mt-3">
+        <label translate>community_name</label>
+        <input
+          class="form-control"
+          [(ngModel)]="name"
+          [placeholder]="'community_name' | translate"
+          required
+          name="teamName"
+          #teamName="ngModel"
+        />
+        <span
+          class="invalid-feedback"
+          *ngIf="
+            teamName.errors &&
+            (teamName.touched || teamName.dirty || submitted) &&
+            submitted
+          "
+          translate
+        >
+          community_name_required
+        </span>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <div class="v-center justify-content-between w-100">
+      <div>
+        <button
+          class="v-center btn c-red f-6 font-weight-bold"
+          type="button"
+          (click)="deleteTeam()"
+        >
+          <i class="i-icon i-trash bgc-red d-block mr-2"></i>
+          <span class="c-red mt-1" translate>Delete Community</span>
+        </button>
+      </div>
+      <div class="v-center justify-content-end">
+        <button
+          class="btn btn-white f-6 font-weight-bold"
+          type="button"
+          mat-dialog-close
+          translate
+        >
+          Cancel
+        </button>
+        <button
+          class="btn btn-blue text-white f-6 font-weight-bold"
+          [class.loading]="updating"
+          type="submit"
+          translate
+          [attr.data-action]="'team-edit-save'"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </mat-dialog-actions>
+</form>

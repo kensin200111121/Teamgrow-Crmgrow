@@ -1,0 +1,20 @@
+<div class="v-center justify-content-end">
+  <button class="v-center border-0 bgc-trans" mat-dialog-close>
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</div>
+<div class="upgrade-package-wrapper">
+  <i class="i-icon header-icon i-information d-block bgc-blue mx-auto"></i>
+  <p class="my-4" translate>Upgrade to unlock</p>
+  <div class="f-4 text-center" translate [translateParams]="{cancelDate: cancelDate}">suspended_account</div>
+  <div class="f-4 text-center" translate>update_payment_command</div>
+</div>
+<mat-dialog-actions align="center" style="margin-left: 30px;margin-right: 30px;">
+  <button class="btn btn-primary f-5 font-weight-bold px-2 mx-auto" (click)="goToBilling()" translate>Manage Billing</button>
+  <button class="btn border border-primary bg-white f-5 font-weight-bold ml-2" [class.loading]="isSaving"
+    (click)="downloadCSV()" translate>Download CSV</button>
+  <!-- <div class="v-center justify-content-between mt-5" >
+    <span  class="f-4 text-secondary">{{ 'Would you like to go to ' | translate }}&nbsp;</span>
+    <span role="button" class="f-4 text-primary font-weight-bold" (click)="gotoSleepMode()">{{ 'Sleeping Mode?' | translate }} </span>
+  </div> -->
+</mat-dialog-actions>

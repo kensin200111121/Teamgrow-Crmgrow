@@ -1,0 +1,11 @@
+<h1 mat-dialog-title translate>Delete community</h1>
+<form #teamForm="ngForm" (ngSubmit)="submitted = true; teamForm.form.valid ? deleteTeam() : false"
+      [class.was-validated]="submitted" class="team-edit-form">
+  <div mat-dialog-content class="font-weight-bold my-4 mx-md-5 mx-sm-2" [innerHTML]="'delete_community_confirm' | translate: {name: team.name}">
+  </div>
+  <div mat-dialog-actions class="mx-0" align="end">
+    <button type="button" class="btn btn-white f-4 font-weight-bold" mat-dialog-close translate>Cancel</button>
+    <button class="btn btn-primary" [class.loading]="updating" type="submit" translate>Delete</button>
+  </div>
+</form>
+

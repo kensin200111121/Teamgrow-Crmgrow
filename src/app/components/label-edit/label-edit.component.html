@@ -1,0 +1,57 @@
+<div class="v-center justify-content-between">
+    <h1 class="m-0" mat-dialog-title translate>
+        Edit Status
+    </h1>
+    <i class="d-block i-icon i-close bgc-dark" mat-dialog-close></i>
+</div>
+<form #labelForm="ngForm" (ngSubmit)="labelForm.form.valid ? editLabel() : false">
+    <mat-dialog-content>
+        <div class="f-1 op-75 text-uppercase mt-3 c-dark" translate>
+            change color
+        </div>
+        <div class="v-center justify-content-between mt-2">
+            <div class="label-color" *ngFor="let color of LABEL_COLORS">
+                <i class="i-icon i-label d-block bgc-dark c-pointer" (click)="selectColor(color)"
+                    [style.backgroundColor]="color"></i>
+                <div class="v-center justify-content-center check-icon bgc-green" *ngIf="color == label.color">
+                    <i class="d-block i-icon i-check bgc-white"></i>
+                </div>
+            </div>
+            <div class="label-color" *ngIf="LABEL_COLORS.indexOf(label.color) === -1; else defaultColor;">
+                <i class="i-icon i-label d-block bgc-dark c-pointer" [style.backgroundColor]="label.color"></i>
+                <div class="v-center justify-content-center check-icon bgc-green">
+                    <i class="d-block i-icon i-check bgc-white"></i>
+                </div>
+            </div>
+            <ng-template #defaultColor>
+                <div class="label-color">
+                    <i class="i-icon i-label d-block bgc-dark c-pointer" [style.backgroundColor]="'#000'"
+                        (click)="selectColor('#000')"></i>
+                </div>
+            </ng-template>
+        </div>
+        <div class="f-3 font-weight-bold c-blue mt-2 c-pointer" (click)="addColor()" translate>
+            Add custom color
+        </div>
+        <div class="mt-3 form-group">
+            <label for="labelName" translate>change text</label>
+            <input class="form-control f-3 border-primary text-capitalize" type="text" [placeholder]="'Add label text' | translate"
+                id="labelName" name="labelText" #labelText="ngModel" [(ngModel)]="label.name" (ngModelChange)="onChangeLabelName()" required />
+            <span class="invalid-error f-2 c-red" *ngIf="labelText.errors" translate>
+                Status name is required
+            </span>
+            <span class="invalid-error f-2 c-red" *ngIf="existingName" translate>
+                Status name is already taken
+            </span>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button type="button" mat-dialog-close class="btn btn-white py-2 f-6 font-weight-bold" translate>
+            Cancel
+        </button>
+        <button type="submit" class="btn btn-blue text-white br-default py-2 f-6 font-weight-bold"
+            [class.loading]="saving" translate>
+            Save changes
+        </button>
+    </mat-dialog-actions>
+</form>

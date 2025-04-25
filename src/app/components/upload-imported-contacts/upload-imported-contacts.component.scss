@@ -1,0 +1,105 @@
+.table thead th {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.dialog-container {
+    padding: 0;
+    max-width: 800px;
+
+    .f-22 {
+        font-size: 22px;
+    }
+
+    @media screen and (max-width: 576px) {
+        .dup-notification-text {
+            display: inline-block;
+        }
+    }
+
+    .close-button {
+        width: auto;
+        padding: 0;
+
+        &:focus,
+        &:hover {
+            color: #000000;
+            background-color: transparent;
+        }
+
+        .i-round-check {
+            width: 32px;
+            height: 32px;
+        }
+    }
+
+    .table {
+        border-collapse: separate;
+        border-spacing: 0px;
+
+        td {
+            padding: 10px;
+        }
+
+        .note {
+            width: 150px;
+        }
+
+        @media screen and (max-width: 576px) {
+            .crmgrow-property {
+                select {
+                    width: 140px;
+                }
+            }
+        }
+    }
+
+    .round-check {
+        background-color: #00916E;
+    }
+
+    .download-button {
+        width: 150px;
+    }
+
+    .no-cvs {
+        background-color: #F9FAFB;
+    }
+}
+
+.review-container {
+    width: 100%;
+    max-height: 60vh;
+    overflow: auto;
+
+    .review-table {
+
+        td,
+        th {
+            height: 50px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+}
+
+.upload-progress-wrapper {
+    position: relative;
+    width: 250px;
+    height: 250px;
+}
+
+.pagination-wrapper {
+    position: sticky;
+    bottom: 0px;
+    z-index: 10;
+    background: white;
+    padding: 8px 0px 0px 0px;
+    display: flex;
+    justify-content: center;
+}
+
+.success-container, .uploading-error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

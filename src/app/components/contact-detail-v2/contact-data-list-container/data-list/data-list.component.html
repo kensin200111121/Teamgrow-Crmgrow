@@ -1,0 +1,319 @@
+<div class="max-h-250">
+  <ng-container *ngIf="!!dataSource.firstLoading; else firstLoaded">
+    <div class="empty-list p-3">
+      <div class="v-center justify-content-center">
+        <div class="list-loading v-center">
+          <div class="loader md"></div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #firstLoaded>
+    <ng-container *ngIf="!!dataSource.isEmptyData; else listview">
+      <div class="p-3">
+        <div class="d-flex justify-content-center mb-2">
+          <i class="bgc-dark d-block i-icon mr-2 gray" [ngClass]="this.icon"></i>
+        </div>
+        <div class="empty-str">
+          {{ emptyStr }}
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #listview>
+      <div class="cdk-scroll-viewport">
+        <ng-scrollbar
+          visibility="hover"
+          cdkVirtualScrollViewport
+          externalViewport
+        >
+          <cdk-virtual-scroll-viewport
+            [itemSize]="50"
+            [minBufferPx]="350"
+            [maxBufferPx]="1000"
+            class="scroll-viewport h-100"
+            (scrolledIndexChange)="onScrolledIndexChange()"
+            #viewport
+            scrollViewport
+          >
+            <ng-container
+              *cdkVirtualFor="
+                let item of dataSource;
+                let i = index;
+                trackBy: trackByIdx
+              "
+              [ngSwitch]="_type"
+            >
+              <ng-container *ngSwitchCase="'follow_up'">
+                <ng-container
+                  *ngTemplateOutlet="
+                    taskItem;
+                    context: { $implicit: item.action }
+                  "
+                >
+                </ng-container>
+              </ng-container>
+              <ng-container *ngSwitchCase="'deal'">
+                <ng-container
+                  *ngTemplateOutlet="
+                    dealItem;
+                    context: { $implicit: item.action }
+                  "
+                >
+                </ng-container>
+              </ng-container>
+              <ng-container *ngSwitchCase="'appointment'">
+                <ng-container
+                  *ngTemplateOutlet="
+                    appointmentItem;
+                    context: { $implicit: item.action }
+                  "
+                >
+                </ng-container>
+              </ng-container>
+            </ng-container>
+          </cdk-virtual-scroll-viewport>
+        </ng-scrollbar>
+      </div>
+    </ng-template>
+  </ng-template>
+</div>
+<ng-template #taskItem let-item>
+  <div class="d-flex mb-3 px-3 contact-data-task">
+    <div
+      class="d-flex c-pointer task-checkbox mr-2 contact-action-status-btn"
+      [ngClass]="{ 'border-blue': item.status === 1 }"
+      (click)="completeTask(item)"
+    >
+      <i *ngIf="item.status === 1" class="i-icon i-check bgc-blue d-block"></i>
+    </div>
+    <div class="w-100 d-flex justify-content-between">
+      <div>
+        <div class="d-flex items-center justify-content-between mb-2">
+          <div class="d-flex icon-value-info">
+            <ng-container [ngSwitch]="item.type">
+              <i
+                class="d-block i-icon i-task bgc-light-dark mr-2"
+                *ngSwitchCase="'task'"
+              ></i>
+              <i
+                class="d-block i-icon i-phone bgc-light-dark mr-2"
+                *ngSwitchCase="'call'"
+              ></i>
+              <i
+                class="d-block i-icon i-lunch bgc-light-dark mr-2"
+                *ngSwitchCase="'meeting'"
+              ></i>
+              <i
+                class="d-block i-icon i-message bgc-light-dark mr-2"
+                *ngSwitchCase="'email'"
+              ></i>
+              <i
+                class="d-block i-icon i-sms-sent bgc-light-dark mr-2"
+                *ngSwitchCase="'text'"
+              ></i>
+              <i
+                class="d-block i-icon i-task bgc-light-dark mr-2"
+                *ngSwitchDefault
+              ></i>
+            </ng-container>
+            <div class="text-style" [class.c-secondary]="item.status === 1"><strong>{{ item.content }}</strong></div>
+          </div>
+        </div>
+        <div class="d-flex items-center">
+          <i class="d-block i-icon i-timer bgc-light-dark mr-2"></i>
+          <div class="text-style f-2" [class.c-secondary]="item.status === 1">
+            {{ item.due_date | datetimeFormat : DueDateTimeFormat }}
+          </div>
+        </div>
+        <div *ngIf="item.set_recurrence == true" class="d-flex items-center mt-1">
+          <i class="d-block i-icon i-calendar bgc-light-dark mr-2"></i>
+          <div class="text-style f-2" [class.c-secondary]="item.status === 1">{{ item.recurrence_mode }}</div>
+        </div>
+        <div *ngIf="item.description?.length > 0" class="d-flex items-center mt-1">
+          <i class="d-block i-icon i-task-desc bgc-light-dark mr-2 align-self-start"></i>
+          <div class="text-style text-gray f-2 text-truncate"
+              #descriptionElement
+              [attr.data-id]="item._id"
+              placement="auto"
+              [ngbTooltip]="checkTruncation(item._id) ? item.description : null"
+              container="body">
+            {{ item.description }}
+          </div>
+        </div>
+      </div>
+      <div
+        ngbDropdown
+        container="body"
+        #actionDropdown="ngbDropdown"
+        class="button-more rounded contact-action-btn"
+        placement="bottom-right"
+      >
+        <a
+          class="d-flex c-pointer no-carot action-icon"
+          [ngClass]="{ 'bg-ccc': actionDropdown.isOpen() }"
+          ngbDropdownToggle
+        >
+          <i class="i-icon i-menu-more bg-dark" aria-hidden="true"></i>
+        </a>
+        <div ngbDropdownMenu class="light py-1">
+          <button
+            class="v-center border-0 py-1 c-dark dropdown-item"
+            *ngIf="item.status !== 1"
+            (click)="editTask(item)"
+          >
+            <i class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i>
+            <span class="ml-3 f-2 font-weight-bold weight-0" translate>Edit</span>
+          </button>
+          <button
+            class="v-center border-0 py-1 c-dark dropdown-item"
+            (click)="archiveTask(item)"
+          >
+            <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+            <span class="ml-3 f-2 font-weight-bold weight-0" translate>Delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #dealItem let-item>
+  <div class="border rounded p-2 mb-2 mx-3 contact-data-deal">
+    <div class="v-center justify-content-between">
+      <div class="rate mb-2">{{ item.deal_stage?.title }}</div>
+      <div
+        ngbDropdown
+        container="body"
+        #actionDropdown="ngbDropdown"
+        class="button-more rounded contact-action-btn"
+        placement="bottom-right"
+        *ngIf="item.primary_contact._id !== _contactId"
+      >
+        <a
+          class="d-flex c-pointer no-carot action-icon"
+          [ngClass]="{ 'bg-ccc': actionDropdown.isOpen() }"
+          ngbDropdownToggle
+        >
+          <i class="i-icon i-menu-more bg-dark" aria-hidden="true"></i>
+        </a>
+        <div ngbDropdownMenu class="light py-1">
+          <button
+            class="v-center border-0 py-1 c-dark dropdown-item"
+            (click)="removeContact(item)"
+          >
+            <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+            <span class="ml-3 f-2 font-weight-bold weight-0" translate
+              >Remove Contact from Deal</span
+            >
+          </button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="d-flex">
+        <div class="title mb-2 mr-2">{{ item.title }}</div>
+        <a href="{{ siteUrl }}/pipeline?deals={{ item._id }}" target="_blank">
+          <i class="i-icon i-expand bgc-dark d-block ml-1"></i>
+        </a>
+      </div>
+      <div class="mb-2 d-flex items-center">
+        <div class="d-flex mr-2 items-center">
+          <div class="avatar d-flex justify-content-center items-center">
+            <span>{{
+              item.contacts[0]?.first_name.charAt(0) +
+                item.contacts[0]?.last_name.charAt(0)
+            }}</span>
+          </div>
+          <div
+            *ngIf="item.contacts[1]"
+            class="avatar d-flex justify-content-center items-center margin-minus z-1 border"
+          >
+            <span>{{
+              item.contacts[1].first_name.charAt(0) +
+                item.contacts[1].last_name.charAt(0)
+            }}</span>
+          </div>
+          <div
+            *ngIf="item.contacts[2]"
+            class="avatar d-flex justify-content-center items-center margin-minus z-2 border"
+          >
+            <span>{{
+              item.contacts[2].first_name.charAt(0) +
+                item.contacts[2].last_name.charAt(0)
+            }}</span>
+          </div>
+        </div>
+        <div class="name">
+          {{ item.contacts[0]?.first_name + ' ' + item.contacts[0]?.last_name }}
+          <span class="pl-2" *ngIf="item.contacts.length > 1"
+            >+{{ item.contacts.length - 1 }}</span
+          >
+        </div>
+      </div>
+      <div class="d-flex items-center">
+        <i class="d-block i-icon i-timer bgc-dark mr-2"></i>
+        <div class="time f-2">
+          {{ item.put_at | datetimeFormat : DueDateTimeFormat }}
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #appointmentItem let-item>
+  <div class="px-3 mb-2 contact-data-appointment">
+    <div class="v-center justify-content-between">
+      <div class="title">{{ item.title | shorten : 35 : '...' }}</div>
+      <div
+        ngbDropdown
+        container="body"
+        #actionDropdown="ngbDropdown"
+        class="button-more rounded contact-action-btn"
+        placement="bottom-right"
+      >
+        <a
+          class="d-flex c-pointer no-carot action-icon"
+          [ngClass]="{ 'bg-ccc': actionDropdown.isOpen() }"
+          ngbDropdownToggle
+        >
+          <i class="i-icon i-menu-more bg-dark" aria-hidden="true"></i>
+        </a>
+        <div ngbDropdownMenu class="light py-1">
+          <button
+            class="v-center border-0 py-1 c-dark dropdown-item"
+            (click)="openAppointmentDlg(item)"
+          >
+            <i class="i-icon i-edit bgc-dark ml-1" aria-hidden="true"></i>
+            <span class="ml-3 f-2 font-weight-bold weight-0" translate>Edit</span>
+          </button>
+          <button
+            class="v-center border-0 py-1 c-dark dropdown-item"
+            (click)="removeAppointment(item)"
+          >
+            <i class="i-icon i-trash bgc-dark ml-1" aria-hidden="true"></i>
+            <span class="ml-3 f-2 font-weight-bold weight-0" translate>Remove</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="desc mb-2" [innerHTML]="item.description || ''
+                                  | stripTags
+                                  | shorten: 100:'...'"></div>
+    <div class="d-flex mb-1 icon-value-info">
+      <i class="d-block i-icon i-timer bgc-dark mr-2"></i>
+      <div class="time">
+        {{ item.due_start | datetimeFormat : DueDateTimeFormat }}
+        <span class="ml-2"
+          >({{ [item.due_start, item.due_end] | timesDuration }} min)</span
+        >
+      </div>
+    </div>
+    <div class="d-flex mb-1 icon-value-info">
+      <i class="d-block i-icon i-location bgc-dark mr-2"></i>
+      <div class="time">{{ item.location }}</div>
+    </div>
+    <div class="d-flex mb-1 icon-value-info">
+      <i class="d-block i-icon i-link bgc-dark mr-2"></i>
+      <div class="link">{{ item.meetingLink }}</div>
+    </div>
+  </div>
+</ng-template>

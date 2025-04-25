@@ -1,0 +1,409 @@
+<div class="container px-0">
+  <div class="v-center py-3 px-3">
+    <div class="mr-auto op-56 back-menu">
+      <app-back-button [defaultTitle]="'Contacts'" [defaultRoute]="'/contacts'" class="back-button"></app-back-button>
+    </div>
+    <ng-container *ngIf="(contactService.readingDetail$ | async) === 'success'; else loader">
+      <div class="v-center f-3 fw-600 mr-3 c-blue c-pointer" *ngIf="!isPending" (click)="editContacts('main', $event)">
+        <i class="d-block i-icon i-edit bgc-blue mr-2"></i>
+        <span translate>Edit contact</span>
+      </div>
+      <div ngbDropdown class="button-more p-0 f-3 fw-600 v-center" *ngIf="!isPending" placement="bottom-end">
+        <div class="v-center c-pointer" ngbDropdownToggle data-name="contact-dropdown-toggle">
+          <i class="d-block i-icon i-menu-more bgc-blue mr-1"></i>
+          <span class="c-blue" translate>More</span>
+        </div>
+        <div ngbDropdownMenu class="light action-menu">
+          <button data-action="contact-action-new-meeting" class="v-center border-0 c-dark dropdown-item m-1"
+            [class.disable]="!isPackageAutomation" (click)="openAppointmentDlg()">
+            <i class="i-icon i-appointments bgc-dark"></i>
+            <span class="ml-3 f-3 font-weight-bold" translate>New Meeting</span>
+          </button>
+          <hr class="my-1" />
+          <button data-action="contact-action-new-note" class="v-center border-0 c-dark dropdown-item m-1"
+            (click)="openNoteDlg()">
+            <i class="i-icon i-notes bgc-dark"></i>
+            <span class="ml-3 f-3 font-weight-bold" translate>New Note</span>
+          </button>
+          <button data-action="contact-action-new-call" class="v-center border-0 c-dark dropdown-item m-1"
+            (click)="openCall()" *enableByFeatures="USER_FEATURES.DIALER">
+            <i class="i-icon i-phone bgc-dark"></i>
+            <span class="ml-3 f-3 font-weight-bold" translate>New Call</span>
+          </button>
+          <button data-action="contact-action-new-email" class="v-center border-0 c-dark dropdown-item m-1"
+            [class.disable]="emailUnsubscribed" (click)="openSendEmail()">
+            <i class="i-icon i-message bgc-dark"></i>
+            <span class="ml-3 f-3 font-weight-bold" translate>New Email</span>
+          </button>
+          <button data-action="contact-action-new-text" class="v-center border-0 c-dark dropdown-item m-1"
+            [class.disable]="!isPackageText || textUnsubscribed" *enableByFeatures="USER_FEATURES.TEXT" (click)="openSendText()">
+            <i class="i-icon i-sms-sent bgc-dark"></i>
+            <span class="ml-3 f-3 font-weight-bold" translate>New Text</span>
+          </button>
+          <button data-action="contact-action-new-task" class="v-center border-0 c-dark dropdown-item m-1"
+            (click)="openTaskDlg()">
+            <i class="i-icon i-task bgc-dark"></i>
+            <span class="ml-3 f-3 font-weight-bold" translate>New Task</span>
+          </button>
+          <ng-container  *enableByFeatures="USER_FEATURES.MATERIAL">
+            <button *ngIf="!isSspa" data-action="contact-action-new-link" class="v-center border-0 c-dark dropdown-item m-1"
+              (click)="openMaterialDlg()">
+              <i class="i-icon i-link-track bgc-dark"></i>
+              <span class="ml-3 f-3 font-weight-bold" translate>New Link</span>
+            </button>
+          </ng-container>
+          <hr class="my-1" />
+          <button data-action="contact-action-merge" class="v-center border-0 c-dark dropdown-item m-1"
+            (click)="openMergeContactDlg()">
+            <i class="i-icon i-contact-merge bgc-dark"></i>
+            <span class="ml-3 f-3 font-weight-bold" translate>Merge</span>
+          </button>
+          <ng-container *ngIf="!isSspa">
+            <ng-container *enableByFeatures="USER_FEATURES.CONTACT_SHARE" >
+              <button data-action="contact-action-share-contact" *ngIf="userId === contactMainInfo?.['user']?.[0]"
+              class="v-center border-0 c-dark dropdown-item m-1" (click)="openShareContactDlg()">
+                <i class="i-icon i-share-contact bgc-dark"></i>
+                <span class="ml-3 f-3 font-weight-bold" translate>Share contact</span>
+              </button>
+              <button data-action="contact-action-routing-contact" *ngIf="userId === contactMainInfo?.['user']?.[0]"
+                class="v-center border-0 c-dark dropdown-item m-1" (click)="openMoveContactDlg()">
+                <i class="i-icon i-share-team bgc-dark"></i>
+                <span class="ml-3 f-3 font-weight-bold" translate>Routing contact</span>
+              </button>
+              <button data-action="contact-action-stop-share-contact"
+                *ngIf="sharedMembers.length && !sharedMembers.includes(userId)"
+                class="v-center border-0 c-dark dropdown-item m-1" (click)="stopShare($event, contactMainInfo)">
+                <i class="i-icon i-share-off bgc-dark"></i>
+                <span class="ml-3 f-3 font-weight-bold" translate>Stop Share contact</span>
+              </button>
+            </ng-container>
+          </ng-container>
+          <ng-container *ngIf="
+            userId &&
+              (userId === contactMainInfo.user ||
+               userId === contactMainInfo.user[0]);
+          ">
+            <hr class="my-1" />
+            <button data-action="contact-action-delete" class="v-center border-0 c-dark dropdown-item m-1"
+              (click)="deleteContact()">
+              <i class="i-icon i-trash bgc-dark"></i>
+              <span class="ml-3 f-3 font-weight-bold c-dark" translate>Delete</span>
+            </button>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #loader>
+      <app-skeleton-loader width="50px" height="25px" class="mx-1"></app-skeleton-loader>
+      <app-skeleton-loader width="50px" height="25px" class="mx-1"></app-skeleton-loader>
+    </ng-template>
+  </div>
+  <ng-scrollbar visibility="hover" class="main-scrollbar" trackClass="scrollbar" #scrollbar>
+    <div class="main-info px-3" *ngIf="(contactService.readingDetail$ | async) === 'success'; else loaderInfo">
+      <!-- Start Contact Main Info -->
+      <div class="card shadow-sm rounded mb-2">
+        <div class="card-header d-flex justify-content-between align-items-center" [style.backgroundColor]="contactMainInfo.label ? getLableColor() : '#F5F5F5'">
+          <div class="label-mask"></div>
+          <div class="ml-auto d-flex">
+            <app-label-select
+              #labelSelect
+              [value]="contactMainInfo.label"
+              (valueChange)="changeLabel($event)"
+              [placement]="'right'"
+            >
+            </app-label-select>
+            <div class="assignee-input">
+              <app-assignee-select
+              #assigneeSelect
+              [disabled]="!assigneeEditable && !isPending && !isShared"
+              [value]="contactMainInfo.owner"
+              *ngIf="assigneeEnabled"
+              type="form"
+              (valueChange)="changeAssignee($event)"
+              [mode]="'contact_detail'"
+            >
+            </app-assignee-select>
+            </div>
+          </div>
+        </div>
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex">
+            <div class="contact-avatar lg font-weight-bold">
+              {{ contactMainInfo.avatarName }}
+            </div>
+            <span *ngIf="!isSspa" class="assignment-label">{{ assignmentLabel }}</span>
+          </div>
+          <div class="d-flex info-item">
+            <i class="i-icon i-person bgc-grey mr-2"></i>
+            <span class="full-name" *ngIf="contactMainInfo?.fullName; else showNamePlaceholder">{{ contactMainInfo.fullName }}</span>
+            <ng-template #showNamePlaceholder>
+              <span class="f-3 font-weight-bold c-blue c-pointer mr-2" (click)="editContacts('main', $event, false, 'name')">
+                Add Name
+              </span>
+            </ng-template>
+          </div>
+          <div class="d-flex info-item">
+            <i class="i-icon i-contact-location bgc-grey mr-2"></i>
+            <span class="maininfo-item" *ngIf="contactMainInfo?.fullAddress; else showAddressPlaceholder">{{ contactMainInfo.fullAddress }}</span>
+            <ng-template #showAddressPlaceholder>
+              <span class="f-4 font-weight-bold c-blue c-pointer mr-2" (click)="editContacts('main', $event, false, 'address')">
+                Add Address
+              </span>
+            </ng-template>
+          </div>
+          <div class="d-flex info-item">
+            <i class="i-icon i-contact-phone bgc-grey mr-2"></i>
+            <span class="maininfo-item" *ngIf="contactMainInfo?.cell_phone; else showPhonePlaceholder">{{ contactMainInfo.cell_phone | phone_format }}</span>
+            <ng-template #showPhonePlaceholder>
+              <span class="f-4 font-weight-bold c-blue c-pointer mr-2" (click)="editContacts('main', $event, false, 'phone')">
+                Add Phone
+              </span>
+            </ng-template>
+            <ng-container *enableByFeatures="USER_FEATURES.DIALER">
+              <a class="d-block ml-auto c-pointer contact-action-btn" *ngIf="contactMainInfo.cell_phone" (click)="openCall()" >
+                <i class="i-icon i-phone bgc-blue d-block"></i>
+              </a>
+            </ng-container>
+            <ng-container *enableByFeatures="USER_FEATURES.TEXT">
+              <a class="d-block ml-3 c-pointer contact-action-btn" (click)="openSendText()" *ngIf="contactMainInfo.cell_phone && !textUnsubscribed">
+                <i class="i-icon i-sms-sent bgc-blue d-block"></i>
+              </a>
+            </ng-container>
+          </div>
+          <div class="d-flex info-item">
+            <i class="i-icon i-message bgc-grey mr-2"></i>
+            <span class="maininfo-item" *ngIf="contactMainInfo?.email; else showEmailPlaceholder">{{ contactMainInfo.email }}</span>
+            <ng-template #showEmailPlaceholder>
+              <span class="f-4 font-weight-bold c-blue c-pointer mr-2" (click)="editContacts('main', $event, false, 'email')">
+                Add Email
+              </span>
+            </ng-template>
+            <div class="d-block ml-auto contact-action c-pointer contact-action-btn" (click)="openSendEmail()" *ngIf="contactMainInfo.email && !emailUnsubscribed">
+              <i class="i-icon i-message bgc-blue d-block"></i>
+            </div>
+          </div>
+          <div class="d-flex info-item" *ngIf="contactMainInfo['website']">
+            <i class="i-icon i-webpage bgc-grey mr-2"></i>
+            <span class="maininfo-item">
+              <app-link [value]="contactMainInfo['website']"></app-link>
+            </span>
+          </div>
+          <div class="d-flex info-item" *ngIf="contactMainInfo['brokerage']">
+            <i class="i-icon i-contact-company bgc-grey mr-2"></i>
+            <span class="maininfo-item">
+              <app-link [value]="contactMainInfo['brokerage']"></app-link>
+            </span>
+          </div>
+          <div class="d-flex info-item">
+            <i class="i-icon i-contact-source bgc-grey mr-2"></i>
+            <span class="maininfo-item contact-source" *ngIf="contactMainInfo['source']; else showSourcePlaceholder">
+              <app-link [value]="contactMainInfo['source']"></app-link>
+            </span>
+            <ng-template #showSourcePlaceholder>
+              <span class="f-4 font-weight-bold c-blue c-pointer mr-2" (click)="editContacts('main', $event, false, 'source')">
+                Add Source
+              </span>
+            </ng-template>
+          </div>
+          <div class="d-flex info-item" *ngIf="getAdditionalFieldValue({type:'date'}, contactMainInfo['birthday']) !== ''">
+            <i class="i-icon i-birthday bgc-grey mr-2"></i>
+            <span class="maininfo-item">
+              {{getAdditionalFieldValue({type:'date'}, contactMainInfo['birthday'])}}
+            </span>
+          </div>
+          <div>
+            <hr>
+          </div>
+          <div class="f-3 d-flex align-items-center tags-section">
+            <span *ngFor="let tag of contactMainInfo.tags" class="tag-el text-capitalize">
+              {{ tag }}
+            </span>
+            <span class="tag-plus c-pointer contact-action-btn" (click)="editContacts('main', $event, true)">
+              <i class="i-icon i-tag-plus bgc-blue"></i>
+            </span>
+          </div>
+          <div *enableByFeatures="USER_FEATURES.BETA">
+            <hr>
+          </div>
+          <div class="d-flex align-items-center" *enableByFeatures="USER_FEATURES.BETA">
+            <ng-container *ngIf="!isPending && !isShared; else ratingView">
+              <app-ratings [currentRate]="contactMainInfo.rate" [locked]="contactMainInfo.rate_lock"
+                [favorite]="contactMainInfo.favorite" (toggleFavorite)="toggleFavorite($event)" (lockRate)="lockRate($event)"
+                (unlockRate)="unlockRate()" (changeRate)="changeRate($event)">
+              </app-ratings>
+            </ng-container>
+            <ng-template #ratingView>
+              <div class="v-center">
+                <div class="rates" #rates [class.increasing]="tempRate > currentRate">
+                  <div class="rate c-pointer" *ngFor="let rate of [1,2,3,4,5]" [class.selected]="contactMainInfo.rate >= rate"
+                    [class.indicated]="0 >= rate">
+                    <i class="d-block i-icon i-star"></i>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+          <ng-container *ngIf="emailUnsubscribed || textUnsubscribed">
+            <div>
+              <hr>
+            </div>
+            <div class="d-flex" style="flex-direction: row; gap: 4px;">
+              <div class="d-flex align-items-center unsubscribed" *ngIf="textUnsubscribed">
+                <i class="d-block i-icon i-information bgc-white"></i>
+                <span class="f-3 ml-1" translate>Text Unsubscribed</span>
+              </div>
+              <div class="d-flex align-items-center unsubscribed" *ngIf="emailUnsubscribed">
+                <i class="d-block i-icon i-information bgc-white"></i>
+                <span class="f-3 ml-1" translate>Email Unsubscribed</span>
+                <a class="c-pointer ml-2 f-3 contact-action-btn" (click)="resubscribe()"><i class="d-block i-icon i-close bgc-white"></i></a>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <!-- End Contact Main Info -->
+
+      <!-- Start Contact Sencondary and Additional Info -->
+      <div class="mt-2 additional-info">
+        <div class="d-flex justify-content-between align-items-center px-3 py-2">
+          <h6 class="f-6 fw-700 mb-0">Additional Info</h6>
+          <i 
+            class="bgc-dark d-block i-icon arrow-down-width cursor-pointer"
+            [ngClass]="isAdditionalInfoOpen ? 'i-arrow-up' : 'i-arrow-down'"
+            (click)="this.isAdditionalInfoOpen = !this.isAdditionalInfoOpen;"
+          ></i>
+        </div>
+        <div *ngIf="isAdditionalInfoOpen">
+          <ng-container *ngIf="hasAnyAdditionalInfo else emptyAdditionalInfo">
+            <div class="contact-detail f-3">
+              <ng-container *ngIf="emails.length > 0">
+                <div class="v-center py-1 sencondary" *ngFor="let email of emails">
+                  <i class="i-icon i-message bgc-grey mr-2"></i>
+                  <span>{{ email['value'] }}</span>
+                  <span class="secondary-type">{{ email['type'] }}</span>
+                  <div class="set-primary c-pointer contact-action-btn" (click)="setPrimaryEmail(email['value'])">Set Primary</div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="phones.length > 0">
+                <div class="v-center py-2 sencondary" *ngFor="let phone of phones">
+                  <i class="i-icon i-contact-phone bgc-grey mr-2"></i>
+                  <span>{{ phone['value'] }}</span>
+                  <span class="secondary-type">{{ phone['type'] }}</span>
+                  <div class="set-primary c-pointer contact-action-btn" (click)="setPrimaryPhone(phone['value'])">Set Primary</div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="addresses.length > 0">
+                <div class="v-center py-2 sencondary" *ngFor="let address of addresses">
+                  <i class="i-icon i-location bgc-grey mr-2"></i>
+                  <span>
+                    {{ address.street ? address.street + ' ' : '' }}
+                    {{ address.city ? address.city + ' ' : '' }}
+                    {{ address.state ? address.state + ' ' : '' }}
+                    {{ address.country ? address.country + ' ' : '' }}
+                    {{ address.zip ? address.zip + ' ' : '' }}
+                  </span>
+                  <span class="secondary-type">{{ address['type'] }}</span>
+                  <div class="set-primary c-pointer contact-action-btn" (click)="setPrimaryAddress(address)">Set Primary</div>
+                </div>
+              </ng-container>
+            </div>
+
+            <div class="contact-additional f-3">
+              <div class="v-center py-2 row lead-item" *ngIf="contactMainInfo?.prospect_id">
+                <span class="fw-400 col-6 col-sm-5 col-md-4" translate>
+                  Prospect profile
+                </span>
+                <span class="fw-400 col-6 col-sm-7 col-md-8">
+                  <a [href]="'lms/detail/leads/' + contactMainInfo?.prospect_id" target="_blank">
+                    {{ contactMainInfo?.prospect_id }}
+                  </a>
+                </span>
+              </div>
+              <ng-container *ngFor="let field of customFields">
+                <div class="d-flex py-2 row lead-item">
+                  <span class="fw-700 c-secondary text-overflow-wrap col-5 col-sm-5 col-md-5 text-capitalize">
+                    {{ field.name }}
+                  </span>
+                  <span class="fw-400 text-overflow-wrap col-7 col-sm-7 col-md-7">
+                    <ng-container *ngIf="
+                    isUrl(
+                      contactMainInfo.additional_field &&
+                        contactMainInfo.additional_field[field.name]
+                    );
+                    else normalTextTemplate
+                  ">
+                      <a class="f-6 text-decoration-none c-blue" [href]="
+                      contactMainInfo.additional_field &&
+                      contactMainInfo.additional_field[field.name] &&
+                      contactMainInfo.additional_field &&
+                      contactMainInfo.additional_field[field.name].startsWith(
+                        'http'
+                      )
+                        ? contactMainInfo.additional_field &&
+                          contactMainInfo.additional_field[field.name]
+                        : 'http://' + contactMainInfo.additional_field &&
+                          contactMainInfo.additional_field[field.name]
+                    " target="_blank">
+                        {{
+                        contactMainInfo.additional_field &&
+                        contactMainInfo.additional_field[field.name]
+                        }}
+                      </a>
+                    </ng-container>
+                    <ng-template #normalTextTemplate>
+                      {{
+                      getAdditionalFieldValue(
+                      field,
+                      contactMainInfo.additional_field &&
+                      contactMainInfo.additional_field[field.name]
+                      )
+                      }}
+                    </ng-template>
+                  </span>
+                </div>
+              </ng-container>
+              <ng-container *ngFor="let field of extraAdditionalFields | keyvalue">
+                <div class="d-flex py-2 row lead-item">
+                  <span class="fw-700 c-secondary text-overflow-wrap col-5 col-sm-5 col-md-5">
+                    {{ field.key }}
+                  </span>
+                  <span class="fw-400 text-overflow-wrap col-7 col-sm-7 col-md-7 d-flex">
+                    <!-- <div class="v-center justify-content-center c-pointer contact-action-status-btn mr-1" placement="top"
+                      ngbTooltip="{{'Convert to global custom contact field' | translate}}" (click)="convertField(field)">
+                      <i class="i-icon i-global op-75 bgc-dark-trans75 d-block"></i>
+                    </div> -->
+                    {{ getExtraAdditionalFieldValue(field.value) }}
+                  </span>
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+          <ng-template #emptyAdditionalInfo>
+            <div class="text-center py-4 text-muted small">
+              <p class="mb-4 fw-400 op-40">
+                Additional phone numbers, emails, addresses, and custom fields will be displayed here
+              </p>
+              <span class="f-4 font-weight-bold c-blue c-pointer mr-2" (click)="editContacts('main', $event)">
+                + Add Additional Info
+              </span>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+    <ng-template #loaderInfo>
+      <div class="main-info px-3">
+        <app-skeleton-loader width="100%" height="200px" class="mb-3"></app-skeleton-loader>
+        <div class="v-center mb-3 w-100">
+          <app-skeleton-loader width="160px" height="30px"></app-skeleton-loader>
+          <app-skeleton-loader width="30px" height="30px" radius="15px" class="ml-auto"></app-skeleton-loader>
+        </div>
+        <div class="v-center mb-3 w-100">
+          <app-skeleton-loader width="160px" height="30px"></app-skeleton-loader>
+          <app-skeleton-loader width="30px" height="30px" radius="15px" class="ml-auto"></app-skeleton-loader>
+        </div>
+      </div>
+    </ng-template>
+  </ng-scrollbar>
+</div>
+

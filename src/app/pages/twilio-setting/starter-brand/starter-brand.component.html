@@ -1,0 +1,237 @@
+<div class="step-body">
+  <form id="brand-form" (ngSubmit)="brandForm.form.valid ? createBrand() : null;" #brandForm="ngForm" [class.disabled]="!profileId">
+    <div class="form-section-description">
+      <span class="form-section-index">1.</span>
+      Please input the your information
+    </div>
+    <div class="form-grid">
+      <div
+        class="form-group"
+        [ngClass]="{invalid: brandForm.submitted && customerFirstName.invalid && (customerFirstName.dirty || customerFirstName.touched || brandForm.submitted)}"
+        >
+        <div>
+          <label translate="">First name</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="customer-firstname"
+          [(ngModel)]="brandData.customerFirstName"
+          required
+          #customerFirstName="ngModel"
+        />
+        <span class="error" *ngIf="customerFirstName.errors" translate>
+          <ng-container *ngIf="customerFirstName.errors.required">Your firstname is required</ng-container>
+        </span>
+      </div>
+      <div
+        class="form-group"
+        [ngClass]="{invalid: brandForm.submitted && customerLastName.invalid && (customerLastName.dirty || customerLastName.touched || brandForm.submitted)}"
+        >
+        <div>
+          <label translate="">Last name</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="customer-lastname"
+          [(ngModel)]="brandData.customerLastName"
+          required
+          #customerLastName="ngModel"
+        />
+        <span class="error" *ngIf="customerLastName.errors" translate>
+          <ng-container *ngIf="customerLastName.errors.required">Your lastname is required</ng-container>
+        </span>
+      </div>
+      <div
+        class="form-group"
+        [ngClass]="{invalid: brandForm.submitted && customerEmail.invalid && (customerEmail.dirty || customerEmail.touched || brandForm.submitted)}"
+        >
+        <div class="d-flex">
+          <label>Email</label>
+          <i
+            class="i-icon tooltip-icon i-information bgc-dark d-block"
+            placement="bottom"
+            ngbPopover="{{ 'twilio_brand_email_desc' | translate }}"
+            popoverTitle="Email"
+          ></i>
+        </div>
+        <input
+          type="email"
+          class="form-control"
+          name="customer-email"
+          [(ngModel)]="brandData.customerEmail"
+          required
+          pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$"
+          #customerEmail="ngModel"
+        />
+        <span class="error" *ngIf="customerEmail.errors" translate>
+          <ng-container *ngIf="customerEmail.errors.required">Your email is required</ng-container>
+        </span>
+      </div>
+      <div
+        class="form-group"
+        [ngClass]="{invalid: brandForm.submitted && !brandData.customerPhone}"
+        >
+        <div class="d-flex">
+          <label>
+            Phone
+          </label>
+          <i
+            class="i-icon tooltip-icon i-information bgc-dark d-block"
+            placement="bottom"
+            ngbPopover="{{ 'twilio_brand_phone_desc' | translate }}"
+            popoverTitle="Phone Number"
+          ></i>
+        </div>
+        <app-phone-input
+          [cssClass]="phoneControl && brandData.customerPhone && !phoneControl.valid ? 'form-control phone-form c-red font-weight-bold' : 'form-control phone-form'"
+          [onlyCountries]="countries"
+          [selectedCountryISO]="CountryISO.UnitedStates"
+          [(ngModel)]="brandData.customerPhone"
+          name="phone"
+          #phoneControl="ngModel"
+        >
+        </app-phone-input>
+        <span class="error" *ngIf="!brandData.customerPhone" translate>
+          Your phone number is required
+        </span>
+      </div>
+    </div>
+    
+    <div class="form-section-description">
+      <span class="form-section-index">2.</span>
+      Please input the business address information
+    </div>
+    <div class="form-grid">
+      <div
+        class="form-group"
+        [ngClass]="{invalid: brandForm.submitted && street.invalid && (street.dirty || street.touched || brandForm.submitted)}"
+        >
+        <div>
+          <label>Street</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="street"
+          [(ngModel)]="brandData.street"
+          required
+          #street="ngModel"
+        />
+        <span class="error" *ngIf="street.errors" translate>
+          <ng-container *ngIf="street.errors.required">Your address street is required</ng-container>
+        </span>
+      </div>
+      <div
+        class="form-group"
+        [ngClass]="{invalid: brandForm.submitted && city.invalid && (city.dirty || city.touched || brandForm.submitted)}"
+        >
+        <div>
+          <label>City</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="city"
+          [(ngModel)]="brandData.city"
+          required
+          #city="ngModel"
+        />
+        <span class="error" *ngIf="city.errors" translate>
+          <ng-container *ngIf="city.errors.required">Your city is required</ng-container>
+        </span>
+      </div>
+      <div
+        class="form-group"
+        [ngClass]="{invalid: brandForm.submitted && region.invalid && (region.dirty || region.touched || brandForm.submitted)}"
+        >
+        <div>
+          <label>State</label>
+        </div>
+        <select
+          id="brand-state"
+          class="form-control"
+          [(ngModel)]="brandData.region"
+          name="region"
+          #region="ngModel"
+          required
+        >
+          <option
+            value=""
+            translate
+          >
+            None
+          </option>
+          <option
+            *ngFor="let region of REGIONS[brandData.isoCountry] || REGIONS['US']"
+            value="{{REGION_CODE[region]}}"
+          >
+            {{region}}
+          </option>
+        </select>
+        <span class="error" *ngIf="region.errors" translate>
+          <ng-container *ngIf="region.errors.required">Your region is required</ng-container>
+        </span>
+      </div>
+      <div
+        class="form-group"
+        [ngClass]="{invalid: brandForm.submitted && postalCode.invalid && (postalCode.dirty || postalCode.touched || brandForm.submitted)}"
+        >
+        <div>
+          <label>Zipcode</label>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          name="postal"
+          [(ngModel)]="brandData.postalCode"
+          required
+          #postalCode="ngModel"
+        />
+        <span class="error" *ngIf="postalCode.errors" translate>
+          <ng-container *ngIf="postalCode.errors.required">Please input your zipcode.</ng-container>
+        </span>
+      </div>
+      <div
+        class="form-group"
+        [ngClass]="{invalid: brandForm.submitted && country.invalid && (country.dirty || country.touched || brandForm.submitted)}"
+        >
+        <div>
+          <label>Country</label>
+        </div>
+        <select
+          id="brand-country"
+          class="form-control"
+          [(ngModel)]="brandData.isoCountry"
+          name="country"
+          #country="ngModel"
+          required
+        >
+          <option
+            value=""
+            translate
+          >
+            None
+          </option>
+          <option
+            *ngFor="let country of COUNTRIES"
+            value="{{country.code}}"
+          >
+            {{country.name}}
+          </option>
+        </select>
+        <span class="error" *ngIf="country.errors" translate>
+          <ng-container *ngIf="country.errors.required">Please select your country.</ng-container>
+        </span>
+      </div>
+    </div>
+
+    <div class="disclaim">
+      The verification code will be sent to {{ brandData.customerPhone?.e164Number || 'your number'}} after creating. You should verify it within a day.
+    </div>
+  </form>
+</div>
+<div class="step-actions">
+  <button class="btn btn-primary ml-1" type="submit" form="brand-form" [class.loading]="creating">Create</button>
+</div>

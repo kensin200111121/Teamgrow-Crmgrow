@@ -1,0 +1,118 @@
+<div class="page-content p-0">
+  <h1 class="page-title" translate>Join our affiliate program & earn rewards</h1>
+  <div class="affiliate-page mt-4">
+    <ng-container *ngIf="affiliateInfo && affiliateInfo.id; else signup">
+      <span class="f-6 fw-600 op-75" translate>Invite a friend</span>
+      <div class="v-center affiliate-action mt-2">
+        <button class="v-center btn btn-primary f-6 main-action" (click)="copyLink()">
+          <i class="d-block i-icon i-affiliate-link bgc-white"></i>
+          <span class="action-title ml-2" translate>Copy Referral Link</span>
+        </button>
+        <button class="v-center btn btn-primary f-6 ml-2 main-action" (click)="gotoSignUp()">
+          <i class="d-block i-icon i-affiliate-dashboard bgc-white"></i>
+          <span class="action-title ml-2" translate>Affiliate Dashboard</span>
+        </button>
+        <button class="btn btn-white border border-primary ml-2 email-share" (click)="openShare()">
+          <i class="d-block i-icon i-affiliate-email bgc-blue"></i>
+        </button>
+        <share-button [theme]="'circles-dark'" [button]="'linkedin'" [size]="-2" [url]="affiliateInfo.link" [autoSetMeta]="false" class="ml-2 mr-0">
+        </share-button>
+        <share-button [theme]="'circles-dark'" [button]="'facebook'" [size]="-2" [url]="affiliateInfo.link" [autoSetMeta]="false" class="ml-2 mr-0">
+        </share-button>
+      </div>
+    </ng-container>
+    <ng-template #signup>
+      <button class="btn btn-primary f-6" (click)="gotoSignUp()" translate>Sign Up Now</button>
+    </ng-template>
+    <div class="afiliate-workflow mt-4" *ngIf="!isWorkflow || isWorkflow !== 'hide'">
+      <div class="f-6 font-weight-bold" translate>
+        Here's how it works
+      </div>
+      <div class="workflows mt-3">
+        <div class="f-4">
+          <img [src]="sspaService.toAsset('img/affiliate/workflow1.svg')">
+          <div class="d-flex mt-2">
+            <span class="font-weight-bold">1.</span>
+            <span class="ml-2" translate>
+              Send your referral link to leads and tell them about crmgrow benefits.
+            </span>
+          </div>
+        </div>
+        <div class="f-4">
+          <img [src]="sspaService.toAsset('img/affiliate/workflow2.svg')">
+          <div class="d-flex mt-2">
+            <span class="font-weight-bold">2.</span>
+            <span class="ml-2" translate>
+              Some leads will subscribe to one of the crmgrow plans.
+            </span>
+          </div>
+        </div>
+        <div class="f-4">
+          <img [src]="sspaService.toAsset('img/affiliate/workflow3.svg')">
+          <div class="d-flex mt-2">
+            <span class="font-weight-bold">3.</span>
+            <span class="ml-2" translate>
+              Earn commissions for each of your affiliated customer payments made to crmgrow for a crmgrow Pro or Elite plan.
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="f-20 font-weight-bold close-icon c-pointer" (click)="closeWorkflow()">
+        &times;
+      </div>
+    </div>
+    <div class="affiliate-plans mt-4"
+      [class.d-none]="userVersion >= 2.2 || !affiliateInfo || !affiliateInfo.id"
+    >
+      <span class="f-22 fw-600" translate>Affiliate Programs</span>
+      <div class="plans mt-3">
+        <div class="plan-starter h-100">
+          <div class="v-center">
+            <img [src]="sspaService.toAsset('img/affiliate/plan_starter.svg')">
+            <span class="plan-title ml-3" translate>Starter Plan</span>
+          </div>
+          <hr class="plan-divider">
+          <div class="plan-summary">
+            <span class="percent">10</span>
+            <span class="f-4 percent-symbol"> % </span>
+            <span class="f-4 c-dark" translate>Commission</span>
+          </div>
+          <div class="f-4 op-75 mt-2" translate>
+            Upgrade to our Growth Plan by recruiting 10 leads that turn into paying affiliate customers.
+          </div>
+        </div>
+        <div class="plan-growth h-100">
+          <div class="v-center">
+            <img [src]="sspaService.toAsset('img/affiliate/plan_growth.svg')">
+            <span class="plan-title ml-3" translate>Growth Plan</span>
+          </div>
+          <hr class="plan-divider">
+          <div class="plan-summary">
+            <span translate>Up to </span>
+            <span class="percent">20</span>
+            <span class="f-4 percent-symbol"> % </span>
+            <span class="f-4 c-dark" translate>Commission</span>
+          </div>
+          <div class="f-4 op-75 mt-2" translate>
+            Earn commission on up to 2 tiers. Upgrade to our Influencer Plan by recruiting 30 leads that turn into paying affiliate customers.
+          </div>
+        </div>
+        <div class="plan-influencer h-100">
+          <div class="v-center">
+            <img [src]="sspaService.toAsset('img/affiliate/plan_influencer.svg')">
+            <span class="plan-title ml-3" translate>Influencer Plan</span>
+          </div>
+          <hr class="plan-divider">
+          <div class="plan-summary">
+            <span class="percent" translate>Max</span>
+            <span class="f-4 percent-symbol"> % </span>
+            <span class="f-4 c-dark" translate>Commission</span>
+          </div>
+          <div class="f-4 op-75 mt-2" translate>
+            Earn commission on up to 3 tiers. To stay in the Influencer Plan, you will need to meet quarterly minimum growth goals.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

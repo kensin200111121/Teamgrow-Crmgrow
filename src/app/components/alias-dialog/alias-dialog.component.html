@@ -1,0 +1,119 @@
+<div class="v-center justify-content-between">
+    <h1 class="m-0" mat-dialog-title translate>
+      alias_title
+    </h1>
+    <i class="d-block i-icon i-close bgc-dark" mat-dialog-close></i>
+</div>
+<mat-dialog-content class="mt-3">
+    <!-- Create Step -->
+    <form
+        *ngIf="formType === FormType.CREATE"
+        #createForm="ngForm"
+        id="create-form"
+        (submit)="createForm.valid ? create() : false"
+    >
+        <div class="form-group"
+            [ngClass]="{invalid: error || (createForm.submitted && emailForm.invalid && (emailForm.dirty || emailForm.touched || createForm.submitted))}">
+            <div class="v-center">
+                <label class="d-block mb-0" translate>alias_email</label>
+                <span class="error ml-auto" *ngIf="emailForm.errors">
+                    <ng-container *ngIf="emailForm.errors.required">
+                        {{ 'Required' | translate }}
+                    </ng-container>
+                    <ng-container *ngIf="emailForm.errors.pattern">
+                        {{ 'Invalid' | translate }}
+                    </ng-container>
+                </span>
+                <span class="error ml-auto" *ngIf="error">
+                    {{ error | translate }}
+                </span>
+            </div>
+            <input
+                class="form-control"
+                type="email"
+                required
+                [(ngModel)]="email"
+                name="emailForm"
+                #emailForm="ngModel"
+                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$"
+                (ngModelChange)="error ? error = '' : false"
+            />
+        </div>
+        <div class="form-group"
+            [ngClass]="{invalid: createForm.submitted && nameForm.invalid && (nameForm.dirty || nameForm.touched || createForm.submitted)}">
+            <div class="v-center">
+                <label class="d-block mb-0" translate>alias_name</label>
+                <span class="error ml-auto" *ngIf="nameForm.errors">
+                    <ng-container *ngIf="nameForm.errors.required">
+                        {{ 'Required' | translate }}
+                    </ng-container>
+                </span>
+            </div>
+            <input class="form-control" type="text" required [(ngModel)]="name" name="nameForm" #nameForm="ngModel" />
+        </div>
+        <div class="form-group" >
+            <div class="v-center">
+                <label class="d-block mb-0" translate>Alias Registering Step</label>
+            </div>
+            <li class="mt-1 f-3">Before submit this information, you need to change your gmail account setting.</li>
+            <ul>
+                <li class="f-2">- Open your <a href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#settings/accounts" target="_blank">Gmail Account Setting.</a></li>
+                <li class="f-2">- Click Add another email address button in "Send mail as:" tab.</li>
+                <li class="f-2">- Register name and email.</li>
+                <li class="f-2">- Verify email Address.</li>
+            </ul>
+            <li class="mt-1 f-3">After gmail account setting completion, please submit the above form with correct data.</li>
+        </div>
+    </form>
+
+    <!-- Edit Step -->
+    <form
+        *ngIf="formType === FormType.UPDATE"
+        #updateForm="ngForm"
+        name="updateForm"
+        id="update-form"
+        (submit)="updateForm.valid ? update() : false"
+    >
+        <div class="my-2 f-3 op-75 text-center" translate [translateParams]="{email: alias.email}">alias_edit_desc</div>
+        <div class="form-group"
+            [ngClass]="{invalid: updateForm.submitted && nameForm.invalid && (nameForm.dirty || nameForm.touched || updateForm.submitted)}">
+            <div class="v-center">
+                <label class="d-block mb-0" translate>alias_name</label>
+                <span class="error ml-auto" *ngIf="nameForm.errors">
+                    <ng-container *ngIf="nameForm.errors.required">
+                        {{ 'Required' | translate }}
+                    </ng-container>
+                </span>
+            </div>
+            <input class="form-control" type="text" required [(ngModel)]="name" name="nameForm" #nameForm="ngModel" />
+        </div>
+    </form>
+
+    <!-- Verify Step -->
+    <form *ngIf="formType === FormType.VERIFY">
+        <div translate [translateParams]="{user_email: alias.email}">
+            alias_verify_desc
+        </div>
+        <code-input
+            [codeLength]="6"
+            (codeCompleted)="verifyCode($event)"
+            >
+        </code-input>
+        <div>
+            <span translate>alias_not_code</span>
+            <a translate>alias_send_code</a>
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button type="button" mat-dialog-close class="btn" translate>Cancel</button>
+    <ng-container *ngIf="formType === FormType.CREATE">
+        <button type="submit" form="create-form" class="btn btn-primary" [class.loading]="creating" translate>Create</button>
+    </ng-container>
+    <ng-container *ngIf="formType === FormType.UPDATE">
+        <button type="submit" form="update-form" class="btn btn-primary" [class.loading]="updating" translate>Save</button>
+    </ng-container>
+    <ng-container *ngIf="formType === FormType.VERIFY">
+        <!-- <button class="btn btn-primary" [class.loading]="verifying" translate>Verify</button> -->
+    </ng-container>
+</mat-dialog-actions>

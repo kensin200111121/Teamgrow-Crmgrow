@@ -1,0 +1,346 @@
+<div class="page-content">
+  <div class="back-header">
+    <app-back-button
+      [defaultTitle]="'Landing Pages'"
+      [defaultRoute]="'/lead-hub/landing-pages'"
+    ></app-back-button>
+  </div>
+  <div class="list-loading text-center" *ngIf="isLoading">
+    <div class="loader mt-5 lg"></div>
+    <h4 class="fw-600 mt-2">{{ 'Loading landing page information' | translate }}...</h4>
+  </div>
+  <div *ngIf="!isLoading">
+    <form #landingPageform="ngForm" 
+      (ngSubmit)="submitted = true; landingPageform.form.valid ? save(): false"
+      [class.was-validated]="submitted"
+    >
+      <div class="status-header v-center mt-1">
+        <h1 class="page-title" translate *ngIf="!pageId; else editTitle">New Landing Page</h1>
+        <ng-template #editTitle>
+          <h1 class="page-title" translate *ngIf="pageId; else editTitle">Edit Landing Page</h1>
+        </ng-template>
+        <div class="ml-auto v-center action-header">
+          <div class="v-center justify-content-between mr-2">
+            <label class="custom-toggle mb-0 mr-2">
+              <input
+                type="checkbox"
+                name="publish"
+                [checked]="isPublished"
+                [(ngModel)]="isPublished"
+              />
+              <span class="custom-toggle-slider rounded-circle"></span>
+            </label>
+            <div class="f-4" translate>Publish</div>
+          </div>
+          <div class="border-left pl-3 pr-0 py-1 text-center ml-2 v-center">
+            <button 
+              (click)="openPreview()"
+              class="v-center btn btn-white border border-primary f-6 fw-600 rounded shadow mr-2 px-3" 
+              type="button"
+            >
+              <span class="normal" translate>Preview</span>
+            </button>
+            <button 
+              class="v-center btn btn-blue f-6 fw-600 text-white rounded shadow mr-2 px-3"
+              [class.loading]="submitting" 
+              type="submit"
+            >          
+              <span class="normal" translate>Save</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="container landing-page-form">    
+        <div class="mt-4">
+          <!-- Main information -->
+          <div class="row">
+            <div 
+              class="col-12 form-group" 
+              [ngClass]="{invalid: submitted && title_cc.invalid && (title_cc.dirty || title_cc.touched || submitted) }"
+            >
+              <div class="v-center justify-content-between">
+                <label for="title_cc" class="mb-1" translate>Page name</label>
+                <span class="error" *ngIf="!title.length && submitted">
+                  <ng-container translate>Required!</ng-container>
+                </span>
+                <span class="error" *ngIf="title.length > 50">
+                  <ng-container translate>Page name should have less than 50 character</ng-container>
+                </span>
+              </div>
+              <input 
+                type="text" 
+                id="title_cc" 
+                class="form-control" 
+                name="title" 
+                [(ngModel)]="title" 
+                #title_cc="ngModel"
+                maxlength="50"
+                required />
+              <div class="placeholder">
+                <span translate>Not displayed for leads. Max 50 characters.</span>
+              </div>
+            </div>
+
+            <div 
+              class="col-12 form-group" 
+              [ngClass]="{invalid: submitted && description_cc.invalid && (description_cc.dirty || description_cc.touched || submitted) }"
+            >
+              <div class="v-center justify-content-between">
+                <label for="description_cc" class="mb-1" translate>Description</label>
+                <span class="error" *ngIf="!description.length && submitted">
+                  <ng-container translate>Required!</ng-container>
+                </span>
+                <span class="error" *ngIf="description.length > 200">
+                  <ng-container translate>Description should have less than 50 character</ng-container>
+                </span>
+              </div>
+              <input 
+                type="text" 
+                id="description_cc" 
+                class="form-control" 
+                name="description" 
+                [(ngModel)]="description" 
+                #description_cc="ngModel"
+                maxlength="200"
+                required />
+              <div class="placeholder">
+                <span translate>Type what this capture page is used for. Max 200 characters.</span>
+              </div>
+            </div>
+
+            <div class="col-12 form-group">
+              <div class="v-center">
+                <label for="description_cc" class="mb-1" translate>Select Layout</label>
+              </div>
+              <div class="select-layout">
+                <div class="layout-item" [class.selected-layout]="theme===1" (click)="setTheme(1)">
+                  <img [src]="sspaService.toAsset('img/layout-simple.svg')" style="width: 100%;">
+                  <span class="layout-title">Simple</span>
+                  <span class="layout-description">Display your material in a simple and direct way.</span>
+                </div>
+                <div class="layout-item" [class.selected-layout]="theme===2" (click)="setTheme(2)">
+                  <img [src]="sspaService.toAsset('img/layout-highlight.svg')" style="width: 100%;">
+                  <span class="layout-title">Highlight</span>
+                  <span class="layout-description">Show contact info & highlights.</span>
+                </div>
+                <div class="layout-item" [class.selected-layout]="theme===3" (click)="setTheme(3)">
+                  <img [src]="sspaService.toAsset('img/layout-calendly.svg')" style="width: 100%;">
+                  <span class="layout-title">Calendly</span>
+                  <span class="layout-description">Integrate your calendar on the page.</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <hr>
+            </div>
+            <div class="col-12 mt-2">
+              <h5>Page Content</h5>
+              <span translate class="content-description">Configure your page using any combination of the options below.</span>
+            </div>
+            <div class="col-12 form-group mt-2">
+              <div class="v-center justify-content-between">
+                <label for="description_cc" class="mb-1" translate>Media</label>
+              </div>            
+              <div class="select-material p-4" *ngIf="!material; else material_section">
+                <span translate>No Media Selected</span>
+                <button class="btn btn-white border-primary mt-3 fw-bold" (click)="selectMaterial()" type="button">Select from Materials</button>
+              </div>
+              <ng-template #material_section>
+                <div class="select-material">
+                  <img src="{{ material.preview }}" class="material-preview">
+                  <span class="edit-material" (click)="selectMaterial()"><i class="d-block i-icon i-edit bgc-white"></i></span>
+                </div>
+              </ng-template>
+            </div>
+            <div class="col-12 form-group" *ngIf="material && materialType==='pdf'">
+              <div class="v-center">
+                <label for="description_cc" class="mb-1" translate>Select PDF View Mode</label>
+              </div>
+              <div class="select-view-mode">
+                <div class="mode-item" [class.selected-mode]="pdfViewMode==='scroll'" (click)="setPdfViewMode('scroll')">
+                  <img [src]="sspaService.toAsset('img/layout_scroll.svg')">
+                  <div>
+                    <span class="layout-title d-block mt-0">Scroll View Mode</span>
+                    <span class="layout-description">Visitors can read the pdf by scrolling.</span>
+                  </div>
+                </div>
+                <div class="mode-item" [class.selected-mode]="pdfViewMode==='bookfold'" (click)="setPdfViewMode('bookfold')">
+                  <img [src]="sspaService.toAsset('img/layout_page.svg')">
+                  <div>
+                    <span class="layout-title d-block mt-0">Bookfold View Mode</span>
+                    <span class="layout-description">Visitors can read the pdf page by page by clicking buttons.</span>
+                  </div>
+                </div>                
+              </div>
+            </div>
+            <div class="col-12 form-group" *ngIf="theme === 2">
+              <label for="headline_cc" class="mb-1" translate>Highlights</label>
+              <div class="placeholder">
+                <span translate>Select materials for highlight in your landing page</span>
+              </div>
+              <div 
+                cdkDropList class="highlights mt-2" 
+                cdkDropListOrientation="horizontal"
+                (cdkDropListDropped)="highlightMoved($event)"
+              >
+                <!-- <div class="highlight img-comp" [cdkDragData]="highlight" cdkDrag
+                  *ngFor="let highlight of highlights; let i = index;">
+                  <img src="{{highlight}}" />
+                  <div class="remove-link" (click)="removeHighlight(i)"></div>
+                  <img *cdkDragPreview [src]="highlight">
+                </div> -->
+                <div class="highlight img-comp" [cdkDragData]="highlight" cdkDrag
+                  *ngFor="let highlight of highlightsV2; let i = index;">
+                  <img src="{{highlight.material?.preview}}" />
+                  <div class="remove-link" (click)="removeHighlight(i)"></div>
+                  <img *cdkDragPreview [src]="highlight.material?.thumbnail">
+                </div>
+                <div class="highlight placeholder img-comp" (click)="pickHighlights()">
+                  <div class="plus">+</div>
+                </div>
+                
+              </div>
+            </div>       
+            <div class="col-12 form-group">
+              <label for="headline_cc" class="mb-1" translate>Headline</label>
+              <input type="text" id="headline_cc" class="form-control" name="headline" [(ngModel)]="headline" required />
+              <div class="placeholder">
+                <span translate>Enter a catchy headline that grabs attention</span>
+              </div>              
+            </div>
+
+            <div class="col-12 form-group">
+              <label for="description_cc" class=" mb-1" translate>Description</label>
+              <app-html-editor
+                [(value)]="content"
+                id="description_cc"
+                [placeholder]="'Write a Description that will be seen by the lead' | translate" 
+                [style]="{ height: '200px' }"
+                [noImage]="true" 
+                [noFont]="true" 
+                [noSize]="true"
+                [hasScheduler]="false">
+              </app-html-editor>
+            </div>          
+            <div class="col-12 form-group mt-2 v-center">
+              <div class="d-flex" style="flex-direction: column; gap: 4px;">
+                <label for="description_cc" class="mb-1" translate>Page Background Color</label>
+                <span translate class="content-description">Pick the color for the background of your page</span>             
+              </div>
+              <div class="ml-auto">
+                <button  
+                  ngx-colors-trigger  name="background-color" [(ngModel)]="backgroundColor" 
+                  class="btn btn-white border mt-3 fw-bold d-flex align-items-center" type="button">                
+                  <ngx-colors                
+                    ngx-colors-trigger
+                    id="colorPicker"
+                    name="background-color"
+                    style="display: inline-block; margin-right:5px;"
+                    [(ngModel)]="backgroundColor"
+                  ></ngx-colors>
+                  Change Color
+                </button>
+              </div>
+            </div>
+            <div class="col-12 form-group mt-2"  >
+              <div class="v-center">
+                <label for="description_cc" class="mb-1" translate>Form</label>
+              </div>
+              <mat-radio-group name="type" [(ngModel)]="formType" class="v-center mt-2 form-type" style="gap: 10px;" (ngModelChange)="onFormTypeChange($event)">
+                <div class="btn btn-white d-flex align-items-center py-3 btn-form-type form-type-item" [class.border-primary]="formType === 0">
+                  <mat-radio-button [attr.data-name]="'form-type-embeded'" class="f-3 w-100" [color]="'primary'" [value]="0">
+                    <div style="display: flex; flex-direction: column; text-align: left;">
+                      <span>None</span>
+                      <span class="placeholder">No form is used on this landing page</span>
+                    </div>
+                  </mat-radio-button>                
+                </div>
+                <div class="btn btn-white d-flex align-items-center py-3 btn-form-type form-type-item" [class.border-primary]="formType === 1">
+                  <mat-radio-button [attr.data-name]="'form-type-embeded'" class="f-3 w-100" [color]="'primary'" [value]="1">
+                    <div style="display: flex; flex-direction: column; text-align: left;">
+                      <span>Embedded Form</span>
+                      <span class="placeholder">Display a form at the end of the page</span>
+                    </div>
+                  </mat-radio-button>                
+                </div>
+                <div 
+                  *ngIf="materialType !== 'image' && materialType !== 'pdf'" 
+                  class="btn btn-white d-flex align-items-center py-3 btn-form-type form-type-item" 
+                  [class.border-primary]="formType === 2"
+                >
+                  <mat-radio-button [attr.data-name]="'form-type-popup'" class="f-3 w-100" [color]="'primary'" [value]="2">
+                    <div style="display: flex; flex-direction: column; text-align: left;">
+                      <span>Popup Form</span>
+                      <span class="placeholder">Display form(s) during video playback</span>
+                    </div>
+                  </mat-radio-button>              
+                </div>
+              </mat-radio-group>
+              <ng-container *ngIf="formType !== 0">
+                <div class="placeholder mt-2" *ngIf="addedForms.length===0; else leadFormList">
+                  <span translate>There’s no form. Add one clicking “+ Add”.</span>
+                </div>
+                <ng-template #leadFormList>
+                  <table mat-table class="w-100 page-table mt-2" [dataSource]="addedForms">
+                    <!-- Form Name Column -->
+                    <ng-container matColumnDef="key">
+                      <th mat-header-cell *matHeaderCellDef >Form Name</th>
+                      <td mat-cell *matCellDef="let element" class="font-weight-bold c-black">{{element.leadForm.name}}</td>
+                    </ng-container>
+
+                    <!-- Delay Time Column -->
+                    <ng-container matColumnDef="second">
+                      <th mat-header-cell *matHeaderCellDef >Delay Time</th>
+                      <td mat-cell *matCellDef="let element" class="c-black">{{element.second}}</td>
+                    </ng-container>
+
+                    <!-- Automation Column -->
+                    <ng-container matColumnDef="automation">
+                      <th mat-header-cell *matHeaderCellDef >Automation</th>
+                      <td mat-cell *matCellDef="let element" class="c-black">{{element.leadForm.automation?.title}}</td>
+                    </ng-container>
+
+                    <!-- Tags Column -->
+                    <ng-container matColumnDef="tags">
+                      <th mat-header-cell *matHeaderCellDef >Tags</th>
+                      <td mat-cell *matCellDef="let element" class="c-black">{{element.leadForm.tags.join('; ') | shorten: 24:'...'}}</td>
+                    </ng-container>
+
+                    <!-- Action Column -->
+                    <ng-container matColumnDef="action">
+                      <th mat-header-cell *matHeaderCellDef >Action</th>
+                      <td mat-cell *matCellDef="let element; ; let i = index" class="pr-0 action-col">
+                        <div class="v-center c-pointer">
+                          <button
+                            type="button"
+                            class="v-center btn bgc-trans c-blue border-0 py-1"
+                            (click)="setForm(i)"
+                          >
+                            <i class="i-icon i-edit bgc-blue"></i>
+                          </button>
+                          <button
+                            type="button"
+                            class="v-center btn bgc-trans c-red border-0 py-1"
+                            (click)="deleteForm(i)"
+                          >
+                            <i class="i-icon i-circle-minus bgc-red"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                  </table>
+                </ng-template>
+                <div class="mt-2" *ngIf="addedForms.length === 0 || formType === 2">
+                  <button class="btn btn-white c-primary" (click)="addForm()" type="button">+ Add</button>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+    
+</div>

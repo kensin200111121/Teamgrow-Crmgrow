@@ -1,0 +1,109 @@
+.overlay-wrapper {
+  padding: 20px 20px 16px 20px;
+  border-radius: 4px;
+  box-shadow: 0px 0px 10px #adadad;
+}
+
+.overlay-content {
+  margin-left: -20px;
+  margin-right: -20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  max-height: 64vh;
+  overflow: auto;
+}
+
+.tokens-wrapper {
+  position: absolute;
+  top: 14px;
+  right: 12px;
+  cursor: pointer;
+  .i-triangle-up {
+    display: none !important;
+  }
+  &.show {
+    .i-triangle-down {
+      display: none !important;
+    }
+    .i-triangle-up {
+      display: block !important;
+    }
+  }
+  i {
+    width: 8px;
+    height: 8px;
+    min-width: 8px;
+  }
+
+  .token-menu {
+    position: absolute;
+    background: white;
+    width: fit-content;
+    box-shadow: 0px 3px 8px #aaa;
+    border-radius: 4px;
+    white-space: nowrap;
+    right: 0px;
+    top: 24px;
+    display: none;
+  }
+
+  &.show .token-menu {
+    display: block;
+  }
+}
+
+.insert-token {
+  position: absolute !important;
+  top: 14px;
+  right: 12px;
+  cursor: pointer;
+  .dropdown-toggle {
+    .i-triangle-up {
+      display: none !important;
+    }
+  }
+  &.show {
+    .dropdown-toggle {
+      .i-triangle-down {
+        display: none !important;
+      }
+      .i-triangle-up {
+        display: block !important;
+      }
+    }
+  }
+  i {
+    width: 10px;
+    height: 10px;
+    min-width: 10px;
+  }
+}
+
+.insert-token.for-subject {
+  top: 42px
+}
+
+.text-template-contents {
+  position: relative;
+
+  .insert-token {
+    top: 0;
+  }
+}
+
+.material-button {
+  border-radius: 24px;
+  border-width: 2px;
+
+  .i-material {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+  }
+
+  .i-plus {
+    width: 12px;
+    height: 12px;
+    min-width: 12px;
+  }
+}

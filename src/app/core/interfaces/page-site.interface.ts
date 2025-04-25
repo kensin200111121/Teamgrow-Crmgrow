@@ -1,0 +1,34 @@
+export interface IPageSite {
+  id: number;
+  name: string;
+  clientsDomain: string;
+  creatorId: number;
+  billingId: number;
+  packageId: number;
+  startingPackageId: number;
+  templateId: number;
+  originalId?: number;
+  settings: any[];
+  sqlServerId: number;
+  progressActions: string[];
+  smileyVote: boolean;
+  surveyTaken: boolean;
+  siteStatus: number;
+  version: number;
+  cloneable: string;
+  canBeUpgradedToLifetime: boolean;
+  site: string;
+  active: boolean;
+  status: number;
+  isFreePackage: boolean;
+  paid: boolean;
+  owner: boolean;
+  hasBusinessInformation: boolean;
+  productBadge: boolean;
+  prohibitedElements: boolean;
+  demoMode: boolean;
+  owners: any[];
+  roles: any[];
+  currentPackage: any;
+  pivot: any;
+}

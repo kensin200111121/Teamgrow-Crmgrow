@@ -1,0 +1,335 @@
+<div class="v-center justify-content-between">
+  <h1 mat-dialog-title class="m-0" translate>Send Landing Page</h1>
+  <button class="v-center border-0 bgc-trans" (click)="closeDialog()">
+    <i class="d-block i-icon i-close bgc-dark"></i>
+  </button>
+</div>
+<div class="send-via-container">
+  <div
+    class="send-via-email"
+    [class.active]="sendMode === 'email'"
+    (click)="changeMethod('email')"
+  >
+    Send via Email
+  </div>
+  <div
+    class="send-via-text"
+    [class.active]="sendMode === 'text'"
+    (click)="changeMethod('text')"
+  >
+    Send via Text
+  </div>
+</div>
+<br />
+<form #sendForm="ngForm" (ngSubmit)="sendForm.form.valid ? send() : false">
+  <mat-dialog-content>
+    <div class="d-flex w-100 mt-2 material-preivew">
+      <img
+        class="w-25"
+        [ngClass]="{
+          'card-img':
+            !pages[0]?.material?.thumbnail &&
+            !pages[0]?.material?.preview
+        }"
+        [src]="
+          pages[0]?.material?.thumbnail ||
+          pages[0]?.material?.preview ||
+          sspaService.toAsset('img/image_not_supported.svg')
+        "
+        (error)="sspaService.imgError($event, 'img/video_thumb.jpg')"
+      />
+      <div class="w-75">
+        <div class="ml-4">
+          <div class="f-6 font-weight-bold material-title">
+            {{ pages[0].name }}
+          </div>
+          <div class="f-3 op-64 mt-2 desc">
+            {{
+              pages[0].description || ''
+            }}
+          </div>
+          <div class="d-flex w-100 justify-content-between items-center mt-2">
+            <div class="title w-half">Form</div>
+            <div class="w-half d-flex items-center">
+              <div class="label nowrap w-100">
+                {{ pages[0].forms[0]?.name?.slice(0, 20) }}
+              </div>
+              <div
+                class="one-more ml-2"
+                *ngIf="pages[0].forms.length > 1"
+              >
+                +{{ pages[0].forms?.length - 1 }}
+              </div>
+            </div>
+          </div>
+          <div class="d-flex w-100 justify-content-between items-center mt-2">
+            <div class="title w-half">
+              <div>Automation</div>
+            </div>
+            <div class="w-half d-flex items-center">
+              <div class="label nowrap w-100">
+                {{ pages[0].forms[0]?.automation?.title?.slice(0, 20) }}
+              </div>
+              <div
+                class="one-more ml-2"
+                *ngIf="pages[0].forms?.length > 1"
+              >
+                +{{ pages[0].forms?.length - 1 }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex">
+      <div
+        class="v-center mt-3 material-more px-1 py-0 mx-auto"
+        *ngIf="pages.length > 1"
+      >
+        <div class="v-center mx-1 my-1" *ngIf="pages.length > 1">
+          <i class="d-block i-icon act-videos mr-1"></i>
+          + {{ pages.length - 1 }} {{ 'Landing Pages' }}
+        </div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="sendMode === 'email'">
+      <app-email-sender (onChange)="onSelectSender($event)"></app-email-sender>
+    </ng-container>
+
+    <div class="form-group">
+      <span class="f-1 fw-600 text-uppercase mb-1" translate>
+        select contact to who you want to send landing page
+      </span>
+      <ng-container *ngIf="sendMode === 'text'; else emailContactTemplate">
+        <app-input-contacts
+          [display]="'cell_phone'"
+          [selectedContacts]="contacts"
+        ></app-input-contacts>
+      </ng-container>
+      <ng-template #emailContactTemplate>
+        <app-input-contacts
+          [display]="'email'"
+          [selectedContacts]="contacts"
+        ></app-input-contacts>
+      </ng-template>
+      <span
+        class="d-block f-2 c-red pl-2"
+        *ngIf="sendForm.submitted && !contacts.length"
+        translate
+      >
+        Please select contacts
+      </span>
+    </div>
+
+    <ng-container *ngIf="sendMode === 'text'; else emailContentFormTemplate">
+      <div class="form-group mb-0">
+        <div class="v-center">
+          <span class="f-1 fw-600 text-uppercase mb-1" translate>
+            message
+          </span>
+          <span
+            class="c-red f-2 ml-auto"
+            *ngIf="sendForm.submitted && content.errors"
+            translate
+          >
+            Required!
+          </span>
+        </div>
+        <textarea
+          rows="10"
+          class="form-control text-content"
+          [(ngModel)]="textContent"
+          name="content"
+          #content="ngModel"
+          [required]="sendMode === 'text'"
+          [mention]="templateTokens"
+          (itemSelected)="onTextContentTokenSelected($event)"
+          [mentionConfig]="mentionConfig"
+          #messageText
+          (ngModelChange)="messageChanged()"
+        ></textarea>
+      </div>
+    </ng-container>
+    <ng-template #emailContentFormTemplate>
+      <div class="form-group mt-2">
+        <div class="v-center">
+          <span class="f-1 fw-600 text-uppercase mb-1" translate>
+            subject
+          </span>
+          <span
+            class="c-red f-2 ml-auto"
+            *ngIf="sendForm.submitted && mailSubject.errors"
+            translate
+          >
+            Required!
+          </span>
+        </div>
+        <input
+          type="text"
+          class="form-control subject"
+          [(ngModel)]="subject"
+          name="mailSubject"
+          #mailSubject="ngModel"
+          [required]="sendMode === 'email'"
+          (focus)="subjectFoucs()"
+          [mention]="templateTokens"
+          (itemSelected)="onEmailSubjectTokenSelected($event)"
+          [mentionConfig]="mentionConfig"
+          #subjectField
+        />
+      </div>
+      <div class="mt-2">
+        <span class="f-1 fw-600 text-uppercase mb-1 d-block" translate>
+          message
+        </span>
+        <app-html-editor
+          [(value)]="emailContent"
+          [placeholder]="'Enter Text' | translate"
+          [required]="false"
+          [(attach)]="attachments"
+          [style]="{ height: '200px' }"
+          [hasAttachment]="true"
+          [hasTemplates]="false"
+          [hasCalendly]="isCalendly"
+          [subject]="subject"
+          (onFocus)="contentFoucs()"
+          (onChangeTemplate)="onChangeTemplate($event)"
+          (attachmentChange)="onAttachmentChange($event)"
+          [mention]="tokens"
+          [mentionEnabled]="false"
+          #emailEditor
+        >
+        </app-html-editor>
+      </div>
+    </ng-template>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <div class="text-toolbar v-center mt-2 w-100">
+      <ng-container *ngIf="sendMode === 'email'">
+        <app-template-selector
+          [type]="'email'"
+          (selectTemplate)="selectEmailTemplate($event)"
+        ></app-template-selector>
+      </ng-container>
+      <ng-container *ngIf="sendMode === 'text'">
+        <app-template-selector
+          [type]="'text'"
+          (selectTemplate)="selectTextTemplate($event)"
+        ></app-template-selector>
+      </ng-container>
+      <div ngbDropdown class="insert-token ml-2">
+        <div
+          class="v-center no-carot c-pointer"
+          placement="top-left"
+          ngbTooltip="Schedule"
+          (click)="showSchedule()"
+          style="width: fit-content"
+        >
+          <i
+            class="d-block i-icon i-schedule-send"
+            [class.bgc-blue]="scheduleCheck"
+            [class.bgc-dark]="!scheduleCheck"
+          ></i>
+        </div>
+      </div>
+      <div class="insert-token ml-2 datetime" *ngIf="scheduleCheck">
+        <div class="v-center no-carot c-pointer">{{ strScheduleDate }}</div>
+        <div class="v-center no-carot c-pointer">{{ strScheduleTime }}</div>
+      </div>
+      <i
+        class="d-block i-icon i-close bgc-dark"
+        style="cursor: pointer"
+        (click)="cancelSchedule()"
+        *ngIf="scheduleCheck"
+      ></i>
+      <div ngbDropdown class="insert-template ml-2">
+        <div
+          class="v-center no-carot c-pointer"
+          ngbDropdownToggle
+          placement="bottom"
+          ngbTooltip="Emoji"
+        >
+          <img
+            class="emoji-icon"
+            [src]="sspaService.toAsset('img/emoji.png')"
+          />
+        </div>
+        <div ngbDropdownMenu class="light">
+          <emoji-mart
+            class="emoji-mart"
+            [set]="set"
+            [darkMode]="false"
+            (emojiSelect)="insertEmailContentValue($event.emoji.native)"
+            title="Pick your emoji…"
+          >
+          </emoji-mart>
+        </div>
+      </div>
+      <div ngbDropdown class="insert-template ml-2" *ngIf="isCalendly">
+        <div
+          class="v-center no-carot c-pointer"
+          ngbDropdownToggle
+          placement="bottom"
+          ngbTooltip="Calendly"
+        >
+          <i class="d-block i-icon i-calendly bgc-dark"></i>
+        </div>
+        <div ngbDropdownMenu class="light template-container">
+          <ng-container
+            *ngFor="let calendly of connectService.calendlyAll$ | async"
+          >
+            <div
+              class="template dropdown-item border-top px-2"
+              (click)="selectCalendly(calendly.scheduling_url)"
+            >
+              <div class="v-center h-100">
+                <div
+                  class="f-3 font-weight-bold flex-grow-1 mr-1 h-100 v-center"
+                >
+                  {{ calendly.name || '' | shorten : 45 : '...' }}
+                </div>
+                <a
+                  class="ml-auto"
+                  [href]="calendly.scheduling_url"
+                  target="blank"
+                >
+                  <i class="d-block i-icon i-expand bgc-dark sm"></i>
+                </a>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <app-token-selector
+        (selectToken)="insertEmailContentValue($event)"
+      ></app-token-selector>
+
+      <button
+        class="btn btn-white f-6 font-weight-bold c-blue ml-auto mr-2"
+        type="button"
+        (click)="closeDialog()"
+        translate
+      >
+        Cancel
+      </button>
+      <button
+        class="btn btn-primary f-6 font-weight-bold segment-width"
+        type="submit"
+        [class.loading]="sending"
+        translate
+        [innerHTML]="(scheduleCheck ? 'Schedule' : 'Send') | translate"
+      ></button>
+    </div>
+    <div class="ml-auto text-center segment-width">
+      <span *ngIf="segments > 1" class="d-inline-flex ml-1 f-2">
+        {{segments}} Segments
+        <a href="{{redirectArticleURL}}" target="_blank">
+          <i class="d-block i-icon i-information bgc-dark"></i>
+        </a>
+      </span>
+    </div>
+  </mat-dialog-actions>
+</form>

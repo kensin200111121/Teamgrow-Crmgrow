@@ -1,0 +1,21 @@
+@import 'variables.scss';
+
+.btn-default {
+    background-color: $color-silver;
+    color: $color-dark;
+
+    &:hover {
+        background-color: $color-silver;
+        color: $color-dark;
+    }
+
+    &:focus {
+        background-color: $color-silver;
+        color: $color-dark;
+    }
+
+    &:active {
+        background-color: $color-silver;
+        color: $color-dark;
+    }
+}
