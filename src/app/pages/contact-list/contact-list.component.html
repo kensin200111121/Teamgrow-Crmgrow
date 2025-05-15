@@ -361,11 +361,11 @@
           <td
             mat-cell
             class="px-md-3 px-sm-2"
-            *matCellDef="let element"
+            *matCellDef="let element"≈
           >
-            <span class="tag rounded mr-2" *ngIf="element.tags?.length">{{
-              element.tags[0]
-            }}</span>
+          <span class="tag rounded mr-2" *ngIf="element.tags?.length" appUppercaseTag>{{
+            element.tags[0]
+          }}</span>
             <span class="f-2 op-56">{{ element.moreTag }}</span>
           </td>
         </ng-container>
@@ -493,13 +493,17 @@
         <!-- Assignee -->
         <ng-container matColumnDef="assignee">
           <ng-container *matHeaderCellDef>
-            <th mat-header-cell *ngIf="!selection.length" translate>
-              Assignee
-            </th>
+            <ng-container *enableByFeatures="USER_FEATURES.ASSIGNEE">
+              <th mat-header-cell *ngIf="!selection.length" translate>
+                Assignee
+              </th>
+            </ng-container>
           </ng-container>
-          <td mat-cell *matCellDef="let element">
-            <span class="">{{ getAssigneeName(element) }}</span>
-          </td>
+          <ng-container mat-cell *matCellDef="let element">
+            <td *enableByFeatures="USER_FEATURES.ASSIGNEE">
+              <span>{{ getAssigneeName(element) }}</span>
+            </td>
+          </ng-container>
         </ng-container>
 
         <!-- custom column -->
@@ -684,7 +688,7 @@
                 <div *ngSwitchCase="'shared'">
                   {{ 'no_contact_shared' | translate }}
                 </div>
-              </ng-container>              
+              </ng-container>
             </ng-container>
             <ng-template #searchConditionTemplate>
               {{ 'no_contact_for_filter' | translate }}

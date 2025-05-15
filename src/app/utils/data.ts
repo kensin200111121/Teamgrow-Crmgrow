@@ -73,6 +73,10 @@ export const contactTableFields = [
     value: 'deal',
     label: 'Pipeline',
     feature: USER_FEATURES.DEAL
+  },
+  {
+    value: 'birthday',
+    label: 'Birthday'
   }
 ];
 
@@ -140,6 +144,10 @@ export const contactMergeFields = [
   {
     value: 'staus',
     label: 'Status'
+  },
+  {
+    value: 'birthday',
+    label: 'Birthday'
   },
   {
     value: 'additional_field',
@@ -210,6 +218,7 @@ export const contactTablePropertiseMap = {
   address: 'Address',
   country: 'Country',
   state: 'State',
+  birthday: 'Birthday',
   city: 'City',
   zip: 'Zipcode',
   tags: 'Tags',

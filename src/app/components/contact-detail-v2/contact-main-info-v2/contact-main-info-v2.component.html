@@ -52,12 +52,16 @@
               <span class="ml-3 f-3 font-weight-bold" translate>New Link</span>
             </button>
           </ng-container>
-          <hr class="my-1" />
-          <button data-action="contact-action-merge" class="v-center border-0 c-dark dropdown-item m-1"
-            (click)="openMergeContactDlg()">
-            <i class="i-icon i-contact-merge bgc-dark"></i>
-            <span class="ml-3 f-3 font-weight-bold" translate>Merge</span>
-          </button>
+          <ng-container *ngIf="userId == contactMainInfo.user || !isSspa">
+            <hr class="my-1" />
+          </ng-container>
+          <ng-container  *ngIf="userId == contactMainInfo.user">
+            <button data-action="contact-action-merge" class="v-center border-0 c-dark dropdown-item m-1"
+              (click)="openMergeContactDlg()">
+              <i class="i-icon i-contact-merge bgc-dark"></i>
+              <span class="ml-3 f-3 font-weight-bold" translate>Merge</span>
+            </button>
+          </ng-container>
           <ng-container *ngIf="!isSspa">
             <ng-container *enableByFeatures="USER_FEATURES.CONTACT_SHARE" >
               <button data-action="contact-action-share-contact" *ngIf="userId === contactMainInfo?.['user']?.[0]"
@@ -107,6 +111,7 @@
           <div class="ml-auto d-flex">
             <app-label-select
               #labelSelect
+              [sharedWith]="userId == contactMainInfo.user ? '' : contactMainInfo.user"
               [value]="contactMainInfo.label"
               (valueChange)="changeLabel($event)"
               [placement]="'right'"
@@ -215,9 +220,9 @@
             <hr>
           </div>
           <div class="f-3 d-flex align-items-center tags-section">
-            <span *ngFor="let tag of contactMainInfo.tags" class="tag-el text-capitalize">
-              {{ tag }}
-            </span>
+              <span *ngFor="let tag of contactMainInfo.tags" class="tag-el" appUppercaseTag>
+                {{ tag }}
+              </span>
             <span class="tag-plus c-pointer contact-action-btn" (click)="editContacts('main', $event, true)">
               <i class="i-icon i-tag-plus bgc-blue"></i>
             </span>
@@ -267,7 +272,7 @@
       <div class="mt-2 additional-info">
         <div class="d-flex justify-content-between align-items-center px-3 py-2">
           <h6 class="f-6 fw-700 mb-0">Additional Info</h6>
-          <i 
+          <i
             class="bgc-dark d-block i-icon arrow-down-width cursor-pointer"
             [ngClass]="isAdditionalInfoOpen ? 'i-arrow-up' : 'i-arrow-down'"
             (click)="this.isAdditionalInfoOpen = !this.isAdditionalInfoOpen;"

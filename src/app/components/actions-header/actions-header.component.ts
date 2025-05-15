@@ -46,7 +46,7 @@ export class ActionsHeaderComponent implements OnInit {
       return;
     }
     this.doCommand.emit(command);
-    if (isMore) {
+    if (isMore && command.command !== 'download') {
       setTimeout(() => {
         this.moreDrop.open();
       }, 50);

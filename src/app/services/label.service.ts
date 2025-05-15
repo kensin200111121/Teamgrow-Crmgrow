@@ -19,6 +19,8 @@ export class LabelService extends HttpService {
   labels$ = this.labels.asObservable();
   allLabels: BehaviorSubject<Label[]> = new BehaviorSubject([]);
   allLabels$ = this.allLabels.asObservable();
+  sharedLabels: BehaviorSubject<Record<string, Label[]>> = new BehaviorSubject({});
+  sharedLabels$ = this.sharedLabels.asObservable();
   labelItems: BehaviorSubject<LabelItem[]> = new BehaviorSubject([]);
   labelItems$ = this.labelItems.asObservable();
   total: BehaviorSubject<number> = new BehaviorSubject(0);
@@ -48,8 +50,8 @@ export class LabelService extends HttpService {
       this.allLabels.next([...currentAllLabels, ...labels]);
     });
     this.getSharedLabels().subscribe((shared_labels) => {
-      const currentAllLabels = this.allLabels.getValue();
-      this.allLabels.next([...currentAllLabels, ...shared_labels]);
+      const currentSharedLabels = this.sharedLabels.getValue();
+      this.sharedLabels.next({...currentSharedLabels, ...shared_labels});
     });
   }
 
@@ -104,9 +106,9 @@ export class LabelService extends HttpService {
       catchError(this.handleError('GET LABELS', []))
     );
   }
-  getSharedLabels(): Observable<Label[]> {
+  getSharedLabels(): Observable<Record<string, Label[]>> {
     return this.httpClient.get(this.server + LABEL.SHARED_LABELS).pipe(
-      map((res) => res['data'] || []),
+      map((res) => res['data'] || {}),
       catchError(this.handleError('GET SHARED LABELS', []))
     );
   }

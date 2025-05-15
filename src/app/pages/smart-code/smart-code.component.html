@@ -84,9 +84,7 @@
               (click)="openSmartCode(element)"
             >
               <div class="v-center c-pointer pr-2">
-                <span class="tag rounded mr-2" *ngIf="element.tags?.length">{{
-                  element.tags[0]
-                }}</span>
+                <span class="tag rounded mr-2" *ngIf="element.contact?.tags && element.contact.tags?.length" appUppercaseTag>{{ element.contact.tags[0] }}</span>
                 <span
                   class="f-2 op-56"
                   *ngIf="element.tags?.length > 1"

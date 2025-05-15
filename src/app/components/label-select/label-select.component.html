@@ -35,12 +35,14 @@
       (optionSelected)="onChangeLabel($event)"
       [class]="(type === 'form' ? 'form-' : '') + 'label-panel'"
     >
-      <mat-option style="height: unset; line-height: unset;" [disabled]="true">
-        <a class="py-2 text-primary f-2 v-center border rounded mt-2 mb-2 px-2 td-none c-pointer manage-label" (click)="openManageLabel()">
-          <i class="i-icon i-setting bgc-blue mr-1 sm"></i>
-          <span class="c-blue fw-600" translate>Create Status</span>
-        </a>
-      </mat-option>
+      <ng-container *ngIf="!sharedWith?.length">
+        <mat-option style="height: unset; line-height: unset;" [disabled]="true">
+          <a class="py-2 text-primary f-2 v-center border rounded mt-2 mb-2 px-2 td-none c-pointer manage-label" (click)="openManageLabel()">
+            <i class="i-icon i-setting bgc-blue mr-1 sm"></i>
+            <span class="c-blue fw-600" translate>Create Status</span>
+          </a>
+        </mat-option>
+      </ng-container>
       <ng-container *ngIf="hasKeepLabel">
         <mat-option [value]="'keep'"
           style="height: unset; line-height: unset;">
@@ -55,15 +57,13 @@
           <span class="label-name" [style.backgroundColor]="'#F5F5F5'" style="color: #4D4D4D;">{{defaultLabel}}</span>
         </div>
       </mat-option>
-      <ng-container>
-        <ng-container *ngFor="let item of labelService.allLabels$ | async">
-          <mat-option [attr.data-name]="'contact-label-' + item.name" [value]="item" *ngIf="item.user === user || item.role == 'admin' || (!user && item.mine)"
-                    style="height: unset; line-height: unset;">
-            <div class="v-center py-2 f-3 fw-600">
-              <span class="label-name text-capitalize" [style.backgroundColor]="item.color === '#FFF' ? '#000' : item.color">{{item.name}}</span>
-            </div>
-          </mat-option>
-        </ng-container>
+      <ng-container *ngFor="let item of (sharedWith?.length ? ((labelService.sharedLabels$ | async)[sharedWith] ?? []) : (labelService.allLabels$ | async))">
+        <mat-option [attr.data-name]="'contact-label-' + item.name" [value]="item"
+                  style="height: unset; line-height: unset;">
+          <div class="v-center py-2 f-3 fw-600">
+            <span class="label-name text-capitalize" [style.backgroundColor]="item.color === '#FFF' ? '#000' : item.color">{{item.name}}</span>
+          </div>
+        </mat-option>
       </ng-container>
     </mat-autocomplete>
   </mat-form-field>

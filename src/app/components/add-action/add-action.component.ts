@@ -2574,6 +2574,11 @@ export class AddActionComponent implements OnInit, OnDestroy {
         category: ACTION_CAT.NORMAL
       }
     ];
+    if (environment.isSspa) {
+      this.DisplayActions = this.DisplayActions.filter(
+        (_item) => _item.type != 'share_contact' && _item.type != 'move_contact'
+      );
+    }
   }
 
   initDialog(): void {

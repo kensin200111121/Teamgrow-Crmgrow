@@ -95,14 +95,15 @@ export class DealsService extends HttpService {
           dictionary[stage._id] = stage;
         });
       });
-      const parsedInfo = JSONParser(selectedPipeline);
+      const _selectedPipeline = this.selectedPipeline.getValue();
+
       const bMyPipeLine = value.some(
-        (element) => parsedInfo._id === element._id
+        (element) => _selectedPipeline._id === element._id
       );
       this.stageDictionary.next(dictionary);
       if (selectedPipeline && value.length) {
         if (bMyPipeLine) {
-          this.selectedPipeline.next(parsedInfo);
+          this.selectedPipeline.next(_selectedPipeline);
         } else {
           this.selectedPipeline.next(null);
         }

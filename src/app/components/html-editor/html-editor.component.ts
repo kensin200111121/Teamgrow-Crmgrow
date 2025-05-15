@@ -73,6 +73,7 @@ export class HtmlEditorComponent implements OnInit {
   @Input() enableChatgpt = false;
   isCalendly = false;
   audioContext;
+  isSspa = environment.isSspa;
   config = {
     toolbar: {
       container: [

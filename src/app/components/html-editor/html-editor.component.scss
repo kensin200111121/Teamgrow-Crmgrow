@@ -147,76 +147,76 @@
     }
     span[data-value="arial"] {
       &::before {
-        content: "Sans Serif" !important;
-        font-family: "arial, sans-serif";
+        content: "Arial" !important;
+        font-family: "Arial", sans-serif;
       }
     }
     span[data-value="times new roman"] {
       &::before {
-        content: "Serif" !important;
-        font-family: "times new roman", serif;
+        content: "Times New Roman" !important;
+        font-family: "Times New Roman", serif;
       }
     }
     span[data-value="monospace"] {
       &::before {
-        content: "Fixed Width" !important;
-        font-family: "monospace";
+        content: "Monospace" !important;
+        font-family: monospace;
       }
     }
     span[data-value="arial black"] {
       &::before {
-        content: "Wide" !important;
-        font-family: "arial black", sans-serif;
+        content: "Arial Black" !important;
+        font-family: "Arial Black", sans-serif;
       }
     }
     span[data-value="arial narrow"] {
       &::before {
-        content: "Narrow" !important;
-        font-family: "arial narrow", sans-serif;
+        content: "Arial Narrow" !important;
+        font-family: "Arial Narrow", sans-serif;
       }
     }
     span[data-value="comic sans ms"] {
       &::before {
         content: "Comic Sans MS" !important;
-        font-family: "comic sans ms", sans-serif;
+        font-family: "Comic Sans MS", sans-serif;
       }
     }
     span[data-value="garamond"] {
       &::before {
         content: "Garamond" !important;
-        font-family: garamond, "times new roman", serif;
+        font-family: "Garamond", serif;
       }
     }
     span[data-value="georgia"] {
       &::before {
         content: "Georgia" !important;
-        font-family: "georgia, serif";
+        font-family: "Georgia", serif;
       }
     }
     span[data-value="tahoma"] {
       &::before {
         content: "Tahoma" !important;
-        font-family: "tahoma, sans-serif";
+        font-family: "Tahoma", sans-serif;
       }
     }
     span[data-value="trebuchet ms"] {
       &::before {
         content: "Trebuchet MS" !important;
-        font-family: "trebuchet ms", sans-serif;
+        font-family: "Trebuchet MS", sans-serif;
       }
     }
     span[data-value="verdana"] {
       &::before {
         content: "Verdana" !important;
-        font-family: "verdana", sans-serif;
+        font-family: "Verdana", sans-serif;
       }
     }
   }
   .ql-font-trebuchet-ms {
-    font-family: "trebuchet ms", sans-serif;
+    font-family: "Trebuchet MS", sans-serif;
   }
-  .ql-font-vardana {
-    font-family: "verdana, sans-serif";
+  .ql-font-verdana {
+    font-family: "Verdana", sans-serif;
   }
   .qtip::before {
     width: max-content;

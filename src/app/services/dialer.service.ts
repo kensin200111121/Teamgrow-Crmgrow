@@ -135,14 +135,17 @@ export class DialerService extends HttpService {
     }
     this.logs.next([]);
     const dialerMini = document.getElementById('wavv-dialer-mini');
+    const minWidth = parseInt(dialerMini.style.minWidth);
+    const minHeight = parseInt(dialerMini.style.minHeight);
+    const centerX = (window.innerWidth - minWidth) / 2;
+    const centerY = (window.innerHeight - minHeight) / 2;
     Storm.startCampaign({ contacts: filtered, mini: true })
       .then(() => {
         if (dialerMini) {
           dialerMini.style.position = 'fixed';
-          dialerMini.style.top = '40%';
-          dialerMini.style.left = '40%';
+          dialerMini.style.left = `${centerX}px`;
+          dialerMini.style.top = `${centerY}px`;
           dialerMini.style.zIndex = '1000';
-
           environment.isSspa && this.setWavvCallStatus(true);
         }
         this._onStartedCampaign({

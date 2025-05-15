@@ -545,8 +545,9 @@
                 <td mat-cell
                     *matCellDef="let element"
                     (click)="openContact(element)">
-                <span class="tag rounded mr-2"
-                      *ngIf="element.tags?.length">{{element.tags[0]}}</span>
+                    <span class="tag rounded mr-2" *ngIf="element.tags?.length" appUppercaseTag>{{
+                      element.tags[0]
+                    }}</span>
                   <span class="f-2 op-56">{{element.moreTag}}</span>
                 </td>
               </ng-container>
@@ -764,16 +765,17 @@
               <!-- Pipeline Column -->
               <ng-container matColumnDef="pipeline">
                 <ng-container *matHeaderCellDef>
-                  <th mat-header-cell
-                      *ngIf="!dealSelection.length" translate>Pipeline</th>
+                  <ng-container *enableByFeatures="USER_FEATURES.PIPELINE">
+                    <th mat-header-cell *ngIf="!dealSelection.length" translate>Pipeline</th>
+                  </ng-container>
                 </ng-container>
-                <td mat-cell
-                    *matCellDef="let element"
-                >
-                  <div class="v-center c-pointer">
-                    <div class="f-3 mr-2">{{element.pipeline ? element.pipeline['title'] : ''}}</div>
-                  </div>
-                </td>
+                <ng-container mat-cell *matCellDef="let element">
+                  <td *enableByFeatures="USER_FEATURES.PIPELINE">
+                    <div class="v-center c-pointer" >
+                      <div class="f-3 mr-2">{{element.pipeline ? element.pipeline['title'] : ''}}</div>
+                    </div>
+                  </td>
+                </ng-container>
               </ng-container>
 
               <!-- Deal Stage Column -->

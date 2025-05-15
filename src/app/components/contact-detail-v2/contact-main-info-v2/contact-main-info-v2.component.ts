@@ -133,6 +133,11 @@ export class ContactMainInfoV2Component implements OnInit, AfterViewInit {
     if (!contact) {
       return false;
     }
+
+    if(contact.shared_all_member && contact.shared_team?.length){
+      return false;
+    }
+
     const pending_users = contact.pending_users || [];
     const sharedMembers = this.sharedMembers || [];
     const contactUser = contact.user || [];
@@ -140,7 +145,8 @@ export class ContactMainInfoV2Component implements OnInit, AfterViewInit {
     if (
       pending_users.includes(this.userId) ||
       (!contactUser.includes(this.userId) &&
-        !sharedMembers.includes(this.userId))
+        !sharedMembers.includes(this.userId)
+      )
     ) {
       return true;
     } else {
@@ -196,7 +202,7 @@ export class ContactMainInfoV2Component implements OnInit, AfterViewInit {
     if (
       this.userId &&
       (this.userId === this.contactMainInfo.user ||
-        this.userId === this.contactMainInfo.user[0])
+        this.userId === this.contactMainInfo.user?.[0])
     ) {
       return this.leadFields;
     } else {
@@ -315,14 +321,25 @@ export class ContactMainInfoV2Component implements OnInit, AfterViewInit {
   getLableColor(): string {
     let color = '#ccc';
     const contactLabel = this.contactMainInfo.label;
-    this.labelService.allLabels$.subscribe((res) => {
-      const value = _.find(res, (e) => e._id === contactLabel);
-      color = value?.color;
-      if (value?.color === '#FFF') {
-        color = '#ccc';
-      }
-    });
-    return color;
+    if(this.userId == this.contactMainInfo.user){
+      this.labelService.allLabels$.subscribe((res) => {
+        const value = _.find(res, (e) => e._id === contactLabel);
+        color = value?.color;
+        if (value?.color === '#FFF') {
+          color = '#ccc';
+        }
+      });
+      return color;
+    }else{
+      this.labelService.sharedLabels$.subscribe((res) => {
+        const value = _.find(res[this.contactMainInfo.user], (e) => e._id === contactLabel);
+        color = value?.color;
+        if (value?.color === '#FFF') {
+          color = '#ccc';
+        }
+      });
+      return color;
+    }
   }
 
   checkSharable(): void {
@@ -611,12 +628,12 @@ export class ContactMainInfoV2Component implements OnInit, AfterViewInit {
       .bulkUpdate([this.contactMainInfo._id], { label: label }, {})
       .subscribe((status) => {
         if (status) {
+          this.contactMainInfo.label = label;
           this.handlerService.bulkContactUpdate$(
             [this.contactMainInfo._id],
             { label: label },
             {}
           );
-          this.contactMainInfo.label = label;
         }
       });
   }
@@ -850,6 +867,7 @@ export class ContactMainInfoV2Component implements OnInit, AfterViewInit {
         .bulkUpdate([this.contactMainInfo._id], { owner: assignee }, {})
         .subscribe((status) => {
           if (status) {
+            this.contactMainInfo.owner = assignee === 'unassign' ? null : assignee;
             this.handlerService.bulkContactUpdate$(
               [this.contactMainInfo._id],
               { owner: assignee },

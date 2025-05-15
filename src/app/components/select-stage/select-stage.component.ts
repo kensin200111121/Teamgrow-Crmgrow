@@ -3,6 +3,8 @@ import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { DealStage } from '@app/models/deal-stage.model';
 import { PipelineWithStages } from '@app/models/pipeline.model';
 import { DealsService } from '@app/services/deals.service';
+import { UserService } from '@services/user.service';
+import { Account } from '@app/models/user.model';
 
 @Component({
   selector: 'app-select-stage',
@@ -52,10 +54,17 @@ export class SelectStageComponent implements OnInit {
   stages: any[] = [];
   searchTermPipeline = '';
   selectedPipelineWithStages: PipelineWithStages;
-  constructor(public dealsService: DealsService) {}
+  accounts: Account[] = [];
+  constructor(
+    public dealsService: DealsService,
+    protected userService: UserService
+  ) {}
 
   ngOnInit(): void {
     this.initializePipelines();
+    this.userService.accounts$.subscribe((accountInfo) => {
+      this.accounts = accountInfo?.accounts ?? [];
+    });
   }
   private initializePipelines(): void {
     this.dealsService.pipelineStages$.subscribe((res) => {

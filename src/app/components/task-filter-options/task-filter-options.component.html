@@ -12,7 +12,7 @@
           <span [ngSwitch]="option.name">
             <span *ngSwitchCase="'Label'">
               {{ labelDic[option.items[0]] || 'No Status' }}
-            </span>            
+            </span>
             <span *ngSwitchCase="'Source'">
               {{ option.items[0] || 'No Source' }}
             </span>
@@ -161,7 +161,17 @@
               (filter)="applyFilter($event, labelToggler)"
               [target]="'task'"
             ></app-advanced-filter-tag>
-          </div>          
+          </div>
+          <div
+            *ngSwitchCase="'Assignee'"
+            class="label-container"
+            (click)="$event.stopPropagation()"
+          >
+            <app-advanced-filter-assignee
+              (filter)="applyFilter($event, labelToggler)"
+              [target]="'task'"
+            ></app-advanced-filter-assignee>
+          </div>
         </div>
       </mat-menu>
     </ng-container>

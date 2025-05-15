@@ -27,7 +27,7 @@ import { NoteCreateComponent } from '@app/components/note-create/note-create.com
 import { ContactAssignAutomationComponent } from '@app/components/contact-assign-automation/contact-assign-automation.component';
 import { DealCreateComponent } from '@app/components/deal-create/deal-create.component';
 import { CalendarEventDialogComponent } from '@app/components/calendar-event-dialog/calendar-event-dialog.component';
-import { DownloadContactsProgreeBarComponent } from '@app/components/contact-download-progress-bar/contact-download-progress-bar.component';
+import { DownloadContactsProgressBarComponent } from '@app/components/contact-download-progress-bar/contact-download-progress-bar.component';
 import { SearchOption } from '@models/searchOption.model';
 import { ConfirmMoveContactsComponent } from '@app/components/confirm-move-contacts/confirm-move-contacts.component';
 import { DialerService } from '@app/services/dialer.service';
@@ -747,7 +747,7 @@ export class ContactListComponent implements OnInit {
   downloadCSV(): void {
     this.updateActionsStatus('download', true);
     this.dialog
-      .open(DownloadContactsProgreeBarComponent, {
+      .open(DownloadContactsProgressBarComponent, {
         width: '90vw',
         maxWidth: '800px',
         data: {

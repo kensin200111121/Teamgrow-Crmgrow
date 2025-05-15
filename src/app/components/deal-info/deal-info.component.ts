@@ -22,6 +22,7 @@ export class DealInfoComponent implements OnInit {
   additional_fields: any[] = [];
   memberIds: string[] = [];
   contacts = [];
+  teamUsers: Account[] = [];
   private customFieldSubscription: Subscription;
 
   constructor(
@@ -39,6 +40,9 @@ export class DealInfoComponent implements OnInit {
     this.customFieldSubscription && this.customFieldSubscription.unsubscribe();
     this.customFieldService.dealFields$.subscribe((_fields) => {
       this.additional_fields = _fields;
+    });
+    this.userService.accounts$.subscribe((res) => {
+      this.teamUsers = res?.accounts;
     });
   }
 

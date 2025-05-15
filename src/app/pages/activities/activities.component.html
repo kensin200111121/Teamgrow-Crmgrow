@@ -132,7 +132,7 @@
         <ng-container matColumnDef="contact_tags">
           <th mat-header-cell *matHeaderCellDef>tags</th>
           <td mat-cell class="px-md-3 px-sm-2" *matCellDef="let element">
-            <span class="tag rounded mr-2" *ngIf="element.contacts.tags?.length">{{ element.contacts.tags[0] }}</span>
+            <app-tag-view [className]="'tag rounded mr-2'" *ngIf="element.tags?.length" [label]="element.tags[0]"></app-tag-view>
           </td>
         </ng-container>
 

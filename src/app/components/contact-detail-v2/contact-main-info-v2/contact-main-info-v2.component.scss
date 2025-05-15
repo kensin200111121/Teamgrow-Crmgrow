@@ -26,7 +26,7 @@
 
 .main-info {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   flex: 1;
 }
 
@@ -80,7 +80,7 @@
 .card-body {
   margin-top: -52px;
   .contact-avatar {
-    position: relative;  
+    position: relative;
     border: 3px solid #FFFFFF;
     width: 56px;
     height: 56px;
@@ -117,6 +117,9 @@
   min-height: 26px;
 }
 
+.tag-plus {
+  display: inline-flex;
+}
 .tag-el {
   padding: 2px 6px;
   background-color: gainsboro;
@@ -128,11 +131,6 @@
   display: inline-block;
   overflow-wrap: anywhere;
 }
-
-.tag-plus {
-  display: inline-flex;
-}
-
 .i-tag-plus{
   width: 32px;
   height: 32px;
@@ -262,7 +260,7 @@
       min-width: 11px;
     }
   }
-  
+
   .scrollbar {
     background-color: rgba(90, 90, 90, 0.2);
     border-radius: 4px;
@@ -285,26 +283,26 @@
     .mat-form-field-infix {
       width: 56px;
       padding: 0px!important;
-  
+
       .mat-chip-list-wrapper {
         margin: 0px;
-  
+
         .value-label.py-1 {
           padding: 0px !important;
         }
-  
+
         .avartar-icon {
           background: white;
           border-radius: 50%;
           width: 40px;
           height: 40px;
-  
+
           img, .contact-avatar {
             width: 40px;
             height: 40px;
             line-height: 40px !important;
           }
-          
+
           .empty-avatar {
             width: 40px;
             height: 40px;
@@ -313,7 +311,7 @@
             align-items: center;
             background-color: #b8b8b8;
             border-radius: 50%;
-            
+
             .i-icon {
               width: 24px;
               height: 24px;
@@ -321,7 +319,7 @@
             }
           }
         }
-  
+
         .mat-autocomplete-trigger {
           height: 100%;
           padding: 0px;
@@ -333,7 +331,7 @@
 }
 
 @media screen and (max-width: 1380px) {
-  
+
 }
 
 :host ::ng-deep {
@@ -345,15 +343,15 @@
       word-break: break-word;
     }
   }
-  
+
   @media screen and (max-width: 960px) {
     .main-scrollbar {
       & > .ng-scrollbar-wrapper {
         position: relative;
-        
+
         & > .ng-scroll-viewport-wrapper {
           position: relative;
-  
+
           & > .ng-scroll-viewport {
             position: relative;
             contain: content;

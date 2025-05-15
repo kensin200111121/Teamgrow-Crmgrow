@@ -129,7 +129,11 @@
           </div>
         </ng-container>
         <ng-template #leaveComment>
-          <button class="btn btn-secondary f-2 py-0 mt-3 px-2" (click)="leaveTaskComment(activity.action)" translate>
+          <button
+            *ngIf="activity.action.status == 1"
+            class="btn btn-secondary f-2 py-0 mt-3 px-2"
+            (click)="leaveTaskComment(activity.action)"
+            translate>
             Leave task comment
           </button>
         </ng-template>

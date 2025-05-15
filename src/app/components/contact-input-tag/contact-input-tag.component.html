@@ -5,7 +5,7 @@
     [removable]="true"
     (removed)="remove(tag)">
     <div [attr.data-name]="'contact-tag-' + tag" class="v-center chip p-1 rounded-pill mr-1">
-      <div class="info c-dark font-weight-bold ml-1 break-all p-0 f-2 text-capitalize" translate>
+      <div class="info c-dark font-weight-bold ml-1 break-all p-0 f-2" translate appUppercaseTag>
         {{ tag === null ? "No Tag" : tag}}
       </div>
       <div class="close-icon-wrapper rounded-circle bg-white ml-1">
@@ -51,14 +51,26 @@
               </div>
             </div>
           </mat-option>
-          <mat-option *ngFor="let item of filteredResults | async" [value]="item">
-            <div class="d-flex chip py-2" *ngIf="item._id">
-              <div class="info">
-                <div class="f-3" *ngIf="item.isNew" translate>Create new tag:</div>
-                <div class="f-4 fw-600 text-capitalize">{{item?._id}}</div>
+          <ng-container *ngIf="sharedWith?.length; else ownedContact">
+            <mat-option *ngFor="let item of sharedTags" [value]="item">
+              <div class="d-flex chip py-2" *ngIf="item._id">
+                <div class="info">
+                  <div class="f-3" *ngIf="item.isNew" translate>Create new tag:</div>
+                  <div class="f-4 fw-600 text-capitalize">{{item?._id}}</div>
+                </div>
               </div>
-            </div>
-          </mat-option>
+            </mat-option>
+          </ng-container>
+          <ng-template #ownedContact>
+            <mat-option *ngFor="let item of filteredResults | async" [value]="item">
+              <div class="d-flex chip py-2" *ngIf="item._id">
+                <div class="info">
+                  <div class="f-3" *ngIf="item.isNew" translate>Create new tag:</div>
+                  <div class="f-4 fw-600 text-capitalize">{{item?._id}}</div>
+                </div>
+              </div>
+            </mat-option>
+          </ng-template>
           <mat-option [value]="nullTag" *ngIf="hasNoTag && selectedTags.indexOf(null) === -1 && keyword">
             <div class="d-flex chip py-2">
               <div class="info">

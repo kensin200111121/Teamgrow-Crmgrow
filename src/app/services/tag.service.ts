@@ -41,6 +41,12 @@ export class TagService extends HttpService {
       catchError(this.handleError('LOAD ALL TAGS', []))
     );
   }
+  public getSharedTags(user: string): Observable<any[]> {
+    return this.httpClient.get(this.server + TAG.SHARED_TAGS + '/' + user).pipe(
+      map((res) => res['data'] || []),
+      catchError(this.handleError('GET SHARED TAGS', []))
+    );
+  }
 
   /**
    * Get All Tags and Set the Observable Data

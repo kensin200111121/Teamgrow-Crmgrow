@@ -74,6 +74,7 @@ import { NamePipe } from '@pipes/name.pipe';
 import { PropertyPipe } from '@pipes/property.pipe';
 import { ConvertIdToUrlPipe } from '@app/pipes/convert-id-to-url.pipe';
 import { EnableByFeaturesDirective } from '@app/directives/enable-by-features.directive';
+import { UppercaseTagDirective } from '@app/directives/uppercase-tag.directive'
 import {
   RECAPTCHA_SETTINGS,
   RecaptchaFormsModule,
@@ -104,7 +105,8 @@ import { TimeWithProfilePipe } from '@app/pipes/time-profile.pipe';
     PropertySearchPipe,
     PropertyPipe,
     TimeWithProfilePipe,
-    EnableByFeaturesDirective
+    EnableByFeaturesDirective,
+    UppercaseTagDirective
   ],
   imports: [
     CommonModule,
@@ -241,7 +243,8 @@ import { TimeWithProfilePipe } from '@app/pipes/time-profile.pipe';
     TimeWithProfilePipe,
     NgScrollbarModule,
     CodemirrorModule,
-    EnableByFeaturesDirective
+    EnableByFeaturesDirective,
+    UppercaseTagDirective
   ]
 })
 export class SharedModule {}

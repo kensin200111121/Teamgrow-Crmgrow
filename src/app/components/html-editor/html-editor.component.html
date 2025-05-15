@@ -46,7 +46,7 @@
     <button class="emoji-action actions" cdkOverlayOrigin #emojiOverlay="cdkOverlayOrigin" type="button" (click)="showEmoji = true" translate>
       OPEN
     </button>
-    <div class="chatgpt-dropdown" *ngIf="hasChatgpt">
+    <div class="chatgpt-dropdown" *ngIf="hasChatgpt && !isSspa">
       <app-chatgpt-button [enabled]="enableChatgpt" (setAiMode)="setAiMode($event)"></app-chatgpt-button>
     </div>
     <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="emojiOverlay" [cdkConnectedOverlayOpen]="showEmoji"

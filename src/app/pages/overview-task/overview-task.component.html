@@ -32,8 +32,12 @@
                   </div>
                 </td>
                 <td class="v-center">
-                  <div class="contact-avatar f-3 mr-2 c-pointer" title="{{task.contact?.fullName}}">
-                    {{task.contact?.avatarName}}</div>
+                  <a class="v-center c-pointer undecoration" *ngIf="task.contact?.fullName; else emptyAvatar;" [routerLink]="['/contacts/'+task.contact._id]">
+                    <div class="contact-avatar f-3 mr-2 c-pointer" title="{{task.contact?.fullName}}">{{task.contact?.avatarName}}</div>
+                  </a>
+                  <ng-template #emptyAvatar>
+                    <div class="mr-2 tasks-empty-avatar"></div>
+                  </ng-template>
                   <span class="c-dark fw-600">{{task.due_date | datetimeFormat: task.is_full? 'MMM d, y':'MMM d, y, h:mm a'}}</span>
                 </td>
                 <td>

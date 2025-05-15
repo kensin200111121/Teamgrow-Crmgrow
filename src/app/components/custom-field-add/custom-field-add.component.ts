@@ -43,7 +43,7 @@ export class CustomFieldAddComponent implements OnInit {
 
   // Dropdown Selector Option
   option_id = 1;
-  options = [{ label: '', value: 'option-1' }];
+  options = [{ label: '', value: this.generateUniqueOptionValue() }];
 
   constructor(
     private dialogRef: MatDialogRef<CustomFieldAddComponent>,
@@ -64,31 +64,28 @@ export class CustomFieldAddComponent implements OnInit {
 
   ngOnInit(): void {
     try {
-      this.original = JSON.parse(JSON.stringify(this.data.field));
-    } catch (err) {
-      console.log('field data', err);
-    }
-    if (this.mode == 'edit') {
-      this.fieldId = this.data.field.id;
-      this.fieldName = this.data.field.name;
-      const type = this.data.field.type || FieldTypeEnum.TEXT;
-      this.FIELD_TYPES.some((_f) => {
-        if (_f.value === type) {
-          this.fieldType = _f.value;
-          return true;
-        }
-      });
+      const field = JSON.parse(JSON.stringify(this.data.field));
+      this.original = field;
 
-      this.options = this.data.field.options;
-      if (this.options.length == 0) {
-        this.options = [{ label: '', value: 'option-1' }];
+      if (this.mode === 'edit') {
+        this.fieldId = field.id;
+        this.fieldName = field.name;
+
+        const matchedType = this.FIELD_TYPES.find((f) => f.value === field.type);
+        this.fieldType = matchedType ? matchedType.value : FieldTypeEnum.TEXT;
+
+        this.options = field.options?.length
+          ? JSON.parse(JSON.stringify(field.options))
+          : [{ label: '', value: this.generateUniqueOptionValue() }];
+
+        this.format = field.format || DateFormatEnum.MMDDYYYY;
+      } else if (this.mode === 'convert') {
+        this.fieldName = field.name;
+        this.fieldType = field.type;
+        this.format = field.format || DateFormatEnum.MMDDYYYY;
       }
-
-      this.format = this.data.field.format || DateFormatEnum.MMDDYYYY;
-    } else if (this.mode === 'convert') {
-      this.fieldName = this.data.field.name;
-      this.fieldType = this.data.field.type;
-      this.format = this.data.field.format || DateFormatEnum.MMDDYYYY;
+    } catch (err) {
+      console.log('field data parse error', err);
     }
   }
 
@@ -191,7 +188,7 @@ export class CustomFieldAddComponent implements OnInit {
     this.option_id++;
     const data = {
       label: '',
-      value: 'option-' + this.option_id
+      value: this.generateUniqueOptionValue()
     };
     this.options.push(data);
   }
@@ -218,6 +215,12 @@ export class CustomFieldAddComponent implements OnInit {
   }
 
   optionValueChange(option: any): void {
-    option.value = option.label.replace(' ', '-');
+    option.value = option.label;
+  }
+
+  private generateUniqueOptionValue(prefix = 'option', ): string {
+    const timestamp = Date.now().toString(36);
+    const random = Math.random().toString(36).substring(2, 8);
+    return `${prefix}-${timestamp}-${random}-${this.option_id}`;
   }
 }

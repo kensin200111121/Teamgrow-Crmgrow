@@ -13,7 +13,7 @@ import { ContactService } from '@services/contact.service';
 import { saveAs } from 'file-saver';
 import { ToastrService } from 'ngx-toastr';
 import moment from 'moment-timezone';
-import { DownloadContactsProgreeBarComponent } from '../contact-download-progress-bar/contact-download-progress-bar.component';
+import { DownloadContactsProgressBarComponent } from '../contact-download-progress-bar/contact-download-progress-bar.component';
 @Component({
   selector: 'app-upgrade-plan-error',
   templateUrl: './upgrade-plan-error.component.html',
@@ -85,7 +85,7 @@ export class UpgradePlanErrorComponent implements OnInit {
       this.toast.error("There isn't any contacts in your account");
       return;
     }
-    this.dialog.open(DownloadContactsProgreeBarComponent, {
+    this.dialog.open(DownloadContactsProgressBarComponent, {
       width: '90vw',
       maxWidth: '800px',
       data: {

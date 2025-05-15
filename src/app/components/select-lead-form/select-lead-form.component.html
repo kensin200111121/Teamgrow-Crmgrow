@@ -12,14 +12,14 @@
         <select class="form-control c-dark f-5"
           (change)='onSelectForm(formSelect.value)'
           name="lead_form"
-          #formSelect 
+          #formSelect
         >
           <option value="0"></option>
           <option *ngFor="let form of leadForms" [selected]="form._id === this.formId" value="{{form._id}}">
           {{form.name}}
           </option>
         </select>
-      </div>        
+      </div>
     </div>
   </div>
   <div class="select-form mt-3" *ngIf="leadForm">
@@ -33,7 +33,7 @@
       <div class="d-block mt-2" *ngIf="leadForm.tags?.length">
         <div class="form-name f-4">Tags</div>
         <div class="d-flex flex-wrap px-1">
-          <div class="badge badge-secondary f-2 py-1 mx-1" *ngFor="let tag of leadForm.tags.slice(0, 5)">
+          <div class="badge badge-secondary f-2 py-1 mx-1" *ngFor="let tag of leadForm.tags.slice(0, 5)" appUppercaseTag>
             {{ tag | shorten :10:'...' }}
           </div>
           <span class="more font-weight-bold f-3" *ngIf="leadForm.tags.length > 5"
@@ -79,6 +79,6 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <a class="btn btn-white f-6 font-weight-bold c-dark mr-2" (click)="close()" translate>Cancel</a>
-  <button class="btn btn-primary f-6 font-weight-bold" type="button" (click)="addForm()" translate>Add</button>    
+  <button class="btn btn-primary f-6 font-weight-bold" type="button" (click)="addForm()" translate>Add</button>
 </mat-dialog-actions>
 

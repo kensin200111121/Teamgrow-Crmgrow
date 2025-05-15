@@ -180,6 +180,7 @@ export class ContactCreateEditComponent implements OnInit, OnDestroy {
     this.COUNTRIES = this.contactService.COUNTRIES;
     this.COUNTRY_REGIONS = this.contactService.COUNTRY_REGIONS;
     if (!this.contact.tags) this.contact.tags = [];
+    if(this.contact?.owner?.length) this.relatedPerson = true;
 
     const profile = this.userService.profile.getValue();
     if (profile) {
@@ -204,8 +205,13 @@ export class ContactCreateEditComponent implements OnInit, OnDestroy {
     this.customFieldSubscription && this.customFieldSubscription.unsubscribe();
     this.customFieldSubscription = this.customFieldService.fields$.subscribe(
       (_fields) => {
+        if(this.userId == this.contact.user || this.contact.user == undefined){
+          this.additional_fields = _fields;
+        }else{
+          this.additional_fields = this.contact.customFields ?? [];
+        }
         const additional_field = this.contact.additional_field || {};
-        this.additional_fields = _fields.map((item) => {
+        this.additional_fields = this.additional_fields.map((item) => {
           if (additional_field.hasOwnProperty(item.name)) {
             return {
               ...item,
@@ -851,6 +857,6 @@ export class ContactCreateEditComponent implements OnInit, OnDestroy {
   }
 
   changeAssignee(evt: any): void {
-    this.contact.owner = evt;
+    this.contact.owner = evt === 'unassign' ? '' : evt;
   }
 }

@@ -4413,7 +4413,6 @@ export const BulkActions = {
       command: 'download',
       loading: false,
       loadingLabel: 'Downloading',
-      feature: USER_FEATURES.COMMUNITY
     },
     {
       label: 'Share',
@@ -4574,7 +4573,6 @@ export const BulkActions = {
       command: 'download',
       loading: false,
       loadingLabel: 'Downloading',
-      feature: USER_FEATURES.COMMUNITY
     },
     {
       label: 'Stop Share',
@@ -4693,7 +4691,6 @@ export const BulkActions = {
       command: 'download',
       loading: false,
       loadingLabel: 'Downloading',
-      feature: USER_FEATURES.COMMUNITY
     }
   ],
   AssignAutomations: [

@@ -23,11 +23,7 @@
                   class="form-control"
                   *ngSwitchCase="'text'"
                   name="{{ 'additional-field-value-' + i }}"
-                  [placeholder]="
-                    field.placeholder
-                      ? field.placeholder
-                      : 'Field value | translate'
-                  "
+                  [placeholder]="field.placeholder ?? ''"
                   [(ngModel)]="additional_fields[field.name]"
                 />
                 <input
@@ -79,7 +75,6 @@
                   [(value)]="additional_fields[field.name]"
                   [minDate]="field?.minDate"
                   [maxDate]="field?.maxDate"
-                  [placeholder]="field.placeholder"
                   [required]="false"
                   outFormat="date"
                   (valueChange)="changeDate(field.name)"

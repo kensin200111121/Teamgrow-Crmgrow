@@ -14,6 +14,9 @@
       color: $color-white !important;
       border: 1px solid $color-blue !important;
     }
+    &:disabled {
+      opacity: .35;
+    }
     &:focus {
       box-shadow: none !important;
     }
@@ -44,4 +47,11 @@
   width: 16px;
   height: 16px;
   margin-right: 6px;
+}
+
+.loading {
+  background-image: url("http://localhost:4200/assets/img/spinner-dark.svg") !important;
+  &:hover {
+    background-image: url("http://localhost:4200/assets/img/spinner.svg") !important;
+  }
 }

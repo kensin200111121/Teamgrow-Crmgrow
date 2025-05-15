@@ -72,8 +72,8 @@
       </ng-container>
     </div>
   </div>
-  <div>
-    <h6 class="c-secondary f-4 fw-700">Team</h6>
+  <div *ngIf="teamUsers?.length">
+    <h6 class="c-secondary f-4 fw-700">Assigned To</h6>
     <div data-name="profile-entrance" class="v-center c-pointer">
       <app-avatar-team-members
         [isSplit]="false"
@@ -101,7 +101,7 @@
     class="row justify-content-between align-items-center f-6 mx-0 mt-2"
     *ngFor="let field of additional_fields; let i = index"
   >
-    <div class="font-weight-bold c-secondary">{{ field?.name }}</div>
+    <div class="font-weight-bold c-secondary text-capitalize">{{ field?.name }}</div>
     <div class="font-weight-bold">{{ field?.value }}</div>
   </div>
 </div>

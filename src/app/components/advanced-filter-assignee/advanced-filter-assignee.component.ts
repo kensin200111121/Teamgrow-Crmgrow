@@ -1,6 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
-import { SearchOption, AssigneeCondition } from '@models/searchOption.model';
+import { SearchOption, TaskSearchOption, AssigneeCondition } from '@models/searchOption.model';
 import { ContactService } from '@services/contact.service';
+import { TaskService } from '@services/task.service';
 
 @Component({
   selector: 'app-advanced-filter-assignee',
@@ -8,19 +9,30 @@ import { ContactService } from '@services/contact.service';
   styleUrls: ['./advanced-filter-assignee.component.scss']
 })
 export class AdvancedFilterAssigneeComponent implements OnInit {
-  searchOption: SearchOption = new SearchOption();
   @Input() selectionType: 'dropdown' | 'checkbox' = 'dropdown';
+  @Input() target: 'contact' | 'task' = 'contact';
   @Output() filter = new EventEmitter();
+  contactSearchOption: SearchOption = new SearchOption();
+  taskSearchOption: TaskSearchOption = new TaskSearchOption();
   assignee: AssigneeCondition[] = [];
+
   constructor(
     private contactService: ContactService,
+    private taskService: TaskService,
   ) {}
 
   ngOnInit(): void {
-    this.searchOption = new SearchOption().deserialize(
-      JSON.parse(JSON.stringify(this.contactService.searchOption.getValue()))
-    );
-    this.assignee = this.searchOption.assigneeCondition;
+    if (this.target === 'task') {
+      this.taskSearchOption = new TaskSearchOption().deserialize(
+        JSON.parse(JSON.stringify(this.taskService.searchOption.getValue()))
+      );
+      this.assignee = this.taskSearchOption.assigneeCondition;
+    } else if (this.target === 'contact') {
+      this.contactSearchOption = new SearchOption().deserialize(
+        JSON.parse(JSON.stringify(this.contactService.searchOption.getValue()))
+      );
+      this.assignee = this.contactSearchOption.assigneeCondition;
+    }
   }
 
   save(): void {
@@ -28,5 +40,4 @@ export class AdvancedFilterAssigneeComponent implements OnInit {
       assigneeCondition: this.assignee
     });
   }
-
 }

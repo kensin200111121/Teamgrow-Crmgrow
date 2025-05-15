@@ -143,7 +143,7 @@
         </div>
       </div>
       <app-token-selector (selectToken)="insertTextContentValue($event)"></app-token-selector>
-      <app-chatgpt-button [enabled]="!aiDialogExtendable" (setAiMode)="setAiMode($event)"></app-chatgpt-button>
+      <app-chatgpt-button *ngIf="!isSspa" [enabled]="!aiDialogExtendable" (setAiMode)="setAiMode($event)"></app-chatgpt-button>
       <div class="v-center justify-content-between mt-2 mt-sm-0 w-100 ">
         <button [attr.data-action]="'template-contact-text-send'" type="button" class="btn btn-blue text-white br-default py-1 f-6 font-weight-bold shadow ml-auto segment-width"
           [class.loading]="sending" (click)="send()" *ngIf='!scheduleCheck'>

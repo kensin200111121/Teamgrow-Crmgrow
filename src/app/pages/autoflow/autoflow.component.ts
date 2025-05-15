@@ -71,7 +71,7 @@ import {
   CheckRequestItem,
   DownloadRequest
 } from '@core/interfaces/resources.interface';
-import { DownloadContactsProgreeBarComponent } from '@app/components/contact-download-progress-bar/contact-download-progress-bar.component';
+import { DownloadContactsProgressBarComponent } from '@app/components/contact-download-progress-bar/contact-download-progress-bar.component';
 import { TaskCreateComponent } from '@app/components/task-create/task-create.component';
 import { SendTextComponent } from '@app/components/send-text/send-text.component';
 import { DealCreateComponent } from '@app/components/deal-create/deal-create.component';
@@ -4261,7 +4261,7 @@ export class AutoflowComponent
    * Download CSV
    */
   downloadCSV(): void {
-    this.dialog.open(DownloadContactsProgreeBarComponent, {
+    this.dialog.open(DownloadContactsProgressBarComponent, {
       width: '90vw',
       maxWidth: '800px',
       data: {

@@ -190,6 +190,7 @@ export class WavvConnectorComponent implements OnInit, OnDestroy {
         dragElement?.classList.toggle('drag_head', isMiniMode);
         iconElement?.classList.toggle('wavv-frame-mini', isMiniMode);
       }
+      return true;
     });
     resizeObserver.observe(element, {
       attributes: true,

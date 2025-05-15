@@ -77,8 +77,8 @@ export class DetailErrorComponent implements OnInit {
   connectMail(type: string): void {
     if (environment.isSspa) {
       const urls = {
-        gmail: `/account/integrations?provider=google&service=mail`,
-        outlook: `/account/integrations?provider=microsoft&service=mail`
+        gmail: `/account/integrations?provider=google_email`,
+        outlook: `/account/integrations?provider=microsoft_email`
       };
 
       if (urls[type]) {
@@ -113,8 +113,8 @@ export class DetailErrorComponent implements OnInit {
   connectCalendar(type: string): void {
     if (environment.isSspa) {
       const urls = {
-        gmail: `/account/integrations?provider=google&service=calendar`,
-        outlook: `/account/integrations?provider=microsoft&service=calendar`
+        gmail: `/account/integrations?provider=google_calendar`,
+        outlook: `/account/integrations?provider=microsoft_calendar`
       };
 
       if (urls[type]) {

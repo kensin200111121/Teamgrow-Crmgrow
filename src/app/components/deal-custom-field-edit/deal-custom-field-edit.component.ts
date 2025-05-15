@@ -102,8 +102,14 @@ export class DealCustomFieldEdit implements OnInit {
   }
 
   submit() {
+    const fieldNames = this.fields.map(f => f.name);
+    const filteredFields = Object.fromEntries(
+      Object.entries(this.additional_fields).filter(
+        ([key]) => fieldNames.includes(key)
+      )
+    );
     this.dialogRef.close({
-      ...this.additional_fields,
+      ...filteredFields,
       ...this.value
     });
   }

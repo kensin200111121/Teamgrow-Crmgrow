@@ -350,11 +350,10 @@ export class DealDetailComponent implements OnInit {
             this.emailDialog = this.dialog.open(SendEmailComponent, {
               position: {
                 bottom: '0px',
-                right: '0px'
+                right: '600px'
               },
-              panelClass: 'send-email',
-              backdropClass: 'cdk-send-email',
-              disableClose: false,
+              panelClass: ['send-email', 'alert-panel'],
+              disableClose: true,
               data: {
                 deal: this.dealId,
                 contacts: this.deal.contacts,
@@ -457,13 +456,10 @@ export class DealDetailComponent implements OnInit {
             this.textDialog = this.dialog.open(SendTextComponent, {
               position: {
                 bottom: '0px',
-                right: '0px'
+                right: '600px'
               },
-              width: '100vw',
-              maxWidth: '600px',
-              panelClass: 'send-email',
-              backdropClass: 'cdk-send-email',
-              disableClose: false,
+              panelClass: ['send-email', 'alert-panel'],
+              disableClose: true,
               data: {
                 type: 'multi',
                 deal: this.dealId,

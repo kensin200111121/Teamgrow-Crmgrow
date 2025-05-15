@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as Storm from '@wavv/dialer';
 import { UploadContactsComponent } from '@components/upload-contacts/upload-contacts.component';
-import { DownloadContactsProgreeBarComponent } from '@components/contact-download-progress-bar/contact-download-progress-bar.component';
+import { DownloadContactsProgressBarComponent } from '@components/contact-download-progress-bar/contact-download-progress-bar.component';
 import {
   BulkActions,
   CONTACT_SORT_OPTIONS,
@@ -78,6 +78,7 @@ import { CustomFieldService } from '@app/services/custom-field.service';
 export class ContactsComponent implements OnInit, OnDestroy {
   readonly USER_FEATURES = USER_FEATURES;
   protected KEY_LAST_SORT_TYPE = 'contact.last_used_sort_type';
+  protected FILTER = 'contact.last_used_filter';
   readonly isSspa = environment.isSspa;
   destroy$ = new Subject();
 
@@ -447,6 +448,19 @@ export class ContactsComponent implements OnInit, OnDestroy {
         this.isPackageText = res.text_info?.is_enabled;
         this.isPackageDialer = res.dialer_info?.is_enabled || false;
 
+        if (this.isSspa) {
+          [this.ACTIONS, this.SHARED_WITH_ACTIONS].forEach((actions) => {
+            actions
+              .filter((action) => action.command === 'download')
+              .forEach((downloadAction) => {
+                downloadAction.label = 'Export';
+                if (downloadAction.loadingLabel) {
+                  downloadAction.loadingLabel = 'Exporting';
+                }
+              });
+          });
+        }
+
         this.userId = res._id;
         this.loading = false;
 
@@ -577,6 +591,19 @@ export class ContactsComponent implements OnInit, OnDestroy {
             description: filter.description
           }))
         ] as Array<{ _id: string; label: string; description: string }>;
+
+        const filterId = localStorage.getCrmItem(this.FILTER);
+        if (!filterId) {
+          this.currentFilterId = 'own';
+        } else {
+          const filter = this.constListTypeOptions.find(
+            (item) => item._id === filterId
+          );
+
+          if (!filter) this.currentFilterId = 'own';
+          else this.currentFilterId = filterId;
+          localStorage.setCrmItem(this.FILTER, this.currentFilterId);
+        }
       });
     this.customFieldSubscription = this.customFieldService.fields$.subscribe(
       (_fields) => {
@@ -652,19 +679,6 @@ export class ContactsComponent implements OnInit, OnDestroy {
         }
         this.pageSelection = [];
         this.selection = [];
-
-        if (
-          this.searchOption.isEmpty() &&
-          (!this.searchOption.listType || this.searchOption.listType === 'own')
-        ) {
-          // if user remove the selected filter options (chips) from the custom saved filters,
-          // need to reset the selected filter list to "own"
-          // but in sspa mode we need to keep the current filter id
-          if (!this.isSspa) {
-            this.currentFilterId = 'own';
-          }
-        }
-
         this.initColumns('contact_columns');
       });
 
@@ -1346,7 +1360,7 @@ export class ContactsComponent implements OnInit, OnDestroy {
   downloadCSV(): void {
     this.updateActionsStatus('download', true);
     this.dialog
-      .open(DownloadContactsProgreeBarComponent, {
+      .open(DownloadContactsProgressBarComponent, {
         width: '90vw',
         maxWidth: '800px',
         data: {
@@ -1716,6 +1730,13 @@ export class ContactsComponent implements OnInit, OnDestroy {
       });
   }
 
+  deletedCurrentFilter(filter: any): void {
+    if (filter._id === this.currentFilterId) {
+      this.currentFilterId = 'own';
+      localStorage.setCrmItem(this.FILTER, this.currentFilterId);
+    }
+  }
+
   changeCurrentFilter(filter: any): void {
     this.contactService.listTypeOption.next(filter._id);
     if (DEFAULT_LIST_TYPE_IDS.includes(filter._id)) {
@@ -1737,11 +1758,13 @@ export class ContactsComponent implements OnInit, OnDestroy {
     }
     this.selectedFilter = filter;
     this.currentFilterId = filter._id;
+    localStorage.setCrmItem(this.FILTER, this.currentFilterId);
     this.initColumns('contact_columns');
   }
 
   clearAllFilters(): void {
-    this.currentFilterId = '';
+    this.currentFilterId = 'own';
+    localStorage.setCrmItem(this.FILTER, this.currentFilterId);
     this.selectedMaterial = [];
     this.selectedMaterialActions = '';
     this.materialActions.forEach((action) => {

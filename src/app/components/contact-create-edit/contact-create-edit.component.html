@@ -50,6 +50,7 @@
       <div class="col-sm-4 col-12 form-group">
         <label for="status_cc" translate>status</label>
         <app-label-select
+          [sharedWith]="userId == contact?.user ? '' : contact?.user"
           [value]="contact.label"
           (valueChange)="updateLabel($event)"
           type="form"
@@ -60,6 +61,7 @@
     <div class="row">
       <div class="col-12 form-group">
         <app-contact-input-tag
+          [sharedWith]="userId == contact?.user ? '' : contact?.user"
           [selectedTags]="contact.tags"
           [isDefaultOpen]="isEditTag"
         ></app-contact-input-tag>
@@ -633,6 +635,7 @@
 
     <div
       class="general-panels w-100 mr-0 border-top pt-3"
+      *ngIf="additional_fields?.length || userId == contact?.user || isCreate"
     >
       <!-- Begin Contact Additional Information -->
       <div class="v-center w-100 mb-3">
@@ -640,11 +643,12 @@
         <div
           class="f-2 fw-600 c-blue c-pointer contact-action-btn"
           (click)="manageField($event)"
+          *ngIf="isCreate || userId == contact?.user"
         >
           <span translate>Manage Fields</span>
         </div>
       </div>
-      <ng-container  *ngIf="additional_fields.length else emptyAdditionalInfo">
+      <ng-container *ngIf="additional_fields?.length else emptyAdditionalInfo">
         <div class="contact-additional f-3">
           <div class="additional-fields">
             <ng-container *ngFor="let field of additional_fields; let i = index">
@@ -734,7 +738,7 @@
         </div>
       </ng-container>
       <ng-template #emptyAdditionalInfo>
-        <p class="empty-additional-info-placeholder">
+        <p class="empty-additional-info-placeholder" *ngIf="userId == contact?.user || isCreate">
           To create or delete your custom fields, click on "Manage Fields." You can also navigate to "Contacts/Preferences" and select the Custom Contact Fields tab.
         </p>
       </ng-template>

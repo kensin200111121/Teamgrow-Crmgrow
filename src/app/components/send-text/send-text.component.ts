@@ -86,6 +86,7 @@ export class SendTextComponent implements OnInit, OnDestroy {
   dialogType = '';
   isMinimizable = true;
   draftText = new Draft();
+  isSspa = environment.isSspa;
 
   dealId = '';
   schedule_date = {

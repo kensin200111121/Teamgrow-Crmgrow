@@ -168,7 +168,7 @@ export class HandlerService {
     // Tasks list update
     const tasks = this.storeService.tasks.getValue();
     tasks.forEach((e) => {
-      if (_ids.indexOf(e.contact._id) !== -1) {
+      if (e.contact && _ids.indexOf(e.contact._id) !== -1) {
         e.contact.deserialize(contact);
       }
     });

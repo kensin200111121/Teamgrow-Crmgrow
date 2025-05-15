@@ -57,6 +57,8 @@ export class ContactInputTagComponent implements OnInit {
   @Input('onlySelect') onlySelect = false;
   @Input('selectedTags') selectedTags: string[] = [];
   @Input('hasNoTag') hasNoTag = false;
+  @Input('sharedWith') sharedWith = '';
+  sharedTags = [];
 
   // default focus handle logic (Open the tag selector by default)
   @Input('isDefaultOpen')
@@ -131,6 +133,12 @@ export class ContactInputTagComponent implements OnInit {
           this.searching = false;
         }
       );
+    
+    if(this.sharedWith ?.length ){
+      this.tagService.getSharedTags(this.sharedWith).subscribe((res) => {
+        this.sharedTags = res;
+      });
+    }
   }
 
   triggerSelectContent() {

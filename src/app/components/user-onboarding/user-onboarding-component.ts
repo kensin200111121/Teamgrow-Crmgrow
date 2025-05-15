@@ -6,6 +6,8 @@ import { UserService } from '@app/services/user.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { VORTEX_FEATURES } from '@app/constants/feature.constants';
+import { Subscription } from 'rxjs';
+import { User } from '@app/models/user.model';
 
 @Component({
   selector: 'app-user-onboarding',
@@ -15,7 +17,21 @@ import { VORTEX_FEATURES } from '@app/constants/feature.constants';
 export class UserOnboardingComponent implements OnInit {
   readonly isSspa = environment.isSspa;
   readonly feature = VORTEX_FEATURES;
+  user: User = new User();
+
+  timezone = '';
+  oldTimezone = '';
+  timezoneModified = true;
+  isUpdateTimezone = false;
+  profileSubscription: Subscription;
+
   onboardingOptions = [
+    {
+      name: 'timezone',
+      title: 'Set Your Time Zone',
+      description:
+        'Select your timezone to ensure Vortex sends your notifications at the right time.'
+    },
     {
       name: 'email',
       title: 'Connect Your Email',
@@ -26,13 +42,13 @@ export class UserOnboardingComponent implements OnInit {
           label: 'Gmail',
           icon: 'img/google.svg',
           alt: 'Gmail',
-          link: '/account/integrations?provider=google&service=mail'
+          link: '/account/integrations?provider=google_email'
         },
         {
           label: 'Outlook',
           icon: 'img/microsoft.svg',
           alt: 'Outlook',
-          link: '/account/integrations?provider=microsoft&service=mail'
+          link: '/account/integrations?provider=microsoft_email'
         }
       ]
     },
@@ -45,13 +61,13 @@ export class UserOnboardingComponent implements OnInit {
           label: 'Gmail',
           icon: 'img/google.svg',
           alt: 'Gmail Calendar',
-          link: '/account/integrations?provider=google&service=calendar'
+          link: '/account/integrations?provider=google_calendar'
         },
         {
           label: 'Outlook',
           icon: 'img/microsoft.svg',
           alt: 'Outlook Calendar',
-          link: '/account/integrations?provider=microsoft&service=calendar'
+          link: '/account/integrations?provider=microsoft_calendar'
         }
       ]
     },
@@ -122,7 +138,18 @@ export class UserOnboardingComponent implements OnInit {
     public onboardingService: OnboardingService,
     private userService: UserService,
     private router: Router
-  ) {}
+  ) {
+    this.profileSubscription = this.userService.profile$.subscribe(
+      (profile) => {
+        if (profile._id) {
+          this.user = profile;
+          this.timezone = profile.time_zone_info;
+          this.oldTimezone = profile.time_zone_info;
+          this.timezoneModified = true;
+        }
+      }
+    );
+  }
   ngOnInit(): void {}
 
   ngOnDestroy(): void {}
@@ -179,5 +206,20 @@ export class UserOnboardingComponent implements OnInit {
 
   onTabClosed(provider): void {
     this.onboardingService.reinitOnboardingSteps();
+  }
+  selectTimezone($event): void {
+    this.timezoneModified = this.oldTimezone == $event;
+  }
+  updateTimezone(): void {
+    this.isUpdateTimezone = true;
+    this.userService
+      .updateProfile({
+        ...this.user,
+        time_zone_info: this.timezone
+      })
+      .subscribe((data) => {
+        this.userService.updateProfileImpl(data);
+        this.isUpdateTimezone = false;
+      });
   }
 }

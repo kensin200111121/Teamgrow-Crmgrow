@@ -16,6 +16,7 @@ import { Subscription } from 'rxjs';
 import { PipelineRenameComponent } from '@app/components/pipeline-rename/pipeline-rename.component';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmComponent } from '@components/confirm/confirm.component';
+import { Account } from '@app/models/user.model';
 
 @Component({
   selector: 'app-deals-preference',
@@ -44,6 +45,7 @@ export class DealsPreferenceComponent implements OnInit {
   pipelines: Pipeline[] = [];
   searchTermPipeline = '';
   reachedLimit = true;
+  accounts: Account[] = [];
 
   constructor(
     private dialog: MatDialog,
@@ -96,6 +98,9 @@ export class DealsPreferenceComponent implements OnInit {
           }
         );
       }
+    });
+    this.userService.accounts$.subscribe((accountInfo) => {
+      this.accounts = accountInfo?.accounts ?? [];
     });
   }
 
@@ -221,7 +226,7 @@ export class DealsPreferenceComponent implements OnInit {
       .afterClosed()
       .subscribe((res) => {
         if (res) {
-          // this.toastr.success('Deal Stage successfully created.');
+          this.toastr.success('Deal Stage successfully created.');
           this.dealsService.createStage$(new DealStage().deserialize(res));
         }
       });

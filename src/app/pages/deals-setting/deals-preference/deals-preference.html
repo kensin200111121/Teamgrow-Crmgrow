@@ -45,7 +45,7 @@
               (click)="onSelectPipeLine(pipeline)"
             >
               <span class="pipeline-title">{{ pipeline.title | shorten: 18:'...' }}</span><br />
-              <span class="creator-name c-secondary">{{ pipeline.user_name | shorten: 24:'...' }}</span>
+              <span *ngIf="accounts.length" class="creator-name c-secondary">{{ pipeline.user_name | shorten: 24:'...' }}</span>
             </div>
             <div
               *ngIf="!reachedLimit"

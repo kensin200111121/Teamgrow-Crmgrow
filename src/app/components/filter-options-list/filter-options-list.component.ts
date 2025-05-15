@@ -29,6 +29,7 @@ export class FilterOptionsListComponent implements OnInit {
   @Input() currentFilterId = 'own';
   @Input() viewMode = '';
   @Output() changeCurrentFilter = new EventEmitter();
+  @Output() deletedCurrentFilter = new EventEmitter();
 
   savedFilters = [];
   originContactListType = CONTACT_LIST_TYPE.filter(
@@ -176,6 +177,7 @@ export class FilterOptionsListComponent implements OnInit {
               .subscribe((status) => {
                 if (status) {
                   // Remove from Service Subject
+                  this.deletedCurrentFilter.emit(filter);
                   this.filterService.remove$(filter._id);
                   this.savedFilters = this.savedFilters.filter(
                     (e) => e._id !== filter._id

@@ -16,14 +16,15 @@ type DialogData = {
   templateUrl: './contact-download-progress-bar.component.html',
   styleUrls: ['./contact-download-progress-bar.component.scss']
 })
-export class DownloadContactsProgreeBarComponent {
+export class DownloadContactsProgressBarComponent {
   overallContacts = 0;
   downloadedContactsCount = 0;
   downloadPercent = 0;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
-    private dialogRef: MatDialogRef<DownloadContactsProgreeBarComponent>,
+    
+    private dialogRef: MatDialogRef<DownloadContactsProgressBarComponent>,
     private contactService: ContactService
   ) {
     if (this.data.selection.length) {
@@ -63,7 +64,12 @@ export class DownloadContactsProgreeBarComponent {
             zip: ((e.contact.zip || '') + '').trim(),
             address: ((e.contact.address || '') + '').trim(),
             secondary_email: ((e.contact.secondary_email || '') + '').trim(),
-            secondary_phone: ((e.contact.secondary_phone || '') + '').trim()
+            secondary_phone: ((e.contact.secondary_phone || '') + '').trim(),
+            birthday: (() => {
+              const b = e.contact?.birthday;
+              if (!b || !b.year || !b.month || !b.day) return '';
+              return `${String(b.month).padStart(2, '0')}/${String(b.day).padStart(2, '0')}/${b.year}`;
+            })()
           };
 
           let label = '';
@@ -131,12 +137,20 @@ export class DownloadContactsProgreeBarComponent {
   csvEngin(contacts: any, index: number): void {
     const replacer = (key, value) => (value === null ? '' : value); // specify how you want to handle null values here
     const header = Object.keys(contacts[0]);
+    const formatHeader = (key: string) => {
+      return key
+        .replace(/_/g, ' ')
+        .split(/\s+/)
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    };
+    const headerLabels = header.map(formatHeader);
     const csv = contacts.map((row) =>
       header
         .map((fieldName) => JSON.stringify(row[fieldName], replacer))
         .join(',')
     );
-    csv.unshift(header.join(','));
+    csv.unshift(headerLabels.join(','));
     const csvArray = csv.join('\r\n');
 
     const blob = new Blob([csvArray], { type: 'text/csv' });

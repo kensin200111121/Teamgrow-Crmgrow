@@ -212,7 +212,11 @@
     <div>
       <div class="d-flex">
         <div class="title mb-2 mr-2">{{ item.title }}</div>
-        <a href="{{ siteUrl }}/pipeline?deals={{ item._id }}" target="_blank">
+        <a
+          [routerLink]="['/pipeline']"
+          [queryParams]="{ deals: item._id }"
+          target="_blank"
+        >
           <i class="i-icon i-expand bgc-dark d-block ml-1"></i>
         </a>
       </div>

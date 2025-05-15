@@ -45,7 +45,7 @@
             >
               <span>
                 <span class="pipeline-title">{{ pipeline.detail.title | shorten: 20:'...' }}</span><br />
-                <span class="creator-name c-secondary">{{ pipeline.detail.user_name | shorten: 24:'...' }}</span>
+                <span *ngIf="accounts.length" class="creator-name c-secondary">{{ pipeline.detail.user_name | shorten: 24:'...' }}</span>
               </span>
             </div>
           </div>

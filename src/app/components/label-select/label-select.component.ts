@@ -26,8 +26,8 @@ export class LabelSelectComponent implements OnInit, AfterViewInit {
   @Input()
   public set value(val: string) {
     if (typeof val !== 'undefined') {
-      const labels = this.labelService.allLabels.getValue();
-      if (labels.length) {
+      const labels = this.sharedWith?.length ? this.labelService.sharedLabels.getValue()[this.sharedWith] : this.labelService.allLabels.getValue();
+      if (labels?.length) {
         const selected = _.find(labels, (e) => e._id === val);
         this.label = selected && selected._id ? selected._id : '';
         this.formControl.setValue(selected, { emitEvent: false });
@@ -56,7 +56,6 @@ export class LabelSelectComponent implements OnInit, AfterViewInit {
   @ViewChild('inputField') trigger: ElementRef;
   @ViewChild(MatAutocompleteTrigger)
   autocompleteTrigger: MatAutocompleteTrigger;
-  sharedLabels = [];
   label = '';
   formControl: UntypedFormControl = new UntypedFormControl();
   constructor(public labelService: LabelService) {}
@@ -65,15 +64,6 @@ export class LabelSelectComponent implements OnInit, AfterViewInit {
     if (this.hasKeepLabel) {
       this.label = undefined;
     }
-    this.labelService.allLabels$.subscribe((res) => {
-      if (typeof this.label !== 'undefined') {
-        const value = _.find(res, (e) => e._id === this.label);
-        this.formControl.setValue(value, { emitEvent: false });
-      } else {
-        this.formControl.setValue('keep', { emitEvent: false });
-      }
-    });
-
     this.formControl.valueChanges.subscribe((value) => {
       if (value === 'keep') {
         this.clearLabel.emit();
@@ -88,6 +78,25 @@ export class LabelSelectComponent implements OnInit, AfterViewInit {
         this.valueChange.emit('');
       }
     });
+
+    if(this.sharedWith?.length){
+      this.labelService.sharedLabels$.subscribe((res) => {
+        this.setLabel(res[this.sharedWith]);
+      });
+    }else{
+      this.labelService.allLabels$.subscribe((res) => {
+        this.setLabel(res);
+      });
+    }
+  }
+
+  setLabel(labels: any[]): void {
+    if (typeof this.label !== 'undefined') {
+      const value = _.find(labels, (e) => e._id === this.label);
+      this.formControl.setValue(value, { emitEvent: false });
+    } else {
+      this.formControl.setValue('keep', { emitEvent: false });
+    }
   }
 
   onChangeLabel(event: MatAutocompleteSelectedEvent): void {}

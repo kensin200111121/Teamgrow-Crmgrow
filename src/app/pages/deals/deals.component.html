@@ -48,7 +48,7 @@
               >
                 <span>
                   <span class="pipeline-title">{{ pipeline.title | shorten: 18:'...' }}</span><br />
-                  <span class="creator-name c-secondary">{{ pipeline.user_name | shorten: 24:'...' }}</span>
+                  <span *ngIf="teamUsers.length" class="creator-name c-secondary">{{ pipeline.user_name | shorten: 24:'...' }}</span>
                 </span>
               </div>
               <div *ngIf="!reachedLimit" ngbDropdownItem>
@@ -119,7 +119,7 @@
             New Deal
           </button>
           <div
-            *ngIf="selectedFilterTeamUser.length > 0"
+            *ngIf="teamUsers.length > 0 && selectedFilterTeamUser.length > 0"
             class="pipeline-dropdown team-members-dropdown mr-2"
             placement="bottom-left"
             ngbDropdown

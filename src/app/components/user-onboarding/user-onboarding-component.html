@@ -9,7 +9,7 @@
       <span class="c-secondary f-body-medium mb-0">
         {{ option.description }}
       </span>
-      <div class="integration-providers">
+      <div class="integration-providers" *ngIf="option.providers">
         <ng-container *ngFor="let provider of option.providers">
           <div class="integration-provider">
             <img
@@ -31,6 +31,23 @@
             </button>
           </div>
         </ng-container>
+      </div>
+      <div *ngIf="option.name == 'timezone'" class="w-50">
+        <app-select-timezone
+          [(timezone)]="timezone"
+          [uiType]="'selector'"
+          (timezoneChange)="selectTimezone($event)"
+        ></app-select-timezone>
+        <div>
+          <button
+            class="provider-btn f-body-medium rounded fw-600 px-3 py-1"
+            [class.loading]="isUpdateTimezone"
+            [disabled]="timezoneModified || isUpdateTimezone"
+            (click)="updateTimezone()"
+          >
+            Save
+          </button>
+        </div>
       </div>
     </app-collapsable-settings>
   </ng-container>

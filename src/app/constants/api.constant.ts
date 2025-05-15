@@ -466,6 +466,7 @@ export const DRAFT = {
 export const TAG = {
   ALL: 'tag/getAll',
   TEAM: 'tag/getAllForTeam',
+  SHARED_TAGS: 'tag/shared-tags',
   GET: 'tag/load',
   CREATE: 'tag',
   UPDATE: 'tag/update',

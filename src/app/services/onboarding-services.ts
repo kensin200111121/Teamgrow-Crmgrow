@@ -10,7 +10,7 @@ import { OnboardStepStatusType } from '@app/models/garbage.model';
 })
 export class OnboardingService {
   readonly isSspa = environment.isSspa;
-  steps = ['email', 'calendar', 'contacts'];
+  steps = ['email', 'calendar', 'contacts', 'timezone'];
   onboardingStatus: Record<string, OnboardStepStatusType> = {};
 
   get totalStepCount(): number {

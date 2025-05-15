@@ -31,7 +31,7 @@ import { DataEmptyComponent } from '@components/data-empty/data-empty.component'
 import { CampaignAddListComponent } from '@components/campaign-add-list/campaign-add-list.component';
 import { CampaignAddContactComponent } from '@components/campaign-add-contact/campaign-add-contact.component';
 import { UploadContactsComponent } from '@components/upload-contacts/upload-contacts.component';
-import { DownloadContactsProgreeBarComponent } from '@components/contact-download-progress-bar/contact-download-progress-bar.component';
+import { DownloadContactsProgressBarComponent } from '@components/contact-download-progress-bar/contact-download-progress-bar.component';
 import { TaskCreateComponent } from '@components/task-create/task-create.component';
 import { NoteCreateComponent } from '@components/note-create/note-create.component';
 import { CalendarDeclineComponent } from '@components/calendar-decline/calendar-decline.component';
@@ -395,6 +395,7 @@ import { RegisterWebinerComponent } from './register-webiner/register-webiner.co
 import { UserOnboardingComponent } from './user-onboarding/user-onboarding-component';
 import { OnboardingSettingComponent } from './onboarding-setting/onboarding-setting.component';
 import { NavLinkComponent } from '@components/nav-link/nav-link.component';
+import { TagViewComponent } from '@components/tag-view/tag-view.component';
 
 export function momentAdapterFactory() {
   return adapterFactory(moment);
@@ -428,7 +429,7 @@ export function momentAdapterFactory() {
     CampaignAddListComponent,
     CampaignAddContactComponent,
     UploadContactsComponent,
-    DownloadContactsProgreeBarComponent,
+    DownloadContactsProgressBarComponent,
     ContactCreateEditComponent,
     AddressInputComponent,
     TaskCreateComponent,
@@ -776,7 +777,8 @@ export function momentAdapterFactory() {
     RegisterWebinerComponent,
     UserOnboardingComponent,
     OnboardingSettingComponent,
-    NavLinkComponent
+    NavLinkComponent,
+    TagViewComponent
   ],
   imports: [
     CommonModule,
@@ -836,7 +838,7 @@ export function momentAdapterFactory() {
     CampaignAddListComponent,
     CampaignAddContactComponent,
     UploadContactsComponent,
-    DownloadContactsProgreeBarComponent,
+    DownloadContactsProgressBarComponent,
     DataEmptyComponent,
     SelectLeaderComponent,
     LabelSelectComponent,
@@ -1044,7 +1046,8 @@ export function momentAdapterFactory() {
     RegisterWebinerComponent,
     UserOnboardingComponent,
     OnboardingSettingComponent,
-    NavLinkComponent
+    NavLinkComponent,
+    TagViewComponent
   ],
   bootstrap: [
     AvatarEditorComponent,
